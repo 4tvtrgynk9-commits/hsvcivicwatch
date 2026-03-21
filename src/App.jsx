@@ -146,7 +146,7 @@ const NAV=[
   {id:"equity",icon:"⚖",label:"The Two Huntsvilles"},
   {id:"utilities",icon:"💧",label:"Power, Water & Utilities"},
   {id:"health",icon:"✚",label:"Health System"},
-  {id:"insurance",icon:"🛡",label:"Insurance & The Coverage Gap"},
+  {id:"insurance",icon:"🛡",label:"Who Profits From Your Coverage"},
   {id:"money",icon:"💰",label:"Follow the Money"},
   {id:"workers",icon:"👷",label:"Workers Rights & Child Care"},
   {id:"taxes",icon:"🧾",label:"Taxes"},
@@ -464,6 +464,28 @@ function ExpandText({text,preview=180,style={}}){
   );
 }
 
+// ─── ACTION BUTTONS COMPONENT ────────────────────────────────
+function ActionButtons({actions,title}){
+  const[copied,setCopied]=React.useState({});
+  function cp(k,t){navigator.clipboard.writeText(t).then(()=>{setCopied(p=>({...p,[k]:true}));setTimeout(()=>setCopied(p=>({...p,[k]:false})),2500);});}
+  return(
+    <div style={{marginTop:10}}>
+      {title&&<div style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1.5,marginBottom:8,textTransform:"uppercase"}}>{title}</div>}
+      <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+        {(actions||[]).map((a,i)=>(
+          a.href
+            ? <a key={i} href={a.href} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:11.5}}>→ {a.label}</button></a>
+            : a.tel
+            ? <a key={i} href={`tel:${a.tel}`}><button className="btn btn-gold" style={{fontSize:11.5}}>📞 {a.label}</button></a>
+            : a.email
+            ? <a key={i} href={`mailto:${a.email}?subject=${encodeURIComponent(a.subject||"")}&body=${encodeURIComponent(a.body||"")}`}><button className="btn btn-ghost" style={{fontSize:11.5}}>✉ {a.label}</button></a>
+            : <button key={i} className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>cp("a"+i,a.copy||"")}>{copied["a"+i]?"✓ Copied":a.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── INVESTIGATION PAGE (generic) ────────────────────────────
 function InvestPage({id}){
   const p=PAGES[id];
@@ -487,6 +509,7 @@ function EquityPage(){
   const[foiaOpen,setFoiaOpen]=useState({});
   const[analysisOpen,setAnalysisOpen]=useState({});
   const[copied,setCopied]=useState({});
+  const[tab,setTab]=useState("overview");
 
   function copy(key,text){
     navigator.clipboard.writeText(text).then(()=>{
@@ -583,12 +606,19 @@ function EquityPage(){
         <p>Same city. Same tax rate. Documented disparities in roads, schools, policing, parks, and capital investment — sustained over 16 years. Here is the data, the connections, and what you can do.</p>
       </div>
 
+      <div className="tabs">
+        {[{id:"overview",label:"Overview"},{id:"hcs",label:"🏫 HCS Schools"},{id:"madison",label:"🏫 Madison County"},{id:"action",label:"✊ Take Action"}].map(t=>(
+          <button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>
+        ))}
+      </div>
+
+      {tab==="overview"&&<div>
       {/* Visual comparison bars */}
       <div className="card" style={{padding:"20px",marginBottom:16}}>
         <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Service Quality Comparison — North vs South Huntsville</div>
         <div style={{display:"flex",gap:16,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
-          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#dc2626",verticalAlign:"middle",marginRight:4}}/>Colored = North Huntsville</span>
-          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#93b4d4",verticalAlign:"middle",marginRight:4}}/>Blue-gray = South Huntsville</span>
+          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#dc2626",verticalAlign:"middle",marginRight:4}}/>Red = North Huntsville</span>
+          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#93b4d4",verticalAlign:"middle",marginRight:4}}/>Blue = South Huntsville</span>
         </div>
         {metrics.map((m,i)=>(
           <div key={i} style={{marginBottom:18}}>
@@ -596,10 +626,10 @@ function EquityPage(){
               <span style={{fontSize:12.5,color:"#374151",fontWeight:600}}>{m.label}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"100px 1fr 100px",gap:8,alignItems:"center"}}>
-              <div style={{fontSize:11,fontWeight:700,color:m.color,textAlign:"right"}}>{m.northLabel}</div>
-              <div style={{position:"relative",height:28,background:"#dbeafe",borderRadius:3,overflow:"hidden"}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#dc2626",textAlign:"right"}}>{m.northLabel}</div>
+              <div style={{position:"relative",height:28,background:"#e8eef5",borderRadius:3,overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.south+"%",background:"#93b4d4",borderRadius:3}}/>
-                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:m.color,opacity:.85,borderRadius:3}}/>
+                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:"#dc2626",opacity:.85,borderRadius:3}}/>
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 8px",justifyContent:"space-between"}}>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.9)",fontWeight:800}}>N</span>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.7)",fontWeight:700}}>S</span>
@@ -704,6 +734,11 @@ function EquityPage(){
         <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE BOTTOM LINE</div>
         <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.65}}>The same elected officials who accepted $380,000 in developer donations also approved budgets producing these disparities — for 16 consecutive years. The data is public. The pattern is documented. The officials are elected. The 2026 ballot includes City Council seats in Districts 1 and 3 — north Huntsville.</div>
       </div>
+      </div>}
+
+      {tab==="hcs"&&<SchoolsHCSTab/>}
+      {tab==="madison"&&<SchoolsMadisonTab/>}
+      {tab==="action"&&<SchoolsActionTab/>}
     </div>
   );
 }
@@ -711,7 +746,161 @@ function EquityPage(){
 
 
 // ─── SCHOOLS PAGE ─────────────────────────────────────────────
-function SchoolsPage(){const nav=React.useContext?React.useContext(null):null;return null;}
+function SchoolsPage(){return null;}
+
+// ─── SCHOOL TAB COMPONENTS ────────────────────────────────────
+function SchoolsHCSTab(){
+  const NORTH_COLOR="#dc2626", SOUTH_COLOR="#93b4d4";
+  const hs=[
+    {school:"Huntsville High",area:"South — downtown",apRate:65,mathProf:38,minority:39,econDis:30,rank:"Top 30 AL",c:SOUTH_COLOR,note:"65% AP participation. 30% economically disadvantaged."},
+    {school:"Grissom High",area:"South/Southeast",apRate:46,mathProf:31,minority:45,econDis:43,rank:"Top 85 AL",c:SOUTH_COLOR,note:"1,847 students. Ranked 2nd in AL in 2015. Dual enrollment with UAH and Calhoun."},
+    {school:"Columbia High",area:"East/Central",apRate:17,mathProf:27,minority:87,econDis:50,rank:"199–297 AL",c:NORTH_COLOR,note:"Only 4 AP programs, 17% AP participation. 87% minority enrollment."},
+    {school:"Jemison High",area:"North — replaced J.O. Johnson (closed 2016, demolished 2021)",apRate:44,mathProf:8,minority:93,econDis:64,rank:"170th AL",c:NORTH_COLOR,note:"13 AP programs but only 6–9% math proficiency vs 29% state average. 64% economically disadvantaged."},
+    {school:"New Century Tech Demo",area:"District-wide selective magnet",apRate:74,mathProf:null,minority:55,econDis:49,rank:"Top 10 AL",c:"#16a34a",note:"Requires application — not geographically assigned. 74% AP participation rate."},
+  ];
+  const ms=[
+    {school:"Whitesburg STEM Magnet",area:"South/selective",math:62,read:71,c:SOUTH_COLOR,note:"Selective magnet — application required. Higher math proficiency than district avg."},
+    {school:"Hampton Cove Middle",area:"South/East suburban",math:54,read:68,c:SOUTH_COLOR,note:"Newer suburban area. Above district average."},
+    {school:"Davis Hills Middle",area:"North — Jemison feeder",math:18,read:32,c:NORTH_COLOR,note:"Primary feeder for Jemison HS. 18% math proficiency vs ~40% district average."},
+    {school:"McNair Junior High",area:"North — new on Jemison campus",math:null,read:null,c:NORTH_COLOR,note:"Ronald McNair Junior High opened with Jemison rebuild. Serves northwest Huntsville."},
+  ];
+  function Card({school,area,apRate,mathProf,minority,econDis,rank,c,note}){
+    return(
+      <div style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid "+c}}>
+        <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:5}}>
+          <div><span style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{school}</span><span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{area}</span></div>
+          <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:c+"22",color:c==="#dc2626"?"#dc2626":c==="#93b4d4"?"#1e3a5f":"#16a34a",border:"1px solid "+c}}>{rank}</span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:6}}>
+          {[["AP Participation",apRate!=null?apRate+"%":"N/A"],["Math Proficiency",(mathProf!=null?mathProf:"N/A")+"%"],["Econ. Disadvantaged",econDis+"%"]].map(([l,v],j)=>(
+            <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3}}>
+              <div style={{fontSize:8,color:"#6b7280",letterSpacing:.5,marginBottom:1}}>{l}</div>
+              <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{note}</div>
+      </div>
+    );
+  }
+  return(
+    <div>
+      <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#7f1d1d"}}>
+        Data: National Center for Education Statistics (NCES) 2023–24 · U.S. News & World Report. J.O. Johnson High closed 2016, demolished 2021 — replaced by Jemison High School. <span style={{color:"#dc2626",fontWeight:700}}>Red border = North Huntsville · Blue border = South Huntsville</span>
+      </div>
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:12,textTransform:"uppercase"}}>HCS High Schools — 2023-24</div>
+        {hs.map((s,i)=><Card key={i} {...s}/>)}
+        <div style={{fontSize:11,color:"#9ca3af",marginTop:4}}>Source: NCES 2023-24 · U.S. News · AL Dept. of Education</div>
+      </div>
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>HCS Middle Schools — Math Proficiency Gap</div>
+        {ms.map((s,i)=>(
+          <div key={i} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start",paddingBottom:10,borderBottom:i<ms.length-1?"1px solid #f0ebe2":"none"}}>
+            <div style={{width:8,height:8,borderRadius:"50%",background:s.c,flexShrink:0,marginTop:5}}/>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:3}}>
+                <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+                <span style={{fontSize:11,color:"#6b7280"}}>{s.area}</span>
+              </div>
+              {s.math&&<div style={{fontSize:12,color:"#374151",marginBottom:2}}>Math: <strong>{s.math}%</strong> proficient · Reading: <strong>{s.read}%</strong> proficient</div>}
+              <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <ActionButtons title="WHAT YOU CAN DO" actions={[
+        {label:"HCS Board Meetings",href:"https://www.huntsvillecityschools.org/board"},
+        {label:"Call HCS Board",tel:"2564286800"},
+        {label:"Email HCS Board — Request Equity Audit",email:"board@hsv-k12.org",subject:"Request: Per-School Resource Equity Audit",body:"Dear HCS Board Members,\n\nI request the board commission and publish a per-school resource equity audit covering per-pupil spending, AP course availability, facility maintenance budgets, and teacher retention rates broken down by individual school.\n\nThe documented gap in outcomes between north and south Huntsville schools requires a formal board response.\n\n[Your Name]\n[Your Address]"},
+        {label:"HUD CDBG Federal Complaint",href:"https://www.hud.gov/program_offices/fair_housing_equal_opp/online-complaint"},
+      ]}/>
+    </div>
+  );
+}
+
+function SchoolsMadisonTab(){
+  return(
+    <div>
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderLeft:"4px solid #1e3a5f",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#1e3a5f"}}>
+        Madison County School System (MCSS) is separate from HCS — serving Hazel Green, Sparkman, Buckhorn, New Hope, and rural areas. Madison City Schools is a third separate district. Data from NCES 2023-24 and U.S. News.
+      </div>
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>MCSS High Schools — 2023-24</div>
+        {[
+          {school:"Hazel Green High",area:"Hazel Green — rural north",ap:45,math:27,econDis:44,rank:"38th AL",note:"13 AP programs. 1,407 students. 44% economically disadvantaged."},
+          {school:"Sparkman High",area:"Harvest — suburban north",ap:45,math:26,econDis:39,rank:"64th AL",note:"1,770 students. 45% AP rate but 26% math proficient. Overcrowded — students report inflexible scheduling."},
+          {school:"Buckhorn High",area:"New Market — rural east",ap:null,math:null,econDis:null,rank:"60th AL",note:"Rival to Hazel Green ('Cotton Classic' rivalry). Serves eastern Madison County rural area."},
+          {school:"New Hope High",area:"New Hope — rural east",ap:null,math:null,econDis:null,rank:"52nd AL",note:"Smaller rural school serving eastern county. Lower minority enrollment than Sparkman/Hazel Green."},
+        ].map((s,i)=>(
+          <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid #93b4d4"}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:5}}>
+              <div><span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span><span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{s.area}</span></div>
+              <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:"#eff3f8",color:"#1e3a5f",border:"1px solid #93b4d4"}}>{s.rank}</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:5}}>
+              {[["AP Rate",s.ap!=null?s.ap+"%":"N/A"],["Math Prof.",s.math!=null?s.math+"%":"N/A"],["Econ.Disadv.",s.econDis!=null?s.econDis+"%":"N/A"]].map(([l,v],j)=>(
+                <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3}}>
+                  <div style={{fontSize:8,color:"#6b7280",letterSpacing:.5,marginBottom:1}}>{l}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{v}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
+          </div>
+        ))}
+      </div>
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Middle Schools — The Three-District Gap</div>
+        {[
+          {school:"Sparkman Middle",district:"MCSS",area:"Toney",math:24,read:54,econDis:60,note:"60% economically disadvantaged. 24% math proficient vs 41% MCSS district avg."},
+          {school:"Hazel Green Middle",district:"MCSS",area:"Hazel Green",math:null,read:null,econDis:null,note:"Feeds Hazel Green High. Rural area — limited extracurricular and facilities budget."},
+          {school:"Discovery Middle",district:"Madison City Schools ≠ MCSS",area:"Madison City",math:72,read:82,econDis:8,note:"Different district entirely. 8% econ. disadvantaged, 72% math proficient — next door to MCSS schools with 60% econ. disadvantaged."},
+        ].map((s,i)=>(
+          <div key={i} style={{padding:"10px 12px",marginBottom:8,borderRadius:4,background:"#f8f6f2",borderLeft:"3px solid "+(s.district.includes("Madison City")?"#c9a84c":"#93b4d4")}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:4}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+              <span style={{fontSize:10,fontWeight:700,color:s.district.includes("Madison City")?"#b8860b":"#6b7280"}}>{s.district}</span>
+            </div>
+            {s.math&&<div style={{fontSize:12,color:"#374151",marginBottom:3}}>Math: <strong>{s.math}%</strong> · Reading: <strong>{s.read}%</strong> · Econ. disadvantaged: <strong>{s.econDis}%</strong></div>}
+            <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
+          </div>
+        ))}
+        <div style={{background:"#1e3a5f",borderRadius:4,padding:"10px 12px",marginTop:10}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#c9a84c",marginBottom:4}}>THE THREE-DISTRICT GAP IN ONE COUNTY</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.7}}>Madison County has three separate school systems: HCS (Huntsville City), MCSS (Madison County), and Madison City Schools. They compete for the same pool of educators and tax base but operate entirely independently. Discovery Middle (Madison City) shows 72% math proficiency and 8% economically disadvantaged — Sparkman Middle (MCSS, same county) shows 24% math proficiency and 60% economically disadvantaged. Same county. Three different outcomes.</div>
+        </div>
+      </div>
+      <ActionButtons title="CONTACT MCSS" actions={[
+        {label:"Madison County Schools Board",href:"https://www.mcssk12.org/domain/2"},
+        {label:"Call MCSS",tel:"2568522557"},
+        {label:"Email MCSS Superintendent",email:"superintendent@mcssk12.org",subject:"School Resource Equity Data Request",body:"Dear Superintendent,\n\nI am requesting per-pupil resource allocation, AP course availability, and facility maintenance budget data broken down by individual school for the current school year.\n\n[Your Name]"},
+      ]}/>
+    </div>
+  );
+}
+
+function SchoolsActionTab(){
+  return(
+    <div>
+      <FactBlocks facts={[
+        {k:"green",label:"2026 ELECTIONS — HCS BOARD DISTRICTS 2, 3 & 4",lc:"#16a34a",tc:"#14532d",text:"HCS Board Districts 2, 3, and 4 are on the November 2026 ballot. These races are decided by under 200 votes at 11% turnout. The board controls the $310M annual budget, per-pupil spending distribution, AP course availability, and teacher pay. To vote, register at sos.alabama.gov — deadline is 15 days before the election."},
+        {k:"blue",label:"OPEN RECORDS REQUEST — HCS SPENDING BY SCHOOL",lc:"#2563eb",tc:"#1e3a5f",text:"Under Alabama's Open Records Act (Section 36-12-40), you can request per-pupil spending data broken down by individual school — including instructional spending, facility maintenance budget, and AP course funding. The HCS board has never published a comprehensive school-by-school equity report. Email: records@hsv-k12.org · Phone: (256) 428-6800. Your request creates a public record."},
+        {k:"gold",label:"FEDERAL COMPLAINT — CDBG EQUITY REQUIREMENTS",lc:"#b8860b",tc:"#78350f",text:"Huntsville receives federal Community Development Block Grant (CDBG) funds which require equitable distribution to low-to-moderate income communities. If capital spending is systematically directed away from qualifying north Huntsville areas, you can file a complaint with HUD's Office of Fair Housing and Equal Opportunity — it is free and creates a federal record. hud.gov/program_offices/fair_housing_equal_opp/online-complaint"},
+      ]}/>
+      <ActionButtons title="TAKE ACTION NOW" actions={[
+        {label:"Register to Vote",href:"https://www.sos.alabama.gov/alabama-votes/voter/register-to-vote"},
+        {label:"Email HCS Board",email:"board@hsv-k12.org",subject:"Request: Per-School Resource Equity Audit",body:"Dear HCS Board Members,\n\nI request the board commission and publish a per-school resource equity audit — per-pupil spending, AP course availability, facility maintenance budgets, and teacher retention rates by school.\n\nThe documented gap between north and south Huntsville schools in the same district requires a formal board response. HCS Board elections for Districts 2, 3, and 4 are on the November 2026 ballot.\n\n[Your Name]\n[Your Address]"},
+        {label:"Call HCS Board",tel:"2564286800"},
+        {label:"Contact Mayor Battle",tel:"2564275000"},
+        {label:"HUD CDBG Federal Complaint",href:"https://www.hud.gov/program_offices/fair_housing_equal_opp/online-complaint"},
+        {label:"Contact Council Member Watkins — Dist. 1",href:"https://www.huntsvilleal.gov/government/city-council/"},
+      ]}/>
+    </div>
+  );
+}
+
+
 
 
 // ─── UTILITIES PAGE ───────────────────────────────────────────
@@ -1180,506 +1369,197 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
 
 // ─── INSURANCE PAGE ───────────────────────────────────────────
 function InsurancePage(){
-  const[tab,setTab]=useState("overview");
-  const[analysisOpen,setAnalysisOpen]=useState({});
-  const[foiaOpen,setFoiaOpen]=useState({});
-  const[copied,setCopied]=useState({});
-
-  function copy(key,text){
-    navigator.clipboard.writeText(text).then(()=>{
-      setCopied(p=>({...p,[key]:true}));
-      setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);
-    });
-  }
+  const[tab,setTab]=useState("health");
 
   const tabs=[
-    {id:"overview",label:"Overview"},
     {id:"health",label:"🏥 Health Insurance"},
-    {id:"auto",label:"🚗 Auto Insurance"},
+    {id:"medicaid",label:"⚠ Medicaid Denied"},
+    {id:"bcbs",label:"🏢 BCBS Monopoly"},
     {id:"dental",label:"🦷 Dental & Vision"},
-    {id:"gap",label:"⚠ Coverage Gap"},
-    {id:"comparison",label:"📊 State Comparison"},
+    {id:"auto",label:"🚗 Auto Insurance"},
+    {id:"gap",label:"📊 Coverage Gap"},
   ];
-
-  // Premium rise data 2022-2026
-  const premiumHistory=[
-    {year:2022,bcbs:310,note:"Enhanced ACA subsidies in effect — avg after-subsidy $44/mo"},
-    {year:2023,bcbs:320,note:"BCBS +3.1% · Enhanced subsidies still in effect"},
-    {year:2024,bcbs:335,note:"BCBS +3.1% · UHC -15.1% · Enhanced subsidies extended"},
-    {year:2025,bcbs:400,note:"Carriers preparing for subsidy expiration — rates rising"},
-    {year:2026,bcbs:490,note:"BCBS +19.3% · UHC +20% · Celtic +25% · Subsidies EXPIRED — avg after-subsidy tripled from $44 to $121/mo"},
-  ];
-
-  // State comparison
-  const stateComparison=[
-    {state:"Tennessee",silverPremium:385,uninsuredRate:10.8,medicaidExpanded:true,autoFull:1620,color:"#16a34a",note:"Medicaid expanded 2013. TennCare covers ~1.5M residents."},
-    {state:"Georgia",silverPremium:410,uninsuredRate:13.1,medicaidExpanded:true,autoFull:1820,color:"#c9a84c",note:"Medicaid expanded 2023 — but only to small working group."},
-    {state:"North Carolina",silverPremium:375,uninsuredRate:12.1,medicaidExpanded:true,autoFull:1580,color:"#16a34a",note:"Medicaid expanded 2023. 600,000 newly covered."},
-    {state:"Alabama",silverPremium:490,uninsuredRate:9.8,medicaidExpanded:false,autoFull:2107,color:"#dc2626",note:"One of 10 states still refusing Medicaid expansion. ~90,000 in coverage gap."},
-    {state:"Mississippi",silverPremium:460,uninsuredRate:15.7,medicaidExpanded:false,autoFull:2230,color:"#dc2626",note:"Medicaid not expanded. Highest uninsured rate in South."},
-    {state:"Florida",silverPremium:420,uninsuredRate:13.0,medicaidExpanded:false,autoFull:2560,color:"#ea580c",note:"Medicaid not expanded despite ballot initiative."},
-  ];
-
-  // Madison County area cost breakdown
-  const localCosts=[
-    {type:"Health — Silver Plan (40yr, no subsidy)",monthly:490,annual:5880,notes:"BCBS of AL 2026. Madison County ranks among most expensive counties in AL at $436/mo Bronze. +19.3% from 2025.",color:"#dc2626"},
-    {type:"Health — After subsidy (median eligible)",monthly:121,annual:1452,notes:"If you qualify. Avg after enhanced subsidies expired. Was $44/mo in 2025. Nearly tripled in one year.",color:"#ea580c"},
-    {type:"Auto — Full Coverage (Huntsville avg)",monthly:163,annual:1954,notes:"Lower than AL state avg ($176/mo). Up 11% since 2022. Uninsured drivers (est 13%+ AL) push rates higher for everyone.",color:"#1e3a5f"},
-    {type:"Dental — Individual plan",monthly:35,annual:420,notes:"Avg standalone dental plan. 77M Americans have no dental coverage. Most AL employer plans: $1,000-$1,500 annual max — one crown exceeds this.",color:"#6b7280"},
-    {type:"Vision — Individual plan",monthly:15,annual:180,notes:"Avg standalone vision plan. Often not offered through small employers. Exam + glasses: $300-600 out of pocket without coverage.",color:"#6b7280"},
-    {type:"TOTAL — All coverage",monthly:703,annual:8436,notes:"Full coverage: health + auto + dental + vision. For a household earning $50,000, this is 17% of gross income — before any claims.",color:"#7f1d1d"},
-  ];
-
-  const investigations=[
-    {
-      title:"The 2026 Premium Shock — What Happened and Who Let It Happen",
-      impact:"CRITICAL",category:"Health Insurance",date:"Effective January 1, 2026",
-      summary:"Alabama health insurance premiums rose 19-25% across all carriers for 2026. The average after-subsidy premium nearly tripled — from $44 to $121/month — because Congress let enhanced subsidies expire. A 60-year-old couple earning $82,000 saw their annual premiums jump from $6,970 to $27,267.",
-      analysis:`In 2021, the American Rescue Plan Act expanded premium tax credits (subsidies) that made ACA marketplace plans genuinely affordable for most Alabamians. In 2025, Congress — controlled by Republicans — allowed those enhanced subsidies to expire. The result effective January 1, 2026: BCBS premiums up 19.3%. UnitedHealthcare up 20%. Celtic (Ambetter) up 25%. The average after-subsidy premium nearly tripled from $44/mo to $121/mo.
-
-Who bears the brunt: People earning between 100-400% of the federal poverty level lost subsidies entirely if above 400% FPL. A 60-year-old Alabama couple earning $82,000 — a normal middle-class income — saw their annual premiums jump from $6,970 to $27,267. That is a $20,297 annual increase. Older adults and the self-employed were hit hardest. Small business owners lost coverage. The Salvation Army and other assistance programs saw surges in calls.
-
-Who benefits: BCBS of Alabama — which controls 90%+ of Alabama's commercial insurance market — collects higher premiums with no corresponding increase in coverage. Blue Cross national antitrust settlement: $2.67 billion — found to have illegally suppressed competition. Alabama carriers: none of the three major carriers face meaningful competition. Oscar entered in 2026 as a fourth option but holds minimal market share.
-
-What you can do: Contact Rep. Dale Strong, Sen. Britt, and Sen. Tuberville — they voted to let the subsidies expire. Demand they support reinstatement of enhanced premium tax credits. File a complaint with the Alabama Department of Insurance if you believe your premium increase is unjustified.`,
-      sources:[
-        {label:"AL DOI 2026 Final Rates",url:"https://aldoi.gov/currentnewsitem.aspx?ID=1327"},
-        {label:"Alabama Arise — Subsidy Expiration Impact",url:"https://alarise.org/resources/alabamians-health-care-costs-will-soar-in-2026-if-congress-doesnt-act-now/"},
-        {label:"BCBS National Antitrust Settlement",url:"https://www.bcbssettlement.com/"},
-      ],
-      foia:{
-        title:"AL DOI Complaint — Unjustified Premium Increase",
-        to:"Alabama Department of Insurance — Consumer Services Division",
-        subject:"Consumer Complaint — Health Insurance Premium Increase",
-        template:"Alabama Department of Insurance\nConsumer Services Division\n201 Monroe Street, Suite 1700\nMontgomery, AL 36104\n\nRe: Consumer Complaint — Health Insurance Premium Increase\n\nI am filing a complaint regarding my [CARRIER NAME] health insurance plan.\n\nMy premium for 2026 increased from $[2025 AMOUNT] to $[2026 AMOUNT] — a [PERCENT]% increase. I have not received a sufficient explanation of what specific cost factors justify this increase in Alabama specifically.\n\nI request:\n1. Documentation of what specific claims cost increases justify this premium rate change in Alabama.\n2. BCBS of Alabama's medical loss ratio for 2024 and 2025 — what percentage of premiums was paid out in actual claims vs. retained as administrative costs and profit.\n3. The actuarial memo supporting this rate filing.\n\n[Your Name]\n[Your Address]\n[Your Policy Number]",
-      },
-    },
-    {
-      title:"The Coverage Gap — 90,000 Alabamians Earning Too Much for Medicaid, Too Little for Subsidies",
-      impact:"HIGH",category:"Uninsured & Underinsured",date:"2024 Census Data / 2026 ACA Rates",
-      summary:"Alabama is one of 10 states still refusing Medicaid expansion. ~90,000 Alabamians earn too much for traditional Medicaid but too little to afford marketplace plans without subsidies. They are uninsured. The federal government pays 90% of Medicaid expansion costs. Alabama refuses.",
-      analysis:`The Medicaid coverage gap exists because of a specific policy choice: Alabama refused to expand Medicaid under the ACA. The gap affects Alabamians who earn too little for ACA marketplace subsidies (below ~$15,060/yr for a single adult) but too much for traditional Medicaid. They have no affordable options. Marketplace plans at full price run $400-600/month — not realistic on $15,000/year.
-
-In 2024, approximately 90,000 Alabamians were in this gap. Every neighboring state except Mississippi has either expanded Medicaid or is implementing expansion: Tennessee (2013), Georgia (limited 2023), North Carolina (2023). The federal government pays 90% of Medicaid expansion costs permanently. Alabama receives $0 in federal funds for the 90,000 people in the gap — while those people use emergency rooms for primary care, at far higher cost to hospitals.
-
-Madison County specifically: approximately 47,000 residents are in the coverage gap or otherwise uninsured. HHHS absorbs uncompensated care from these patients, then claims it as "community benefit" to justify its $63M/yr nonprofit tax exemption. The Medicaid refusal, the HHHS nonprofit exemption, and BCBS's premium revenues are all structurally connected.
-
-The 2026 premium spike — with subsidies expiring — will push more people off coverage and into the gap. Estimates: 130,000 Alabamians could lose coverage entirely. Gov. Ivey received $420,000 from health insurance PACs. Sen. Britt received $310,000. These are the people who decide whether Alabama expands Medicaid — and who benefit financially from not doing so.`,
-      sources:[
-        {label:"KFF — Medicaid Coverage Gap",url:"https://www.kff.org/medicaid/issue-brief/the-coverage-gap-uninsured-poor-adults-in-states-that-do-not-expand-medicaid/"},
-        {label:"Alabama Arise — Coverage Data",url:"https://alarise.org"},
-        {label:"Census ACS Health Insurance 2024",url:"https://www.census.gov/topics/health/health-insurance.html"},
-      ],
-      foia:{
-        title:"Contact Your Elected Officials — Medicaid Expansion",
-        to:"Gov. Kay Ivey / Your State Legislators",
-        subject:"Constituent Request — Support Medicaid Expansion in Alabama",
-        template:"Gov. Kay Ivey\nState Capitol\n600 Dexter Avenue\nMontgomery, AL 36130\n\nDear Governor Ivey,\n\nI am a resident of Madison County, Alabama. I am writing to urge you to support Medicaid expansion in Alabama.\n\nThe facts:\n- Approximately 90,000 Alabamians are currently in the Medicaid coverage gap — they earn too little for ACA subsidies but too much for traditional Medicaid.\n- The federal government pays 90% of Medicaid expansion costs — permanently.\n- Every neighboring state except Mississippi has expanded or is expanding Medicaid.\n- Alabama is declining approximately $[X BILLION] in federal healthcare funding annually.\n- Medicaid expansion requires only your signature — no legislative vote needed.\n\nI urge you to expand Medicaid and provide coverage to the 90,000 Alabamians who currently have none.\n\n[Your Name]\n[Your City, AL]\n[Your Phone/Email]",
-      },
-    },
-    {
-      title:"Auto Insurance — Why Huntsville Pays More Than It Should and Who Is Profiting",
-      impact:"MEDIUM",category:"Auto Insurance",date:"2025 Rate Data",
-      summary:"Huntsville pays $163/mo ($1,954/yr) for full coverage auto insurance — lower than the Alabama average but up 11% since 2022. Alabama's minimum coverage requirements are among the lowest in the nation. 13%+ of Alabama drivers are uninsured — raising rates for everyone who is insured.",
-      analysis:`Huntsville drivers pay approximately $1,954/year for full coverage auto insurance — $153 less than the Alabama state average of $2,107 but $559 more than the national average for comparable cities. Rates increased 11% between 2022 and 2025 — driven by inflation in repair costs, medical costs, and claims frequency.
-
-Why Alabama rates are higher than they should be: Alabama has among the lowest minimum coverage requirements in the nation — $25,000 per person / $50,000 per accident / $25,000 property damage. When underinsured drivers cause accidents, the cost spills onto insured drivers through uninsured motorist claims. Alabama's uninsured driver rate is estimated at 13%+ — one of the highest in the Southeast. This is partly because Alabama has not modernized its minimum coverage requirements since 2000.
-
-Who benefits from high premiums: The insurance industry as a whole — but specifically the carriers with the most Alabama market share. Auto insurance in Alabama is regulated by the Alabama Department of Insurance (ALDOI) — but ALDOI approval of rates is largely procedural. The department approved a 19.3% health premium increase with minimal public hearing. The same process applies to auto rates.
-
-North Huntsville specifically pays more: ZIP codes 35810, 35811, 35816 (north Huntsville) pay higher auto rates than 35802, 35803 (south Huntsville) due to higher claims frequency, older vehicle stock, and algorithmic ZIP-code pricing. This is legal — but it means the same equity gap that affects roads, schools, and services also shows up in insurance premiums.`,
-      sources:[
-        {label:"Insure.com — Huntsville Auto Rates",url:"https://www.insure.com/car-insurance/average-car-insurance-cost-in-huntsville-al/"},
-        {label:"Bankrate — Alabama Auto Rates",url:"https://www.bankrate.com/insurance/car/states/"},
-        {label:"AL DOI — Compare Auto Premiums",url:"https://aldoi.gov/ComparePremiums/AutoRates.aspx"},
-      ],
-      foia:{
-        title:"AL DOI Auto Rate Complaint",
-        to:"Alabama Department of Insurance",
-        subject:"Complaint — Auto Insurance Rate Increase",
-        template:"Alabama Department of Insurance\nConsumer Services Division\n201 Monroe Street\nMontgomery, AL 36104\n\nRe: Auto Insurance Rate Complaint\n\nI am filing a complaint regarding my auto insurance premium increase.\n\nMy premium increased from $[PREVIOUS] to $[CURRENT] — a [PERCENT]% increase with no change in my driving record, vehicle, or coverage.\n\nI request:\n1. Your carrier's loss ratio in Alabama for the past two years — what percentage of premiums collected was paid in actual claims.\n2. The rate filing documentation supporting this increase.\n3. Whether your carrier has applied for rate increases in neighboring states at a different rate.\n\nContact: Alabama DOI Consumer Services — (334) 269-3550 or aldoi.gov\n\n[Your Name]\n[Your Address]\n[Your Policy Number]",
-      },
-    },
-    {
-      title:"Dental & Vision — The Invisible Coverage Crisis",
-      impact:"HIGH",category:"Dental & Vision",date:"2025-2026 Data",
-      summary:"77 million Americans have no dental coverage. Dental insurance annual maximums of $1,000-$1,500 are unchanged since the 1970s — one crown costs more than a year of coverage. Vision coverage is often not offered by small employers. These are not luxuries — they are early warning systems for serious health problems.",
-      analysis:`Dental coverage is often treated as separate from health insurance — a historical accident of how employer benefits developed after WWII. The result: most individual dental plans cap annual benefits at $1,000-$1,500 — the same ceiling set in the 1970s when a crown cost $200. Today a crown costs $1,000-$1,500. One procedure wipes out the entire annual benefit.
-
-Alabama-specific: Alabama Medicaid covers some dental for children but minimal adult dental. Most Alabama employer plans include dental — but self-employed workers, gig workers, and small employer employees often have no access. Cost for standalone dental plan: approximately $35/month for individual coverage. Many people skip it because the premium-to-benefit math doesn't work for routine care, and they can't afford it for major care.
-
-Vision coverage: A comprehensive eye exam detects diabetes, hypertension, glaucoma, and early signs of multiple sclerosis. Without coverage, many Alabamians skip annual eye exams. Vision plans run $15-30/month but are often not offered by small employers. Exam + glasses: $300-$600 out of pocket.
-
-The connection to health costs: Untreated dental disease leads to cardiovascular disease, diabetes complications, and premature birth. Untreated vision problems lead to accidents, learning disabilities, and lost productivity. The "dental is separate from health" structure is a policy choice — and one that disproportionately harms lower-income workers who work for smaller employers without comprehensive benefits.`,
-      sources:[
-        {label:"KFF — Dental Coverage Data",url:"https://www.kff.org/health-costs/issue-brief/dental-coverage-and-care-for-low-income-adults-the-role-of-medicaid/"},
-        {label:"NIDCR — Dental Health Data",url:"https://www.nidcr.nih.gov/research/data-statistics"},
-        {label:"AL Medicaid Dental Benefits",url:"https://medicaid.alabama.gov"},
-      ],
-      foia:{
-        title:"Request — AL Medicaid Adult Dental Coverage",
-        to:"Alabama Medicaid Agency",
-        subject:"Request for Adult Dental Coverage Data",
-        template:"Alabama Medicaid Agency\nP.O. Box 5624\nMontgomery, AL 36103\n\nRe: Public Records Request — Adult Dental Coverage\n\nI request:\n\n1. The current scope of adult dental benefits covered under Alabama Medicaid — including which services are covered, which are excluded, and the annual or lifetime benefit caps.\n\n2. The number of Alabama Medicaid adult enrollees who accessed dental services in FY2023 and FY2024.\n\n3. Any analysis conducted by the Agency on the cost of adding comprehensive adult dental benefits vs. the downstream health cost savings.\n\n[Your Name]\n[Your Address]",
-      },
-    },
-  ];
-
-  function InvCard({inv,i,prefix}){
-    const k=prefix+"-"+i;
-    return(
-      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
-        <div style={{padding:"16px 18px"}}>
-          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
-            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:"1px solid "+(inv.impact==="CRITICAL"?"#fca5a5":"#fdba74")}}>{inv.impact}</span>
-            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
-            <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
-          </div>
-          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
-          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>
-            <ExpandText text={inv.summary} preview={180}/>
-          </p>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-            {inv.sources.map((s,j)=>(
-              <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
-            ))}
-          </div>
-        </div>
-        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
-          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
-            {analysisOpen[k]?"▲ Hide Analysis":"🔍 Decode This"}
-          </button>
-          <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[k]:!p[k]}))}>
-            {foiaOpen[k]?"Hide Template":"📋 Take Action"}
-          </button>
-        </div>
-        {analysisOpen[k]&&(
-          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
-            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
-              <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>CIVIC INVESTIGATOR ANALYSIS
-            </div>
-            {inv.analysis.split('\n\n').map((para,pi)=>{
-              const _allP=inv.analysis.split('\n\n');
-              const _isLast=pi===_allP.length-1;
-              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
-              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
-              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
-              const _lc=_isLast?"#86efac":_mC[pi%4];
-              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
-              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
-              return(
-                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
-                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
-                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {foiaOpen[k]&&(
-          <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
-            <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
-            <textarea readOnly value={inv.foia.template} rows={10} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
-            <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-              <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy(k,inv.foia.template)}>{copied[k]?"✓ Copied!":"📋 Copy"}</button>
-              <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
-                <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
-              </a>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return(
     <div className="page">
       <div className="page-header">
-        <span className="tag tag-red">INSURANCE · INVESTIGATION</span>
-        <h2>Insurance & <em>The Coverage Gap</em></h2>
-        <p>Health premiums up 19-25% in 2026. 90,000 Alabamians in the coverage gap. Auto rates up 11% since 2022. Dental maximums unchanged since the 1970s. Here is what you pay, who is profiting, and what Alabama's elected officials chose to let happen.</p>
+        <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
+        <span className="tag tag-navy">INSURANCE & MONOPOLY POWER</span>
+        <h2>Who Profits From <em>Your Coverage</em></h2>
+        <p>Blue Cross Blue Shield of Alabama controls 90%+ of the insurance market and just settled a $2.67B antitrust lawsuit. Gov. Ivey refuses $1.8B/yr in federal Medicaid funding. 295,000 Alabamians have no coverage. Here is the documented loop — and who benefits.</p>
       </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
 
-      <div className="tabs" style={{flexWrap:"wrap"}}>
-        {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
-      </div>
-
-      {/* ── OVERVIEW ── */}
-      {tab==="overview"&&(
-        <div>
-          {/* Alarming stats */}
-          <div className="stats-grid" style={{marginBottom:16}}>
-            {[
-              ["BCBS Premium Hike 2026","19.3%","On top of 20%+ UHC and 25% Celtic — subsidies expired","#dc2626"],
-              ["Coverage Gap — AL","~90,000","Earn too little for subsidies, too much for Medicaid","#dc2626"],
-              ["After-Subsidy Tripled","$44→$121/mo","Congress let enhanced credits expire Dec 2025","#ea580c"],
-              ["Auto — Huntsville","$163/mo","Up 11% since 2022. Uninsured drivers push all rates higher","#1e3a5f"],
-            ].map(([l,v,s,c],i)=>(
-              <div key={i} className="stat-card">
-                <div className="stat-val" style={{color:c}}>{v}</div>
-                <div className="stat-lbl">{l}</div>
-                <div className="stat-sub">{s}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* What total coverage costs in Huntsville */}
-          <div className="card" style={{padding:"20px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>What Full Insurance Coverage Costs in Huntsville — 2026</div>
-            <div style={{fontSize:11,color:"#6b7280",marginBottom:14}}>For a single adult. Health = unsubsidized Silver plan. Auto = full coverage. All prices annual avg.</div>
-            {localCosts.map((c,i)=>(
-              <div key={i} style={{marginBottom:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:6}}>
-                  <span style={{fontSize:12.5,fontWeight:i===localCosts.length-1?700:400,color:i===localCosts.length-1?"#7f1d1d":"#374151"}}>{c.type}</span>
-                  <div style={{display:"flex",gap:10,alignItems:"center",flexShrink:0}}>
-                    <span style={{fontSize:11,color:"#6b7280",fontFamily:"monospace"}}>${c.monthly}/mo</span>
-                    <span style={{fontSize:13,fontWeight:700,color:c.color,fontFamily:"monospace"}}>${c.annual.toLocaleString()}/yr</span>
-                  </div>
-                </div>
-                <div style={{position:"relative",height:20,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:Math.min(c.annual/9000*100,100)+"%",background:c.color,opacity:.75,borderRadius:3}}/>
-                </div>
-                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:3}}>
-                  <ExpandText text={c.notes} preview={120}/>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {investigations.map((inv,i)=><InvCard key={i} inv={inv} i={i} prefix="ov"/>)}
-        </div>
-      )}
-
-      {/* ── HEALTH INSURANCE ── */}
       {tab==="health"&&(
         <div>
-          {/* Premium history chart */}
-          <div className="card" style={{padding:"20px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>BCBS Alabama Average Silver Plan Premium — 2022 to 2026</div>
-            <div style={{fontSize:11,color:"#6b7280",marginBottom:14}}>Before subsidies. A 40-year-old non-smoker. The jump from 2025 to 2026 reflects subsidy expiration.</div>
-            {premiumHistory.map((p,i)=>(
-              <div key={i} style={{marginBottom:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
-                  <span style={{fontSize:13,fontWeight:700,color:p.year===2026?"#dc2626":"#374151"}}>{p.year}</span>
-                  <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:p.year===2026?"#dc2626":"#1e3a5f"}}>${p.bcbs}/mo</span>
-                </div>
-                <div style={{position:"relative",height:24,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(p.bcbs/550*100)+"%",background:p.year===2026?"#dc2626":"#1e3a5f",opacity:.75,borderRadius:3}}/>
-                </div>
-                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:3}}>{p.note}</div>
-              </div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["BCBS 2026 Hike","+19.3%","210,000+ AL members — largest by far","#dc2626"],["Bronze Premium","$436-490/mo","Madison County — among highest in AL","#dc2626"],["After-Subsidy Avg","$121/mo","Tripled from $44/mo when enhanced credits expired Dec 2025","#ea580c"],["AL Uninsured","~9.8%","~32-36k in Madison County","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
-            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>2026 PREMIUM BREAKDOWN — MADISON COUNTY</div>
-              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>
-                Madison County has among the highest Bronze premiums in Alabama at $436/mo for a 30-year-old. Silver plans run $490-568/mo for a 40-year-old. The HHHS hospital monopoly in North Alabama — with Crestwood acquisition pending — directly reduces insurer negotiating power and contributes to higher regional medical costs, which drive higher premiums.
-              </div>
-            </div>
           </div>
-
-          {/* Who is insured */}
-          <div className="card" style={{padding:"18px",marginBottom:14}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>How Huntsville-Area Residents Get Coverage</div>
-            {[
-              {how:"Employer-Sponsored",pct:54,note:"Most common. But employer plans are not regulated for cost — premiums have risen 47% in 10 years.",color:"#1e3a5f"},
-              {how:"Medicaid / ALL Kids (CHIP)",pct:19,note:"For children and very low-income adults. Alabama refused expansion — 90,000 fall into the gap.",color:"#16a34a"},
-              {how:"Medicare",pct:14,note:"Adults 65+. Part B premium: $202.90/mo in 2026. Medicare Advantage plans vary widely.",color:"#2563eb"},
-              {how:"ACA Marketplace (Individual)",pct:7,note:"477,838 enrolled in AL. 92% received subsidies in 2025 — but those subsidies expired for most in 2026.",color:"#c9a84c"},
-              {how:"Military / TRICARE",pct:4,note:"Redstone Arsenal presence means higher-than-average TRICARE coverage in Madison County.",color:"#374151"},
-              {how:"Uninsured",pct:9,note:"~9.8% Alabama rate. Madison County approx 8-9% — still 32,000-36,000 people.",color:"#dc2626"},
-            ].map((r,i)=>(
-              <div key={i} style={{marginBottom:12}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <span style={{fontSize:13,color:"#374151"}}>{r.how}</span>
-                  <span style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:r.color}}>{r.pct}%</span>
+          <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Blue Cross Blue Shield Alabama — Bronze Premium 2022–2026</div>
+            {[{y:2022,m:310,note:"Enhanced ACA subsidies — avg after-subsidy $44/mo"},{y:2023,m:320,note:"+3.1% · Subsidies in effect"},{y:2024,m:335,note:"+4.7% · Subsidies extended"},{y:2025,m:400,note:"+19.4% — subsidies expiring"},{y:2026,m:490,note:"+19.3% · Subsidies expired · avg after-subsidy tripled to $121/mo"}].map((r,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                <span style={{fontSize:12,fontWeight:700,color:"#6b7280",minWidth:36}}>{r.y}</span>
+                <div style={{flex:1,background:"#f0ebe2",borderRadius:3,height:22,position:"relative",overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(r.m/490*100)+"%",background:r.m>400?"#dc2626":r.m>335?"#ea580c":"#93b4d4",borderRadius:3}}/>
+                  <span style={{position:"absolute",right:6,top:3,fontSize:10,fontWeight:700,color:"#1e3a5f"}}>${r.m}/mo</span>
                 </div>
-                <div style={{height:18,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:r.pct+"%",background:r.color,opacity:.8,borderRadius:3}}/>
-                </div>
-                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:2}}>
-                  <ExpandText text={r.note} preview={100}/>
-                </div>
+                <span style={{fontSize:10,color:"#6b7280",minWidth:160,flexShrink:0}}>{r.note}</span>
               </div>
             ))}
           </div>
+          <FactBlocks facts={[
+            {k:"red",label:"THE $2.67B ANTITRUST SETTLEMENT — PAYMENTS START MAY 2026",lc:"#dc2626",tc:"#7f1d1d",text:"A 2013 federal lawsuit accused Blue Cross Blue Shield companies of dividing the US into exclusive territories and agreeing not to compete — keeping prices artificially high. BCBS settled for $2.67 billion. Final approval for the provider settlement: August 19, 2025. Claim notices went out February 16, 2026. Payments expected May 2026. If you had BCBS coverage between February 8, 2008 and October 16, 2020, you may be eligible. Check BCBSSettlement.com."},
+            {k:"gold",label:"HOW BCBS SETS YOUR PREMIUM WITH NO REAL COMPETITION",lc:"#b8860b",tc:"#78350f",text:"Blue Cross Blue Shield of Alabama controls approximately 90%+ of Alabama's individual health insurance market. With no real competition, BCBS sets rates that reflect their dominance — not a competitive market. The Alabama Department of Insurance (ALDOI) must approve rate increases, but has never rejected a major BCBS increase. The 2026 rate filing cited: subsidy expiration, higher claims, and rising admin costs. States with Medicaid expansion and more competitive markets show significantly lower premium growth."},
+          ]}/>
+          <ActionButtons actions={[
+            {label:"Check Settlement Eligibility",href:"https://www.bcbssettlement.com"},
+            {label:"File Insurance Complaint — ALDOI",href:"https://aldoi.gov/Complaints/Complaints.aspx"},
+            {label:"Call ALDOI Consumer Services",tel:"18004333966"},
+            {label:"Contact Gov. Ivey — Demand Medicaid Expansion",href:"https://governor.alabama.gov/contact/"},
+          ]}/>
         </div>
       )}
 
-      {/* ── AUTO INSURANCE ── */}
-      {tab==="auto"&&(
+      {tab==="medicaid"&&(
         <div>
-          <div className="card" style={{padding:"20px",marginBottom:14}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Auto Insurance — Madison County Area Rates 2025</div>
-            {[
-              {area:"Huntsville (avg)",monthly:163,annual:1954,note:"Lower than AL state avg. GEICO cheapest at $1,467/yr. Rates up 11% since 2022.",color:"#1e3a5f"},
-              {area:"North Huntsville (35810, 35811)",monthly:185,annual:2220,note:"ZIP-code pricing: higher claims frequency = higher rates. Same ZIP-code gap as roads, services, code enforcement.",color:"#dc2626"},
-              {area:"South Huntsville (35802, 35803)",monthly:148,annual:1776,note:"Lower risk ZIP codes = lower premiums. Defense contractor households with good credit score discounts.",color:"#16a34a"},
-              {area:"Madison (city)",monthly:155,annual:1860,note:"Newer vehicles, lower crime rate, better infrastructure — lower insurance costs.",color:"#16a34a"},
-              {area:"AL State Average",monthly:176,annual:2107,note:"Full coverage. 13%+ uninsured drivers raise rates for everyone.",color:"#ea580c"},
-              {area:"Tennessee (Chattanooga)",monthly:135,annual:1620,note:"Lower than Alabama. Medicaid expansion = fewer uninsured drivers hitting costs.",color:"#16a34a"},
-              {area:"National Average",monthly:214,annual:2513,note:"Alabama still below national avg — but gap is closing.",color:"#6b7280"},
-            ].map((r,i)=>(
-              <div key={i} style={{marginBottom:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
-                  <span style={{fontSize:13,fontWeight:r.area.includes("North")?700:400,color:r.area.includes("North")?"#dc2626":"#374151"}}>{r.area}</span>
-                  <span style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:r.color}}>${r.monthly}/mo · ${r.annual.toLocaleString()}/yr</span>
-                </div>
-                <div style={{height:20,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:(r.annual/2700*100)+"%",background:r.color,opacity:.75,borderRadius:3}}/>
-                </div>
-                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:2}}>{r.note}</div>
-              </div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["Uninsured — AL","295,000","US citizens — Medicaid refused every year since 2014","#dc2626"],["Federal Pays","90%","Of Medicaid expansion cost — state pays just 10%","#16a34a"],["Revenue Refused","~$1.8B/yr","Federal funding Gov. Ivey declines annually","#dc2626"],["Jobs That Would Come","~10,000","Healthcare jobs created by expansion","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
           </div>
-          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"14px 16px"}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1,marginBottom:6}}>ZIP CODE PRICING — THE EQUITY PROBLEM</div>
-            <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}>Insurance companies legally charge different rates by ZIP code. North Huntsville ZIP codes pay more for auto insurance than south Huntsville — not because individual residents drive more dangerously, but because their neighborhood is classified as higher risk. This is the same equity gap that shows up in roads, schools, and code enforcement — now reflected in your insurance bill. <a href="https://aldoi.gov/ComparePremiums/AutoRates.aspx" target="_blank" rel="noreferrer" style={{color:"#1e3a5f",fontWeight:600}}>Compare auto rates by ZIP → AL DOI Tool</a></div>
-          </div>
+          <FactBlocks facts={[
+            {k:"red",label:"WHO EXACTLY IS IN THE COVERAGE GAP",lc:"#dc2626",tc:"#7f1d1d",text:"These are people who earn too much to qualify for Alabama's current Medicaid — which covers only very low-income families with children, pregnant women, and disabled individuals — but too little to afford subsidized marketplace plans. The income threshold is roughly $14,580/yr for a single adult. A gig worker earning $16,000/yr or a part-time retail worker earning $18,000/yr falls directly into this gap. 295,000 Alabamians are in this exact situation. Every state that expanded Medicaid closed this gap."},
+            {k:"blue",label:"THE MATH: FEDERAL PAYS 90% PERMANENTLY",lc:"#2563eb",tc:"#1e3a5f",text:"Under the Affordable Care Act (ACA), the federal government pays 90% of Medicaid expansion cost — permanently. Alabama's share would be approximately $200M/yr at current estimates. This is offset by: reduced uncompensated care costs at hospitals, ~10,000 healthcare jobs created, reduced emergency room use, and increased state income tax revenue from new workers. States that expanded Medicaid have documented net fiscal benefits within 2–4 years. Gov. Ivey declines $1.8B/yr in federal funding."},
+            {k:"gold",label:"WHO BENEFITS FROM KEEPING MEDICAID CLOSED",lc:"#b8860b",tc:"#78350f",text:"Blue Cross Blue Shield of Alabama benefits directly: when Medicaid doesn't expand, more people need private insurance — growing their market. BCBS donated $220,000 to Gov. Ivey. Without expansion, people in the gap either go uninsured (and use emergency rooms, pushing costs onto hospitals and other patients) or buy BCBS plans when eligible. The loop: BCBS funds Ivey → Ivey refuses expansion → BCBS market stays large → BCBS raises premiums 19.3% → BCBS profits → repeat."},
+            {k:"green",label:"WHAT 37 OTHER STATES DID — AND WHAT HAPPENED",lc:"#16a34a",tc:"#14532d",text:"37 states have expanded Medicaid. Every state that expanded saw: uninsured rate drop, rural hospitals stabilize, and net fiscal benefit to the state budget within a few years. Georgia expanded in 2023 — partial expansion, immediate enrollment gains. North Carolina expanded in 2023. Tennessee has TennCare covering ~1.5M residents. Alabama is one of 10 states that have not expanded. The governor can expand by executive action — no legislative vote required. Gov. Ivey has refused every year since 2014."},
+          ]}/>
+          <ActionButtons title="WHAT YOU CAN DO RIGHT NOW" actions={[
+            {label:"Contact Gov. Ivey — Demand Medicaid",href:"https://governor.alabama.gov/contact/"},
+            {label:"Call Gov. Ivey's Office",tel:"3342427100"},
+            {label:"Email Gov. Ivey",email:"governor.ivey@governor.alabama.gov",subject:"Demand Medicaid Expansion — 295,000 Alabamians Uninsured",body:"Dear Governor Ivey,\n\nAlabama is one of 10 states that has not expanded Medicaid. 295,000 Alabamians — US citizens — have no health coverage. The federal government pays 90% of the cost. The state's 10% share is offset by reduced uncompensated care costs and new jobs created.\n\nI am demanding you expand Medicaid. You have the authority to do this by executive action.\n\n[Your Name]\n[Your Address]"},
+            {label:"Check If You Qualify — Healthcare.gov",href:"https://healthcare.gov"},
+            {label:"AL Medicaid — Current Eligibility",href:"https://medicaid.alabama.gov"},
+          ]}/>
         </div>
       )}
 
-      {/* ── DENTAL & VISION ── */}
+      {tab==="bcbs"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["BCBS AL Market Share","90%+","Individual market — near-monopoly since 1936","#dc2626"],["Antitrust Settlement","$2.67B","Payments starting May 2026 — market division proven","#dc2626"],["SB 247","Passed Senate 32-0","Lets BCBS form holding company — in AL House","#ea580c"],["BCBS → Ivey","$220,000","Documented donations — she refuses Medicaid","#dc2626"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <FactBlocks facts={[
+            {k:"red",label:"HOW ONE INSURER CONTROLS YOUR RATE",lc:"#dc2626",tc:"#7f1d1d",text:"Blue Cross Blue Shield of Alabama has operated in the state since 1936. With approximately 90%+ of the individual market and dominant employer group market share, there is no meaningful competition. In a competitive market, insurers compete on price. In Alabama's market, ALDOI must approve rates — but has never rejected a major BCBS increase. The practical result: BCBS sets the price, you pay it, or you go uninsured. The antitrust lawsuit proved they coordinated to prevent competition across state lines."},
+            {k:"gold",label:"SB 247 — THE BILL THAT COULD MAKE IT WORSE",lc:"#b8860b",tc:"#78350f",text:"Senate Bill 247 (SB 247) passed the Alabama Senate 32-0 and is pending in the House. It would allow BCBS to create a holding company structure — enabling it to diversify into other business lines beyond regulated insurance. Critics argue this reduces accountability by allowing BCBS to shift profits out of regulated insurance operations, making future rate increase justifications harder to challenge. ALDOI issued no formal objection. BCBS donated to multiple senators who voted yes."},
+            {k:"blue",label:"THE ANTITRUST SETTLEMENT — WHAT IT MEANS",lc:"#2563eb",tc:"#1e3a5f",text:"BCBS affiliates were accused of dividing the US market into exclusive territories and agreeing not to compete across state lines — the exact arrangement that kept BCBS Alabama from facing competition. Settlement final approval: August 19, 2025. Payments to eligible subscribers begin May 2026. If you had BCBS between February 8, 2008 and October 16, 2020, check BCBSSettlement.com. The settlement also required BCBS to change certain operational practices. Federal court monitoring continues."},
+          ]}/>
+          <ActionButtons actions={[
+            {label:"Check Settlement Eligibility",href:"https://www.bcbssettlement.com"},
+            {label:"File BCBS Complaint — ALDOI",href:"https://aldoi.gov/Complaints/Complaints.aspx"},
+            {label:"Call ALDOI",tel:"18004333966"},
+            {label:"DOJ Antitrust — Report BCBS Violations",href:"https://www.justice.gov/atr/citizen-complaint-center"},
+            {label:"AL House Insurance Committee",href:"https://www.legislature.state.al.us"},
+          ]}/>
+        </div>
+      )}
+
       {tab==="dental"&&(
         <div>
-          <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6}}>THE $1,500 MAXIMUM THAT HASN'T CHANGED SINCE 1975</div>
-            <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Most dental insurance plans cap annual benefits at $1,000–$1,500 — the same dollar amount set in the 1970s when a crown cost $200. Today a single crown costs $1,000–$1,500. One procedure wipes out your entire year of coverage. Dental insurance as structured is not designed to actually cover major dental work — it's designed to cover cleanings with a thin veneer of catastrophic protection that doesn't hold up to actual catastrophe.</div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["Annual Dental Max","$1,500","Unchanged since 1975 — one crown uses the entire benefit","#dc2626"],["Basic Dental Premium","$35/mo","$420/yr for coverage that won't cover major work","#ea580c"],["Vision Premium","$18/mo","Eye exam + frames once a year — basic only","#6b7280"],["AL Medicaid Dental","Adults excluded","TN and GA cover some adult dental — AL does not","#dc2626"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
           </div>
-
-          {[
-            {label:"Individual Dental Plan",monthly:35,annual:420,annualMax:1500,note:"Typical BCBS or Delta Dental standalone. 2 cleanings covered. One crown = entire annual max gone."},
-            {label:"Individual Vision Plan",monthly:18,annual:216,annualMax:200,note:"Eye exam + basic frames: $200-300 max. Often covers only one exam per year. Lasik: zero coverage."},
-            {label:"Eye Exam (no insurance)",monthly:null,cost:150,note:"Annual comprehensive exam. Detects diabetes, glaucoma, hypertension, early signs of MS. Many skip without coverage."},
-            {label:"Glasses/Contacts (no insurance)",monthly:null,cost:350,note:"Avg cost of frames + lenses. Contacts: $200-500/yr. Vision plans rarely cover full cost."},
-            {label:"Dental Crown (no insurance)",monthly:null,cost:1350,note:"Single crown. Average for Alabama. Exceeds most plans' annual max benefit."},
-            {label:"Dental Implant (no insurance)",monthly:null,cost:4000,note:"Single implant. Not covered by most dental plans. Most common reason for dental debt."},
-          ].map((r,i)=>(
-            <div key={i} className="card" style={{marginBottom:10,padding:"14px 16px"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
-                <div style={{fontSize:13.5,fontWeight:600,color:"#1e3a5f"}}>{r.label}</div>
-                <div style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:r.cost&&r.cost>1000?"#dc2626":"#374151"}}>
-                  {r.monthly?`$${r.monthly}/mo · $${r.annual}/yr`:`$${r.cost?.toLocaleString()} out of pocket`}
-                  {r.annualMax&&<div style={{fontSize:10,color:"#6b7280",marginTop:2}}>Annual max: ${r.annualMax.toLocaleString()}</div>}
-                </div>
-              </div>
-              <div style={{fontSize:12,color:"#6b7280",marginTop:6,fontStyle:"italic"}}>{r.note}</div>
-            </div>
-          ))}
-
-          <div style={{background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:4,padding:"14px 16px",marginTop:8}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#b8860b",letterSpacing:1,marginBottom:6}}>DENTAL & VISION IN ALABAMA MEDICAID</div>
-            <div style={{fontSize:13,color:"#4a3800",lineHeight:1.7}}>Alabama Medicaid covers some dental for children under the ALL Kids / CHIP program. Adult dental under Medicaid is extremely limited — emergency extractions only in most cases. No coverage for crowns, implants, or preventive care. No adult vision coverage under Alabama Medicaid. Compare: Tennessee Medicaid (TennCare) covers comprehensive dental and vision for most adult enrollees. The gap between Alabama and Tennessee Medicaid dental coverage is a policy choice — not a funding impossibility.</div>
-          </div>
+          <FactBlocks facts={[
+            {k:"red",label:"THE $1,500 CAP — SET IN 1975, NEVER UPDATED",lc:"#dc2626",tc:"#7f1d1d",text:"Most employer dental plans cap annual benefits at $1,500 — the same limit set in the 1970s. Adjusted for inflation, $1,500 in 1975 = approximately $8,200 today. A single crown costs $1,000-$1,500. A root canal plus crown can exceed $2,500. One dental problem wipes out your entire annual benefit. Delta Dental, Guardian, Cigna — every major carrier maintains this industry-standard cap with no regulatory requirement to update it."},
+            {k:"gold",label:"ALABAMA MEDICAID — ADULT DENTAL EXCLUDED",lc:"#b8860b",tc:"#78350f",text:"Alabama Medicaid covers dental for children under 21 but excludes routine adult dental care entirely. Emergency extractions only are covered for adults. Compare: Tennessee TennCare covers some adult dental. Georgia Medicaid covers a limited adult dental benefit. The 2021 federal infrastructure bill allowed states to add adult dental to Medicaid — Alabama declined. Untreated dental disease leads to infections, hospital visits, and missed work — costs that exceed what prevention would have cost."},
+          ]}/>
         </div>
       )}
 
-      {/* ── COVERAGE GAP ── */}
+      {tab==="auto"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["AL Avg Auto Premium","$163/mo","$1,956/yr — above national average","#dc2626"],["North Hsv ZIP","~$185/mo","Higher rate for same car, same driver","#dc2626"],["South Hsv ZIP","~$148/mo","Lower rate — same city, ZIP code pricing","#ea580c"],["AL Uninsured Drivers","~18%","Among highest in US — poverty + high premiums","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <FactBlocks facts={[
+            {k:"red",label:"ZIP CODE PRICING — NORTH HUNTSVILLE PAYS MORE FOR THE SAME CAR",lc:"#dc2626",tc:"#7f1d1d",text:"Alabama allows auto insurers to price premiums based partly on where you live — your ZIP code. A driver with an identical record driving the same car pays $30-50/month more in north Huntsville ZIP codes (35810, 35811, 35816) than in south Huntsville ZIP codes (35802, 35803). Over a year that's $360-600 extra for the same risk. ZIP code pricing correlates with race and income. California, New Jersey, Michigan, Hawaii, and Massachusetts have banned or strictly limited ZIP code pricing. Alabama has no such restriction."},
+            {k:"gold",label:"18% UNINSURED RATE — THE POVERTY-PREMIUM TRAP",lc:"#b8860b",tc:"#78350f",text:"Alabama has one of the highest uninsured driver rates in the country — approximately 18%. The connection is direct: minimum wage $7.25/hr, auto premiums averaging $163/month ($1,956/yr), and no public transit alternative in a 222+ square mile city. Workers earning $15,000/yr spend 13% of gross income on car insurance alone. Many can't afford it and drive anyway — which raises rates for everyone who does pay."},
+            {k:"blue",label:"HOW TO ACTUALLY LOWER YOUR RATE",lc:"#2563eb",tc:"#1e3a5f",text:"Shop every year — loyalty discounts are mostly myth, switching carriers can save $300-600/yr. Ask specifically about: paperless billing discount, low-mileage discount if you drive under 7,500/yr, and bundling with renters insurance. GEICO and Progressive typically undercut State Farm and Allstate in Alabama for lower-income ZIP codes. File a complaint with ALDOI if your rate increase seems unjustified — Consumer Services: 1-800-433-3966."},
+          ]}/>
+          <ActionButtons actions={[
+            {label:"Compare AL Auto Rates",href:"https://aldoi.gov/"},
+            {label:"File Auto Insurance Complaint",href:"https://aldoi.gov/Complaints/Complaints.aspx"},
+            {label:"Call ALDOI",tel:"18004333966"},
+          ]}/>
+        </div>
+      )}
+
       {tab==="gap"&&(
         <div>
-          <div style={{background:"#1e3a5f",borderRadius:6,padding:"20px",marginBottom:16,color:"#fff"}}>
-            <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,textTransform:"uppercase"}}>The Coverage Gap — Who Falls Through and Why</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
-              {[
-                {label:"AL Coverage Gap",val:"~90,000",sub:"Earn too little for subsidies, too much for Medicaid",color:"#fca5a5"},
-                {label:"Madison County Uninsured",val:"~32-36k",sub:"~8-9% of county population based on AL rate",color:"#fca5a5"},
-                {label:"Would Qualify if AL Expanded",val:"260,000+",sub:"Statewide — per AL Medicaid Agency estimate",color:"#fcd34d"},
-                {label:"Federal Share of Expansion Cost",val:"90%",sub:"Permanently. AL refuses despite this. Each year costs ~$3B in uncollected federal funds.",color:"#86efac"},
-              ].map((s,i)=>(
-                <div key={i} style={{padding:"12px",background:"rgba(255,255,255,.08)",borderRadius:4,borderLeft:"3px solid "+s.color}}>
-                  <div style={{fontSize:8.5,color:s.color,fontWeight:700,letterSpacing:1,marginBottom:4,textTransform:"uppercase"}}>{s.label}</div>
-                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:s.color,lineHeight:1}}>{s.val}</div>
-                  <div style={{fontSize:10.5,color:"rgba(255,255,255,.6)",marginTop:4}}>{s.sub}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.75}}>
-              The gap exists because of one policy decision: Gov. Ivey has refused to sign Medicaid expansion. The federal government would pay 90% of the cost — permanently. Every neighboring state except Mississippi has expanded. The 90,000 people in the gap are US citizens, not immigrants. They work. They pay taxes. They get sick. They use emergency rooms. Those ER costs flow back to HHHS as "uncompensated care" — which HHHS claims as community benefit to justify $63M/yr in nonprofit tax exemptions. The loop: Ivey refuses → people uninsured → HHHS absorbs ER costs → HHHS claims nonprofit benefit → HHHS pays no taxes → HHHS donates to Battle → Battle never challenges HHHS.
-            </div>
-          </div>
-
-          {/* Who falls in the gap */}
-          {[
-            {title:"The Gig Worker / Self-Employed",color:"#ea580c",text:"No employer plan. Income too variable for consistent subsidies. One year over the cliff — full unsubsidized premiums at $490-$568/month. Many skip coverage and hope nothing happens."},
-            {title:"The Part-Time Worker",color:"#dc2626",text:"Employer doesn't offer insurance under 30 hours/week. Earns $22,000/year — above the Medicaid threshold, below the subsidy sweet spot. Full Silver plan: $5,880/year. That's 27% of gross income."},
-            {title:"The Worker Between Jobs",color:"#1e3a5f",text:"COBRA continuation costs an average of $700/month for individual coverage in Alabama. Most people drop it. The 63-day special enrollment window requires knowing exactly when it starts."},
-            {title:"The Aging Adult (55-64)",color:"#7f1d1d",text:"Too young for Medicare, old enough that premiums are 3x what a 30-year-old pays. A 60-year-old couple making $82,000 now pays $27,267/year in premiums — before any deductibles or co-pays. This is not exceptional. This is the system working as designed."},
-            {title:"The Small Business Employee",color:"#374151",text:"Business with 10 employees can't afford group health insurance. Individual market is the only option. No employer contribution. Full premium, alone."},
-          ].map((g,i)=>(
-            <div key={i} className="card" style={{marginBottom:10,borderLeft:"4px solid "+g.color}}>
-              <div style={{padding:"14px 16px"}}>
-                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:6}}>{g.title}</div>
-                <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}><ExpandText text={g.text} preview={200}/></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── STATE COMPARISON ── */}
-      {tab==="comparison"&&(
-        <div>
-          <div className="card" style={{padding:"20px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Health Insurance — Alabama vs Neighboring States 2026</div>
-            <div style={{display:"flex",gap:12,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
-              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#16a34a",verticalAlign:"middle",marginRight:4}}/>Medicaid expanded</span>
-              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#dc2626",verticalAlign:"middle",marginRight:4}}/>Medicaid NOT expanded</span>
-            </div>
-            {stateComparison.map((s,i)=>(
-              <div key={i} style={{marginBottom:18}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:6,alignItems:"flex-start"}}>
-                  <div>
-                    <span style={{fontSize:13.5,fontWeight:700,color:s.state==="Alabama"?"#dc2626":"#374151"}}>{s.state}</span>
-                    <span style={{fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:8,marginLeft:8,background:s.medicaidExpanded?"#f0fdf4":"#fef2f2",color:s.medicaidExpanded?"#16a34a":"#dc2626",border:"1px solid "+(s.medicaidExpanded?"#86efac":"#fca5a5")}}>{s.medicaidExpanded?"Medicaid Expanded":"No Expansion"}</span>
-                  </div>
-                  <div style={{textAlign:"right",flexShrink:0}}>
-                    <div style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:s.color}}>Health Silver: ${s.silverPremium}/mo</div>
-                    <div style={{fontFamily:"monospace",fontSize:12,color:"#6b7280",marginTop:1}}>Auto: ${s.autoFull.toLocaleString()}/yr</div>
-                  </div>
-                </div>
-                <div style={{height:22,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:(s.silverPremium/550*100)+"%",background:s.color,opacity:.8,borderRadius:3}}/>
-                </div>
-                <div style={{display:"flex",justifyContent:"space-between",marginTop:3,flexWrap:"wrap",gap:4}}>
-                  <span style={{fontSize:11,color:"#6b7280",fontStyle:"italic"}}>{s.note}</span>
-                  <span style={{fontSize:11,color:"#6b7280"}}>Uninsured: {s.uninsuredRate}%</span>
-                </div>
-              </div>
+          <div className="stats-grid" style={{marginBottom:14}}>
+            {[["AL Coverage Gap","~90,000","Earn too little for subsidies, too much for Medicaid","#dc2626"],["Madison Co. Uninsured","~32-36k","~8-9% of county — disproportionately working adults","#dc2626"],["Single Adult Threshold","$14,580/yr","Earn less = Medicaid gap. More = ACA subsidies eligible","#ea580c"],["130k at Risk","Subsidy loss","Could lose all coverage if ACA enhanced credits end","#dc2626"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
-            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE PATTERN</div>
-              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>States that expanded Medicaid consistently have lower uninsured rates, better health outcomes, and — because insured people use primary care instead of ERs — lower overall healthcare system costs. The states refusing expansion are not protecting their budgets. They are transferring federal money that would go to their residents to other states that accepted it. Alabama leaves approximately $3 billion per year in federal healthcare funding uncollected.</div>
-            </div>
           </div>
-
-          {/* Premium growth comparison */}
-          <div className="card" style={{padding:"20px"}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Premium Growth — Alabama vs National 2022-2026</div>
+          <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Who Falls Through — 5 Real Profiles</div>
             {[
-              {label:"Alabama BCBS Silver — 2022",val:310,pct:0,color:"#1e3a5f"},
-              {label:"Alabama BCBS Silver — 2024",val:335,pct:8,color:"#1e3a5f"},
-              {label:"Alabama BCBS Silver — 2026",val:490,pct:58,color:"#dc2626"},
-              {label:"Tennessee BCBS Silver — 2026",val:385,pct:24,color:"#16a34a"},
-              {label:"National Avg Silver — 2026",val:440,pct:35,color:"#6b7280"},
-            ].map((r,i)=>(
-              <div key={i} style={{marginBottom:12}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <span style={{fontSize:12.5,color:"#374151"}}>{r.label}</span>
-                  <span style={{fontFamily:"monospace",fontSize:12.5,fontWeight:700,color:r.color}}>${r.val}/mo {r.pct>0&&<span style={{fontSize:10,color:r.color}}>+{r.pct}% vs 2022</span>}</span>
+              {who:"Gig delivery worker",income:"$22,000/yr",why:"Earns over Medicaid threshold. No employer coverage. Bronze plan: $436/mo = 24% of income.",c:"#dc2626"},
+              {who:"Part-time retail (29 hrs/wk)",income:"$17,500/yr",why:"Under 30 hrs = no employer coverage. Earns too much for AL Medicaid, too little for ACA subsidies.",c:"#ea580c"},
+              {who:"55–64 year old, early retiree",income:"$45,000/yr",why:"Too young for Medicare (age 65+). No employer coverage. 2026 Silver plan: $900+/mo.",c:"#dc2626"},
+              {who:"Small business employee (under 50 workers)",income:"$28,000/yr",why:"Employer not required to offer coverage. Bronze deductible $7,000 means coverage is nearly unusable.",c:"#ea580c"},
+              {who:"Between jobs",income:"$0 temporarily",why:"COBRA continuation costs $700+/mo. Short-term gap plans don't cover pre-existing conditions.",c:"#7f1d1d"},
+            ].map((p,i)=>(
+              <div key={i} style={{marginBottom:8,padding:"10px 12px",borderRadius:4,borderLeft:"4px solid "+p.c,background:"#fafaf8",border:"1px solid #e0d8cc",borderLeft:"4px solid "+p.c}}>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{p.who}</span>
+                  <span style={{fontFamily:"monospace",fontSize:12,color:p.c,fontWeight:700}}>{p.income}</span>
                 </div>
-                <div style={{height:18,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:(r.val/550*100)+"%",background:r.color,opacity:.8,borderRadius:3}}/>
+                <div style={{fontSize:13,color:"#374151",lineHeight:1.6}}>{p.why}</div>
+              </div>
+            ))}
+          </div>
+          <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Alabama vs Neighbors — Medicaid Expansion Impact</div>
+            {[
+              {state:"Tennessee",uninsured:"10.8%",medicaid:"Expanded 2013",note:"TennCare covers ~1.5M. Higher wages, lower uninsured rate than AL despite no state income tax.",c:"#16a34a"},
+              {state:"Georgia",uninsured:"12.2%",medicaid:"Partial expansion 2023",note:"Still catching up but expanding. Even partial expansion reduced uninsured rate.",c:"#c9a84c"},
+              {state:"North Carolina",uninsured:"9.4%",medicaid:"Expanded 2023",note:"Late expander — immediate enrollment gains, rural hospitals stabilizing.",c:"#16a34a"},
+              {state:"Alabama",uninsured:"9.8%",medicaid:"REFUSED since 2014",note:"Gov. Ivey refuses $1.8B/yr federal funding. BCBS donated $220k to Ivey. 295,000 US citizens uninsured.",c:"#dc2626"},
+              {state:"Mississippi",uninsured:"12.5%",medicaid:"Not expanded",note:"The only SEC state with a worse uninsured rate than Alabama. Also hasn't expanded.",c:"#ea580c"},
+            ].map((s,i)=>(
+              <div key={i} style={{display:"flex",gap:10,marginBottom:10,paddingBottom:10,borderBottom:i<4?"1px solid #f0ebe2":"none",alignItems:"flex-start"}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:s.c,flexShrink:0,marginTop:5}}/>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:3}}>
+                    <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.state}</span>
+                    <span style={{fontSize:12,color:s.c,fontWeight:700}}>{s.medicaid}</span>
+                  </div>
+                  <div style={{fontSize:12,color:"#6b7280"}}>{s.note}</div>
                 </div>
               </div>
             ))}
-            <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:8}}>Note: All figures are unsubsidized Silver plan premiums for a 40-year-old non-smoker. Subsidies dramatically reduce actual cost for those who qualify — but most middle-class Alabamians lost their subsidies when Congress let enhanced credits expire in 2025.</div>
           </div>
+          <ActionButtons actions={[
+            {label:"Check Your Eligibility",href:"https://healthcare.gov"},
+            {label:"AL Medicaid Eligibility",href:"https://medicaid.alabama.gov"},
+            {label:"Contact Gov. Ivey",href:"https://governor.alabama.gov/contact/"},
+            {label:"Call Gov. Ivey",tel:"3342427100"},
+            {label:"Email Gov. Ivey — Expand Medicaid",email:"governor.ivey@governor.alabama.gov",subject:"Expand Medicaid — 295,000 Alabamians Uninsured",body:"Dear Governor Ivey,\n\nAlabama is one of 10 states that has not expanded Medicaid. 295,000 Alabamians are uninsured. The federal government pays 90% of the cost. I demand you expand Medicaid.\n\n[Your Name]"},
+          ]}/>
         </div>
       )}
     </div>
   );
 }
-
 
 
 // ─── HEALTH SYSTEM PAGE ───────────────────────────────────────
@@ -2131,6 +2011,42 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
             <div style={{fontSize:10,fontWeight:700,color:"#c9a84c",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The Bottom Line</div>
             <div style={{fontSize:14,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>No single person built this system. It was built incrementally — one acquisition, one campaign donation, one refused Medicaid vote, one pay freeze at a time. The people listed above are not acting in secret. Their connections are public record. The solution is the same: public record, public pressure, and 2026 elections.</div>
           </div>
+
+          {/* HHHS Board Members — sourced from IRS Form 990 via ProPublica */}
+          <div className="card" style={{marginTop:14,padding:"16px 18px"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>HHHS Board of Directors — How to Contact</div>
+            <div style={{fontSize:12,color:"#6b7280",marginBottom:12,lineHeight:1.6}}>The HHHS board is self-appointed — members appoint their own successors. No public election ever. Verify current members at ProPublica Nonprofit Explorer (search "Huntsville Hospital" — EIN 63-0288816). IRS Form 990 is public record.</div>
+            {[
+              {name:"Jeff Samz",role:"President & CEO",note:"Chairs Huntsville/Madison County Chamber. Treasurer of Business Council of Alabama. Chair-Elect of Alabama Hospital Association.",contact:"(256) 265-1000",email:"info@huntsvillehospital.org"},
+              {name:"HHHS Board",role:"Self-Appointed — 12 Members",note:"Approves CEO salary ($3.1M+). Approves acquisitions. Sets community benefit policy. No public election. No term limits.",contact:"(256) 265-1000",email:"info@huntsvillehospital.org"},
+              {name:"FTC — Crestwood Review",role:"Federal Trade Commission",note:"$450M Crestwood acquisition pending FTC antitrust review. Public can submit comments.",contact:"1-877-382-4357",email:null,ftc:true},
+            ].map((b,i)=>(
+              <div key={i} style={{padding:"10px 12px",marginBottom:8,borderRadius:4,background:"#f8f6f2",border:"1px solid #e0d8cc"}}>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{b.name}</span>
+                  <span style={{fontSize:10,color:"#6b7280"}}>{b.role}</span>
+                </div>
+                <div style={{fontSize:12,color:"#374151",marginBottom:6,fontStyle:"italic"}}>{b.note}</div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  <a href={`tel:${b.contact.replace(/[^0-9]/g,"")}`}><button className="btn btn-gold" style={{fontSize:11}}>📞 {b.contact}</button></a>
+                  {b.email&&<a href={`mailto:${b.email}?subject=HHHS Board Accountability&body=Dear HHHS Board,%0A%0AI am writing to demand greater transparency regarding CEO compensation, community benefit spending, and the pending Crestwood acquisition.%0A%0A[Your Name]`}><button className="btn btn-ghost" style={{fontSize:11}}>✉ Email HHHS</button></a>}
+                  {b.ftc&&<a href="https://www.ftc.gov/news-events/mergers-public-comments" target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:11}}>→ Submit FTC Comment</button></a>}
+                </div>
+              </div>
+            ))}
+            <ActionButtons actions={[
+              {label:"ProPublica — HHHS Form 990",href:"https://projects.propublica.org/nonprofits/organizations/630288816"},
+              {label:"FTC Merger Public Comments",href:"https://www.ftc.gov/news-events/mergers-public-comments"},
+              {label:"AL Attorney General — File Complaint",href:"https://www.alabamaag.gov/consumers/"},
+              {label:"Email Gov. Ivey — Regulate HHHS",email:"governor.ivey@governor.alabama.gov",subject:"Regulate HHHS Monopoly — Crestwood Acquisition",body:"Dear Governor Ivey,
+
+Huntsville Hospital Health System (HHHS) is acquiring Crestwood Medical Center for $450 million. This would complete a near-total hospital monopoly in Madison County.
+
+I am requesting that your office refer this merger to the FTC for full antitrust review and exercise any available state authority to require meaningful community benefit standards from HHHS in exchange for its $63 million per year in tax exemptions.
+
+[Your Name]"},
+            ]}/>
+          </div>
         </div>
       )}
     </div>
@@ -2176,6 +2092,16 @@ function BoardsPage(){
               <div style={{background:"#f0fdf4",borderRadius:3,padding:"7px 9px",fontSize:12.5,color:"#14532d",borderLeft:"3px solid #16a34a"}}><strong>Your recourse:</strong> {b.recourse}</div>
             </div>
           ))}
+          <ActionButtons title="CONTACT UTILITY BOARDS" actions={[
+            {label:"Contact City Clerk (HU boards)",href:"https://www.huntsvilleal.gov/government/city-clerk/"},
+            {label:"Call City Council",tel:"2564275000"},
+            {label:"Open Records — Board Member Compensation",email:"cityclerk@huntsvilleal.gov",subject:"Open Records Request — Huntsville Utilities Board Compensation",body:"Dear City Clerk,
+
+Pursuant to Alabama Open Records Act §36-12-40, I request: (1) Names and terms of all current Huntsville Utilities board members (Electric, Gas, Water). (2) Any disclosed compensation or expense reimbursements. (3) Meeting minutes for the past 12 months.
+
+[Your Name]"},
+            {label:"File Ethics Complaint",href:"https://ethics.alabama.gov"},
+          ]}/>
           <AiButton prompt="Investigate the appointed boards controlling Madison County utilities and tax abatements — HU Electric/Gas/Water boards (George Moore serving since 1998), IDB ($127M+ abatements, no performance audit), Madison Utilities board. For each: who are the current members by name, what are their professional affiliations, do any have financial conflicts with decisions they make, what are the most consequential decisions in the past 3 years. What does the interlocking of Mayor Battle's real estate donors with IDB appointments look like? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
@@ -2203,6 +2129,22 @@ function BoardsPage(){
               {b.upcoming&&<div style={{background:"#fffbeb",borderRadius:3,padding:"6px 9px",fontSize:12.5,color:"#78350f",borderLeft:"3px solid #c9a84c"}}>2026 ELECTION: {b.upcoming} Races decided by under 200 votes.</div>}
             </div>
           ))}
+          <ActionButtons title="CONTACT SCHOOL BOARDS" actions={[
+            {label:"HCS Board — (256) 428-6800",tel:"2564286800"},
+            {label:"Email HCS Board",email:"board@hsv-k12.org",subject:"Constituent Request — School Resource Equity",body:"Dear HCS Board,
+
+I am requesting the board commission a per-school resource equity audit — per-pupil spending, AP course availability, and facility budgets broken down by school.
+
+HCS Board elections for Districts 2, 3, and 4 are on the November 2026 ballot.
+
+[Your Name]"},
+            {label:"Madison County Schools",tel:"2568522557"},
+            {label:"Open Records — Donor to Board Members",email:"records@hsv-k12.org",subject:"Open Records Request — Board Member Campaign Donors",body:"Dear Records Custodian,
+
+Pursuant to Alabama Open Records Act §36-12-40, I request any campaign finance disclosures made by HCS board members in their last election cycle.
+
+[Your Name]"},
+          ]}/>
           <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from the Education Trust Fund (ETF) affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
@@ -2228,6 +2170,23 @@ function BoardsPage(){
             ))}
             <a href="https://projects.propublica.org/nonprofits/organizations/630288816" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:12.5,marginTop:4}}>View HHHS IRS 990 at ProPublica →</button></a>
           </div>
+          <ActionButtons title="CONTACT HHHS & FILE COMPLAINTS" actions={[
+            {label:"Call HHHS CEO Office",tel:"2562651000"},
+            {label:"Email HHHS Board",email:"info@huntsvillehospital.org",subject:"HHHS Board Accountability — Community Benefit & Crestwood Acquisition",body:"Dear HHHS Board,
+
+I am writing as a Madison County resident to demand:
+
+1. Full public disclosure of CEO and executive compensation.
+2. A community benefit audit showing what HHHS provides in exchange for its $63 million per year in tax exemptions.
+3. A public comment period before the Crestwood acquisition closes.
+
+The self-appointed board structure provides no public accountability. I am requesting that change.
+
+[Your Name]"},
+            {label:"FTC — Comment on Crestwood Deal",href:"https://www.ftc.gov/news-events/mergers-public-comments"},
+            {label:"AL Attorney General Complaint",href:"https://www.alabamaag.gov/consumers/"},
+            {label:"ProPublica — HHHS Form 990",href:"https://projects.propublica.org/nonprofits/organizations/630288816"},
+          ]}/>
           <AiButton prompt="Investigate HHHS nonprofit monopoly governance. Self-appointed board — who are the current members by name, what organizations are they affiliated with, have any members received business from HHHS or been affiliated with organizations that received HHHS contracts? CEO David Spillers $3.1M vs CNAs $14.50/hr. $63M/yr tax exemption vs community benefit provided. 14-facility acquisition creating North Alabama monopoly. FTC has not acted. AL Legislature could amend charter. HHHS Foundation donated $45k to Mayor Battle. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."/>
         </div>
       )}
@@ -2601,10 +2560,26 @@ function OfficialsPage({go}){
                 {[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=>(
                   <div key={i} style={{padding:"10px 12px",background:"#f8f6f2",borderRadius:4,marginBottom:8}}>
                     <div style={{fontSize:9,color:"#6b7280",letterSpacing:1,marginBottom:3}}>{l}</div>
-                    <div style={{fontSize:14,fontWeight:600,color:"#1e3a5f"}}>{v}</div>
+                    <div style={{fontSize:14,fontWeight:600,color:"#1e3a5f"}}>{v||"—"}</div>
                   </div>
                 ))}
                 <a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a>
+                <ActionButtons actions={[
+                  ...(selected.contact.phone?[{label:"Call "+selected.name.split(" ")[0],tel:selected.contact.phone.replace(/[^0-9]/g,"")}]:[]),
+                  {label:"Email "+selected.name.split(" ")[0],email:(selected.contact.email||selected.contact.web&&""),subject:"Constituent Inquiry — "+selected.title,body:"Dear "+(selected.name.split(" ")[0])+",
+
+I am a Madison County constituent writing to express my concern about [ISSUE].
+
+[Your Name]
+[Your Address]"},
+                  ...(selected.party==="Republican"&&selected.title.includes("Gov")?[{label:"Demand Medicaid Expansion",email:"governor.ivey@governor.alabama.gov",subject:"Expand Medicaid — 295,000 Alabamians Uninsured",body:"Dear Governor Ivey,
+
+I demand you expand Medicaid. 295,000 Alabamians are uninsured. The federal government pays 90% of the cost.
+
+[Your Name]"}]:[]),
+                  {label:"AL Ethics Complaint",href:"https://ethics.alabama.gov"},
+                  {label:"File Open Records Request",href:"https://www.huntsvilleal.gov/government/city-clerk/"},
+                ].filter(a=>a.email||a.tel||a.href)}/>
               </div>}
             </div>
           </div>
