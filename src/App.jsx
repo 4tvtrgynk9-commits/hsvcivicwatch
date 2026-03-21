@@ -744,8 +744,8 @@ function UtilitiesPage(){
 
   // Rate comparison — CORRECTED March 2026 data
   const rateComparison=[
-    {city:"Huntsville, AL — Summer Peak",provider:"HU + TVA",monthlyBill:320,governance:"Appointed board",govType:"appointed",color:"#dc2626",note:"Jul-Aug avg for 2,000 kWh home. $20.23 fixed + usage + TVA fuel surcharge. No PSC oversight."},
-    {city:"Huntsville, AL — Annual Avg",provider:"HU + TVA",monthlyBill:189,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"~1,200 kWh typical month post-2025 rate increases. Up ~15% since 2022."},
+    {city:"Huntsville, AL — Winter/Summer Peak",provider:"HU + TVA",monthlyBill:450,governance:"Appointed board",govType:"appointed",color:"#dc2626",note:"Jan 2025 bills doubled for many — residents reporting $500-$600. Aug 2025 billing system chaos. Petition: 1,605 signatures demanding audit."},
+    {city:"Huntsville, AL — Annual Avg",provider:"HU + TVA",monthlyBill:240,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Electric only, ~1,200 kWh. Add water + gas + trash: many residents pay $300-$400+ monthly. Up ~20%+ since 2022."},
     {city:"Chattanooga, TN",provider:"EPB + TVA",monthlyBill:152,governance:"Elected board",govType:"elected",color:"#16a34a",note:"Same TVA wholesale. EPB elected board keeps delivery costs lower. $168/mo peak."},
     {city:"Knoxville, TN",provider:"KUB + TVA",monthlyBill:140,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"KUB appointed but smaller markup. Same TVA base."},
     {city:"Nashville, TN",provider:"NES + TVA",monthlyBill:148,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Nashville Electric Service. Similar structure to HU."},
@@ -769,7 +769,11 @@ function UtilitiesPage(){
 
 4. CITY SEWER / TRASH — HU collects these on behalf of the city. Not their revenue.
 
-For a typical 1,200 kWh month: $20.23 + $140.10 + $28.76 = ~$189. For a 2,000 kWh August bill: $20.23 + $163.45 + $73.49 + FCA = ~$278-320. Residents report $300-$450 summer peaks.
+For a typical 1,200 kWh month: $20.23 + $140.10 + $28.76 = ~$189 electric only. Add water ($35-60) + gas ($30-80) + trash/sewer ($25-40) = combined monthly bill often $280-$380.
+
+For a 2,000 kWh peak month (summer/winter): $20.23 + $163.45 + TVA FCA = $280-$320 electric alone. Residents report $500-$600 combined bills. In January 2025, hundreds of customers saw bills double with no change in usage.
+
+In August 2025 HU launched a new billing system that generated "double bills" and widespread account confusion. Over 1,600 customers signed a Change.org petition demanding an independent billing audit. HU's official response: "blame the weather." Council Member Bill Kling's response to the petition: "The utility rates in Huntsville are among the lowest in the entire state of Alabama." That may be technically true for the electric rate per kWh — but it does not describe what residents are actually paying when the full combined bill lands.
 
 Who approved this? HU Board approved the rate structure. City Council approved it unanimously in October 2024. TVA approved their fuel surcharge internally. Your state legislators have zero authority over any of it.`,
       sources:[
@@ -979,7 +983,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
             </div>
             <div style={{marginTop:14,padding:"11px 14px",background:"rgba(220,38,38,.15)",borderRadius:4,border:"1px solid rgba(220,38,38,.3)"}}>
               <div style={{fontSize:9,fontWeight:800,color:"#fca5a5",letterSpacing:1,marginBottom:4}}>REAL BILLS RESIDENTS ARE SEEING</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.8)",lineHeight:1.7}}>Typical month (1,200 kWh): <strong style={{color:"#fcd34d"}}>~$189</strong> · Summer peak (2,000 kWh): <strong style={{color:"#fca5a5"}}>$280–$400+</strong> · Annual combined (electric + water + gas): <strong style={{color:"#fca5a5"}}>$200–$450+/mo</strong> depending on home size and season. Electric bills have risen approximately 15% since 2022 when stacking TVA and HU increases together.</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.8)",lineHeight:1.7}}>January 2025: residents reported bills <strong style={{color:"#fca5a5"}}>doubling — $500-$600</strong> for many households. A Change.org petition with 1,605 signatures demanded an independent billing audit. The Salvation Army Project SHARE fielded <strong style={{color:"#fca5a5"}}>300 calls/week</strong> for utility bill help in Feb 2026. January 2026 bills ran <strong style={{color:"#fca5a5"}}>~$100 more than January 2025</strong>. Summer peak (2,000+ kWh): <strong style={{color:"#fca5a5"}}>$280–$500+</strong>. August 2025: new billing system launched, generating "double bills" and widespread confusion — 1,600+ complaints on HU's Facebook page. HU's official explanation: "blame the weather and your consumption." The combined bill — electric + water + gas + trash + sewer — can exceed <strong style={{color:"#fca5a5"}}>$600/mo</strong> in peak months for larger homes.</div>
             </div>
           </div>
 
@@ -987,8 +991,8 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
           <div className="stats-grid" style={{marginBottom:16}}>
             {[
               ["TVA CEO Pay","$8.1M/yr","Jeff Lyash 2023 — no shareholder vote, no AL oversight","#dc2626"],
-              ["HU+TVA Rate Hikes","~15%","Combined increase since 2022 — stacked on each other","#ea580c"],
-              ["Summer Peak Bill","$280-$400+","2,000 kWh home in July-August — before water and gas","#dc2626"],
+              ["HU+TVA Rate Hikes","~20%+","Jan 2025 bills doubled for many — $500-$600 reported","#dc2626"],
+              ["Peak Bills Reported","$500-$600+","Resident-reported Jan & summer 2025 — 1,605 sign audit petition","#dc2626"],
               ["Triana PFOS","Above EWG","Health guideline exceeded — majority-Black Superfund community","#7f1d1d"],
             ].map(([l,v,s,c],i)=>(
               <div key={i} className="stat-card">
@@ -1053,7 +1057,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
             ))}
             <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
               <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE GOVERNANCE CONNECTION</div>
-              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Chattanooga's EPB uses the same TVA wholesale power as Huntsville — but an elected board has kept delivery costs lower. Nebraska's elected public power boards deliver electricity at $97/mo — the same public utility structure as HU, but with elected accountability. The difference between $97 and $320 (summer peak) is governance, not technology.</div>
+              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Chattanooga's EPB uses the same TVA wholesale power as Huntsville — but an elected board has kept delivery costs lower. Nebraska's elected public power boards deliver electricity at $97/mo — the same public utility structure as HU, but with elected accountability. The difference between $97 and $450+ (Huntsville peak) is governance, not technology. And unlike a private company, HU has no shareholders demanding profit — yet residents are still seeing $500-600 winter and summer bills. The question is not whether HU is better than Alabama Power (it is). The question is whether an unelected, unaccountable appointed board is delivering the rate fairness that a truly public utility should.</div>
             </div>
           </div>
         </div>
@@ -1253,6 +1257,12 @@ function HealthPage(){
       complicit:"Has not yet acted on the Crestwood deal announced January 2026. Under prior leadership, FTC had been aggressive on hospital mergers. Political appointees control FTC enforcement priorities. Residents can file public comments to FTC supporting antitrust review.",
       source:"WAFF, STAT News, FTC.gov",
     },
+    {
+      name:"Blue Cross Blue Shield of Alabama",role:"Dominant Health Insurer — 90%+ market share",pay:"Not publicly disclosed — nonprofit 501(m)",color:"#2563eb",category:"Insurance Monopoly",
+      benefit:"BCBS controls over 90% of Alabama's commercial health insurance market — itself a monopoly. As HHHS acquires more hospitals and eliminates competitors, BCBS loses negotiating leverage to push back on HHHS prices — which BCBS then passes to employers and workers as premium increases. ACA individual market premiums increased 19.3% for 2026 — approved by Alabama DOI. BCBS national antitrust class action settlement: $2.67 billion (final 2024) — found to have illegally colluded to suppress competition and raise premiums. Payments to Alabama policyholders begin May 2026.",
+      complicit:"SB 247 (2026) — currently moving through Alabama Legislature — would allow BCBS to reorganize under a nonprofit holding company with no prior state insurance department approval required. Passed Senate 32-0. Critics: 'an enormous transfer of wealth from citizens of Alabama to what might be viewed as BCBS AL's own private equity fund.' BCBS lobbied for this legislation. The bill's sponsor stated BCBS needs it to 'remain competitive' as national health insurance consolidates. Two monopolies — HHHS and BCBS — each growing, each less accountable, each passing higher costs to residents.",
+      source:"AL DOI 2026 Rate Filing, AL Reflector SB 247, BCBS National Settlement bcbssettlement.com, Becker's Payer Issues",
+    },
   ];
 
   const investigations=[
@@ -1287,7 +1297,7 @@ The IRS requires nonprofits to disclose total community benefit spending on Form
 
 The FTC has challenged similar deals. In 2023, nonprofit Novant Health announced a $140M deal to buy two North Carolina hospitals. The FTC sued, arguing it would reduce competition. Novant eventually abandoned the deal while litigation was pending. The Crestwood deal is more than 3x larger and creates an even more complete geographic monopoly.
 
-What a monopoly means for patients: When there is no competition, hospital prices rise. Insurance companies have less negotiating power. Insurance premiums increase. Employer healthcare costs increase. Wages stagnate because there is only one major healthcare employer. Patients in labor disputes or with grievances have nowhere else to go.
+What a monopoly means for patients: When there is no competition, hospital prices rise — HHHS can charge more and insurers must pay. Insurance companies lose negotiating leverage and pass higher costs to employers and workers as premium increases. Blue Cross Blue Shield of Alabama — which already controls over 90% of Alabama commercial health insurance — saw ACA premiums increase 19.3% for 2026. The HHHS monopoly and the BCBS premium increases are structurally linked: each hospital HHHS acquires reduces the competition that keeps prices in check. Wages stagnate because there is only one major healthcare employer. Patients in labor disputes or with grievances have nowhere else to go.
 
 What you can do today: File a public comment with the FTC. Contact Rep. Dale Strong's office. The deal has not yet closed. The period for regulatory challenge is now.`,
       sources:[
