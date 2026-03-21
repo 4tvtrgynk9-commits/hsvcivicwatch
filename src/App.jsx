@@ -146,7 +146,7 @@ const NAV=[
   {id:"equity",icon:"⚖",label:"The Two Huntsvilles",desc:"North vs south Huntsville - schools, roads, city spending. Same city, different outcomes."},
   {id:"utilities",icon:"💧",label:"Power, Water & Utilities",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
   {id:"health",icon:"✚",label:"Hospital & Health System",desc:"The hospital network that dominates North Alabama - their prices, pay, and political donations."},
-  {id:"insurance",icon:"🛡",label:"Who Profits From Your Coverage",desc:"Health insurance monopoly, rising premiums, dental gaps, auto insurance ZIP-code pricing."},
+  {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",desc:"Premiums, deductibles, dental gaps, and auto insurance - what you pay and why."},
   {id:"money",icon:"💰",label:"Follow the Money",desc:"Who donates to which official - and what policies change because of it."},
   {id:"workers",icon:"👷",label:"Workers Rights & Child Care",desc:"Your legal rights at work. What other states have. How to form a union. Child care costs."},
   {id:"taxes",icon:"🧾",label:"Taxes",desc:"Grocery tax, income tax, property tax - who pays more and who gets the big breaks."},
@@ -519,7 +519,7 @@ function EquityPage(){
 
   const metrics=[
     {label:"Road Pavement Quality (PCI Score)",north:41,south:72,northLabel:"41 / 100",southLabel:"72 / 100",note:"PCI below 40 = Poor — needs full reconstruction. Same city. Same tax rate.",color:"#dc2626"},
-    {label:"HCS AP Participation Rate",north:44,south:17,northLabel:"44% (Jemison)",southLabel:"17% (Columbia)",note:"Jemison (north): 13 AP programs, 44% participation. Columbia (west): 4 AP programs, 17% participation. Columbia's 87% minority enrollment is treated more like north than south despite its location.",color:"#ea580c"},
+    {label:"HCS AP Participation Rate: Jemison (N) vs Huntsville High (S)",north:44,south:65,northLabel:"44% Jemison (N)",southLabel:"65% Huntsville High (S)",note:"Jemison (north): 13 AP programs, 44% participation. Columbia (west): 4 AP programs, 17% participation. Columbia's 87% minority enrollment is treated more like north than south despite its location.",color:"#ea580c"},
     {label:"Streetlight Response Under 48hr",north:18,south:72,northLabel:"18% resolved",southLabel:"72% resolved",note:"City service request data. North waits 4x longer for basic maintenance.",color:"#c9a84c"},
     {label:"Park Facility Quality Index",north:38,south:81,northLabel:"38 / 100",southLabel:"81 / 100",note:"Rated by facility age, maintenance frequency, and programming.",color:"#16a34a"},
     {label:"Police Patrol Hours per Resident",north:85,south:40,northLabel:"85% — over-policed",southLabel:"40% — baseline",note:"2x the proactive patrol hours in north despite comparable crime rates.",color:"#9333ea"},
@@ -758,37 +758,87 @@ function SchoolsHCSTab(){
   const NORTH_COLOR="#dc2626", SOUTH_COLOR="#93b4d4";
   const WEST_COLOR="#9333ea"; // West Huntsville — distinct from both north (red) and south (blue)
   const hs=[
-    {school:"Huntsville High",area:"South — downtown / Monte Sano",apRate:65,mathProf:38,minority:39,econDis:30,rank:"Top 30 AL",c:SOUTH_COLOR,note:"65% AP participation. 30% economically disadvantaged. Serves wealthiest HCS zip codes."},
-    {school:"Grissom High",area:"South/Southeast — Jones Valley",apRate:46,mathProf:31,minority:45,econDis:43,rank:"Top 85 AL",c:SOUTH_COLOR,note:"1,847 students. Ranked 2nd in AL in 2015. Dual enrollment with UAH and Calhoun."},
-    {school:"Columbia High",area:"West Huntsville — NOT south Huntsville",apRate:17,mathProf:27,minority:87,econDis:50,rank:"199–297 AL",c:WEST_COLOR,note:"87% minority, 50% economically disadvantaged — demographics closer to Jemison than to Huntsville High or Grissom. Only 4 AP programs despite being in the same district as Grissom (13 APs). West Huntsville receives less investment than south AND less than its demographics warrant vs north."},
-    {school:"Jemison High",area:"North — replaced J.O. Johnson (closed 2016, demolished 2021)",apRate:44,mathProf:8,minority:93,econDis:64,rank:"170th AL",c:NORTH_COLOR,note:"13 AP programs but only 6–9% math proficiency vs 29% state average. 64% economically disadvantaged. Most underserved school in the district."},
-    {school:"New Century Tech Demo",area:"District-wide selective magnet",apRate:74,mathProf:null,minority:55,econDis:49,rank:"Top 10 AL",c:"#16a34a",note:"Requires application — not geographically assigned. 74% AP participation rate."},
+    {school:"Huntsville High",area:"South — downtown / Monte Sano zone",apRate:65,mathProf:44,minority:39,econDis:30,rank:"#14 AL / Top 8%",c:SOUTH_COLOR,
+     white:61,black:23,hispanic:8,
+     perPupil:7531,
+     note:"61% White, 23% Black. 65% AP participation — highest in HCS. Serves some of the wealthiest HCS zip codes including Monte Sano and Five Points."},
+    {school:"Grissom High",area:"Southeast Huntsville — Jones Valley / Haysland",apRate:46,mathProf:31,minority:45,econDis:43,rank:"#41 AL / Top 25%",c:SOUTH_COLOR,
+     white:52,black:17,hispanic:21,
+     perPupil:7893,
+     note:"52% White, 17% Black. Growing Hispanic population (21%). 2007 Blue Ribbon School. Still strong academically but declining vs 2015 peak. Free lunch up from 16% to 43%."},
+    {school:"Columbia High",area:"West Huntsville — NOT south Huntsville",apRate:17,mathProf:12,minority:87,econDis:50,rank:"#199-297 AL / Bottom 50%",c:WEST_COLOR,
+     white:13,black:52,hispanic:28,
+     perPupil:null,
+     note:"52% Black, 28% Hispanic, 13% White — the most diverse HCS high school. 87% minority. Only 17% AP participation. West Huntsville receives less infrastructure investment than south."},
+    {school:"Jemison High",area:"North Huntsville — Pulaski Pike",apRate:44,mathProf:6,minority:93,econDis:64,rank:"#170 AL / Bottom 50%",c:NORTH_COLOR,
+     white:7,black:73,hispanic:16,
+     perPupil:11834,
+     note:"73% Black, 16% Hispanic, 7% White. 93% minority. Despite spending MORE per student ($11,834) than Grissom ($7,893) due to federal Title I funds, math proficiency is 6% vs Grissom's 31%. This gap is structural — it reflects decades of neighborhood disinvestment, not school effort."},
   ];
+
   const ms=[
     {school:"Whitesburg STEM Magnet",area:"South/selective",math:62,read:71,c:SOUTH_COLOR,note:"Selective magnet — application required. Higher math proficiency than district avg."},
     {school:"Hampton Cove Middle",area:"South/East suburban",math:54,read:68,c:SOUTH_COLOR,note:"Newer suburban area. Above district average."},
     {school:"Davis Hills Middle",area:"North — Jemison feeder",math:18,read:32,c:NORTH_COLOR,note:"Primary feeder for Jemison HS. 18% math proficiency vs ~40% district average."},
     {school:"McNair Junior High",area:"North — new on Jemison campus",math:null,read:null,c:NORTH_COLOR,note:"Ronald McNair Junior High opened with Jemison rebuild. Serves northwest Huntsville."},
   ];
-  function Card({school,area,apRate,mathProf,minority,econDis,rank,c,note}){
+  function Card({school,area,apRate,mathProf,minority,econDis,rank,c,note,white,black,hispanic,perPupil}){
+    // Determine label based on color
+    const areaType = c===NORTH_COLOR?"NORTH":c===WEST_COLOR?"WEST":"SOUTH";
+    const areaLabel = {"NORTH":"North Huntsville","WEST":"West Huntsville","SOUTH":"South Huntsville"}[areaType];
+    const areaTagColor = {"NORTH":"#dc2626","WEST":"#9333ea","SOUTH":"#2563eb"}[areaType];
     return(
       <div style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid "+c}}>
-        <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:5}}>
-          <div><span style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{school}</span><span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{area}</span></div>
-          <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:c+"22",color:c==="#dc2626"?"#dc2626":c==="#93b4d4"?"#1e3a5f":c==="#9333ea"?"#9333ea":"#16a34a",border:"1px solid "+c}}>{rank}</span>
+        <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
+          <div>
+            <span style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{school}</span>
+            <span style={{display:"inline-block",fontSize:9,fontWeight:700,color:"#fff",background:areaTagColor,borderRadius:8,padding:"1px 7px",marginLeft:8,letterSpacing:.5}}>{areaLabel}</span>
+          </div>
+          <span style={{fontSize:11,fontWeight:700,color:c,background:c+"15",padding:"2px 8px",borderRadius:8}}>{rank}</span>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:6}}>
-          {[["AP Participation",apRate!=null?apRate+"%":"N/A"],["Math Proficiency",(mathProf!=null?mathProf:"N/A")+"%"],["Econ. Disadvantaged",econDis+"%"]].map(([l,v],j)=>(
-            <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3}}>
-              <div style={{fontSize:8,color:"#6b7280",letterSpacing:.5,marginBottom:1}}>{l}</div>
-              <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{v}</div>
+        {/* Race/ethnicity bar */}
+        {white!=null&&(
+          <div style={{marginBottom:8}}>
+            <div style={{fontSize:9,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>Student Demographics (NCES 2023-24)</div>
+            <div style={{display:"flex",height:16,borderRadius:3,overflow:"hidden",gap:1}}>
+              <div style={{width:white+"%",background:"#e5e7eb",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {white>10&&<span style={{fontSize:8,fontWeight:700,color:"#374151"}}>{white}% W</span>}
+              </div>
+              <div style={{width:black+"%",background:"#1e3a5f",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {black>8&&<span style={{fontSize:8,fontWeight:700,color:"#fff"}}>{black}% B</span>}
+              </div>
+              <div style={{width:hispanic+"%",background:"#c9a84c",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {hispanic>8&&<span style={{fontSize:8,fontWeight:700,color:"#1e3a5f"}}>{hispanic}% H</span>}
+              </div>
+              <div style={{flex:1,background:"#d1d5db"}}/>
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:3,fontSize:9,color:"#6b7280",flexWrap:"wrap"}}>
+              <span><span style={{display:"inline-block",width:8,height:8,background:"#e5e7eb",borderRadius:1,marginRight:3}}/>White: {white}%</span>
+              <span><span style={{display:"inline-block",width:8,height:8,background:"#1e3a5f",borderRadius:1,marginRight:3}}/>Black: {black}%</span>
+              <span><span style={{display:"inline-block",width:8,height:8,background:"#c9a84c",borderRadius:1,marginRight:3}}/>Hispanic: {hispanic}%</span>
+              <span style={{color:c,fontWeight:700}}>{minority}% total minority enrollment</span>
+            </div>
+          </div>
+        )}
+        {/* Stats grid */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:8}}>
+          {[
+            {l:"AP Participation",v:apRate+"%",color:apRate>=50?"#16a34a":apRate>=30?"#c9a84c":"#dc2626"},
+            {l:"Math Proficiency",v:mathProf+"%",color:mathProf>=40?"#16a34a":mathProf>=20?"#c9a84c":"#dc2626"},
+            {l:"Econ. Disadvantaged",v:econDis+"%",color:econDis<=30?"#16a34a":econDis<=50?"#c9a84c":"#dc2626"},
+            {l:"Per-Pupil Spend",v:perPupil?"$"+perPupil.toLocaleString():"N/A",color:"#374151"},
+          ].map(({l,v,color},j)=>(
+            <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3,border:"1px solid #e0d8cc"}}>
+              <div style={{fontSize:8,color:"#6b7280",letterSpacing:.4,marginBottom:1,textTransform:"uppercase"}}>{l}</div>
+              <div style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color}}>{v}</div>
             </div>
           ))}
         </div>
-        <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{note}</div>
+        <div style={{fontSize:12,color:"#374151",lineHeight:1.65,fontStyle:"italic"}}>{note}</div>
       </div>
     );
   }
+
   return(
     <div>
       <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#7f1d1d"}}>
@@ -798,6 +848,38 @@ function SchoolsHCSTab(){
         <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:12,textTransform:"uppercase"}}>HCS High Schools — 2023-24</div>
         {hs.map((s,i)=><Card key={i} {...s}/>)}
         <div style={{fontSize:11,color:"#9ca3af",marginTop:4}}>Source: NCES 2023-24 · U.S. News · AL Dept. of Education</div>
+
+      {/* Racial disparity explainer */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #dc2626"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The Racial Disparity — By the Numbers</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
+          {[
+            {label:"Huntsville High (South — 61% White)",mathProf:"44%",ap:"65%",econ:"30%",perPupil:"$7,531",c:"#93b4d4"},
+            {label:"Grissom High (Southeast — 52% White)",mathProf:"31%",ap:"46%",econ:"43%",perPupil:"$7,893",c:"#93b4d4"},
+            {label:"Columbia High (West — 87% minority, 52% Black)",mathProf:"12%",ap:"17%",econ:"50%",perPupil:"N/A",c:"#9333ea"},
+            {label:"Jemison High (North — 93% minority, 73% Black)",mathProf:"6%",ap:"44%",econ:"64%",perPupil:"$11,834",c:"#dc2626"},
+          ].map((s,i)=>(
+            <div key={i} style={{padding:"10px 12px",borderRadius:4,border:"1px solid #e0d8cc",borderLeft:"3px solid "+s.c}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.4}}>{s.label}</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {[["Math Proficient",s.mathProf],["AP Rate",s.ap],["Free Lunch",s.econ],["Per Pupil",s.perPupil]].map(([l,v],j)=>(
+                  <div key={j} style={{textAlign:"center",minWidth:56}}>
+                    <div style={{fontFamily:"monospace",fontSize:15,fontWeight:800,color:s.c}}>{v}</div>
+                    <div style={{fontSize:8,color:"#6b7280",letterSpacing:.3}}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:"#fef2f2",borderRadius:4,padding:"10px 12px",marginBottom:10,fontSize:13,color:"#7f1d1d",lineHeight:1.75}}>
+          <strong>Same school district. Same superintendent. Same school board.</strong> A student at Huntsville High is 7x more likely to be proficient in math than a student at Jemison — while attending a school 9 miles away. The student bodies are not separated by district lines or by choice. They are separated by where their families could afford to live — which is shaped by decades of redlining, annexation patterns that prioritized south Huntsville infrastructure, and TIF financing that redirected tax growth away from north Huntsville schools.
+        </div>
+        <div style={{background:"#eff3f8",borderRadius:4,padding:"10px 12px",fontSize:12.5,color:"#1e3a5f",lineHeight:1.75}}>
+          <strong>The spending paradox:</strong> Jemison receives <em>more</em> per-student funding ($11,834) than Grissom ($7,893) — because federal Title I dollars and remediation funding flow to higher-need schools. But money spent catching up is not the same as money invested in foundation. Grissom's $7,893 builds on neighborhood wealth, stable housing, and parent professional networks. Jemison's $11,834 is spent addressing poverty, chronic absenteeism, trauma, and the compounding effects of underfunded elementary years. Higher spending at Jemison is evidence of deeper need — not evidence of fairness.
+        </div>
+      </div>
+
       </div>
       <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
         <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>HCS Middle Schools — Math Proficiency Gap</div>
@@ -2729,7 +2811,7 @@ function Dashboard({go}){
       {id:"utilities",icon:"💧",label:"Power, Water & Utilities",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
       {id:"health",icon:"✚",label:"Health System",sub:"HHHS $2.4B monopoly · CEO $3.1M · Medicaid gap · $63M tax exemption"},
       {id:"money",icon:"💰",label:"Follow the Money",sub:"City budget · no-bid contracts · donor→policy · pay clocks"},
-      {id:"insurance",icon:"🛡",label:"Insurance & The Coverage Gap",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
+      {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
       {id:"workers",icon:"👷",label:"Workers Rights & Child Care",sub:"$7.25/hr wage ban · $14,400/yr infant care · NLRB · right-to-work"},
       {id:"taxes",icon:"🧾",label:"Taxes",sub:"Property · grocery · income · corporate vs individual · millage calculator"},
     ]},
