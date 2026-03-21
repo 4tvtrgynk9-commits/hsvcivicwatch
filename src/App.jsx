@@ -319,49 +319,6 @@ function AiResult({text}){
   );
 }
 
-){
-  if(!text) return null;
-  const sectionMeta={
-    'THE FACTS':{color:'#1e3a5f',bg:'#eff3f8',border:'#93b4d4',icon:'📋'},
-    'WHO BENEFITS':{color:'#dc2626',bg:'#fef2f2',border:'#fca5a5',icon:'💰'},
-    'WHO GETS HURT':{color:'#dc2626',bg:'#fef2f2',border:'#fca5a5',icon:'⚠'},
-    'THE CONNECTIONS':{color:'#b8860b',bg:'#fffbeb',border:'#fcd34d',icon:'🔗'},
-    'WHAT CAN CHANGE':{color:'#16a34a',bg:'#f0fdf4',border:'#86efac',icon:'▶'},
-  };
-  const sections=text.split(/\n(?=##\s)/);
-  return(
-    <div style={{display:"flex",flexDirection:"column",gap:8}}>
-      {sections.map((section,si)=>{
-        const lines=section.split('\n').filter(l=>l.trim());
-        if(!lines.length) return null;
-        const isHeader=lines[0].startsWith('##');
-        const rawHeader=isHeader?lines[0].replace(/^#+\s*/,''):'';
-        const body=isHeader?lines.slice(1):lines;
-        const metaKey=Object.keys(sectionMeta).find(k=>rawHeader.toUpperCase().includes(k));
-        const meta=metaKey?sectionMeta[metaKey]:{color:'#374151',bg:'#f8f6f2',border:'#e0d8cc',icon:'◈'};
-        return(
-          <div key={si} style={{background:meta.bg,border:`1px solid ${meta.border}`,borderLeft:`4px solid ${meta.color}`,borderRadius:5,padding:"10px 13px"}}>
-            {rawHeader&&<div style={{fontSize:10,fontWeight:800,color:meta.color,letterSpacing:1.2,marginBottom:7,textTransform:"uppercase",display:"flex",alignItems:"center",gap:5}}><span>{meta.icon}</span>{rawHeader}</div>}
-            {body.map((line,li)=>{
-              const txt=line.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/^[-•]\s*/,'').trim();
-              if(!txt) return null;
-              const isBullet=line.trim().startsWith('-')||line.trim().startsWith('•');
-              return isBullet?(
-                <div key={li} style={{display:"flex",gap:7,marginBottom:5}}>
-                  <span style={{color:meta.color,flexShrink:0,fontSize:11.5,marginTop:3}}>◈</span>
-                  <span style={{fontSize:14,color:"#2d2a22",lineHeight:1.65}}>{txt}</span>
-                </div>
-              ):(
-                <p key={li} style={{fontSize:14,color:"#374151",lineHeight:1.7,marginBottom:4}}>{txt}</p>
-              );
-            })}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function AiButton({prompt,label="🔍 Break It Down"}){
   const[r,setR]=useState(null);
   const[ld,setLd]=useState(false);
