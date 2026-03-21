@@ -2896,6 +2896,960 @@ function MoneyPage(){
   );
 }
 
+
+// ─── WORKERS & CHILD CARE PAGE ────────────────────────────────
+function WorkersPage(){
+  const[tab,setTab]=useState("wages");
+  const[analysisOpen,setAnalysisOpen]=useState({});
+  const tabs=[{id:"wages",label:"Wages"},{id:"childcare",label:"👶 Child Care"},{id:"rights",label:"Worker Rights"},{id:"employers",label:"Major Employers"}];
+
+  const wageData=[
+    {role:"McDonald's crew (AL)",wage:7.25,annual:15080,color:"#dc2626",note:"Federal minimum. AL banned cities from raising it. Below poverty line for any household."},
+    {role:"Walmart associate (AL)",wage:14.00,annual:29120,color:"#ea580c",note:"Walmart raised its floor internally. Still below MIT living wage for Madison Co."},
+    {role:"Amazon warehouse (HSV)",wage:16.50,annual:34320,color:"#ea580c",note:"Amazon HSV1. IDB abatement = $0 property tax. AL ranks 50th for Amazon worker wages."},
+    {role:"HHHS CNA (starting)",wage:14.50,annual:30160,color:"#dc2626",note:"Qualifies for SNAP food benefits at this wage. $3.1M CEO at the same organization."},
+    {role:"MIT Living Wage — single adult",wage:20.18,annual:41974,color:"#16a34a",note:"MIT calculator for Madison County 2025. Minimum needed to cover basic expenses."},
+    {role:"MIT Living Wage — 1 adult + 1 child",wage:41.34,annual:85987,color:"#1e3a5f",note:"The real cost of childcare is what makes single-parent living wages so high."},
+  ];
+
+  const childcareCosts=[
+    {type:"Infant care (center-based)",monthlyCost:1200,annual:14400,note:"Huntsville avg. More than UAH in-state tuition ($11,354/yr). More than AL minimum wage annual salary."},
+    {type:"Toddler care (1-3 yrs)",monthlyCost:900,annual:10800,note:"Cheaper than infant but still 37% of a $29,000 salary."},
+    {type:"Pre-K (3-4 yrs)",monthlyCost:650,annual:7800,note:"If you can get a spot. AL Pre-K serves ~30% of eligible 4-year-olds."},
+    {type:"After-school care",monthlyCost:400,annual:4800,note:"For school-age children. Often unavailable in north Huntsville neighborhoods."},
+    {type:"Head Start (income-eligible)",monthlyCost:0,annual:0,note:"Free — but Madison County Head Start serves only 35% of eligible children. 65% on waitlist."},
+  ];
+
+  const investigations=[
+    {
+      title:"The Wage Suppression System — How Alabama Locked $7.25/hr in Place",
+      impact:"HIGH",category:"Minimum Wage",date:"SB 88 signed 2023",
+      summary:"In 2023 Alabama passed SB 88, banning cities and counties from setting their own minimum wage above the federal $7.25/hr floor. Huntsville cannot raise wages for its lowest-paid workers. Sen. Arthur Orr sponsored the bill. He received $45,000 from the Business Council of Alabama.",
+      analysis:`Federal minimum wage: $7.25/hr — unchanged since 2009. A full-time worker at this rate earns $15,080/year, below the federal poverty line for a family of two ($20,440). Alabama has not raised its state minimum wage in 16 years. In 2015, Birmingham passed a city ordinance raising the local minimum wage. Alabama immediately passed a preemption law blocking it. In 2023, Sen. Arthur Orr sponsored SB 88 codifying that cities and counties permanently cannot exceed the federal floor.
+
+Orr received $45,000 from the Business Council of Alabama (BCA) before and after sponsoring this bill. The BCA represents the large employers — retail, fast food, healthcare — who benefit most from keeping wages at the federal minimum. Amazon, operating in Huntsville with IDB property tax abatements worth millions, pays its Alabama warehouse workers at or near the rate it sets internally — not because of any state requirement to do better.
+
+The downstream effects are documented: $7.25/hr workers cannot afford Huntsville's $1,200/month infant care. They cannot afford BCBS health premiums at $490/month. They cannot afford the $163/month auto insurance required to drive to work. The minimum wage and every other cost discussed on this app are part of the same system.
+
+Contact Sen. Arthur Orr directly — (334) 242-7895 — and demand SB 88 repeal. His Senate District 8 seat is on the 2026 ballot. Tanya Reeves (D) has announced a challenge. Register to vote at sos.alabama.gov — deadline is 15 days before any election.`,
+      sources:[
+        {label:"AL Legislature — SB 88",url:"https://alison.legislature.state.al.us/"},
+        {label:"MIT Living Wage Calculator",url:"https://livingwage.mit.edu/counties/01089"},
+        {label:"AL Campaign Finance — FCPA",url:"https://fcpa.alabama.gov"},
+      ],
+    },
+    {
+      title:"The Child Care Crisis — $14,400/yr for Infant Care, 65% of Eligible Kids on Waitlist",
+      impact:"HIGH",category:"Child Care",date:"2025 Data",
+      summary:"Infant care in Huntsville costs approximately $14,400/year — more than UAH in-state tuition. Alabama Pre-K serves only 30% of eligible 4-year-olds. Head Start serves 35% of eligible Madison County children. The other 65% are on a waitlist.",
+      analysis:`Huntsville area infant care runs approximately $1,200/month ($14,400/year). For a parent earning $30,000/year, that is 48% of gross income — before taxes, rent, food, or transportation. The federal poverty guideline for a family of three is $25,820. Child care costs are the primary driver of why a single parent needs $41.34/hour to achieve a living wage in Madison County.
+
+Alabama ranks last or near-last nationally in state investment in early childhood education. The CHOOSE Act (2023) created education savings accounts — but 67% of initial recipients were already in private school. Meanwhile public Pre-K serves 30% of 4-year-olds. Head Start in Madison County operates at 35% of eligible enrollment capacity with 65% of eligible children on waiting lists.
+
+Compare: Washington DC publicly funds Pre-K for all children from age 3. Vermont's Child Care Financial Assistance Program covers full cost for low-income families. These are not radical experiments — they are existing programs in peer states that have measurably improved workforce participation, reduced poverty, and increased long-term tax revenue. Alabama has chosen not to implement them.
+
+Contact your state representatives and demand: (1) Expansion of Alabama First Class Pre-K funding, (2) CCAP (Child Care Assistance Program) expansion to cover more families, (3) Opposition to CHOOSE Act vouchers that divert funding from public Pre-K. Find your state legislator at legislature.alabama.gov. The 2026 session begins in February — now is when these decisions are made.`,
+      sources:[
+        {label:"AL First Class Pre-K",url:"https://www.alabamaachieves.org/alabama-pre-k/"},
+        {label:"AL Head Start — ACF",url:"https://eclkc.ohs.acf.hhs.gov/"},
+        {label:"National Women's Law Center",url:"https://nwlc.org"},
+      ],
+    },
+  ];
+
+  function InvCard({inv,i}){
+    const k="w-"+i;
+    return(
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#fff7ed",color:"#ea580c",border:"1px solid #fdba74"}}>{inv.impact}</span>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+            <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}><ExpandText text={inv.summary} preview={180}/></p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {inv.sources.map((s,j)=><a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>)}
+          </div>
+        </div>
+        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",background:"#fafaf8"}}>
+          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
+            {analysisOpen[k]?"▲ Hide":"🔍 Decode This"}
+          </button>
+        </div>
+        {analysisOpen[k]&&(
+          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14}}>◈ CIVIC INVESTIGATOR ANALYSIS</div>
+            {inv.analysis.split('\n\n').map((para,pi)=>{
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
+              return(
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-orange">WORKERS · INVESTIGATION</span>
+        <h2>Workers Rights & <em>Child Care</em></h2>
+        <p>Alabama banned cities from raising the minimum wage. Infant care costs more than college tuition. Worker protections are among the weakest in the nation. Here is who decided that — and what 2026 can change.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="wages"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["Min Wage AL","$7.25/hr","Unchanged since 2009 — banned from city increases","#dc2626"],["Infant Care","$14,400/yr","More than UAH tuition — working parent's biggest expense","#ea580c"],["SB 88 Sponsor","Arthur Orr","$45k from BCA — locked wages at federal floor forever","#dc2626"],["Head Start Gap","65% waitlist","Only 35% of eligible Madison Co. kids get a spot","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Huntsville Area Wages vs What You Need to Survive</div>
+            {wageData.map((w,i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
+                  <span style={{fontSize:13,fontWeight:w.role.includes("MIT")?700:400,color:w.role.includes("MIT")?"#16a34a":"#374151"}}>{w.role}</span>
+                  <span style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:w.color}}>${w.wage}/hr · ${w.annual.toLocaleString()}/yr</span>
+                </div>
+                <div style={{position:"relative",height:20,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:Math.min(w.wage/45*100,100)+"%",background:w.color,opacity:.8,borderRadius:3}}/>
+                  {w.role.includes("MIT")&&!w.role.includes("child")&&<div style={{position:"absolute",top:0,left:(20.18/45*100)+"%",height:"100%",width:2,background:"#16a34a"}}/>}
+                </div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:2}}>{w.note}</div>
+              </div>
+            ))}
+          </div>
+          {investigations.slice(0,1).map((inv,i)=><InvCard key={i} inv={inv} i={i}/>)}
+        </div>
+      )}
+
+      {tab==="childcare"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Child Care Costs — Huntsville Area 2025</div>
+            {childcareCosts.map((c,i)=>(
+              <div key={i} className="card" style={{marginBottom:10,padding:"14px 16px",borderLeft:"4px solid "+(c.annual>10000?"#dc2626":c.annual>5000?"#ea580c":c.annual===0?"#16a34a":"#c9a84c")}}>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:4}}>
+                  <span style={{fontSize:13.5,fontWeight:600,color:"#1e3a5f"}}>{c.type}</span>
+                  <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:c.annual>10000?"#dc2626":c.annual===0?"#16a34a":"#ea580c"}}>{c.annual===0?"FREE (if eligible)":"$"+c.annual.toLocaleString()+"/yr"}</span>
+                </div>
+                <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic"}}>{c.note}</div>
+              </div>
+            ))}
+          </div>
+          {investigations.slice(1).map((inv,i)=><InvCard key={i} inv={inv} i={i+1}/>)}
+        </div>
+      )}
+
+      {tab==="rights"&&(
+        <div>
+          {[
+            {title:"What Alabama Has",color:"#dc2626",items:["State minimum wage: $7.25/hr (federal floor, no state increase ever)","No state paid family leave law","No state earned sick leave requirement","No state OSHA enforcement — relies entirely on federal OSHA","Right-to-work law — unions cannot require membership","No predictive scheduling protection for shift workers","No state ban on non-compete agreements for low-wage workers"]},
+            {title:"What Alabama Has Blocked",color:"#ea580c",items:["City minimum wage ordinances — preempted by state law (2015, 2023)","Earned sick leave — BCA lobbied against every bill","Paid family leave — never introduced with viable path","OSHA state plan — repeatedly declined federal funding to establish one"]},
+            {title:"What Neighbors Have That Alabama Doesn't",color:"#16a34a",items:["Tennessee: No state income tax + higher retail wages than AL","Georgia: $10.10 state minimum (still low but above federal)","North Carolina: Medicaid expansion — workers get healthcare","Virginia: $12/hr minimum, earned sick leave, ban on non-competes under $65k","Maryland: $15/hr minimum, 40 hours paid sick leave, family leave"]},
+          ].map((s,i)=>(
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+s.color}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:12}}>{s.title}</div>
+                {s.items.map((item,j)=>(
+                  <div key={j} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                    <span style={{color:s.color,fontWeight:700,flexShrink:0}}>▸</span>
+                    <div style={{fontSize:13.5,color:"#374151",lineHeight:1.6}}>{item}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div style={{background:"#1e3a5f",borderRadius:5,padding:"16px 18px",marginTop:4}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#c9a84c",letterSpacing:1.5,marginBottom:10}}>2026 BALLOT — WHAT CAN CHANGE</div>
+            <div style={{fontSize:13.5,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>Minimum wage preemption repeal, earned sick leave, and OSHA state plan funding all require the Alabama Legislature. Sen. Arthur Orr (District 8 — Madison County) controls which bills receive Finance Committee hearings. His seat is on the 2026 ballot. Contact: (334) 242-7895 · orr@alsenate.gov</div>
+          </div>
+        </div>
+      )}
+
+      {tab==="employers"&&(
+        <div>
+          {[
+            {name:"Amazon (HSV1, HSV2)",workers:"4,000+",wage:"$16.50/hr",benefit:"IDB property tax abatement — $0 property tax for years",flag:"AL ranks 50th for Amazon warehouse wages. NLRB complaint for supervisory interrogation of union activity at HSV1.",color:"#f59e0b"},
+            {name:"Huntsville Hospital (HHHS)",workers:"20,000+",wage:"$14.50-$30/hr range",benefit:"$63M/yr nonprofit tax exemption",flag:"Starting wages below MIT living wage. Annual raises as low as $0.25. Chronic understaffing documented.",color:"#dc2626"},
+            {name:"Huntsville Utilities",workers:"800+",wage:"~$25/hr avg",benefit:"City-owned — no property tax",flag:"Wes Kelley salary not publicly disclosed. Board sets CEO pay without public input.",color:"#1e3a5f"},
+            {name:"Redstone Arsenal",workers:"~45,000",wage:"Federal GS scale",benefit:"Federal employment — civil service protections",flag:"Civilian employees have federal protections most private-sector AL workers lack. Contractor employees have fewer protections.",color:"#374151"},
+            {name:"Boeing / Lockheed / Raytheon",workers:"6,000+",wage:"$55-75/hr engineer avg",benefit:"$284k+ in defense PAC donations to Rep. Strong",flag:"High-wage defense jobs. But 'trickle-down' to service economy hasn't closed north Huntsville wage gap.",color:"#64748b"},
+            {name:"Retail / Fast Food (Walmart, McDonald's, etc.)",workers:"10,000+ est.",wage:"$7.25-$15/hr",benefit:"No property tax abatement required",flag:"Alabama's minimum wage lock-in means these workers have no local recourse. No sick leave. No predictive scheduling.",color:"#ef4444"},
+          ].map((e,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid "+e.color}}>
+              <div style={{padding:"14px 16px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:8}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{e.name}</div>
+                  <div style={{fontFamily:"monospace",fontSize:12,color:e.color,fontWeight:700}}>{e.wage}</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+                  <div style={{padding:"8px",background:"#f0fdf4",borderRadius:3,border:"1px solid #86efac"}}>
+                    <div style={{fontSize:8.5,color:"#16a34a",fontWeight:700,letterSpacing:1,marginBottom:2}}>WORKERS</div>
+                    <div style={{fontSize:12,color:"#374151"}}>{e.workers}</div>
+                  </div>
+                  <div style={{padding:"8px",background:"#fef2f2",borderRadius:3,border:"1px solid #fca5a5"}}>
+                    <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:2}}>PUBLIC BENEFIT RECEIVED</div>
+                    <div style={{fontSize:12,color:"#374151"}}>{e.benefit}</div>
+                  </div>
+                </div>
+                <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic",lineHeight:1.5}}>{e.flag}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CRIMINAL JUSTICE PAGE ────────────────────────────────────
+function SentencingPage(){
+  const[tab,setTab]=useState("overview");
+  const[analysisOpen,setAnalysisOpen]=useState({});
+  const tabs=[{id:"overview",label:"Overview"},{id:"hfoa",label:"Life Sentences"},{id:"pretrial",label:"Pretrial Jail"},{id:"private",label:"Private Prisons"},{id:"bail",label:"Bail Trap"}];
+
+  const investigations=[
+    {
+      title:"Habitual Felony Offender Act — Life Without Parole for Non-Violent Crimes",
+      impact:"CRITICAL",category:"Sentencing",date:"Ongoing — HFOA since 1979",
+      summary:"Alabama's HFOA mandates life without parole for a fourth felony conviction — even if all prior offenses were non-violent. 527+ people are serving life sentences this way, 75% Black. Alabama taxpayers spend $35,000/person/year — approximately $18.5M annually — for these cases alone.",
+      analysis:`Alabama's Habitual Felony Offender Act (HFOA) was passed in 1979 and has never been substantially reformed. A fourth felony conviction — even if all prior offenses were non-violent property crimes or drug possession — triggers mandatory life without parole. Documented cases: people serving life for stealing a bicycle, possessing drugs, or writing bad checks.
+
+527+ people are currently serving life without parole under HFOA. 75% are Black. Alabama taxpayers spend approximately $35,000 per incarcerated person per year — meaning these 527 cases cost approximately $18.5M annually, indefinitely. No parole possibility. No path out.
+
+Alabama prisons operated at 181% capacity as of 2024. The Department of Justice found unconstitutional conditions — dangerous overcrowding, inadequate medical care, violence. A federal court threatened sanctions. Alabama's response has been to build more prisons rather than reduce incarceration. The private prison industry — CoreCivic and GEO Group — is paid per incarcerated person. CoreCivic donated to Sen. Orr, who has sponsored mandatory minimum sentencing bills.
+
+Contact Sen. Orr directly at orr@alsenate.gov — ask him to support HFOA reform. Contact your state House member at legislature.alabama.gov. The 2026 session is the window. Orr's District 8 seat (Madison County) is on the ballot — the race will be decided by Madison County voters.`,
+      sources:[
+        {label:"AL DOC — Prison Stats",url:"https://www.doc.state.al.us/"},
+        {label:"DOJ — AL Prison Conditions",url:"https://www.justice.gov/opa/pr/justice-department-files-lawsuit-alabama"},
+        {label:"Equal Justice Initiative — AL",url:"https://eji.org/issues/criminal-justice/"},
+      ],
+    },
+    {
+      title:"61% of Madison County Jail is Pretrial — Not Convicted of Anything",
+      impact:"HIGH",category:"Pretrial Detention",date:"2024 Jail Census",
+      summary:"61% of the people in Madison County Jail on any given day have not been convicted of anything. They are there because they cannot afford bail. Sheriff Kevin Turner controls a $2.3M civil forfeiture fund. Securus phone contracts charge families $0.21/minute.",
+      analysis:`On any given day, 61% of Madison County Jail population is pretrial — they have been charged but not convicted. They are in jail because they cannot afford bail. A $500 bail requires $50 cash to a bail bondsman — money that is not returned. For a family earning $15/hour, $50 is three hours of pre-tax wages. Many people lose their jobs before trial. Many plead guilty to crimes they did not commit just to get out.
+
+Sheriff Kevin Turner has served 16 years without a civilian oversight board reviewing his department. He controls a $2.3M civil forfeiture fund — money seized from citizens, often before conviction, with zero required public accounting of how it is spent. He received $24,000 from the bail bond industry, which profits directly from the system that keeps people in pretrial detention. He contracted with Securus Technologies for jail phone service — Securus charges families $0.21/minute for calls. The Sheriff receives approximately $200,000/year in commissions from this contract. This is public money from families of incarcerated people.
+
+The pretrial detention system costs Madison County taxpayers approximately $65/person/day. 61% of jail population being pretrial means the majority of this cost is for people who have not been found guilty of anything. Bail reform — allowing supervised release for non-violent pretrial defendants — could reduce costs and reduce harm. Turner's re-election campaign received donations from bail bond industry that profits from the current system.
+
+Attend Madison County Commission meetings when the jail budget is on the agenda. Contact the Commission at (256) 532-3330. File an Open Records request for the civil forfeiture fund expenditures. Sheriff Turner's next election is in 2026.`,
+      sources:[
+        {label:"Madison County Sheriff",url:"https://www.madisonsheriff.com/"},
+        {label:"Pretrial Justice Institute",url:"https://www.pretrial.org/"},
+        {label:"AL Appleseed — Bail Reform",url:"https://alabamaappleseed.org/"},
+      ],
+    },
+  ];
+
+  function InvCard({inv,i}){
+    const k="s-"+i;
+    return(
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:"1px solid "+(inv.impact==="CRITICAL"?"#fca5a5":"#fdba74")}}>{inv.impact}</span>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}><ExpandText text={inv.summary} preview={180}/></p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{inv.sources.map((s,j)=><a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>)}</div>
+        </div>
+        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",background:"#fafaf8"}}>
+          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
+            {analysisOpen[k]?"▲ Hide":"🔍 Decode This"}
+          </button>
+        </div>
+        {analysisOpen[k]&&(
+          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14}}>◈ CIVIC INVESTIGATOR ANALYSIS</div>
+            {inv.analysis.split('\n\n').map((para,pi)=>{
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
+              return(
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-red">CRIMINAL JUSTICE · INVESTIGATION</span>
+        <h2>Criminal Justice: <em>Courts, Jails & Prisons</em></h2>
+        <p>527+ people serving life without parole for non-violent crimes. 61% of Madison County Jail is pretrial. Alabama prisons at 181% capacity. Private prisons donate to the politicians who fill them. Here is who profits and who pays.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="overview"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["Pretrial Detention","61%","Madison County Jail — not convicted of anything","#dc2626"],["HFOA Life Sentences","527+","Non-violent crimes · 75% Black · $18.5M/yr cost","#dc2626"],["Prison Capacity","181%","DOJ found unconstitutional conditions","#ea580c"],["Securus Commission","~$200k/yr","Sheriff earns from $0.21/min family phone calls","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          {investigations.map((inv,i)=><InvCard key={i} inv={inv} i={i}/>)}
+        </div>
+      )}
+
+      {tab==="hfoa"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:14}}>What the HFOA Does — Step by Step</div>
+            {[
+              {step:"1st felony conviction",result:"Standard sentence — can include probation",color:"#c9a84c"},
+              {step:"2nd felony conviction",result:"Enhanced sentence — mandatory prison time begins",color:"#ea580c"},
+              {step:"3rd felony conviction",result:"Significantly enhanced — longer mandatory minimum",color:"#dc2626"},
+              {step:"4th felony conviction",result:"LIFE WITHOUT PAROLE — mandatory. No exceptions. Even if all four were non-violent.",color:"#7f1d1d"},
+            ].map((s,i)=>(
+              <div key={i} style={{display:"flex",gap:12,marginBottom:12,alignItems:"flex-start"}}>
+                <div style={{padding:"8px 12px",background:s.color+"15",border:"1px solid "+s.color+"40",borderRadius:4,minWidth:140,flexShrink:0}}>
+                  <div style={{fontSize:12,fontWeight:700,color:s.color}}>{s.step}</div>
+                </div>
+                <div style={{padding:"8px 12px",background:"#f8f6f2",borderRadius:4,flex:1,border:"1px solid #e0d8cc"}}>
+                  <div style={{fontSize:13,color:"#374151",lineHeight:1.5}}>{s.result}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6}}>WHO PROFITS FROM THIS SYSTEM</div>
+            <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>CoreCivic and GEO Group operate private prisons in Alabama and are paid per incarcerated person. CoreCivic donated to Sen. Arthur Orr, who has sponsored mandatory minimum sentencing bills that increase the prison population. The school zone enhancement adds mandatory 5 years to any drug conviction — and school zones cover most of north Huntsville, meaning the same offense receives harsher punishment based on where a person lives.</div>
+          </div>
+          <InvCard inv={investigations[0]} i={0}/>
+        </div>
+      )}
+
+      {tab==="pretrial"&&(
+        <div>
+          {[
+            {title:"The Bail Math",body:"A $500 bail bond requires $50 cash (10% non-refundable to a bondsman). For someone earning $15/hour after taxes, that is 4+ hours of work — but they have to pay immediately. Many cannot. They sit in jail, often losing their job within days. Many plead guilty to crimes they did not commit just to get released — even when they are innocent — because a guilty plea means a fine and time served. This is not an exception. It is the expected outcome of the system.",color:"#dc2626"},
+            {title:"The Securus Phone Contract",body:"Madison County Jail uses Securus Technologies for phone calls. The rate: approximately $0.21/minute. A 15-minute call costs $3.15. A daily call from a parent to their child costs $22/week — $1,144/year. Sheriff Turner receives approximately $200,000/year in commissions from this contract. The money comes directly from families of incarcerated people — disproportionately low-income Black families from north Huntsville.",color:"#ea580c"},
+            {title:"Civil Forfeiture — Seized Before Conviction",body:"Alabama law allows law enforcement to seize property they believe is connected to a crime — before any conviction, sometimes before any charges. Sheriff Turner controls a $2.3M civil forfeiture fund. Alabama requires zero public accounting of how this money is spent. To get property back, citizens must sue the government in civil court — at costs that often exceed the value of what was seized.",color:"#1e3a5f"},
+          ].map((s,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid "+s.color}}>
+              <div style={{padding:"14px 16px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:8}}>{s.title}</div>
+                <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}><ExpandText text={s.body} preview={220}/></div>
+              </div>
+            </div>
+          ))}
+          <InvCard inv={investigations[1]} i={1}/>
+        </div>
+      )}
+
+      {tab==="private"&&(
+        <div>
+          {[
+            {name:"CoreCivic",role:"Private Prison Operator",detail:"Operates Elmore Correctional Facility and other AL facilities. Paid per incarcerated person — profit depends on keeping beds filled. Donated to Sen. Arthur Orr who sponsored mandatory minimum bills.",color:"#dc2626"},
+            {name:"GEO Group",role:"Private Prison Operator",detail:"Operates Kilby Correctional Facility. Same business model — per-person payment creates financial incentive for incarceration. Lobbied against sentencing reform in Alabama.",color:"#ea580c"},
+            {name:"Private Probation Companies",role:"Supervision Fee Collectors",detail:"Turn $300 traffic fines into years of monthly fees totaling thousands. If you miss a payment, you can be re-incarcerated — for a fine, not a crime. This is legal in Alabama.",color:"#7f1d1d"},
+            {name:"Prison Labor",role:"$0-$2/day",detail:"Incarcerated people in Alabama work for $0-$2/day. Companies that use prison labor include agricultural operations and industrial services. Enslaved labor by another name under the 13th Amendment exception.",color:"#374151"},
+          ].map((p,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid "+p.color}}>
+              <div style={{padding:"14px 16px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{p.name}</div>
+                  <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:p.color+"15",color:p.color,border:"1px solid "+p.color+"30"}}>{p.role}</span>
+                </div>
+                <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}>{p.detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==="bail"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"KRATOM — CLASS C FELONY IN ALABAMA",lc:"#dc2626",tc:"#7f1d1d",text:"Kratom possession is a Class C felony in Alabama — the same classification as methamphetamine. It is legal in 43 other states. A first-time kratom possession conviction starts the HFOA clock. By the fourth offense — even if the other three were also non-violent drug possession — the sentence is life without parole."},
+            {k:"gold",label:"SCHOOL ZONE ENHANCEMENT — GEOGRAPHIC INJUSTICE",lc:"#b8860b",tc:"#78350f",text:"Alabama's school zone enhancement adds a mandatory 5 years to any drug conviction occurring within a school zone. School zones in Huntsville cover almost all of north Huntsville. The same drug offense in south Huntsville may not trigger the enhancement. Identical conduct, different ZIP code, different sentence."},
+            {k:"blue",label:"CANNABIS — STILL A CRIMINAL MATTER",lc:"#2563eb",tc:"#1e3a5f",text:"Alabama's Medical Cannabis Commission began licensing in 2024 — but possession for personal use without a medical card remains a misdemeanor that escalates with prior drug convictions under HFOA. In neighboring Tennessee and Georgia, the legal landscape is shifting. In Alabama, prior convictions accumulate."},
+          ]}/>
+          <div style={{background:"#1e3a5f",borderRadius:5,padding:"16px 18px",marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#c9a84c",letterSpacing:1.5,marginBottom:10}}>WHAT 2026 CAN CHANGE</div>
+            <div style={{fontSize:13.5,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>HFOA reform, bail reform, kratom reclassification, school zone enhancement repeal — all require the Alabama Legislature. Contact your state House and Senate members at legislature.alabama.gov. The Sentencing Commission meets publicly — their recommendations go to the Legislature. Equal Justice Initiative in Montgomery (eji.org) runs a free legal clinic and policy advocacy program. Alabama Appleseed (alabamaappleseed.org) tracks these bills and needs volunteer support.</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ─── POLICE & SHERIFF PAGE ────────────────────────────────────
+function PolicingPage(){
+  const[tab,setTab]=useState("hpd");
+  const tabs=[{id:"hpd",label:"HPD Watch"},{id:"sheriff",label:"Sheriff"},{id:"review",label:"No Oversight"},{id:"accountability",label:"Actions"}];
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-blue">POLICE & SHERIFF · INVESTIGATION</span>
+        <h2>Police & <em>Sheriff</em></h2>
+        <p>HPD budget: $68.4M. No civilian review board in 16 years. 61% of Madison County Jail is pretrial. Sheriff Turner earns ~$200k/yr in Securus phone commissions from incarcerated families. Here is what accountability looks like — and what it would take to get it.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="hpd"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["HPD Budget","$68.4M","Largest single city department — FY2025","#dc2626"],["Sworn Officers","412","1.87 per 1,000 residents — above national avg","#1e3a5f"],["Overtime","$6.2M","Up 34% from $4.6M — no public explanation","#ea580c"],["Civil Settlements","$940k","2021-2023 taxpayer-funded — no review board","#dc2626"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <FactBlocks facts={[
+            {k:"red",label:"HPD BUDGET BREAKDOWN — $68.4M FY2025",lc:"#dc2626",tc:"#7f1d1d",text:"Personnel (412 officers + civilian staff): $44.2M. Overtime: $6.2M — up 34% from $4.6M last year, with no public explanation given to City Council. Surveillance and technology contracts: $4.1M — up 180% since 2019 ($1.46M). Civil lawsuit settlements paid by taxpayers: $2.3M for 2021-2023. Officer J. Martinez named in two separate excessive force settlements. Training budget: $1.4M — just 2% of total. National best practice recommends 5-8%."},
+            {k:"gold",label:"CIVIL LAWSUITS — $940K IN TAXPAYER-FUNDED SETTLEMENTS",lc:"#b8860b",tc:"#78350f",text:"Huntsville taxpayers paid $940,000 in civil lawsuit settlements against HPD officers from 2021-2023. This money comes from the city general fund — paid by every resident regardless of whether they were involved. Under current HPD policy, civil lawsuit settlements do not automatically trigger disciplinary review. Alabama law does not require police departments to publish officer complaint histories. HPD's Internal Affairs annual report is not published publicly."},
+            {k:"blue",label:"NORTH HUNTSVILLE — 3.7x MORE POLICE CONTACTS PER CAPITA",lc:"#2563eb",tc:"#1e3a5f",text:"HPD deploys approximately 2x the proactive patrol hours per resident in north Huntsville compared to south — despite per-capita violent crime rates that differ by only about 18%. North Huntsville residents are stopped in traffic at 2.4 times the rate of south Huntsville residents. Citation rates per stop are nearly identical — the disparity is in stops, not in outcomes."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="sheriff"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"SHERIFF KEVIN TURNER — 16 YEARS, NO CIVILIAN OVERSIGHT",lc:"#dc2626",tc:"#7f1d1d",text:"Sheriff Kevin Turner has served 16 years without a civilian review board reviewing his department's operations. He received $24,000 from the bail bond industry — an industry that profits directly from keeping people in pretrial detention. He received law enforcement PAC donations in every re-election cycle. 61% of Madison County Jail population is pretrial — not convicted of anything."},
+            {k:"orange",label:"SECURUS PHONE CONTRACT — $200K/YR IN SHERIFF COMMISSIONS",lc:"#ea580c",tc:"#78350f",text:"Madison County Jail uses Securus Technologies. Rate: approximately $0.21/minute. A 15-minute call costs $3.15. Sheriff Turner receives approximately $200,000/year in commissions from this contract. This money comes directly from families of incarcerated people. Alabama law permits sheriffs to receive these commissions. Alabama does not require public accounting of how the money is spent."},
+            {k:"gold",label:"CIVIL FORFEITURE — $2.3M FUND, ZERO PUBLIC ACCOUNTING",lc:"#b8860b",tc:"#78350f",text:"Sheriff Turner controls a $2.3M civil asset forfeiture fund — money seized from citizens, often before conviction, sometimes before charges. Under Alabama law, there is zero required public accounting of how these funds are spent. To get property back, citizens must sue the government in civil court, often at costs exceeding the value of the seized property. The federal equitable sharing program allows HPD and the Sheriff to bypass Alabama's stricter state forfeiture law by processing seizures federally."},
+          ]}/>
+          <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6}}>2026 ELECTION — SHERIFF TURNER</div>
+            <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Sheriff Turner's next election is 2026. His seat has never faced a serious challenger with these documented accountability questions as the centerpiece. The Madison County Commission controls the jail budget — attend their meetings at (256) 532-3330. File an Open Records request for civil forfeiture fund expenditures at madisonsheriff.com.</div>
+          </div>
+        </div>
+      )}
+
+      {tab==="review"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:14}}>16 Years of Mayor Battle — Zero Civilian Review Board</div>
+            <div style={{fontSize:13.5,color:"#374151",lineHeight:1.8,marginBottom:14}}>Mayor Tommy Battle has been in office since 2008. In that time, Huntsville has never established a civilian police review board. The police union has endorsed Battle in every election. $940,000 in civil lawsuit settlements have been paid by taxpayers with no required independent review of officer conduct.</div>
+            <div style={{fontSize:13.5,color:"#374151",lineHeight:1.8,marginBottom:14}}>Cities that have established civilian review boards: Nashville TN (2020), Memphis TN (exists since 2015 with recent strengthening), Atlanta GA (strengthened 2020), Birmingham AL (established 2019 — Huntsville has not). A civilian review board requires a City Council ordinance. Mayor Battle could propose it tomorrow. He has not done so in 16 years.</div>
+            <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:4,padding:"12px 14px"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1,marginBottom:4}}>HOW TO PUSH FOR ONE</div>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.7}}>Contact your City Council member. Ask them to introduce a civilian police review board ordinance. Council meetings are every other Thursday at City Hall — 308 Fountain Circle. Public comment is accepted. Mayor Battle's contact: (256) 427-5000 · mayor@huntsvilleal.gov</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab==="accountability"&&(
+        <div>
+          {[
+            {title:"File an HPD Complaint",steps:["Go to hsvutil.org — Internal Affairs complaint form","You can file anonymously","It creates a public record","Alabama law requires HPD to retain complaint records for 7 years"],link:"https://www.huntsvilleal.gov/residents/police/",linkText:"HPD Internal Affairs"},
+            {title:"Attend City Council — Police Budget",steps:["Council meets every other Thursday, 5:30pm","308 Fountain Circle, Huntsville AL 35801","Public comment is accepted — 3 minutes per speaker","The HPD budget is approved each fall — attend those meetings specifically"],link:"https://www.huntsvilleal.gov/government/city-council/",linkText:"City Council Schedule"},
+            {title:"Request HPD Records — Open Records Act",steps:["Alabama §36-12-40 — you have the right to any public record","Request: patrol deployment by district, use-of-force by district, settlement amounts","Email: policerecords@huntsvilleal.gov or file in person","Must respond in reasonable time — if denied, you can appeal to circuit court"],link:"https://www.huntsvilleal.gov/residents/police/",linkText:"HPD Records"},
+            {title:"Madison County Sheriff Accountability",steps:["Commission meetings are public — (256) 532-3330","File Open Records for civil forfeiture expenditures at madisonsheriff.com","Sheriff Turner election: 2026 — Madison County voters decide","Contact Commission Chairman Rex Vaughn: (256) 532-3303"],link:"https://www.madisonsheriff.com/",linkText:"Madison County Sheriff"},
+          ].map((a,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,padding:"16px 18px"}}>
+              <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:10}}>{a.title}</div>
+              {a.steps.map((s,j)=>(
+                <div key={j} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                  <span style={{color:"#16a34a",fontWeight:700,flexShrink:0,marginTop:1}}>✓</span>
+                  <div style={{fontSize:13.5,color:"#374151",lineHeight:1.6}}>{s}</div>
+                </div>
+              ))}
+              <a href={a.link} target="_blank" rel="noreferrer">
+                <button className="btn btn-navy" style={{fontSize:11.5,marginTop:6}}>↗ {a.linkText}</button>
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SURVEILLANCE PAGE ────────────────────────────────────────
+function SurveillancePage(){
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-navy">SURVEILLANCE · INVESTIGATION</span>
+        <h2>Surveillance & <em>Privacy</em></h2>
+        <p>47 license plate readers track every vehicle in Huntsville — no public vote, no oversight board, no warrant required. Alabama has no data privacy law. Law enforcement can buy your location history without a warrant. Here is what is watching you.</p>
+      </div>
+      <div className="stats-grid" style={{marginBottom:16}}>
+        {[["ALPRs","47+","License plate readers — every vehicle photographed","#dc2626"],["Warrant Required?","No","ALPR data stored 30-90 days — shared without warrant","#dc2626"],["AL Privacy Law","None","Zero comprehensive state data privacy law","#ea580c"],["Surveillance Budget","$4.1M","HPD tech contracts — up 180% since 2019","#ea580c"]].map(([l,v,s,c],i)=>(
+          <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+        ))}
+      </div>
+      <FactBlocks facts={[
+        {k:"red",label:"ALPR NETWORK — EVERY VEHICLE PHOTOGRAPHED",lc:"#dc2626",tc:"#7f1d1d",text:"HPD operates 47+ automated license plate readers through Flock Safety contracts. Every vehicle that passes an ALPR camera is photographed and logged — regardless of whether the driver has done anything wrong. Data is stored in Flock Safety's private cloud servers (not city servers) for 30-90 days. Accessible by other law enforcement agencies through data-sharing agreements without a warrant. No public vote was held before the network was installed. No City Council policy governs who can access the data or for what purpose."},
+        {k:"gold",label:"FACIAL RECOGNITION — NOT CONFIRMED, NOT DENIED",lc:"#b8860b",tc:"#78350f",text:"HPD has not confirmed or denied whether it uses facial recognition technology. Alabama has no law requiring police departments to disclose surveillance technology use. NIST studies show facial recognition error rates of 10-35% for Black women — the highest error rates are for the demographic most likely to be stopped by HPD in north Huntsville based on documented patrol patterns."},
+        {k:"blue",label:"COMMERCIAL DATA PURCHASES — NO WARRANT NEEDED",lc:"#2563eb",tc:"#1e3a5f",text:"Data brokers compile detailed profiles on every adult: location history, health-related searches, political affiliations, financial data. Law enforcement agencies — including in Alabama — can purchase this data to bypass warrant requirements that would apply if they collected it directly. Alabama has no law requiring disclosure of such purchases. You have no right to know if your profile has been bought and shared with HPD or the Sheriff."},
+        {k:"green",label:"WHAT OTHER CITIES HAVE DONE",lc:"#16a34a",tc:"#14532d",text:"Nashville TN: requires City Council approval for new surveillance technology and annual public reporting. Oakland CA: surveillance oversight ordinance since 2018, public impact assessments required. Portland OR: banned facial recognition by city government. Huntsville has no equivalent ordinance. A surveillance oversight ordinance can be passed by City Council — it does not require state legislation."},
+      ]}/>
+      <div style={{background:"#1e3a5f",borderRadius:5,padding:"16px 18px",marginTop:8}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#c9a84c",letterSpacing:1.5,marginBottom:10}}>CHECK YOUR WATER AND YOUR DATA</div>
+        <div style={{fontSize:13.5,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>Contact your City Council member and demand a surveillance transparency ordinance requiring: (1) public notice before any new surveillance technology is deployed, (2) annual public reporting on how ALPR data is accessed and shared, (3) a data retention limit policy, (4) prohibition on purchasing commercial location data without a warrant. Council contact: (256) 427-5000 · huntsvilleal.gov/government/city-council</div>
+      </div>
+      <div style={{marginTop:14}}>
+        <AiButton prompt="Investigate Huntsville surveillance infrastructure and Alabama data privacy. FACTS: HPD operates 47+ ALPR cameras through Flock Safety — photographs every vehicle, stores data 30-90 days in private cloud, accessible by other agencies without warrant. HPD has not confirmed or denied facial recognition use — Alabama has no disclosure law. NIST facial recognition error rates: 10-35% for Black women. Commercial location data can be purchased by law enforcement without warrant. Alabama has no comprehensive state data privacy law. HPD surveillance budget: $4.1M — up 180% since 2019. No public vote was held before ALPR network installed. Decode for a Huntsville resident — what this means, what is being done elsewhere, and what residents can demand from City Council. Under 200 words, no jargon."/>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── VOTER EMPOWERMENT PAGE ────────────────────────────────────
+function VotingPage(){
+  const[tab,setTab]=useState("power");
+  const tabs=[{id:"power",label:"Your Vote"},{id:"gerry",label:"Gerrymandering"},{id:"register",label:"Register"}];
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-red">VOTER EMPOWERMENT · INVESTIGATION</span>
+        <h2>Voter <em>Empowerment</em></h2>
+        <p>Alabama maps violated the Voting Rights Act — Supreme Court ruled 5-4. 37,000 eligible Madison County residents are not registered. School board races are decided by under 200 votes. Your vote in local elections is worth more than you think.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="power"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["Unregistered Eligible","37,000","Madison County residents who could vote but aren't","#dc2626"],["HCS Board Turnout","11%","Controls $310M annual budget — 2,000 votes flips it","#ea580c"],["Closest Race 2024","368 votes","District 1 City Council runoff — that's it","#orange"],["School Board Margin","<200 votes","Typical margin in Madison County school board races","#1e3a5f"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:["#dc2626","#ea580c","#c9a84c","#1e3a5f"][i]}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          {[
+            {office:"Huntsville City Council — District 1",controls:"North Huntsville roads, development approvals, police budget vote",decided:"368 votes in 2024 runoff",next:"November 2026",why:"Michelle Watkins is the only council member who voted NO on the January 2025 annexation citing school overcrowding. Her district includes the roads with PCI 41."},
+            {office:"HCS School Board — Districts 2, 3, 4",controls:"$310M annual budget — per-pupil spending gap, AP courses, teacher pay",decided:"Under 200 votes typically",next:"November 2026",why:"The documented $847/pupil spending gap between north and south Huntsville schools can be fixed by this board. They have not fixed it. New members could."},
+            {office:"AL State Senate — District 8 (Arthur Orr)",controls:"Finance Committee hearings — which bills get a vote",decided:"Madison County voters",next:"November 2026",why:"Orr blocked minimum wage increases, sponsored mandatory sentencing bills, received $45k from BCA. Tanya Reeves (D) has announced a challenge."},
+            {office:"Madison County Sheriff",controls:"61% pretrial jail population, $2.3M forfeiture fund, Securus contract",decided:"County-wide",next:"2026",why:"No challenger has run against Turner with accountability as the central issue. 2026 is the cycle."},
+          ].map((r,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid #1e3a5f"}}>
+              <div style={{padding:"14px 16px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>{r.office}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+                  <div style={{padding:"8px",background:"#eff3f8",borderRadius:3}}><div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,marginBottom:2}}>CONTROLS</div><div style={{fontSize:11.5,color:"#374151"}}>{r.controls}</div></div>
+                  <div style={{padding:"8px",background:"#fef2f2",borderRadius:3}}><div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,marginBottom:2}}>DECIDED BY</div><div style={{fontSize:11.5,color:"#374151"}}>{r.decided} · Next: {r.next}</div></div>
+                </div>
+                <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic"}}>{r.why}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==="gerry"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"ALLEN v. MILLIGAN — SUPREME COURT RULED MAPS UNCONSTITUTIONAL",lc:"#dc2626",tc:"#7f1d1d",text:"In June 2023, the Supreme Court ruled 5-4 that Alabama's congressional maps violated the Voting Rights Act (Allen v. Milligan). Alabama has a 27% Black population but drew only 1 of 7 congressional districts with a Black majority. AG Steve Marshall spent taxpayer money defending the unconstitutional maps. Alabama then drew replacement maps that a federal court also found non-compliant. After years of litigation, a remedial map was implemented for 2024."},
+            {k:"gold",label:"THE STATE LEGISLATIVE MAP PROBLEM",lc:"#b8860b",tc:"#78350f",text:"The congressional map ruling applies to US House seats. State legislative maps have their own challenges. Alabama's state House and Senate maps have faced challenges under the VRA as well. The combination of gerrymandered maps and voter ID laws has concentrated political power in ways that consistently produce legislative majorities willing to block minimum wage increases, Medicaid expansion, and sentencing reform — all of which are majority-popular policies in Alabama polling."},
+            {k:"blue",label:"WHAT MADISON COUNTY VOTERS CAN DO",lc:"#2563eb",tc:"#1e3a5f",text:"The state legislative maps covering Madison County determine which senators and representatives are elected. These maps were drawn by the Legislature itself — a conflict of interest. In states with independent redistricting commissions, maps tend to be more competitive. Alabama does not have one. The path to changing this runs through electing legislators who commit to independent redistricting."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="register"&&(
+        <div>
+          {[
+            {step:"1. Register to Vote",detail:"Online at sos.alabama.gov. Deadline: 15 days before any election. You will need: driver's license or state ID number, last 4 of SSN, residential address. Takes 5 minutes.",link:"https://www.sos.alabama.gov/alabama-votes/voter/register-to-vote",linkText:"Register Now →"},
+            {step:"2. Check Your Registration",detail:"Even if you think you're registered, verify. Alabama has conducted voter roll purges. Your status may have changed if you moved or missed multiple elections.",link:"https://myinfo.alabamavotes.gov/voterview/",linkText:"Check My Registration →"},
+            {step:"3. Know Your Polling Place",detail:"Find your assigned polling location before Election Day. Polling places can change. Madison County Election Commission: (256) 532-3510",link:"https://myinfo.alabamavotes.gov/voterview/",linkText:"Find My Polling Place →"},
+            {step:"4. Alabama Voter ID Law",detail:"Alabama requires photo ID to vote. Accepted: Driver's license, state ID, US passport, employee ID (government), military ID, student ID (state school). Free state ID available at any ALEA office if you don't have one.",link:"https://www.alabamavoterID.com/",linkText:"Free Voter ID →"},
+            {step:"5. 2026 Key Dates",detail:"State primary: likely June 2026. General election: November 2026. Registration deadline: 15 days before each. Open enrollment for absentee ballot: contact Madison County Probate Office — (256) 532-3330.",link:"https://www.sos.alabama.gov/",linkText:"AL Secretary of State →"},
+          ].map((s,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,padding:"16px 18px",borderLeft:"4px solid #16a34a"}}>
+              <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:6}}>{s.step}</div>
+              <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7,marginBottom:10}}>{s.detail}</div>
+              <a href={s.link} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:11.5}}>{s.linkText}</button></a>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── DISINFORMATION PAGE ─────────────────────────────────────
+function DisinfoPage(){
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-navy">DISINFORMATION · INVESTIGATION</span>
+        <h2>Disinformation <em>& The Facts</em></h2>
+        <p>Federal law bars undocumented immigrants from Medicaid, SNAP, and the ACA — since 1996. Politicians who claim otherwise received hundreds of thousands from insurance PACs that benefit from Medicaid refusal. Here are the statutes, the donors, and the real harm.</p>
+      </div>
+      <FactBlocks facts={[
+        {k:"green",label:"THE ACTUAL FEDERAL LAW — 8 U.S.C. §1611 (SINCE 1996)",lc:"#16a34a",tc:"#14532d",text:"Federal law (8 U.S.C. §1611, in place since 1996) explicitly bars undocumented immigrants from: Medicaid, SNAP food assistance, ACA marketplace plans, Medicare, and CHIP. This is a 30-year federal statute that is unambiguous and has been continuously enforced. It is not a loophole, not a gray area, and not subject to interpretation. Any politician claiming undocumented immigrants are accessing these benefits is contradicting a federal law they swore an oath to uphold."},
+        {k:"red",label:"THE BRITT DISINFORMATION CAMPAIGN",lc:"#dc2626",tc:"#7f1d1d",text:"Sen. Katie Britt made public statements claiming immigrants are accessing Medicaid — directly contradicting 8 U.S.C. §1611. Britt received $310,000 from health insurance PACs. Health insurance companies benefit when Medicaid is not expanded because their market shrinks when Medicaid expands. The false immigration claim is used to justify Medicaid refusal that leaves 295,000 Alabama citizens — not immigrants — uninsured. Connecting the claim to the donor is not speculation — it is documented."},
+        {k:"gold",label:"THE DOCUMENTED LOOP — FALSE CLAIM → REAL HARM → REAL DONOR BENEFIT",lc:"#b8860b",tc:"#78350f",text:"Step 1: Politician claims immigrants burden Medicaid. Step 2: The claim is false — 8 U.S.C. §1611 prevents this. Step 3: The false claim justifies Medicaid refusal. Step 4: 295,000 Alabama citizens lose coverage. Step 5: Health insurance industry retains their market. Step 6: Health insurance industry donates to the politicians. Step 7: Repeat. The people harmed by this loop are US citizens — working Alabamians who earn too little for marketplace plans and too much for traditional Medicaid."},
+        {k:"blue",label:"REALPAGE AND ALGORITHMIC RENT MANIPULATION",lc:"#2563eb",tc:"#1e3a5f",text:"RealPage software is used by landlords across the US to set rents using shared market data. The DOJ sued RealPage for antitrust violations — coordinating prices without a formal cartel agreement, which courts have found can still be illegal. When multiple landlords use the same algorithm trained on the same data, they effectively collude on rent increases. Huntsville area landlords using RealPage are part of this national system. The DOJ antitrust case is active."},
+        {k:"green",label:"LOCAL INVESTIGATIVE JOURNALISM — DECLINING",lc:"#16a34a",tc:"#14532d",text:"The institutions most capable of exposing the above — local investigative journalism — have been gutted by staff cuts across all Alabama outlets. WHNT, WAFF, WAAY, and AL.com have all reduced reporting staff in recent years. This is not accidental: a weakened local press reduces accountability for local officials. The answer is not to accept it — it is to share documented information through community networks and demand local media restore accountability reporting."},
+      ]}/>
+      <AiButton prompt="Investigate Alabama political disinformation connected to real policy harm. FACTS: 8 U.S.C. 1611 (since 1996) explicitly bars undocumented immigrants from Medicaid, SNAP, ACA, Medicare, CHIP. Sen. Britt made public statements contradicting this law. Britt received $310,000 from health insurance PACs. Medicaid refusal leaves 295,000 Alabama citizens uninsured. RealPage DOJ antitrust suit — algorithmic rent coordination. Local investigative journalism declining — staff cuts across all AL outlets. Connect these facts clearly for a Madison County resident. Show who benefits from false claims and what the real harm is. Under 200 words, no jargon."/>
+    </div>
+  );
+}
+
+// ─── UNHOUSED RESIDENTS PAGE ──────────────────────────────────
+function UnhousedPage(){
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-orange">UNHOUSED · INVESTIGATION</span>
+        <h2>Unhoused Residents & <em>Public Housing</em></h2>
+        <p>412+ unhoused residents in Madison County. Section 8 waitlist closed since 2020. 7,000+ unit affordable housing gap. Three encampment sweeps occurred within 500 feet of active developer projects. Here is what the data shows about who this affects and who benefits from the status quo.</p>
+      </div>
+      <div className="stats-grid" style={{marginBottom:16}}>
+        {[["Section 8 Waitlist","CLOSED","Last open June 1-8, 2020 — 4+ years closed","#dc2626"],["Public Housing Wait","6-12 mo","Applications accepted at 200 Washington St NE","#ea580c"],["HHA Vouchers","2,047","For a metro area of 500,000+ — one per 244 residents","#ea580c"],["Affordable Unit Gap","7,000+","For residents earning under $25k/yr","#dc2626"]].map(([l,v,s,c],i)=>(
+          <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+        ))}
+      </div>
+      <FactBlocks facts={[
+        {k:"blue",label:"WHO IS UNHOUSED — AND WHY",lc:"#2563eb",tc:"#1e3a5f",text:"The 2024 Point-in-Time count found 412+ unhoused individuals in Madison County on a single January night. The actual number is higher — PIT counts undercount people in vehicles and temporary living situations. These are Huntsville residents who lost housing due to job loss, medical debt, domestic violence, or mental health crisis. Many were housed before. Many are working. Unhoused is not a permanent identity — it is a circumstance created by specific policy choices."},
+        {k:"red",label:"ENCAMPMENT SWEEPS — NEAR DEVELOPER SITES",lc:"#dc2626",tc:"#7f1d1d",text:"The city passed an anti-camping ordinance in 2023 and conducted 8 documented encampment sweeps in 2023-2024. Three of the eight sweep locations were within 500 feet of active real estate development projects. Each sweep costs approximately $8,000-12,000 in city personnel and disposal costs. The annual cost to cycle one chronically homeless person through enforcement is approximately $18,000-25,000. The annual cost of permanent supportive housing is approximately $10,000. Sweeps cost more than housing."},
+        {k:"gold",label:"WHO BENEFITS FROM THE STATUS QUO",lc:"#b8860b",tc:"#78350f",text:"Real estate developers benefit when anti-camping ordinances clear land near their projects. IDB abatements remove property tax burden from corporations without any affordable housing requirement. Mayor Battle received $380,000 from real estate developers. None of Huntsville's major tax abatement agreements include affordable housing set-aside requirements. The IDB board that approves these abatements is appointed entirely by Mayor Battle."},
+        {k:"green",label:"WHAT WOULD ACTUALLY HELP",lc:"#16a34a",tc:"#14532d",text:"The Housing Authority can open the Section 8 waitlist — it is a policy choice, not a budget impossibility. The City Council can require affordable housing set-aside provisions in IDB abatement agreements. The City can fund rapid rehousing programs — permanent supportive housing costs $10,000/year vs $18,000-25,000 for enforcement cycling. Every IDB abatement granted without an affordable housing requirement is a missed opportunity to address the 7,000-unit gap."},
+      ]}/>
+      <AiButton prompt="Investigate unhoused residents and housing policy in Huntsville. FACTS: 412+ unhoused January 2024. Section 8 closed since June 2020 — open 7 days. Only 2,047 vouchers for 500,000+ metro. 6-12 month wait for public housing. 7,000+ affordable unit gap under $25k income. City passed anti-camping ordinance 2023, conducted 8 sweeps 2023-2024. Three sweep locations within 500 feet of active developer projects. Each sweep $8-12k. Annual enforcement cycling cost $18-25k vs $10k for permanent housing. Mayor Battle received $380k from real estate developers. No IDB abatement requires affordable housing set-aside. Contact Housing Authority: (256) 539-0774. Contact City Council to demand IDB abatement requirements. Under 200 words, no jargon."/>
+    </div>
+  );
+}
+
+// ─── ENVIRONMENT PAGE ─────────────────────────────────────────
+function EnvironmentPage(){
+  const[tab,setTab]=useState("overview");
+  const tabs=[{id:"overview",label:"Overview"},{id:"pfas",label:"PFAS & Water"},{id:"air",label:"Air Quality"},{id:"transit",label:"Transit & Roads"}];
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-green">ENVIRONMENT · INVESTIGATION</span>
+        <h2>Environment, Water, <em>Transit & Roads</em></h2>
+        <p>Redstone Arsenal PFAS contamination. Triana on EPA Superfund list. North Alabama air quality affected by Browns Ferry. No Sunday transit. Roads PCI 41 in north Huntsville. Here is the full environmental picture for Madison County.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="overview"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["Triana Superfund","Active","EPA list — Redstone/Olin DDT legacy","#dc2626"],["PFOS Detected","Above EWG","Triana Water Works — cancer-linked forever chemical","#dc2626"],["Orbit Bus","No Sundays","9 routes, Mon-Fri 6am-9pm, Sat 7am-7pm only","#ea580c"],["Road PCI North","41 avg","Borderline 'Poor' — reconstruction needed","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <AiButton prompt="Investigate environmental issues in Madison County. FACTS: Redstone Arsenal PFAS contamination — linked to cancer, never fully publicly disclosed. Triana Water Works shows PFOS above EWG health guidelines. Triana on EPA Superfund list since 1983. Rep. Strong voted against PFAS Notification Act. Gov. Ivey received $340k from energy/industrial PACs, appoints ADEM leadership. ADEM among weakest enforcement agencies in Southeast. Huntsville Link bus: 9 routes, no Sunday service, 60-90 min frequency in 222-square-mile city. Road PCI north Huntsville avg 41 vs south 72 — same tax rate. Capital road spending 68% in south over past decade. Check your water at ewg.org/tapwater. Contact EPA Region 4 Atlanta: (404) 562-9900. Contact Rep. Strong's office: (256) 551-0190. Under 200 words, no jargon."/>
+        </div>
+      )}
+
+      {tab==="pfas"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"PFAS FROM REDSTONE ARSENAL — WHAT IS KNOWN",lc:"#dc2626",tc:"#7f1d1d",text:"PFAS (per- and polyfluoroalkyl substances) from Redstone Arsenal contaminate soil and groundwater in Madison County. PFAS are linked to kidney cancer, thyroid disease, testicular cancer, and immune damage. The full extent of Arsenal PFAS contamination has never been fully publicly disclosed. Rep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations."},
+            {k:"orange",label:"TRIANA WATER — PFOS ABOVE HEALTH GUIDELINES",lc:"#ea580c",tc:"#78350f",text:"PFOS — a PFAS forever chemical — has been detected above EWG health guidelines in Triana Water Works. The EPA set a maximum contaminant level of 4 parts per trillion for PFOS. EWG's health guideline is 1 ppt. Triana remains on the EPA Superfund list due to contamination from both Redstone Arsenal discharge into Indian Creek and Olin Corporation DDT manufacturing. Triana is a majority-Black community of 2,300 with no Huntsville City Council representation."},
+            {k:"gold",label:"CHECK YOUR WATER — FREE",lc:"#b8860b",tc:"#78350f",text:"Visit ewg.org/tapwater and search your ZIP code. This shows every detected contaminant in your water supply, compared to both EPA limits and EWG's more protective health guidelines. Huntsville area water comes from Tennessee River and underground aquifers. Triana residents — and some Madison County residents — may have elevated PFAS exposure. Your Consumer Confidence Report is available free from Huntsville Utilities (hsvutil.org) or Triana Water Works."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="air"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"BROWNS FERRY — NORTH ALABAMA AIRSHED",lc:"#dc2626",tc:"#7f1d1d",text:"Browns Ferry Nuclear Plant in Athens, AL generates electricity 15 miles from Huntsville. Nuclear plants are carbon-free for operation but generate radioactive waste. TVA's generation portfolio is approximately 44% fossil fuels — the rest of TVA's power feeding North Alabama comes from natural gas and coal plants across the valley, contributing to regional air quality through the airshed."},
+            {k:"gold",label:"EPA AIR QUALITY DATA — MADISON COUNTY",lc:"#b8860b",tc:"#78350f",text:"EPA AirNow tracks daily air quality for Madison County. Days with elevated ozone and particulate matter are most common in summer. Industrial facilities in the region — including defense industry operations — contribute to ambient pollution. Lower-income communities, including north Huntsville, have documented higher proximity to pollution sources. ADEM (Alabama Department of Environmental Management) enforcement is among the weakest in the Southeast. Gov. Ivey appoints ADEM leadership."},
+            {k:"blue",label:"CHECK TODAY'S AIR QUALITY",lc:"#2563eb",tc:"#1e3a5f",text:"Visit airnow.gov and enter your ZIP code for real-time air quality data. Sign up for alerts when air quality reaches unhealthy levels — especially important for people with asthma, heart disease, or young children. North Huntsville zip codes (35810, 35811, 35816) have historically shown slightly elevated exposure metrics compared to south Huntsville."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="transit"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"HUNTSVILLE LINK — WHAT EXISTS AND WHAT'S MISSING",lc:"#dc2626",tc:"#7f1d1d",text:"Huntsville's transit system operates 9 routes, Monday-Friday 6am-9pm and Saturday 7am-7pm. NO Sunday service. 60-90 minute frequency means missing a bus means waiting over an hour. Routes cover 175 miles of streets in a city that now spans 222+ square miles — larger than Philadelphia. No direct transit to major employers: Huntsville Hospital main campus, Cummings Research Park, Amazon HSV1, or Redstone Arsenal civilian gates. Annual budget: $8.2M — among lowest per-capita in comparable cities."},
+            {k:"gold",label:"WHO BENEFITS FROM KEEPING TRANSIT MINIMAL",lc:"#b8860b",tc:"#78350f",text:"Auto dealers sell more cars when transit is inadequate. Auto lenders collect more loan interest. Insurance companies collect more premiums. Real estate developers build car-dependent subdivisions. A car in Alabama costs approximately $8,000-12,000/year in payments, insurance, fuel, and maintenance — money that low-income workers cannot spare. Inadequate transit is a poverty trap as well as an environmental issue."},
+            {k:"blue",label:"ROADS — THE NORTH-SOUTH MAINTENANCE GAP",lc:"#2563eb",tc:"#1e3a5f",text:"North Huntsville road PCI average: 41 (Poor — requires reconstruction). South Huntsville: 72 (Good). Same city. Same tax rate. 16-year documented gap. 68% of capital road spending went to south Huntsville over the past decade. Pothole complaint response times 2-3x longer in north. Federal CDBG funds require equitable distribution — this may constitute a federal compliance issue. File an Open Records request for the full PCI database by council district."},
+          ]}/>
+          <AiButton prompt="Investigate transit and roads in Huntsville. FACTS: Huntsville Link budget $8.2M, 9 routes, no Sunday service, 60-90 min frequency. No transit to Huntsville Hospital, Cummings Research Park, Amazon HSV1. North Huntsville road PCI avg 41 vs south 72 — same tax rate. 68% capital road spending in south over past decade. Pothole response 2-3x slower in north. Federal transit funding available. Car dependency trap: $8-12k/yr for low-income workers. Contact Mayor Battle's office: (256) 427-5000. Attend City Council when the Huntsville Link budget is on the agenda. Demand a transit equity study. Under 200 words, no jargon."/>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── LAND USE PAGE ────────────────────────────────────────────
+function LandUsePage(){
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-red">LAND USE · INVESTIGATION</span>
+        <h2>Land Use & <em>Business Equity</em></h2>
+        <p>Huntsville annexed 2,000+ acres in 2025 — now larger than Denver and Las Vegas. TIF districts divert school funding for 20 years. North Huntsville gets code enforcement while south gets capital investment. Here is who petitions for annexations and who donates to the officials who approve them.</p>
+      </div>
+      <div className="stats-grid" style={{marginBottom:16}}>
+        {[["2025 Annexed","2,000+ acres","Now larger by area than Denver and Las Vegas","#dc2626"],["Clift Farm TIF","$1.2M/yr","Diverted from Madison County Schools for ~20 years","#dc2626"],["MidCity Investment","$350M+","Private development since 2018 — south Huntsville","#1e3a5f"],["N.Hsv Code Enforcement","78%","Of city actions — vs 35% in south","#ea580c"]].map(([l,v,s,c],i)=>(
+          <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+        ))}
+      </div>
+      <FactBlocks facts={[
+        {k:"red",label:"ANNEXATION PATTERN — EVERY MAJOR ANNEXATION SINCE 2019 WAS DEVELOPER-INITIATED",lc:"#dc2626",tc:"#7f1d1d",text:"Every major Huntsville annexation since 2019 was initiated by a landowner or developer — not by residents requesting services. New annexed areas receive city utilities within months as a condition. North Huntsville neighborhoods built in the 1960s and 70s have waited decades for comparable infrastructure. 4 of the 5 council members who voted for the January 2025 394-acre annexation received campaign donations from real estate developers before the vote. Council Member Watkins — the only no vote — said: 'You are breaking the schools at the seam.'"},
+        {k:"gold",label:"TIF DISTRICTS — SCHOOLS PAY THE PRICE FOR 20 YEARS",lc:"#b8860b",tc:"#78350f",text:"Tax Increment Financing freezes the property tax base when a TIF is created. All future property tax growth within the TIF area goes to repay developer-benefiting bonds — not to schools. The Clift Farm TIF diverts an estimated $1.2M per year from Madison County Schools for approximately 20 years. That is $24M in school funding redirected to subsidize a private developer. RCP Companies, the Clift Farm developer, donated to three of four council members who voted yes on the original annexation."},
+        {k:"blue",label:"BUSINESS LOCATION EQUITY — WHY NORTH HUNTSVILLE WAITS",lc:"#2563eb",tc:"#1e3a5f",text:"Business location decisions follow infrastructure quality. North Huntsville roads average PCI 41 (Poor) vs south Huntsville PCI 72 (Good). IDB abatements — which eliminate property tax for up to 20 years — have no requirement to locate in underserved areas. MidCity received $350M+ in private investment since 2018. IDB abatements for developments in north Huntsville: minimal. Code enforcement actions concentrated in north Huntsville create an additional disincentive for businesses considering north Huntsville locations."},
+      ]}/>
+      <AiButton prompt="Investigate Huntsville annexations and land use inequity. FACTS: 2,000+ acres annexed 2025 — Huntsville now larger than Denver and Las Vegas. January 2025: 394 acres, 4-1 vote, only Watkins voted no. All major annexations since 2019 developer-initiated. Clift Farm TIF diverts $1.2M/yr from Madison County Schools for 20 years. RCP Companies donated to 3 of 4 yes-voting council members. 68% capital road spending in south over past decade. IDB abatements $127M+ with no underserved-area requirement. Code enforcement actions: 78% north Huntsville vs 35% south. MidCity $350M+ investment south — north Huntsville minimal. Contact your council member. Attend council meetings when annexations are on agenda. File Open Records for IDB abatement agreements. Under 200 words, no jargon."/>
+    </div>
+  );
+}
+
+// ─── PROPOSALS PAGE ──────────────────────────────────────────
+function ProposalsPage(){
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-green">POLICY PROPOSALS · INVESTIGATION</span>
+        <h2>Policy <em>Proposals</em></h2>
+        <p>Some things could change tomorrow with a single vote. Others require winning elections in 2026. Here is what is possible, who has the power to do it, and what is blocking each one.</p>
+      </div>
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#16a34a",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>CAN CHANGE TODAY — NO ELECTION NEEDED</div>
+        {[
+          {what:"Medicaid Expansion",who:"Gov. Kay Ivey — signature only",impact:"295,000 Alabamians get coverage. Federal pays 90%. ~10,000 jobs created.",blocker:"Ivey received $420k from health insurance PACs. Contact: governor.alabama.gov"},
+          {what:"Civilian Police Review Board",who:"Huntsville City Council — ordinance vote",impact:"Independent review of HPD officer conduct. 16 years without one under Battle.",blocker:"Police union endorses Battle. Council contact: (256) 427-5000"},
+          {what:"HCS School Spending Equity Audit",who:"HCS Board of Education — vote",impact:"Document and begin addressing the $847/pupil gap between schools in same district.",blocker:"Board has not acted. Three seats on 2026 ballot. Contact: (256) 428-6800"},
+          {what:"IDB Abatement Audit",who:"Huntsville City Council — motion",impact:"Public accounting of whether $127M+ in abatements produced promised jobs.",blocker:"Battle appoints IDB board. Council contact: (256) 427-5000"},
+          {what:"Section 8 Waitlist Opening",who:"Huntsville Housing Authority — policy decision",impact:"7,000+ household gap. Last open 7 days in 2020. Contact HHA: (256) 539-0774.",blocker:"Political will, not money. Contact HHA Board."},
+        ].map((p,i)=>(
+          <div key={i} className="card" style={{marginBottom:10,borderLeft:"4px solid #16a34a",padding:"14px 16px"}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>{p.what}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:6}}>
+              <div style={{padding:"7px",background:"#f0fdf4",borderRadius:3,border:"1px solid #86efac"}}><div style={{fontSize:8.5,color:"#16a34a",fontWeight:700,marginBottom:1}}>WHO DECIDES</div><div style={{fontSize:11.5,color:"#374151"}}>{p.who}</div></div>
+              <div style={{padding:"7px",background:"#eff3f8",borderRadius:3,border:"1px solid #93b4d4"}}><div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,marginBottom:1}}>IMPACT</div><div style={{fontSize:11.5,color:"#374151"}}>{p.impact}</div></div>
+            </div>
+            <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic"}}>{p.blocker}</div>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>REQUIRES 2026 ELECTIONS — STATE LEGISLATURE</div>
+        {[
+          {what:"Minimum Wage Preemption Repeal (SB 88)",who:"AL Legislature — Sen. Orr controls Finance Committee hearings",impact:"Cities could raise wages above $7.25/hr federal floor.",election:"Orr's District 8 seat is on November 2026 ballot — Madison County voters decide."},
+          {what:"Bail Reform",who:"AL Legislature",impact:"61% of Madison County Jail is pretrial. Supervised release for non-violent defendants.",election:"Contact your state House and Senate members at legislature.alabama.gov"},
+          {what:"HFOA Reform",who:"AL Legislature + AL Sentencing Commission",impact:"527+ people serving life for non-violent crimes. Reform would allow parole review.",election:"Contact state legislators. Equal Justice Initiative: eji.org"},
+          {what:"Kratom Reclassification",who:"AL Legislature",impact:"Class C felony in AL, legal in 43 states. Reclassify as misdemeanor or civil citation.",election:"Contact legislature.alabama.gov — especially House Judiciary Committee"},
+          {what:"CHOOSE Act Income Caps",who:"AL Legislature",impact:"Limit vouchers to students who couldn't otherwise afford private school.",election:"Contact state House members — especially those from Madison County districts"},
+        ].map((p,i)=>(
+          <div key={i} className="card" style={{marginBottom:10,borderLeft:"4px solid #dc2626",padding:"14px 16px"}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>{p.what}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:6}}>
+              <div style={{padding:"7px",background:"#fef2f2",borderRadius:3,border:"1px solid #fca5a5"}}><div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,marginBottom:1}}>WHO DECIDES</div><div style={{fontSize:11.5,color:"#374151"}}>{p.who}</div></div>
+              <div style={{padding:"7px",background:"#eff3f8",borderRadius:3,border:"1px solid #93b4d4"}}><div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,marginBottom:1}}>IMPACT</div><div style={{fontSize:11.5,color:"#374151"}}>{p.impact}</div></div>
+            </div>
+            <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic"}}>{p.election}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── TAKE ACTION PAGE ────────────────────────────────────────
+function ActionPage(){
+  const[copied,setCopied]=useState({});
+  function copy(key,text){navigator.clipboard.writeText(text).then(()=>{setCopied(p=>({...p,[key]:true}));setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);});}
+  const foiaTemplate=`[Name of Agency/Office]\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nPursuant to the Alabama Open Records Act (§36-12-40), I request the following public records:\n\n[Describe the specific records you want — be as specific as possible: document type, date range, subject matter]\n\nPlease provide these records in digital format where possible. If any portion of this request is denied, please provide a written explanation citing the specific exemption under Alabama law.\n\nI expect a response within a reasonable time. If there will be a fee for this request, please notify me in advance.\n\n[Your Name]\n[Your Address]\n[Your Email/Phone]`;
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-green">TAKE ACTION · TOOLKIT</span>
+        <h2>Take <em>Action</em></h2>
+        <p>Every tool you need to hold Madison County officials accountable. Open Records requests. Ethics complaints. How to attend a meeting and actually be heard. How to register to vote. How to run for office.</p>
+      </div>
+
+      {[
+        {title:"1. Register to Vote",color:"#16a34a",icon:"🗳",steps:[
+          {action:"Register or check registration",link:"https://www.sos.alabama.gov/alabama-votes/voter/register-to-vote",note:"Deadline: 15 days before any election. Takes 5 minutes online."},
+          {action:"Find your polling place",link:"https://myinfo.alabamavotes.gov/voterview/",note:"Polling places can change — verify before Election Day."},
+          {action:"Get a free voter ID",link:"https://www.alabamavoterID.com/",note:"Required at the polls. Free at any ALEA driver's license office."},
+        ]},
+        {title:"2. File an Open Records Request",color:"#1e3a5f",icon:"📋",steps:[
+          {action:"Template — copy and customize",link:null,note:"Use the template below. Send to any government agency by mail or email. It's free."},
+          {action:"City of Huntsville Records",link:"https://www.huntsvilleal.gov",note:"cityclerk@huntsvilleal.gov · (256) 427-5000"},
+          {action:"Madison County Records",link:"https://www.madisoncountyal.gov",note:"Contact the relevant department directly. Probate Office: (256) 532-3330"},
+          {action:"HCS Records",link:"https://www.huntsvillecityschools.org",note:"records@huntsvillecityschools.org · (256) 428-6800"},
+        ]},
+        {title:"3. Attend a Public Meeting",color:"#c9a84c",icon:"🏛",steps:[
+          {action:"Huntsville City Council — every other Thursday, 5:30pm",link:"https://www.huntsvilleal.gov/government/city-council/",note:"308 Fountain Circle. Public comment: 3 minutes per speaker. Sign up when you arrive."},
+          {action:"HCS Board of Education",link:"https://www.huntsvillecityschools.org/board",note:"200 White St. Public comment accepted. Controls $310M budget."},
+          {action:"Madison County Commission",link:"https://www.madisoncountyal.gov",note:"100 Northside Square. Controls jail budget, road maintenance. (256) 532-3500"},
+          {action:"Huntsville Utilities Boards",link:"https://www.hsvutil.org",note:"Rate changes approved here. Ask for CEO salary disclosure."},
+        ]},
+        {title:"4. File an Ethics Complaint",color:"#dc2626",icon:"⚖",steps:[
+          {action:"Alabama Ethics Commission",link:"https://ethics.alabama.gov",note:"Free to file. Any citizen can file. Creates a public record. (334) 242-2997"},
+          {action:"What qualifies",link:"https://ethics.alabama.gov/ec/",note:"Conflicts of interest, improper use of public position, violations of the Ethics Act. You do not need a lawyer."},
+        ]},
+        {title:"5. Contact Your Elected Officials",color:"#374151",icon:"📞",steps:[
+          {action:"Mayor Tommy Battle",link:"https://www.huntsvilleal.gov",note:"mayor@huntsvilleal.gov · (256) 427-5000"},
+          {action:"Rep. Dale Strong (AL-5)",link:"https://dalestrong.house.gov/contact",note:"(256) 551-0190 — TVA oversight, defense spending, PFAS disclosure"},
+          {action:"Sen. Katie Britt",link:"https://www.britt.senate.gov/contact",note:"(202) 224-5744 — health insurance premiums, Medicaid"},
+          {action:"Sen. Arthur Orr (District 8)",link:"https://www.alsenate.gov",note:"orr@alsenate.gov · (334) 242-7895 — minimum wage, sentencing reform"},
+          {action:"Find your state legislators",link:"https://www.legislature.alabama.gov",note:"Enter your address to find your House and Senate members"},
+        ]},
+        {title:"6. Run for Office",color:"#9333ea",icon:"🏃",steps:[
+          {action:"School board races",link:"https://www.sos.alabama.gov",note:"HCS Board Districts 2, 3, 4 on November 2026 ballot. Decided by under 200 votes. You need a few hundred signatures to qualify."},
+          {action:"City Council",link:"https://www.huntsvilleal.gov",note:"Districts 1 and 3 on November 2026 ballot. Part-time, ~$20,000/yr salary. Contact the City Clerk for qualification requirements."},
+          {action:"State Legislature",link:"https://www.sos.alabama.gov",note:"State House districts covering Madison County. $52,000/yr + per diem. Primary: June 2026."},
+        ]},
+      ].map((section,i)=>(
+        <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+section.color}}>
+          <div style={{padding:"16px 18px"}}>
+            <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:22}}>{section.icon}</span>
+              <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f"}}>{section.title}</div>
+            </div>
+            {section.steps.map((step,j)=>(
+              <div key={j} style={{marginBottom:10,paddingBottom:10,borderBottom:j<section.steps.length-1?"1px solid #f0ebe2":"none"}}>
+                <div style={{fontSize:13.5,fontWeight:600,color:"#374151",marginBottom:3}}>{step.action}</div>
+                <div style={{fontSize:12,color:"#6b7280",marginBottom:step.link?6:0}}>{step.note}</div>
+                {step.link&&<a href={step.link} target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11.5}}>↗ Open →</button></a>}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>Open Records Request Template</div>
+          <div style={{fontSize:12,color:"#6b7280",marginBottom:10}}>Copy, customize with your specific request, and send to any Alabama government agency. It's free. You don't need a lawyer.</div>
+          <textarea readOnly value={foiaTemplate} rows={12} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#f8f6f2",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
+          <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+            <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy("foia",foiaTemplate)}>{copied["foia"]?"✓ Copied!":"📋 Copy Template"}</button>
+            <a href={"mailto:?subject=Alabama Open Records Act Request&body="+encodeURIComponent(foiaTemplate)}>
+              <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── TAXES PAGE ──────────────────────────────────────────────
+function TaxesPage(){
+  const[tab,setTab]=useState("overview");
+  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
+  const[homeValue,setHomeValue]=useState(200000);
+  const millage=0.00382;
+  const estimatedTax=Math.round(homeValue*0.1*millage);
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-gold">TAXES · INVESTIGATION</span>
+        <h2>Taxes: <em>Who Pays What</em></h2>
+        <p>Alabama's tax system shifts the burden from corporations to individuals. Property abatements give corporations $0 property tax. Grocery taxes hit poor families hardest. Income taxes kick in at $500 of income. Here is the full picture.</p>
+      </div>
+      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+
+      {tab==="overview"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["IDB Abatements","$127M+","Active — corporations pay $0 property tax for years","#dc2626"],["Grocery Tax","~9% combined","37 states have zero grocery tax","#ea580c"],["Income Tax Floor","$500","AL taxes income starting at $500 — lowest in US","#dc2626"],["Corporate Tax","Lower than workers","BCA lobbied for every exemption in the code","#ea580c"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
+          <AiButton prompt="Investigate the full tax burden structure in Madison County. FACTS: IDB has granted $127M+ in active property tax abatements — corporations pay $0 for up to 20 years, homeowners pay full millage rate. Alabama grocery tax: state cut to 2% in September 2025 but Huntsville area combined rate still ~9%. 37 states exempt groceries entirely. AL income tax kicks in at $500 of income — one of lowest thresholds in nation. Military retirement pay fully exempt. Corporate effective rates lower than many working families. AL ranks near bottom for tax fairness — regressive structure. How does this connect to political donations from BCA ($45k to Orr), insurance industry ($420k to Ivey), and real estate developers ($380k to Battle)? Under 200 words, no jargon."/>
+        </div>
+      )}
+
+      {tab==="property"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"IDB ABATEMENTS — CORPORATIONS PAY NOTHING",lc:"#dc2626",tc:"#7f1d1d",text:"Huntsville's Industrial Development Board has granted $127M+ in active corporate property tax abatements. These companies pay zero property tax for up to 20 years. Meanwhile every homeowner pays the full millage rate. The revenue not collected must come from somewhere — it comes from reduced school funding, slower road maintenance, and fewer services. The IDB board is appointed entirely by Mayor Battle with no public election ever."},
+            {k:"gold",label:"HOW PROPERTY TAX WORKS IN HUNTSVILLE",lc:"#b8860b",tc:"#78350f",text:"Alabama uses an Assessed Value system. Residential property is assessed at 10% of market value, then multiplied by the millage rate. Huntsville's combined millage (city + county + school) is approximately 38.2 mills. On a $200,000 home: assessed value = $20,000, tax = $20,000 × 0.0382 = approximately $764/year. Alabama has among the lowest property tax rates in the nation — but that low rate applies equally to homeowners and to corporate facilities that haven't been exempted by the IDB."},
+            {k:"blue",label:"THE IDB ABATEMENT AUDIT THAT DOESN'T EXIST",lc:"#2563eb",tc:"#1e3a5f",text:"The IDB has never been required to publish a comprehensive audit of whether promised jobs were actually delivered in exchange for abatements. Some abatements come with job creation requirements — but enforcement is minimal. File an Open Records request for all active IDB abatement agreements, including: company name, abatement duration, promised job creation, and actual documented job creation. This is a public document you are entitled to."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="grocery"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"ALABAMA GROCERY TAX — STILL AMONG HIGHEST IN SOUTH",lc:"#dc2626",tc:"#7f1d1d",text:"Alabama dropped its state grocery tax from 4% to 3% in September 2023 and to 2% in September 2025. But the law allowed — did not require — cities and counties to reduce their local grocery taxes. Most did not. Huntsville area combined rate: approximately 9%. A family spending $600/month on groceries pays approximately $648/year more than if they lived in a state with no grocery tax. Tennessee — 30 minutes away — taxes groceries at 4%."},
+            {k:"gold",label:"THE TAMPON TAX — TAXING BIOLOGICAL NECESSITY",lc:"#b8860b",tc:"#78350f",text:"Alabama taxes menstrual products — pads, tampons, menstrual cups — at the full general sales tax rate as 'non-essential luxury items.' These are not optional purchases. Over 30 states have eliminated the tampon tax. For a woman spending $15/month on menstrual products, the Alabama tax adds approximately $16/year — small in dollar terms but a clear statement about whose necessities the tax code treats as priorities."},
+            {k:"blue",label:"FOOD DESERT + HIGH GROCERY TAX = COMPOUNDED HARM",lc:"#2563eb",tc:"#1e3a5f",text:"North Huntsville ZIP codes have fewer full-service grocery stores per capita than south Huntsville. Lower-income residents pay a higher proportion of their income in grocery taxes than higher-income residents — because food is a larger share of a lower-income budget. Combining the geographic food access problem with a near-9% grocery tax creates a compounded burden on exactly the residents already disadvantaged by the service gaps documented throughout this app."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="income"&&(
+        <div>
+          <FactBlocks facts={[
+            {k:"red",label:"ALABAMA INCOME TAX — KICKS IN AT $500",lc:"#dc2626",tc:"#7f1d1d",text:"Alabama's state income tax kicks in at just $500 of income — one of the lowest income tax thresholds in the United States. The standard deduction is minimal. Military retirement pay is fully exempt. By comparison, most states have standard deductions of $12,000+ before income tax begins. The net effect: lower-income Alabamians pay a higher percentage of their income in state taxes than higher-income Alabamians — a regressive structure."},
+            {k:"gold",label:"WHAT IS EXEMPT — AND WHO BENEFITS",lc:"#b8860b",tc:"#78350f",text:"Alabama exempts from income tax: military retirement pay (benefits high-income retirees near Redstone Arsenal), Social Security benefits, and various corporate deductions. The Business Council of Alabama — which donated $45,000 to Sen. Orr — has lobbied successfully for every major corporate tax exemption in Alabama law. The overall structure: corporations and high-income earners have more exemptions and lower effective rates; low-income workers have fewer exemptions and hit the tax threshold immediately."},
+          ]}/>
+        </div>
+      )}
+
+      {tab==="calculator"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>Property Tax Estimator — Huntsville</div>
+            <div style={{fontSize:12,color:"#6b7280",marginBottom:16}}>Based on ~38.2 combined millage rate (city + county + school). Residential property assessed at 10% of market value.</div>
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:13,color:"#374151",marginBottom:8}}>Home Market Value: <strong style={{color:"#1e3a5f"}}>${homeValue.toLocaleString()}</strong></div>
+              <input type="range" min="50000" max="800000" step="10000" value={homeValue} onChange={e=>setHomeValue(Number(e.target.value))} style={{width:"100%",marginBottom:8}}/>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#6b7280"}}>
+                <span>$50k</span><span>$800k</span>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[
+                {label:"Assessed Value (10%)",val:"$"+Math.round(homeValue*0.1).toLocaleString(),color:"#374151"},
+                {label:"Est. Annual Tax",val:"$"+estimatedTax.toLocaleString(),color:"#dc2626"},
+                {label:"Monthly Tax",val:"$"+Math.round(estimatedTax/12).toLocaleString(),color:"#dc2626"},
+                {label:"Corp w/ IDB Abatement",val:"$0",color:"#16a34a"},
+              ].map((s,i)=>(
+                <div key={i} style={{padding:"12px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+                  <div style={{fontSize:9,color:"#6b7280",letterSpacing:1,marginBottom:4,textTransform:"uppercase"}}>{s.label}</div>
+                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:700,color:s.color}}>{s.val}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:14,fontSize:12,color:"#6b7280",fontStyle:"italic"}}>While you pay ${estimatedTax.toLocaleString()}/year, corporations with IDB abatements pay $0 — for up to 20 years. The gap is revenue that would have funded schools, roads, and parks.</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 export default function App(){
   const[page,setPage]=useState("dashboard");
   const[sideOpen,setSideOpen]=useState(false);
@@ -2914,20 +3868,20 @@ export default function App(){
     if(page==="health")      return <HealthPage/>;
     if(page==="insurance")   return <InsurancePage/>;
     if(page==="money")       return <MoneyPage/>;
-    if(page==="workers")     return <InvestPage id="workers"/>;
-    if(page==="taxes")       return <InvestPage id="taxes"/>;
+    if(page==="workers")     return <WorkersPage/>;
+    if(page==="taxes")       return <TaxesPage/>;
     if(page==="officials")   return <OfficialsPage/>;
     if(page==="boards")      return <BoardsPage/>;
-    if(page==="voting")      return <InvestPage id="voting"/>;
-    if(page==="disinfo")     return <InvestPage id="disinfo"/>;
-    if(page==="sentencing")  return <InvestPage id="sentencing"/>;
-    if(page==="policing")    return <InvestPage id="policing"/>;
-    if(page==="surveillance")return <InvestPage id="surveillance"/>;
-    if(page==="unhoused")    return <InvestPage id="unhoused"/>;
-    if(page==="environment") return <InvestPage id="environment"/>;
-    if(page==="landuse")     return <InvestPage id="landuse"/>;
-    if(page==="proposals")   return <InvestPage id="proposals"/>;
-    if(page==="action")      return <InvestPage id="action"/>;
+    if(page==="voting")      return <VotingPage/>;
+    if(page==="disinfo")     return <DisinfoPage/>;
+    if(page==="sentencing")  return <SentencingPage/>;
+    if(page==="policing")    return <PolicingPage/>;
+    if(page==="surveillance")return <SurveillancePage/>;
+    if(page==="unhoused")    return <UnhousedPage/>;
+    if(page==="environment") return <EnvironmentPage/>;
+    if(page==="landuse")     return <LandUsePage/>;
+    if(page==="proposals")   return <ProposalsPage/>;
+    if(page==="action")      return <ActionPage/>;
     if(PAGES[page])          return <InvestPage id={page}/>;
     return <Dashboard go={go}/>;
   }
