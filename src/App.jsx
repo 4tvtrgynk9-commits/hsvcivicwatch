@@ -354,21 +354,28 @@ function Spin(){return <span className="spin"/>;}
 function AiResult({text}){
   if(!text) return null;
   const paragraphs=text.split(/\n+/).filter(p=>p.trim().length>10);
-  const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO","ADDITIONAL CONTEXT"];
-  const colors=["#fca5a5","#93c5fd","#86efac","#fcd34d"];
-  const textColors=["#fef2f2","#eff6ff","#f0fdf4","#fffbeb"];
+  const n=paragraphs.length;
+  // Middle labels cycle; last paragraph is always WHAT YOU CAN DO
+  const midLabels=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+  const midColors=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+  const midTextColors=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+  const actionColor="#86efac";
+  const actionTextColor="#f0fdf4";
   return(
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
-      {paragraphs.map((p,i)=>(
-        <div key={i}>
-          <div style={{fontSize:8,fontWeight:800,color:colors[i%4],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>
-            {labels[i%4]}
+      {paragraphs.map((p,i)=>{
+        const isLast=i===n-1;
+        const mi=i%(midLabels.length);
+        const color=isLast?actionColor:midColors[mi];
+        const textColor=isLast?actionTextColor:midTextColors[mi];
+        const label=isLast?"WHAT YOU CAN DO":midLabels[mi];
+        return(
+          <div key={i}>
+            <div style={{fontSize:8,fontWeight:800,color:color,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{label}</div>
+            <p style={{fontSize:13.5,color:textColor,lineHeight:1.85,margin:0,borderLeft:"2px solid "+color,paddingLeft:12}}>{p.trim()}</p>
           </div>
-          <p style={{fontSize:13.5,color:textColors[i%4],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[i%4],paddingLeft:12}}>
-            {p.trim()}
-          </p>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -648,19 +655,20 @@ function EquityPage(){
                 CIVIC INVESTIGATOR ANALYSIS
               </div>
               {inv.analysis.split('\n\n').map((para,pi)=>{
-                const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
-                const colors=["#fca5a5","#93c5fd","#86efac"];
-                const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
-                return(
-                  <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
-                    <div style={{fontSize:8,fontWeight:800,color:colors[pi]||"#c9a84c",letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>
-                      {labels[pi]||"ANALYSIS"}
-                    </div>
-                    <p style={{fontSize:13.5,color:textColors[pi]||"#f5f0e8",lineHeight:1.85,margin:0,borderLeft:`2px solid ${colors[pi]||"#c9a84c"}`,paddingLeft:12}}>
-                      {para}
-                    </p>
-                  </div>
-                );
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
+              return(
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
+                </div>
+              );
               })}
             </div>
           )}
@@ -896,13 +904,18 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
               CIVIC INVESTIGATOR ANALYSIS
             </div>
             {inv.analysis.split('\n\n').map((para,pi)=>{
-              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
-              const colors=["#fca5a5","#93c5fd","#86efac"];
-              const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
               return(
-                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
-                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%3],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%3]}</div>
-                  <p style={{fontSize:13.5,color:textColors[pi%3],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%3],paddingLeft:12}}>{para}</p>
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
                 </div>
               );
             })}
@@ -1342,13 +1355,18 @@ The connection to health costs: Untreated dental disease leads to cardiovascular
               <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>CIVIC INVESTIGATOR ANALYSIS
             </div>
             {inv.analysis.split('\n\n').map((para,pi)=>{
-              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","WHAT YOU CAN DO"];
-              const colors=["#fca5a5","#93c5fd","#fcd34d","#86efac"];
-              const tc=["#fef2f2","#eff6ff","#fffbeb","#f0fdf4"];
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
               return(
-                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
-                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%4],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%4]}</div>
-                  <p style={{fontSize:13.5,color:tc[pi%4],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%4],paddingLeft:12}}>{para}</p>
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
                 </div>
               );
             })}
@@ -1896,13 +1914,18 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
               <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>CIVIC INVESTIGATOR ANALYSIS
             </div>
             {inv.analysis.split('\n\n').map((para,pi)=>{
-              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
-              const colors=["#fca5a5","#93c5fd","#86efac"];
-              const tc=["#fef2f2","#eff6ff","#f0fdf4"];
+              const _allP=inv.analysis.split('\n\n');
+              const _isLast=pi===_allP.length-1;
+              const _mL=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
+              const _mC=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
+              const _mT=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
+              const _lc=_isLast?"#86efac":_mC[pi%4];
+              const _tc=_isLast?"#f0fdf4":_mT[pi%4];
+              const _lbl=_isLast?"WHAT YOU CAN DO":_mL[pi%4];
               return(
-                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
-                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%3],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%3]}</div>
-                  <p style={{fontSize:13.5,color:tc[pi%3],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%3],paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
+                <div key={pi} style={{marginBottom:pi<_allP.length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:_lc,letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{_lbl}</div>
+                  <p style={{fontSize:13.5,color:_tc,lineHeight:1.85,margin:0,borderLeft:"2px solid "+_lc,paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
                 </div>
               );
             })}
