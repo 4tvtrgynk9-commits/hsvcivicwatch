@@ -1,9 +1,9 @@
 import{useState,useEffect,useRef,useCallback}from"react";
 
-// ─── THEME ────────────────────────────────────────────────────
+// --- THEME ---
 const C={navy:"#1e3a5f",red:"#dc2626",gold:"#c9a84c",orange:"#ea580c",green:"#16a34a",muted:"#6b7280",border:"#e0d8cc",card:"#fff",bg:"#f5f0e8"};
 
-// ─── AI ───────────────────────────────────────────────────────
+// --- AI ---
 const SYSTEM_PROMPT=`You are the investigative AI engine for the Huntsville Civic Investigator — a public accountability tool for Madison County, Alabama residents.
 
 Your job: decode complex legal, financial, and governmental source material so that any resident can understand it.
@@ -33,7 +33,7 @@ async function callAI(prompt){
   }
 }
 
-// ─── CSS ──────────────────────────────────────────────────────
+// --- CSS ---
 const CSS=`
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-serif;font-size:16px;color:#1a1a1a;overflow-x:hidden}
@@ -140,34 +140,33 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 }
 `;
 
-// ─── NAV DATA ─────────────────────────────────────────────────
+// --- NAV DATA ---
 const NAV=[
   {group:"ECONOMIC"},
-  {id:"equity",icon:"⚖",label:"The Two Huntsvilles"},
-  {id:"utilities",icon:"💧",label:"Power, Water & Utilities"},
-  {id:"health",icon:"✚",label:"Health System"},
-  {id:"insurance",icon:"🛡",label:"Who Profits From Your Coverage"},
-  {id:"money",icon:"💰",label:"Follow the Money"},
-  {id:"workers",icon:"👷",label:"Workers Rights & Child Care"},
-  {id:"taxes",icon:"🧾",label:"Taxes"},
+  {id:"equity",icon:"⚖",label:"The Two Huntsvilles",desc:"North vs south Huntsville - schools, roads, city spending. Same city, different outcomes."},
+  {id:"utilities",icon:"💧",label:"Power, Water & Utilities",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
+  {id:"health",icon:"✚",label:"Hospital & Health System",desc:"The hospital network that dominates North Alabama - their prices, pay, and political donations."},
+  {id:"insurance",icon:"🛡",label:"Who Profits From Your Coverage",desc:"Health insurance monopoly, rising premiums, dental gaps, auto insurance ZIP-code pricing."},
+  {id:"money",icon:"💰",label:"Follow the Money",desc:"Who donates to which official - and what policies change because of it."},
+  {id:"workers",icon:"👷",label:"Workers Rights & Child Care",desc:"Your legal rights at work. What other states have. How to form a union. Child care costs."},
+  {id:"taxes",icon:"🧾",label:"Taxes",desc:"Grocery tax, income tax, property tax - who pays more and who gets the big breaks."},
   {group:"GOVERNANCE"},
-  {id:"officials",icon:"▣",label:"Officials & Elections"},
-  {id:"boards",icon:"🏛",label:"Boards, Directors & Schools"},
-  {id:"voting",icon:"🗳",label:"Voter Empowerment"},
-  {id:"disinfo",icon:"🧠",label:"Disinformation"},
-  {group:"JUSTICE"},
-  {id:"sentencing",icon:"⚖",label:"Criminal Justice"},
-  {id:"policing",icon:"🚔",label:"Police & Sheriff"},
-  {id:"surveillance",icon:"📡",label:"Surveillance & Privacy"},
-  {group:"COMMUNITY"},
-  {id:"unhoused",icon:"🏠",label:"Unhoused Residents"},
-  {id:"environment",icon:"🌊",label:"Environment, Water, Transit & Roads"},
-  {id:"landuse",icon:"🗺",label:"Land Use & Business Equity"},
-  {id:"proposals",icon:"📐",label:"Policy Proposals"},
-  {id:"action",icon:"▶",label:"Take Action"},
-];
+  {id:"officials",icon:"▣",label:"Officials & Elections",desc:"Who holds power, what they voted for, who paid for their campaigns."},
+  {id:"boards",icon:"🏛",label:"Boards, Directors & Schools",desc:"Appointed boards - never elected - that control your utilities, hospitals, and school funding."},
+  {id:"voting",icon:"🗳",label:"Voting & Your Rights",desc:"Register, verify your registration, and know what races are on the 2026 ballot."},
+  {id:"sentencing",icon:"⚖",label:"Sentencing & Prisons",desc:"Life sentences for non-violent crimes. Private prison donor money. The school-to-prison pipeline."},
+  {id:"policing",icon:"🚔",label:"Policing & Accountability",desc:"Police budget, Sheriff commissions from jail phone contracts, civilian oversight gaps."},
+  {id:"surveillance",icon:"👁",label:"Surveillance",desc:"License plate readers, facial recognition, data brokers - who is watching and profiting."},
+  {group:"DEEP DIVES"},
+  {id:"land",icon:"🗺",label:"Land, Zoning & Development",desc:"Who gets annexed, who gets tax breaks, who approves the deals - and who profits."},
+  {id:"environment",icon:"🌿",label:"Environment",desc:"PFAS forever chemicals in your water, air quality, and who is blocking cleanup."},
+  {id:"disinfo",icon:"📡",label:"Misinformation Watch",desc:"Claims by local officials - fact-checked against public records so you can verify."},
+  {id:"unhoused",icon:"🏠",label:"Housing & Unhoused",desc:"Section 8 waitlist closed since 2020. Encampments swept near new development sites."},
+  {id:"proposals",icon:"📋",label:"What Can Change",desc:"Specific policy changes possible now versus what requires winning the 2026 elections."},
+  {id:"action",icon:"🎯",label:"Take Action",desc:"Voter registration, public records requests, how to run for office, direct official contacts."},
+]
 
-// ─── PAGE DATA ────────────────────────────────────────────────
+// --- PAGE DATA ---
 const PAGES={
   equity:{icon:"⚖",title:"The Two Huntsvilles:",subtitle:"Service & Spending Inequality",tag:"tag-red",sub:"Roads PCI 41 north vs 72 south. Same taxes. $847/pupil school gap. 3.7× more police contacts per capita north. Who ...",
     stats:[["Jemison High AP Rate","44%","vs Columbia High 17% AP participation — same district",C.red],["Road PCI North","41 avg","Poor — needs full reconstruction, not patching",C.red],["School Funding Gap","$847/pupil","Less in lower-income HCS schools",C.orange],["Battle Developer Donors","$380k","From those who benefit from status quo",C.red]],
@@ -351,7 +350,7 @@ const PAGES={
     prompt:"Generate a comprehensive list of specific achievable policy proposals that would most improve life for Madison County residents. Organize by level of government required. For each: what it does in plain language, who opposes it and why, what the realistic path is, and what residents can do now. Under 150 words, no jargon."},
 };
 
-// ─── SHARED COMPONENTS ───────────────────────────────────────
+// --- SHARED COMPONENTS ---
 function Spin(){return <span className="spin"/>;}
 
 function AiResult({text}){
@@ -447,7 +446,7 @@ function FactBlocks({facts}){
   return facts.map((f,i)=><FactBlock key={i} f={f} i={i}/>);
 }
 
-// ─── EXPANDABLE TEXT COMPONENT ───────────────────────────────
+// --- EXPANDABLE TEXT COMPONENT ---
 function ExpandText({text,preview=180,style={}}){
   const[open,setOpen]=useState(false);
   if(!text)return null;
@@ -464,7 +463,7 @@ function ExpandText({text,preview=180,style={}}){
   );
 }
 
-// ─── ACTION BUTTONS COMPONENT ────────────────────────────────
+// --- ACTION BUTTONS COMPONENT ---
 function ActionButtons({actions,title}){
   const[copied,setCopied]=React.useState({});
   function cp(k,t){navigator.clipboard.writeText(t).then(()=>{setCopied(p=>({...p,[k]:true}));setTimeout(()=>setCopied(p=>({...p,[k]:false})),2500);});}
@@ -486,7 +485,7 @@ function ActionButtons({actions,title}){
   );
 }
 
-// ─── INVESTIGATION PAGE (generic) ────────────────────────────
+// --- INVESTIGATION PAGE (generic) ---
 function InvestPage({id}){
   const p=PAGES[id];
   if(!p)return <div className="page"><h2>Page not found</h2></div>;
@@ -504,7 +503,7 @@ function InvestPage({id}){
   );
 }
 
-// ─── EQUITY PAGE — THE TWO HUNTSVILLES ───────────────────────
+// --- EQUITY PAGE — THE TWO HUNTSVILLES ---
 function EquityPage(){
   const[foiaOpen,setFoiaOpen]=useState({});
   const[analysisOpen,setAnalysisOpen]=useState({});
@@ -751,10 +750,10 @@ function EquityPage(){
 
 
 
-// ─── SCHOOLS PAGE ─────────────────────────────────────────────
+// --- SCHOOLS PAGE ---
 function SchoolsPage(){return null;}
 
-// ─── SCHOOL TAB COMPONENTS ────────────────────────────────────
+// --- SCHOOL TAB COMPONENTS ---
 function SchoolsHCSTab(){
   const NORTH_COLOR="#dc2626", SOUTH_COLOR="#93b4d4";
   const WEST_COLOR="#9333ea"; // West Huntsville — distinct from both north (red) and south (blue)
@@ -1006,7 +1005,7 @@ function SchoolsActionTab(){
 
 
 
-// ─── UTILITIES PAGE ───────────────────────────────────────────
+// --- UTILITIES PAGE ---
 function UtilitiesPage(){
   const[elapsed,setElapsed]=useState(0);
   const[tab,setTab]=useState("overview");
@@ -1027,7 +1026,7 @@ function UtilitiesPage(){
     });
   }
 
-  // ── REAL RATE MATH (March 2026) ──
+  // -- REAL RATE MATH (March 2026) --
   // HU Schedule RS effective March 1, 2026:
   // Residential Availability Charge: $20.23/mo (was $17.23 + $3.00 Jan 2025 increase)
   // First 1,400 kWh: $0.11675/kWh (was $0.11387 + $0.00288 Jan 2025)
@@ -1251,12 +1250,16 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
         <h2>Power, Water & <em>Utilities</em></h2>
         <p>TVA owns the nuclear plant 15 miles from your home. HU delivers that power to your door. Neither is elected. Neither answers to Alabama regulators. Your summer bill can top $400. Here is exactly who decided that — and who is letting it happen.</p>
       </div>
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"9px 14px",marginBottom:12,fontSize:11.5,color:"#374151",lineHeight:1.7}}>
+        <span style={{fontWeight:700,color:"#1e3a5f"}}>Plain English: </span>
+        <strong>HU</strong> = Huntsville Utilities (city-owned, appointed board) &nbsp;&middot;&nbsp; <strong>TVA</strong> = Tennessee Valley Authority (federal power, no AL oversight) &nbsp;&middot;&nbsp; <strong>PFAS</strong> = Forever chemicals (cancer-linked)
+      </div>
 
       <div className="tabs">
         {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
       </div>
 
-      {/* ── OVERVIEW ── */}
+      {/* -- OVERVIEW -- */}
       {tab==="overview"&&(
         <div>
           {/* Chain diagram */}
@@ -1347,7 +1350,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
         </div>
       )}
 
-      {/* ── RATE COMPARISON ── */}
+      {/* -- RATE COMPARISON -- */}
       {tab==="rates"&&(
         <div>
           <div className="card" style={{padding:"20px",marginBottom:16}}>
@@ -1383,7 +1386,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
         </div>
       )}
 
-      {/* ── PAY CLOCKS ── */}
+      {/* -- PAY CLOCKS -- */}
       {tab==="pay"&&(
         <div>
           <div className="card" style={{padding:"20px",marginBottom:16,background:"#fef9f9",border:"1px solid rgba(220,38,38,.18)"}}>
@@ -1420,7 +1423,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
         </div>
       )}
 
-      {/* ── PROVIDERS ── */}
+      {/* -- PROVIDERS -- */}
       {tab==="providers"&&(
         <div>
           {[
@@ -1492,7 +1495,7 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
 }
 
 
-// ─── INSURANCE PAGE ───────────────────────────────────────────
+// --- INSURANCE PAGE ---
 function InsurancePage(){
   const[tab,setTab]=useState("health");
 
@@ -1687,7 +1690,7 @@ function InsurancePage(){
 }
 
 
-// ─── HEALTH SYSTEM PAGE ───────────────────────────────────────
+// --- HEALTH SYSTEM PAGE ---
 function HealthPage(){
   const[tab,setTab]=useState("overview");
   const[analysisOpen,setAnalysisOpen]=useState({});
@@ -1801,7 +1804,7 @@ function HealthPage(){
       summary:"HHHS claims $63M/yr in tax exemptions as a nonprofit hospital system. In exchange, it must provide community benefit commensurate with its exemption. The CEO earns $3.1M. Starting CNAs earn $14.50/hr and may qualify for SNAP food benefits.",
       analysis:`HHHS pays zero federal income tax, zero state income tax, and reduced property tax — claiming approximately $63 million per year in total tax exemptions as a nonprofit. The legal justification: nonprofits must provide community benefit to the public commensurate with their exemption.
 
-Here is what HHHS does with that exemption: CEO David Spillers earned approximately $3.1 million in 2022 — approximately $1,490 per hour. Starting CNAs earn $14.50 per hour. Patient Care Technicians start at approximately $18/hr. Environmental Services workers start at $12.50/hr. Multiple frontline roles earn wages that qualify employees for SNAP food assistance.
+Here is what HHHS does with that exemption: CEO Jeff Samz earned approximately $3.1 million in 2022 — approximately $1,490 per hour. Starting CNAs earn $14.50 per hour. Patient Care Technicians start at approximately $18/hr. Environmental Services workers start at $12.50/hr. Multiple frontline roles earn wages that qualify employees for SNAP food assistance.
 
 In 2013, while Spillers' compensation grew, HHHS froze wages system-wide with no deadline and simultaneously increased employee health insurance premiums by $40/month and cut pension contributions. The official justification was declining reimbursements. The CEO's compensation continued to increase through this period.
 
@@ -1969,12 +1972,16 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
         <h2>Health System: <em>Monopoly, Low Wages & Who Benefits</em></h2>
         <p>Huntsville Hospital Health System (HHHS) controls 14+ facilities across North Alabama. A $450M deal would eliminate Huntsville's last competitor. The CEO earns $3.1M. CNAs earn $14.50/hr and may qualify for food stamps. The nonprofit claims $63M in annual tax exemptions. Here is who benefits — and who is making it possible.</p>
       </div>
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"9px 14px",marginBottom:12,fontSize:11.5,color:"#374151",lineHeight:1.7}}>
+        <span style={{fontWeight:700,color:"#1e3a5f"}}>Plain English: </span>
+        <strong>HHHS</strong> = Huntsville Hospital Health System &nbsp;&middot;&nbsp; <strong>CNA</strong> = Certified Nursing Assistant &nbsp;&middot;&nbsp; <strong>LPN</strong> = Licensed Practical Nurse &nbsp;&middot;&nbsp; <strong>RN</strong> = Registered Nurse &nbsp;&middot;&nbsp; <strong>FTC</strong> = Federal Trade Commission
+      </div>
 
       <div className="tabs" style={{flexWrap:"wrap"}}>
         {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
       </div>
 
-      {/* ── OVERVIEW ── */}
+      {/* -- OVERVIEW -- */}
       {tab==="overview"&&(
         <div>
           <div className="stats-grid" style={{marginBottom:16}}>
@@ -1995,7 +2002,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
         </div>
       )}
 
-      {/* ── MONOPOLY MAP ── */}
+      {/* -- MONOPOLY MAP -- */}
       {tab==="monopoly"&&(
         <div>
           <div className="card" style={{padding:"20px",marginBottom:16}}>
@@ -2024,7 +2031,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
         </div>
       )}
 
-      {/* ── PAY GAP ── */}
+      {/* -- PAY GAP -- */}
       {tab==="pay"&&(
         <div>
           <div className="card" style={{padding:"20px",marginBottom:16,background:"#fef9f9",border:"1px solid rgba(220,38,38,.18)"}}>
@@ -2072,7 +2079,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
         </div>
       )}
 
-      {/* ── WORKERS ── */}
+      {/* -- WORKERS -- */}
       {tab==="workers"&&(
         <div>
           <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginBottom:16}}>
@@ -2084,7 +2091,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
             {title:"Staffing Ratios — The Safety Problem",color:"#dc2626",
               facts:["RNs report regularly being assigned 3-5 patients while simultaneously performing CNA, transport, and phlebotomy duties — not in their job descriptions.","ICU nurses report being asked to float to units they have no training in.","Frequently reported: 1 CNA assigned to 15+ patients — national safety guidelines recommend 1:8 maximum.","Short-staffed shifts are documented across multiple units and multiple years — this is structural, not situational."]},
             {title:"Wages — The Numbers",color:"#ea580c",
-              facts:["Environmental Services (Housekeeping): $12.50-$13/hr starting — $26,000/yr. The federal poverty line for a family of two: $20,440.","CNA/Patient Care Tech: $14.50-$18/hr starting. At $14.50/hr full-time: $30,160/yr. A single adult with one child in Madison County needs $41.34/hr to meet basic needs (MIT, 2025).","Annual raises: multiple reviews cite $0.05 to $0.59 raises as the norm. 'Raises are at most $0.25' appears in 14 Glassdoor reviews.","Staff RN: ~$30/hr at Huntsville Hospital. Travel nurses in the same market earn $45-65/hr. HHHS has not closed this gap.","In 2013, HHHS imposed a system-wide pay freeze with no deadline and simultaneously raised employee health insurance premiums by $40/month. CEO compensation continued to increase."]},
+              facts:["Janitorial / Groundskeeping: $13.50/hr starting — $26,000/yr. The federal poverty line for a family of two: $20,440.","CNA/Patient Care Tech: $14.50-$18/hr starting. At $14.50/hr full-time: $30,160/yr. A single adult with one child in Madison County needs $41.34/hr to meet basic needs (MIT, 2025).","Annual raises: multiple reviews cite $0.05 to $0.59 raises as the norm. 'Raises are at most $0.25' appears in 14 Glassdoor reviews.","Staff RN: ~$30/hr at Huntsville Hospital. Travel nurses in the same market earn $45-65/hr. HHHS has not closed this gap.","In 2013, HHHS imposed a system-wide pay freeze with no deadline and simultaneously raised employee health insurance premiums by $40/month. CEO compensation continued to increase."]},
             {title:"The Monopoly Effect on Workers",color:"#1e3a5f",
               facts:["With 20,000+ employees and no competitor in North Alabama, HHHS sets the healthcare wage floor for the entire region. There is no competing offer to anchor against.","The Crestwood acquisition would complete this dynamic — Huntsville Hospital would be the only hospital in Huntsville. Workers who want to stay in healthcare in this region have one employer.","Multiple reviews cite 'monopoly' explicitly: 'HH is a large health system that holds the monopoly in North Alabama. Pay is decent for Alabama, but overall very low compared nationally. It's not the worst place to work, especially given it's one of the only options locally.' — that last clause is the key.","Alabama has no minimum staffing ratio law. Alabama has no mandatory break law for nurses. Alabama has no state OSHA enforcement."]},
           ].map((s,i)=>(
@@ -2105,7 +2112,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
         </div>
       )}
 
-      {/* ── WHO BENEFITS ── */}
+      {/* -- WHO BENEFITS -- */}
       {tab==="connections"&&(
         <div>
           <div style={{fontSize:12,color:"#6b7280",marginBottom:14,lineHeight:1.7}}>Every person listed below has a documented financial or political relationship to the HHHS system. This is not speculation — each connection is sourced. Together they form an interlocking network that has maintained HHHS's monopoly, blocked Medicaid expansion, suppressed wages, and prevented meaningful public accountability.</div>
@@ -2179,7 +2186,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
 
 
 
-// ─── BOARDS PAGE ──────────────────────────────────────────────
+// --- BOARDS PAGE ---
 function BoardsPage(){
   const[tab,setTab]=useState("appointed");
   const TABS=[{id:"appointed",label:"Utility & IDB Boards"},{id:"schools",label:"School Boards"},{id:"hospital",label:"HHHS Hospital"},{id:"connections",label:"Interlocking"}];
@@ -2320,7 +2327,7 @@ function BoardsPage(){
 
 
 
-// ─── OFFICIALS DATA ───────────────────────────────────────────
+// --- OFFICIALS DATA ---
 const OFFICIALS=[
   {level:"Federal",color:"#1e3a5f",officials:[
     {name:"Dale Strong",photo:"https://bioguide.congress.gov/bioguide/photo/S/S001220.jpg",title:"U.S. Representative",district:"Alabama's 5th Congressional District",party:"Republican",
@@ -2382,7 +2389,7 @@ const OFFICIALS=[
   ]},
 ];
 
-// ─── OFFICIALS PAGE (full v8-style with modal) ─────────────────
+// --- OFFICIALS PAGE (full v8-style with modal) ---
 
 function OfficialsPage({go}){
   const[mainTab,setMainTab]=useState("directory");
@@ -2435,7 +2442,7 @@ function OfficialsPage({go}){
         ))}
       </div>
 
-      {/* ── DIRECTORY TAB ─────────────────────────────── */}
+      {/* -- DIRECTORY TAB --- */}
       {mainTab==="directory"&&(
         <div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
@@ -2476,7 +2483,7 @@ function OfficialsPage({go}){
         </div>
       )}
 
-      {/* ── 2026 CANDIDATES TAB ───────────────────────── */}
+      {/* -- 2026 CANDIDATES TAB --- */}
       {mainTab==="candidates"&&(
         <div>
           <div className="alert-banner">
@@ -2515,7 +2522,7 @@ function OfficialsPage({go}){
         </div>
       )}
 
-      {/* ── VOTING & REGISTRATION TAB ─────────────────── */}
+      {/* -- VOTING & REGISTRATION TAB --- */}
       
       {mainTab==="elections"&&(
         <div>
@@ -2578,7 +2585,7 @@ function OfficialsPage({go}){
         </div>
       )}
 
-      {/* ── OFFICIAL DETAIL MODAL ─────────────────────── */}
+      {/* -- OFFICIAL DETAIL MODAL --- */}
       {selected&&(
         <div style={{position:"fixed",inset:0,zIndex:500,background:"rgba(30,58,95,.6)",backdropFilter:"blur(3px)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"20px",overflowY:"auto"}} onClick={e=>{if(e.target===e.currentTarget){setSelected(null);setR(null);}}}>
           <div style={{background:"#fff",borderRadius:8,width:"100%",maxWidth:700,border:`3px solid ${selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"}`,boxShadow:"0 20px 60px rgba(0,0,0,.25)",overflow:"hidden",marginTop:20}}>
@@ -2693,7 +2700,7 @@ function OfficialsPage({go}){
 }
 
 
-// ─── DASHBOARD ───────────────────────────────────────────────
+// --- DASHBOARD ---
 function Dashboard({go}){
   const[elapsed,setElapsed]=useState(0);
   useEffect(()=>{
@@ -2819,7 +2826,7 @@ function Dashboard({go}){
               <div key={i} className="dash-card" style={{borderLeftColor:g.color}} onClick={()=>go(item.id)}>
                 <div className="dash-card-icon">{item.icon}</div>
                 <div className="dash-card-title">{item.label}</div>
-                <div className="dash-card-sub">{item.sub}</div>
+                {item.desc&&<div style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3,lineHeight:1.4}}>{item.desc}</div>}
               </div>
             ))}
           </div>
@@ -2837,8 +2844,8 @@ function Dashboard({go}){
   );
 }
 
-// ─── APP ──────────────────────────────────────────────────────
-// ─── NETWORK GRAPH COMPONENT ─────────────────────────────────
+// --- APP ---
+// --- NETWORK GRAPH COMPONENT ---
 // Pure SVG/CSS network graph — no external libs needed
 function NetworkGraph({nodes,edges,title,subtitle}){
   const[hover,setHover]=useState(null);
@@ -2920,7 +2927,7 @@ function NetworkGraph({nodes,edges,title,subtitle}){
   );
 }
 
-// ─── GRAPH DATA ───────────────────────────────────────────────
+// --- GRAPH DATA ---
 
 const PRISON_GRAPH={
   title:"PRIVATE PRISON MONEY NETWORK",
@@ -3383,7 +3390,7 @@ function MoneyPage(){
 }
 
 
-// ─── WORKERS & CHILD CARE PAGE ────────────────────────────────
+// --- WORKERS & CHILD CARE PAGE ---
 function WorkersPage(){
   const[tab,setTab]=useState("wages");
   const[analysisOpen,setAnalysisOpen]=useState({});
@@ -3500,7 +3507,11 @@ Contact your state representatives and demand: (1) Expansion of Alabama First Cl
         <h2>Workers Rights & <em>Child Care</em></h2>
         <p>Alabama banned cities from raising the minimum wage. Infant care costs more than college tuition. Worker protections are among the weakest in the nation. Here is who decided that — and what 2026 can change.</p>
       </div>
-      <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"9px 14px",marginBottom:12,fontSize:11.5,color:"#374151",lineHeight:1.7}}>
+        <span style={{fontWeight:700,color:"#1e3a5f"}}>Plain English: </span>
+        <strong>IDB</strong> = Industrial Development Board (gives tax breaks to corporations) &nbsp;&middot;&nbsp; <strong>FEC</strong> = Federal Election Commission (tracks political donations) &nbsp;&middot;&nbsp; <strong>PAC</strong> = Political Action Committee &nbsp;&middot;&nbsp; <strong>BCA</strong> = Business Council of Alabama
+      </div>
+            <div className="tabs">{tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
 
       {tab==="wages"&&(
         <div>
@@ -3667,7 +3678,7 @@ Contact your state representatives and demand: (1) Expansion of Alabama First Cl
   );
 }
 
-// ─── CRIMINAL JUSTICE PAGE ────────────────────────────────────
+// --- CRIMINAL JUSTICE PAGE ---
 function SentencingPage(){
   const[tab,setTab]=useState("overview");
   const[analysisOpen,setAnalysisOpen]=useState({});
@@ -3862,7 +3873,7 @@ Attend Madison County Commission meetings when the jail budget is on the agenda.
 }
 
 
-// ─── POLICE & SHERIFF PAGE ────────────────────────────────────
+// --- POLICE & SHERIFF PAGE ---
 function PolicingPage(){
   const[tab,setTab]=useState("hpd");
   const tabs=[{id:"hpd",label:"HPD Watch"},{id:"sheriff",label:"Sheriff"},{id:"review",label:"No Oversight"},{id:"accountability",label:"Actions"}];
@@ -3946,7 +3957,7 @@ function PolicingPage(){
   );
 }
 
-// ─── SURVEILLANCE PAGE ────────────────────────────────────────
+// --- SURVEILLANCE PAGE ---
 function SurveillancePage(){
   return(
     <div className="page">
@@ -3979,7 +3990,7 @@ function SurveillancePage(){
 }
 
 
-// ─── VOTER EMPOWERMENT PAGE ────────────────────────────────────
+// --- VOTER EMPOWERMENT PAGE ---
 function VotingPage(){
   const[tab,setTab]=useState("power");
   const tabs=[{id:"power",label:"Your Vote"},{id:"gerry",label:"Gerrymandering"},{id:"register",label:"Register"}];
@@ -4051,7 +4062,7 @@ function VotingPage(){
   );
 }
 
-// ─── DISINFORMATION PAGE ─────────────────────────────────────
+// --- DISINFORMATION PAGE ---
 function DisinfoPage(){
   return(
     <div className="page">
@@ -4073,7 +4084,7 @@ function DisinfoPage(){
   );
 }
 
-// ─── UNHOUSED RESIDENTS PAGE ──────────────────────────────────
+// --- UNHOUSED RESIDENTS PAGE ---
 function UnhousedPage(){
   return(
     <div className="page">
@@ -4099,7 +4110,7 @@ function UnhousedPage(){
   );
 }
 
-// ─── ENVIRONMENT PAGE ─────────────────────────────────────────
+// --- ENVIRONMENT PAGE ---
 function EnvironmentPage(){
   const[tab,setTab]=useState("overview");
   const tabs=[{id:"overview",label:"Overview"},{id:"pfas",label:"PFAS & Water"},{id:"air",label:"Air Quality"},{id:"transit",label:"Transit & Roads"}];
@@ -4158,7 +4169,7 @@ function EnvironmentPage(){
   );
 }
 
-// ─── LAND USE PAGE ────────────────────────────────────────────
+// --- LAND USE PAGE ---
 function LandUsePage(){
   return(
     <div className="page">
@@ -4183,7 +4194,7 @@ function LandUsePage(){
   );
 }
 
-// ─── PROPOSALS PAGE ──────────────────────────────────────────
+// --- PROPOSALS PAGE ---
 function ProposalsPage(){
   return(
     <div className="page">
@@ -4235,7 +4246,7 @@ function ProposalsPage(){
   );
 }
 
-// ─── TAKE ACTION PAGE ────────────────────────────────────────
+// --- TAKE ACTION PAGE ---
 function ActionPage(){
   const[copied,setCopied]=useState({});
   function copy(key,text){navigator.clipboard.writeText(text).then(()=>{setCopied(p=>({...p,[key]:true}));setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);});}
@@ -4320,7 +4331,7 @@ function ActionPage(){
 }
 
 
-// ─── TAXES PAGE ──────────────────────────────────────────────
+// --- TAXES PAGE ---
 function TaxesPage(){
   const[tab,setTab]=useState("overview");
   const[homeValue,setHomeValue]=useState(250000);
@@ -4726,7 +4737,7 @@ export default function App(){
       </div>
     </>
   );
-}// ─── EQUITY PAGE — THE TWO HUNTSVILLES ──────────────────────
+}// --- EQUITY PAGE — THE TWO HUNTSVILLES ---
       {/* Bottom disclaimer ticker — only on dashboard */}
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#0d1a2b",borderTop:"1px solid rgba(201,168,76,.25)",zIndex:50,overflow:"hidden",height:28,display:"flex",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",whiteSpace:"nowrap",animation:"ticker 35s linear infinite",fontSize:10,color:"rgba(255,255,255,.45)",letterSpacing:.5}}>
@@ -4735,4 +4746,3 @@ export default function App(){
       </div>
       {/* Spacer so content doesn't hide behind bottom banner */}
       <div style={{height:34}}/>
-─
