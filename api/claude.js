@@ -1,5 +1,3 @@
-// Vercel serverless function — holds your API key server-side
-// Residents never see your key. All AI calls route through here.
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -21,16 +19,20 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: 'You investigate Madison County, Alabama civic issues. Be direct. Name names. Follow money. Format: THE FACTS | WHO BENEFITS | WHO GETS HURT | THE CONNECTIONS | WHAT CAN CHANGE. Under 400 words. Plain language.',
+        max_tokens: 400,
+        system: `You summarize civic information about Madison County, Alabama for everyday residents. 
+You are given data already gathered about a specific issue. Your job is to connect the dots and explain what it means.
+Write 2-3 short paragraphs. No headers. No bullet points. No legal or government terms without explaining them.
+If you must use a technical term, immediately explain it in simple words in the same sentence.
+Keep it under 175 words. Be direct and factual. Focus on: what this means for someone who lives here, who is benefiting from this arrangement, and what residents can actually do.`,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || 'Investigation unavailable.';
+    const text = data.content?.[0]?.text || 'Summary unavailable.';
     res.status(200).json({ result: text });
   } catch (error) {
-    res.status(500).json({ error: 'Investigation failed. Try again.' });
+    res.status(500).json({ error: 'Summary failed. Try again.' });
   }
 }
