@@ -97,11 +97,20 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .source-link{font-size:10.5px;color:${C.navy};text-decoration:none;border:1px solid #93b4d4;padding:3px 8px;border-radius:3px;background:#fff}
 .source-link:hover{background:${C.navy};color:#fff}
 @media(max-width:768px){
-  .sidebar{position:fixed;inset:0 auto 0 0;z-index:300;transform:translateX(-100%);transition:transform .25s}
-  .topbar{display:flex}
-  .page{padding:16px 14px 40px}
-  .stats-grid{grid-template-columns:1fr 1fr}
+  .sidebar{position:fixed;inset:0 auto 0 0;z-index:300;transform:translateX(-100%);transition:transform .25s;width:280px}
+  .topbar{display:flex;height:48px;min-height:48px}
+  .menu-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .topbar-title{font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .main{padding-top:48px}
+  .page{padding:14px 12px 40px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .dash-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-val{font-size:18px}
+  .page-header h2{font-size:18px}
+}
+@media(max-width:400px){
   .dash-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
 }
 `;
 
@@ -266,7 +275,7 @@ function AiButton({prompt,label="🔍 Investigate — Full AI Analysis"}){
   if(r)return(
     <div className="ai-panel">
       <div className="ai-panel-label">🔍 AI INVESTIGATION</div>
-      <div className="ai-text">{r}</div>
+      <AiResult text={r}/>
       <button className="btn btn-ghost" onClick={()=>setR(null)} style={{marginTop:10,fontSize:11}}>Clear</button>
     </div>
   );
@@ -609,7 +618,7 @@ function OfficialsPage(){
               {["bio","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 6px",border:"none",cursor:"pointer",fontSize:11,fontWeight:tab===t?700:500,color:tab===t?(selected.color||"#1e3a5f"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.color||"#1e3a5f"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
             </div>
             <div style={{padding:"14px 20px",maxHeight:360,overflowY:"auto"}}>
-              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><div className="ai-text">{r}</div><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
+              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
               {tab==="donors"&&<div><div style={{fontSize:8.5,color:"#6b7280",letterSpacing:1,marginBottom:10,fontWeight:700}}>TOP DONORS — PUBLIC RECORD</div>{selected.topDonors.map(([donor,amt],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",marginBottom:5,background:i===0?"#fef2f2":"#f8f6f2",borderRadius:4,borderLeft:`3px solid ${i===0?"#dc2626":"#e0d8cc"}`}}><span style={{fontSize:11.5,color:"#374151"}}>{donor}</span><span style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>{amt}</span></div>)}<a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:8}}>Search AL Campaign Finance →</button></a></div>}
               {tab==="votes"&&<div>{selected.votes.length===0?<p style={{color:"#6b7280",fontSize:12}}>Voting record under research.</p>:selected.votes.map((v,i)=><div key={i} style={{background:"#f8f6f2",borderRadius:4,padding:"9px 11px",marginBottom:7,borderLeft:`3px solid ${v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a"}`}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}><span style={{fontSize:11.5,fontWeight:700,color:"#1e3a5f",flex:1}}>{v.bill}</span><span style={{fontSize:9,fontWeight:700,color:v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a",padding:"2px 7px",background:"rgba(0,0,0,.04)",borderRadius:3,flexShrink:0}}>{v.vote}</span></div><div style={{fontSize:11,color:"#6b7280"}}>{v.impact}</div></div>)}</div>}
               {tab==="contact"&&<div>{[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=><div key={i} style={{padding:"8px 11px",background:"#f8f6f2",borderRadius:4,marginBottom:7}}><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>{l}</div><div style={{fontSize:12.5,fontWeight:600,color:"#1e3a5f"}}>{v}</div></div>)}<a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a></div>}
@@ -823,7 +832,7 @@ export default function App(){
           </div>
         </div>
         {/* Main */}
-        <div className="main" ref={mainRef}>
+        <div className="main" ref={mainRef} style={{paddingTop:0}}>
           <div style={{background:"#1e3a5f",padding:"5px 0",overflow:"hidden",flexShrink:0}}>
             <div style={{display:"flex",gap:0,animation:"ticker 40s linear infinite",whiteSpace:"nowrap"}}>
               {["⚡ TVA rate hike #3 in 18 months — AL delegation has introduced zero oversight bills","✚ HHHS CEO earns $3.1M — nonprofit claims $63M/yr in tax exemptions","⚖ 61% of Madison County Jail is pretrial — not convicted of anything","🏫 CHOOSE Act: 67% of recipients were already in private school","🗺 Alabama maps violated Voting Rights Act — Supreme Court ruled 5-4","📡 HPD deployed 47 license plate readers — no public vote held","💧 Triana water shows PFAS above EWG health guidelines","🏠 North Huntsville road PCI 41 vs South 72 — same tax rate","⚖ Kratom is a Class C felony in Alabama — legal in 43 states"].map((t,i)=>(
