@@ -670,102 +670,443 @@ function EquityPage(){
 // ─── SCHOOLS PAGE ─────────────────────────────────────────────
 function SchoolsPage(){const nav=React.useContext?React.useContext(null):null;return null;}
 
-// ─── OFFICIALS PAGE ───────────────────────────────────────────
 
 // ─── UTILITIES PAGE ───────────────────────────────────────────
 function UtilitiesPage(){
-  const[tab,setTab]=useState("providers");
-  const PROVIDERS=[
-    {id:"hu",name:"Huntsville Utilities",color:C.navy,serves:"Huntsville + portions of Madison County · ~218,000 customers",services:"Electric (TVA) · Water · Natural Gas",gov:"3 appointed boards. All appointed by City Council — no public election. No PSC oversight.",rates:[{what:"Electric increase",when:"Jan + Oct 2025",amount:"5.1% combined",why:"First rate increase since 2018. Materials costs, inflation, infrastructure."},
-      {what:"TVA wholesale increase",when:"Aug 2024",amount:"5.25% (largest in 16 years)",why:"Passed directly to HU customers. Combined effect: ~10%+ on your bill in 2025."}],
-    recourse:"Rate changes require City Council approval — attend council meetings before a vote. The 2024 increase was tabled for 2..."},
-    {id:"mu",name:"Madison Utilities",color:"#374151",serves:"City of Madison + surrounding · 19,000+ water connections",services:"Water · Wastewater (no electric)",gov:"Public corporation, board appointed by Madison City Council for 6-year terms.",rates:[{what:"Wall Triana water main",when:"2025-2026",amount:"Major infrastructure",why:"New large-diameter transmission main for city growth."}],
-    recourse:"Board appointed by City Council. New mayor Bartlett (former board member) may shift priorities."},
-    {id:"triana",name:"Triana Water Works",color:C.red,serves:"Town of Triana · pop. ~2,323 · ~50% Black",services:"Water · Sewer",gov:"Run directly by Town of Triana — mayor and council control it.",rates:[{what:"PFOS contamination",when:"Ongoing",amount:"Above EWG health guidelines",why:"PFAS detected above health guidelines. Redstone Arsenal/Olin Corporation DDT contamination legacy. Still on EPA Superfund list."}],
-    recourse:"Contact elected mayor and council. File Open Records for rate history. Request annual Consumer Confidence Report."},
-    {id:"tva",name:"TVA — Federal Power Monopoly",color:"#7f1d1d",serves:"All North Alabama (wholesale to HU)",services:"Electric generation + transmission",gov:"Federal corporation. 9-member board appointed by President, confirmed by Senate. Zero PSC jurisdiction. Only Congress can reform TVA.",rates:[{what:"Wholesale rate hike",when:"Aug 2024",amount:"5.25% — largest in 16 years",why:"Aging grid, data center capacity. Passed through to all ratepayers."},{what:"3 hikes in 18 months",when:"2022-2024",amount:"Multiple increases",why:"Each passed to HU customers with no ability to choose a different provider."}],
-    recourse:"ONLY Congress can reform TVA. AL delegation received $1.4M+ energy PACs and introduced zero oversight bills."},
+  const[elapsed,setElapsed]=useState(0);
+  const[tab,setTab]=useState("overview");
+  const[copied,setCopied]=useState({});
+  const[analysisOpen,setAnalysisOpen]=useState({});
+  const[foiaOpen,setFoiaOpen]=useState({});
+
+  useEffect(()=>{
+    const s=Date.now();
+    const iv=setInterval(()=>setElapsed((Date.now()-s)/1000),200);
+    return()=>clearInterval(iv);
+  },[]);
+
+  function copy(key,text){
+    navigator.clipboard.writeText(text).then(()=>{
+      setCopied(p=>({...p,[key]:true}));
+      setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);
+    });
+  }
+
+  // Pay clock rates
+  const tvaCeoRate   = 8100000/(365*24*3600);   // Jeff Lyash $8.1M/yr
+  const tvaWorkerRate= 22.50/3600;              // avg TVA direct employee ~$22.50/hr
+  const huCeoRate    = 430000/(365*24*3600);    // Wes Kelley est. $380-480k, use $430k
+  const huWorkerRate = 19.50/3600;              // avg HU frontline worker ~$52k/yr
+  const trianaRate   = 52000/(365*24*3600);     // Triana town administrator/water mgr est.
+  const trianaWorkerRate = 16.00/3600;          // Triana water worker est. $16/hr
+
+  // Rate comparison data
+  const rateComparison=[
+    {city:"Huntsville, AL",provider:"HU + TVA",monthlyBill:163,governance:"Appointed boards",govType:"appointed",color:"#dc2626",note:"Post 2025 increases. Board appointed by City Council."},
+    {city:"Chattanooga, TN",provider:"EPB + TVA",monthlyBill:152,governance:"Elected board",govType:"elected",color:"#16a34a",note:"EPB is a municipal utility with elected board — same TVA wholesale."},
+    {city:"Nashville, TN",provider:"NES + TVA",monthlyBill:148,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Nashville Electric Service, appointed board."},
+    {city:"Knoxville, TN",provider:"KUB + TVA",monthlyBill:140,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Knoxville Utilities Board, appointed. Lower rates than Huntsville."},
+    {city:"National Average",provider:"Varies",monthlyBill:147,governance:"Varies",govType:"mixed",color:"#6b7280",note:"EIA 2025 national average residential electric bill."},
+    {city:"Alabama Average",provider:"Alabama Power",monthlyBill:184,governance:"PSC regulated",govType:"private",color:"#7f1d1d",note:"Alabama Power (private) customers pay significantly more than HU customers."},
+    {city:"Nebraska (public)",provider:"NPPD/LES",monthlyBill:97,governance:"Elected board",govType:"elected",color:"#2563eb",note:"Nebraska Public Power District — elected board, lowest rates. Best practice example."},
   ];
-  const selProv=useState("hu");
-  const[sel,setSel]=selProv;
-  const p=PROVIDERS.find(x=>x.id===sel)||PROVIDERS[0];
+
+  // Executive vs worker pay data
+  const payComparison=[
+    {
+      org:"Tennessee Valley Authority",
+      type:"Federal Gov. Corporation",
+      color:"#7f1d1d",
+      executive:{name:"Jeff Lyash",title:"CEO",pay:8100000,hourly:3894,note:"Approved by a board he works alongside. No shareholder vote. No PSC oversight."},
+      worker:{role:"Avg TVA Direct Employee",hourly:22.50,annual:46800,note:"~$22.50/hr. Works at plants like Browns Ferry, 15 miles from Huntsville."},
+      ratio:Math.round(8100000/46800),
+      taxStatus:"Federal corporation — zero income tax at any level.",
+      accountability:"Only Congress can reform TVA. AL delegation received $1.4M+ in energy PACs.",
+    },
+    {
+      org:"Huntsville Utilities",
+      type:"Municipal Utility — City Owned",
+      color:"#1e3a5f",
+      executive:{name:"Wes Kelley",title:"President & CEO",pay:430000,hourly:207,note:"Est. $380-480k. Not publicly disclosed — municipal utility exemption. Appointed board sets salary."},
+      worker:{role:"Avg HU Frontline Worker",hourly:19.50,annual:40560,note:"Meter readers, line workers, customer service. ~$52k/yr blended."},
+      ratio:Math.round(430000/40560),
+      taxStatus:"City-owned public utility — no income tax. HU board members: ~$200/meeting stipend.",
+      accountability:"Board appointed by City Council. No public election. Rate changes require City Council approval.",
+    },
+    {
+      org:"Triana Water Works",
+      type:"Town-Operated Water System",
+      color:"#dc2626",
+      executive:{name:"Town Administrator",title:"Water System Manager",pay:55000,hourly:26,note:"Est. $45-65k. Town of 2,300 residents. No dedicated utility CEO. PFOS detected above health guidelines."},
+      worker:{role:"Water System Worker",hourly:16.00,annual:33280,note:"Est. $14-18/hr. Triana is a majority-Black community on EPA Superfund list."},
+      ratio:Math.round(55000/33280),
+      taxStatus:"Town government — serves 2,300 residents, majority Black. Still on EPA Superfund list.",
+      accountability:"Controlled by elected mayor and town council. Has no city council representation in Huntsville.",
+    },
+  ];
+
+  const investigations=[
+    {
+      title:"The TVA Federal Monopoly — Why You Cannot Choose Your Electric Company",
+      impact:"HIGH",category:"Federal Monopoly",date:"Ongoing since 1933",
+      summary:"By federal statute, TVA holds an exclusive service territory across 7 states. No Alabama state body has any authority over TVA rates. Only Congress can reform it — and the Alabama delegation has introduced zero oversight bills.",
+      analysis:"TVA is a federal government corporation created by Congress in 1933. Federal statute gives TVA an exclusive 7-state service territory — no private or public utility can compete with it. Browns Ferry Nuclear Plant in Athens, Alabama — 15 miles from Huntsville — generates 3,800 megawatts of electricity. It was built partly with federal appropriations intended to benefit the region. Alabama ratepayers must purchase that power from TVA at TVA-set rates.\n\nThe Alabama Public Service Commission has zero jurisdiction over TVA. No Alabama state body can cap TVA rates or require TVA to justify increases. The ONLY mechanism to reform TVA is an Act of Congress. TVA has raised rates three times in 18 months. Jeff Lyash earned $8.1M in 2023 while issuing those increases. TVA carries $20B+ in long-term debt — all passed to ratepayers.\n\nRep. Dale Strong (AL-5), Sen. Katie Britt, and Sen. Tommy Tuberville collectively received $1.4M+ from energy PACs and introduced zero TVA oversight bills. Contact your federal representatives directly — they are the only people who can change this.",
+      sources:[
+        {label:"TVA Annual Report 2023",url:"https://www.tva.com/about-tva/annual-reports"},
+        {label:"Browns Ferry — NRC",url:"https://www.nrc.gov/info-finder/reactors/bf.html"},
+        {label:"Senate Energy Committee",url:"https://www.energy.senate.gov"},
+      ],
+      foia:{
+        title:"FOIA Request — TVA Rate-Setting Documents",
+        to:"Tennessee Valley Authority — FOIA Officer",
+        subject:"Freedom of Information Act Request — Rate Increase Justification",
+        template:"Tennessee Valley Authority — FOIA Officer\n400 W. Summit Hill Drive\nKnoxville, TN 37902\n\nRe: Freedom of Information Act Request\n\nDear FOIA Officer,\n\nPursuant to the Freedom of Information Act (5 U.S.C. §552), I request:\n\n1. All documents related to the rate increases of 2023 and 2024, including: the cost-of-service study or analysis supporting each increase, internal communications about the decision, and any board materials discussing the increases.\n\n2. The most recent executive compensation study or justification for CEO compensation.\n\n3. Board of Directors meeting minutes for 2023 and 2024.\n\n[Your Name]\n[Your Address]\n[Your Email]",
+      },
+    },
+    {
+      title:"The Double Markup — TVA Raises Rates, HU Raises Rates, You Pay Both",
+      impact:"HIGH",category:"Rate Structure",date:"Jan & Oct 2025",
+      summary:"TVA generates power and sells wholesale to Huntsville Utilities. HU marks it up and delivers it to your home. Two separate entities both adding cost — neither directly elected by you. In 2024-2025, both raised rates simultaneously.",
+      analysis:"TVA raised its wholesale rate 5.25% in August 2024 — the largest increase in 16 years. Huntsville Utilities then raised its delivery rates a combined 5.1% in January and October 2025. These are two separate increases stacked on top of each other. Your total electric bill went up approximately 10%+ in a single year.\n\nHere is what makes this especially difficult: HU is required to pass TVA's wholesale rate increases directly to customers. When TVA raises rates, HU has no choice but to raise your bill. So your bill is set by two different organizations — neither of which you vote for directly. The HU board is appointed by City Council. TVA's board is appointed by the President and confirmed by the Senate.\n\nThe rate comparison shows this matters: Chattanooga pays EPB, which also buys from TVA wholesale — but EPB's elected board has negotiated better delivery terms and kept distribution costs lower. Huntsville pays more for delivery than Chattanooga despite buying from the same TVA wholesale source. An elected HU board would have more incentive to minimize delivery costs.",
+      sources:[
+        {label:"HU Rate Increase Approval",url:"https://www.hsvutil.org/news_detail_T15_R300.php"},
+        {label:"HU Rate Schedule",url:"https://www.hsvutil.org/residential_services/residential_rates.php"},
+        {label:"Alabama PSC",url:"https://psc.alabama.gov"},
+      ],
+      foia:{
+        title:"Open Records Request — HU Rate Documentation",
+        to:"Huntsville Utilities — Records Custodian",
+        subject:"Alabama Open Records Act Request — Rate Documentation",
+        template:"Huntsville Utilities\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nI request the following public records:\n\n1. All cost-of-service studies or rate analyses conducted for the January 2025 and October 2025 rate increases.\n\n2. Full CEO and executive compensation for FY2023 and FY2024 — including base salary, bonuses, benefits, and deferred compensation.\n\n3. Board of Directors meeting minutes for all meetings in 2024 and 2025 where rate changes were discussed or approved.\n\n4. HU's TVA wholesale rate schedule and any pass-through agreements.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+    {
+      title:"Triana Water Works — PFAS Contamination in a Majority-Black Community",
+      impact:"CRITICAL",category:"Environmental Justice",date:"Ongoing",
+      summary:"Triana's water shows PFOS above EWG health guidelines. The town remains on the EPA Superfund list due to Redstone Arsenal and Olin Corporation contamination. This is a majority-Black community of 2,300 with no Huntsville City Council representation.",
+      analysis:"PFOS — a PFAS 'forever chemical' linked to cancer, thyroid disease, and immune damage — has been detected above EWG health guidelines in Triana Water Works. Triana remains on the EPA Superfund list due to decades of contamination from Redstone Arsenal and Olin Corporation DDT manufacturing via Huntsville Spring Branch.\n\nTriana is a majority-Black community of approximately 2,300 residents. It has no representation on the Huntsville City Council. It cannot access IDB tax abatements. It receives none of the capital investment flowing to newly annexed Huntsville areas. The full extent of Redstone Arsenal PFAS groundwater contamination has never been fully disclosed to the public.\n\nRep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations. Gov. Ivey — who appoints ADEM leadership — received $340,000 from energy PACs. ADEM is among the weakest environmental enforcement agencies in the Southeast. The combination of contaminated water, federal inaction, and state political incentives has left Triana's residents with a water system that is failing them.",
+      sources:[
+        {label:"EWG Tap Water Database",url:"https://www.ewg.org/tapwater/"},
+        {label:"EPA Superfund — Triana",url:"https://www.epa.gov/superfund"},
+        {label:"PFAS Notification Act Vote",url:"https://www.congress.gov"},
+      ],
+      foia:{
+        title:"Open Records Request — Triana Water Quality",
+        to:"Town of Triana — Records Custodian",
+        subject:"Alabama Open Records Act Request — Water Quality and Contamination Records",
+        template:"Town of Triana\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nI request the following public records:\n\n1. All Consumer Confidence Reports (annual water quality reports) for Triana Water Works for 2020 to present.\n\n2. All correspondence with EPA, ADEM, or Redstone Arsenal regarding PFAS or PFOS contamination — 2018 to present.\n\n3. All water testing results for PFAS compounds — 2020 to present.\n\n4. Any remediation plans or agreements with EPA related to Superfund contamination.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+  ];
+
+  const tabs=[
+    {id:"overview",label:"Overview"},
+    {id:"rates",label:"Rate Comparison"},
+    {id:"pay",label:"Executive Pay"},
+    {id:"providers",label:"Providers"},
+  ];
+
   return(
     <div className="page">
       <div className="page-header">
         <span className="tag tag-blue">UTILITIES · INVESTIGATION</span>
         <h2>Power, Water & <em>Utilities</em></h2>
-        <p>Every utility board in Madison County is appointed, not elected. When your bill goes up, you cannot vote out the person who approved it. Here's who controls each utility and what leverage you actually have.</p>
+        <p>TVA owns the nuclear plant 15 miles from your home. You pay to lease your own electricity back. No Alabama body can cap their rates. Here is the full picture — who controls it, what they earn, what you pay, and what you can do.</p>
       </div>
+
+      {/* Tabs */}
       <div className="tabs">
-        {[{id:"providers",label:"Providers"},{id:"compare",label:"Rates"},{id:"watchdog",label:"Watchdog"}].map(t=>(
-          <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
-        ))}
+        {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
       </div>
-      {tab==="providers"&&(
+
+      {/* ── OVERVIEW TAB ── */}
+      {tab==="overview"&&(
         <div>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
-            {PROVIDERS.map(x=><button key={x.id} onClick={()=>setSel(x.id)} style={{padding:"5px 12px",borderRadius:12,border:"1px solid #e0d8cc",background:sel===x.id?x.color:"#fff",color:sel===x.id?"#fff":C.muted,fontSize:12.5,fontWeight:600,cursor:"pointer"}}>{x.name.split(" ")[0]}{x.name.includes("TVA")?" TVA":""}</button>)}
-          </div>
-          <div className="card" style={{borderLeft:`4px solid ${p.color}`}}>
-            <div style={{fontWeight:800,fontSize:14,color:p.color,marginBottom:4}}>{p.name}</div>
-            <div style={{fontSize:13,color:C.muted,marginBottom:8}}>{p.serves}</div>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-              {p.services.split(" · ").map((s,i)=><span key={i} style={{fontSize:10.5,fontWeight:700,color:C.navy,background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:10,padding:"2px 8px"}}>{s}</span>)}
-            </div>
-            <div style={{marginBottom:10}}><div style={{fontSize:10,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:5}}>GOVERNANCE — WHO CONTROLS THIS</div><div style={{fontSize:13.5,color:"#374151",lineHeight:1.6}}>{p.gov}</div></div>
-            <div style={{marginBottom:10}}><div style={{fontSize:10,color:C.red,fontWeight:700,letterSpacing:1,marginBottom:6}}>RECENT RATE CHANGES</div>
-              {p.rates.map((r,i)=>(
-                <div key={i} style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:3,padding:"8px 10px",marginBottom:6}}>
-                  <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}>
-                    <span style={{fontSize:13,fontWeight:700,color:C.navy}}>{r.what}</span>
-                    <span style={{fontSize:10.5,fontWeight:700,color:C.red,flexShrink:0}}>{r.amount} · {r.when}</span>
-                  </div>
-                  <div style={{fontSize:12.5,color:C.muted}}>{r.why}</div>
+          {/* Chain diagram */}
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:16,textTransform:"uppercase"}}>How Power Gets to Your Home — And Who Takes a Cut</div>
+            <div style={{display:"flex",alignItems:"stretch",gap:0,flexWrap:"wrap",rowGap:10}}>
+              {[
+                {node:"Browns Ferry\nNuclear Plant",sub:"Athens, AL · 15 mi away\nGenerates 3,800 MW",color:"#7f1d1d",note:"Built with federal funds"},
+                {arrow:"→\nowned by →"},
+                {node:"TVA\nFederal Corp.",sub:"Sets wholesale rate\nNo AL oversight",color:"#dc2626",note:"$8.1M CEO · $20B debt"},
+                {arrow:"→\nsells to →"},
+                {node:"Huntsville\nUtilities",sub:"Adds delivery fees\n& infrastructure cost",color:"#1e3a5f",note:"Appointed board"},
+                {arrow:"→\nbills →"},
+                {node:"YOU",sub:"No choice\nNo vote on rates",color:"#374151",note:"~$163/mo avg"},
+              ].map((item,i)=>item.arrow?(
+                <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"0 8px",fontSize:10,color:"#6b7280",textAlign:"center",whiteSpace:"pre-line",flexShrink:0}}>
+                  {item.arrow}
+                </div>
+              ):(
+                <div key={i} style={{flex:item.node==="YOU"?"0 0 auto":1,minWidth:100,padding:"12px",background:item.color+"12",border:`1px solid ${item.color}30`,borderRadius:4,textAlign:"center"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:item.color,whiteSpace:"pre-line",marginBottom:4}}>{item.node}</div>
+                  <div style={{fontSize:10,color:"#6b7280",whiteSpace:"pre-line",marginBottom:4}}>{item.sub}</div>
+                  <div style={{fontSize:9,color:item.color,fontWeight:600}}>{item.note}</div>
                 </div>
               ))}
             </div>
-            <div style={{background:"#fffbeb",borderRadius:3,padding:"9px 11px",marginBottom:10}}><div style={{fontSize:10,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:4}}>YOUR LEVERAGE</div><div style={{fontSize:13.5,color:"#78350f"}}>{p.recourse}</div></div>
-            <AiButton prompt={`Investigate ${p.name} for Madison County ratepayers. Governance: ${p.gov}. Rate history: ${p.rates.map(r=>r.what+" "+r.amount).join(", ")}. Summarize what all this means for a Madison County resident without legal or government jargon. Connect t...`} label={`🔍 Investigate ${p.name}`}/>
           </div>
-        </div>
-      )}
-      {tab==="compare"&&(
-        <div>
-          <div className="fact fact-red"><div className="fact-label" style={{color:C.red}}>THE DOUBLE MARKUP PROBLEM</div><div className="fact-text" style={{color:"#7f1d1d"}}>TVA generates power → sells wholesale to HU → HU marks up → you pay. Two entities adding cost, neither elected. In 2024-2025: TVA +5.25% + HU +5.1% = ~10%+ on your electric bill in one year. Neit...</div></div>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13.5,marginBottom:14}}>
-            <thead><tr>{["Utility","Avg Monthly","Oversight","Your Recourse"].map(h=><th key={h} style={{background:C.navy,color:C.gold,padding:"8px 10px",textAlign:"left",fontSize:11.5}}>{h}</th>)}</tr></thead>
-            <tbody>
-              {[["Huntsville (HU+TVA)","~$146–165","Appointed boards","Attend City Council · elect better reps"],["National Average","~$137","Varies","Many states have elected utility boards"],["Nebraska (public)","~$90–100","Elected board","Vote directly for board members"]].map((row,i)=>(
-                <tr key={i} style={{background:i===0?"#fef2f2":"#fff"}}>
-                  {row.map((c,j)=><td key={j} style={{padding:"8px 10px",borderBottom:"1px solid #f0ebe2",fontWeight:j===0?700:400,color:j===0?C.navy:"#374151"}}>{c}</td>)}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <AiButton prompt="Investigate how Madison County utility rates compare to peer cities and states. TVA ratepayers face unique challenges — federal monopoly, no PSC jurisdiction. Combined TVA+HU increases in 2024-2025 ~10% in one year. Compare to Nebraska elected utility board, national average, other TVA-served cities. What reform options exist? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
-        </div>
-      )}
-      {tab==="watchdog"&&(
-        <div>
-          {[{icon:"💧",title:"Check Your Water — EWG Database",sub:"Free database showing every detected contaminant compared to EPA limits AND stricter health guidelines.",url:"https://www.ewg.org/tapwater/",btn:"Check Your Water"},
-            {icon:"📋",title:"Request Consumer Confidence Report",sub:"Every water utility must publish an annual report listing every detected substance. Request from your provider.",template:"[Utility Name]\nRe: Alabama Open Records Act §36-12-40\n\nI request:\n1. Current rate schedule and all changes FY2020-present\n2. Board meeting minutes — past 24 months\n3. All current board member names and professional affiliations\n\n[Your Name]"},
-            {icon:"✉",title:"Attend a Utility Board Meeting",sub:"HU boards meet monthly — open to public. Weeks before a rate vote are when public comment matters most.",sub2:"HU Electric Board: 4th Wednesday, 8:30am, 112 Spragins St NW"},
-            {icon:"⚖",title:"Contact Congress — TVA Reform",sub:"Only Congress can reform TVA. AL delegation received $1.4M+ energy PACs and introduced zero oversight bills.",links:[{l:"Rep. Strong",u:"https://dalestrong.house.gov/contact"},{l:"Sen. Britt",u:"https://www.britt.senate.gov/contact"},{l:"Sen. Tuberville",u:"https://www.tuberville.senate.gov/contact"}]},
-          ].map((t,i)=>(
-            <div key={i} className="card" style={{marginBottom:10}}>
-              <div style={{display:"flex",gap:9,marginBottom:6}}><span style={{fontSize:20}}>{t.icon}</span><div style={{fontWeight:700,color:C.navy,fontSize:14}}>{t.title}</div></div>
-              <div style={{fontSize:13.5,color:"#374151",lineHeight:1.6,marginBottom:t.template?8:0}}>{t.sub}</div>
-              {t.sub2&&<div style={{fontSize:12.5,color:C.muted,marginTop:4}}>{t.sub2}</div>}
-              {t.template&&<pre style={{fontSize:12,background:"#f8f6f2",padding:"8px 10px",borderRadius:3,whiteSpace:"pre-wrap",color:"#374151",lineHeight:1.5,marginTop:6}}>{t.template}</pre>}
-              {t.url&&<a href={t.url} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{marginTop:8,fontSize:12.5}}>{t.btn} →</button></a>}
-              {t.links&&<div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>{t.links.map((l,j)=><a key={j} href={l.u} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:12.5}}>↗ {l.l}</button></a>)}</div>}
+
+          {/* Quick stats */}
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[
+              ["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote","#dc2626"],
+              ["TVA Rate Hike","5.25%","Aug 2024 — largest in 16 years","#dc2626"],
+              ["HU Rate Hike","5.1%","Jan + Oct 2025 — stacked on TVA hike","#ea580c"],
+              ["Triana PFOS","Above EWG","Health guideline exceeded in town water","#7f1d1d"],
+            ].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card">
+                <div className="stat-val" style={{color:c}}>{v}</div>
+                <div className="stat-lbl">{l}</div>
+                <div className="stat-sub">{s}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Investigation cards */}
+          {investigations.map((inv,i)=>(
+            <div key={i} className="card" style={{marginBottom:14,overflow:"hidden"}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+                  <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:`1px solid ${inv.impact==="CRITICAL"?"#fca5a5":"#fdba74"}`}}>{inv.impact}</span>
+                  <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+                  <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+                </div>
+                <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+                <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>{inv.summary}</p>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {inv.sources.map((s,j)=>(
+                    <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
+                  ))}
+                </div>
+              </div>
+              <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
+                <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[i]:!p[i]}))}>
+                  {analysisOpen[i]?"▲ Hide Analysis":"🔍 Decode This"}
+                </button>
+                <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[i]:!p[i]}))}>
+                  {foiaOpen[i]?"Hide Template":"📋 FOIA Request"}
+                </button>
+              </div>
+              {analysisOpen[i]&&(
+                <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+                  <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>
+                    CIVIC INVESTIGATOR ANALYSIS
+                  </div>
+                  {inv.analysis.split('\n\n').map((para,pi)=>{
+                    const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
+                    const colors=["#fca5a5","#93c5fd","#86efac"];
+                    const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
+                    return(
+                      <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
+                        <div style={{fontSize:8,fontWeight:800,color:colors[pi]||"#c9a84c",letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi]||"ANALYSIS"}</div>
+                        <p style={{fontSize:13.5,color:textColors[pi]||"#f5f0e8",lineHeight:1.85,margin:0,borderLeft:`2px solid ${colors[pi]||"#c9a84c"}`,paddingLeft:12}}>{para}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {foiaOpen[i]&&(
+                <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
+                  <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
+                  <textarea readOnly value={inv.foia.template} rows={9} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
+                  <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+                    <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy("foia-u-"+i,inv.foia.template)}>{copied["foia-u-"+i]?"✓ Copied!":"📋 Copy"}</button>
+                    <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
+                      <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
+
+      {/* ── RATE COMPARISON TAB ── */}
+      {tab==="rates"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Average Monthly Residential Electric Bill — City Comparison</div>
+            <div style={{display:"flex",gap:16,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
+              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#16a34a",verticalAlign:"middle",marginRight:4}}/>Elected board</span>
+              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#ea580c",verticalAlign:"middle",marginRight:4}}/>Appointed board</span>
+              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#7f1d1d",verticalAlign:"middle",marginRight:4}}/>Private/investor-owned</span>
+            </div>
+            {rateComparison.map((r,i)=>(
+              <div key={i} style={{marginBottom:16}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:4,alignItems:"center"}}>
+                  <div>
+                    <span style={{fontSize:12.5,fontWeight:700,color:r.city==="Huntsville, AL"?"#dc2626":"#374151"}}>{r.city}</span>
+                    <span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{r.provider}</span>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:r.govType==="elected"?"#f0fdf4":r.govType==="private"?"#fef2f2":"#fffbeb",color:r.govType==="elected"?"#16a34a":r.govType==="private"?"#dc2626":"#ea580c",border:`1px solid ${r.govType==="elected"?"#86efac":r.govType==="private"?"#fca5a5":"#fdba74"}`}}>{r.governance}</span>
+                    <span style={{fontSize:13,fontWeight:900,color:r.color,fontFamily:"monospace"}}>${r.monthlyBill}/mo</span>
+                  </div>
+                </div>
+                <div style={{position:"relative",height:24,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(r.monthlyBill/200*100)+"%",background:r.color,opacity:.8,borderRadius:3,transition:"width 1.2s ease"}}/>
+                  {r.city==="Huntsville, AL"&&<div style={{position:"absolute",top:0,left:"73.5%",height:"100%",width:2,background:"#dc2626",opacity:.6}}/>}
+                </div>
+                <div style={{fontSize:10,color:"#6b7280",fontStyle:"italic",marginTop:3}}>{r.note}</div>
+              </div>
+            ))}
+            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE GOVERNANCE CONNECTION</div>
+              <div style={{fontSize:13,color:"#7f1d1d",lineHeight:1.65}}>The pattern is consistent: cities with <strong>elected utility boards</strong> pay lower rates. Chattanooga's EPB (elected board) buys from the same TVA wholesale source as Huntsville but charges less for delivery. Nebraska's public power (elected board) pays $97/mo — $66 less than Huntsville. Governance structure is not coincidental to cost — it is directly connected.</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── EXECUTIVE PAY TAB ── */}
+      {tab==="pay"&&(
+        <div>
+          {/* Live clocks */}
+          <div className="card" style={{padding:"20px",marginBottom:16,background:"#fef9f9",border:"1px solid rgba(220,38,38,.18)"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>⏱ Live Earnings — Since You Opened This Page</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
+              {[
+                {label:"TVA CEO (Jeff Lyash)",rate:tvaCeoRate,color:"#7f1d1d",sub:"$8.1M/yr · federal corp · no shareholder vote"},
+                {label:"HU CEO (Wes Kelley)",rate:huCeoRate,color:"#1e3a5f",sub:"Est. $430k/yr · city utility · appointed board"},
+                {label:"Triana Water Manager",rate:trianaRate,color:"#dc2626",sub:"Est. $55k/yr · town of 2,300 · PFAS in water"},
+              ].map((c,i)=>(
+                <div key={i} style={{padding:"12px",background:c.color+"10",borderRadius:4,border:`1px solid ${c.color}25`}}>
+                  <div style={{fontSize:8.5,color:c.color,fontWeight:700,letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>{c.label}</div>
+                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:c.color,lineHeight:1}}>${(c.rate*elapsed).toFixed(2)}</div>
+                  <div style={{fontSize:10,color:"#6b7280",marginTop:4}}>{c.sub}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+              {[
+                {label:"Avg TVA Worker",rate:tvaWorkerRate,color:"#6b7280",sub:"~$22.50/hr · works at Browns Ferry · same TVA"},
+                {label:"Avg HU Frontline Worker",rate:huWorkerRate,color:"#6b7280",sub:"~$19.50/hr · reads your meter · maintains lines"},
+                {label:"Triana Water Worker",rate:trianaWorkerRate,color:"#6b7280",sub:"Est. $16/hr · drinks PFAS water too"},
+              ].map((c,i)=>(
+                <div key={i} style={{padding:"12px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+                  <div style={{fontSize:8.5,color:c.color,fontWeight:700,letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>{c.label}</div>
+                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:c.color,lineHeight:1}}>${(c.rate*elapsed).toFixed(2)}</div>
+                  <div style={{fontSize:10,color:"#6b7280",marginTop:4}}>{c.sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pay ratio breakdown */}
+          {payComparison.map((p,i)=>(
+            <div key={i} className="card" style={{marginBottom:14,overflow:"hidden",borderLeft:`4px solid ${p.color}`}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8,marginBottom:12}}>
+                  <div>
+                    <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:2}}>{p.org}</div>
+                    <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:8,background:p.color+"15",color:p.color,border:`1px solid ${p.color}30`}}>{p.type}</span>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:9,color:"#6b7280",letterSpacing:1,marginBottom:2}}>PAY RATIO</div>
+                    <div style={{fontSize:28,fontWeight:900,color:p.color,fontFamily:"monospace"}}>{p.ratio}:1</div>
+                    <div style={{fontSize:9,color:"#6b7280"}}>executive vs worker</div>
+                  </div>
+                </div>
+
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+                  <div style={{padding:"11px",background:"#fef2f2",borderRadius:4,border:"1px solid #fca5a5"}}>
+                    <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:4}}>EXECUTIVE — {p.executive.name}</div>
+                    <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{p.executive.title}</div>
+                    <div style={{fontFamily:"monospace",fontSize:18,fontWeight:900,color:"#dc2626",marginTop:4}}>${p.executive.pay.toLocaleString()}/yr</div>
+                    <div style={{fontSize:9.5,color:"#7f1d1d",marginTop:5,lineHeight:1.5}}>{p.executive.note}</div>
+                  </div>
+                  <div style={{padding:"11px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+                    <div style={{fontSize:8.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:4}}>FRONTLINE WORKER</div>
+                    <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{p.worker.role}</div>
+                    <div style={{fontFamily:"monospace",fontSize:18,fontWeight:900,color:"#6b7280",marginTop:4}}>${p.worker.hourly}/hr · ${p.worker.annual.toLocaleString()}/yr</div>
+                    <div style={{fontSize:9.5,color:"#6b7280",marginTop:5,lineHeight:1.5}}>{p.worker.note}</div>
+                  </div>
+                </div>
+
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                  <div style={{padding:"9px 11px",background:"#fffbeb",borderRadius:3,border:"1px solid #fcd34d"}}>
+                    <div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:3}}>TAX STATUS</div>
+                    <div style={{fontSize:11.5,color:"#4a3800",lineHeight:1.5}}>{p.taxStatus}</div>
+                  </div>
+                  <div style={{padding:"9px 11px",background:"#eff3f8",borderRadius:3,border:"1px solid #93b4d4"}}>
+                    <div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,letterSpacing:1,marginBottom:3}}>ACCOUNTABILITY</div>
+                    <div style={{fontSize:11.5,color:"#1e3a5f",lineHeight:1.5}}>{p.accountability}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── PROVIDERS TAB ── */}
+      {tab==="providers"&&(
+        <div>
+          {[
+            {name:"Huntsville Utilities (HU)",color:"#1e3a5f",icon:"💧",serves:"~218,000 electric · ~104,000 water · ~60,000 gas customers",gov:"3 separate appointed boards — Electric, Gas, and Water. All appointed by City Council. No public election. No PSC oversight. Wes Kelley is CEO.",rates:"5.1% electric increase in 2025 (Jan + Oct). TVA wholesale increase of 5.25% passed through on top. Combined effect: ~10%+ on electric bill in one year.",leverage:"Rate changes require City Council approval. Attend council meetings before rate votes. File Open Records for CEO salary and board compensation.",contact:"(256) 535-1200 · hsvutil.org",boardMeeting:"Monthly — check hsvutil.org/about/board-of-directors"},
+            {name:"Madison Utilities",color:"#374151",icon:"🚰",serves:"19,000+ water and wastewater connections in City of Madison",gov:"Public corporation. Board appointed by Madison City Council for 6-year staggered terms. New Mayor Bartlett (former school board member 2011-2020) controls appointments.",rates:"Major 2025-2026 project: Wall Triana water main expansion. Rate history not publicly summarized — request via Open Records.",leverage:"Contact Mayor Bartlett directly — she controls who gets appointed. New mayor may shift priorities. Board meetings are public.",contact:"(256) 772-6845 · madisonal.gov",boardMeeting:"Contact Madison City Hall for schedule"},
+            {name:"Triana Water Works",color:"#dc2626",icon:"⚠",serves:"~2,323 residents · majority-Black community · 50%+ Black",gov:"Run directly by the Town of Triana — mayor and council control it. No dedicated utility CEO. Town administrator handles water system oversight.",rates:"PFOS detected above EWG health guidelines — ongoing contamination issue. Triana remains on EPA Superfund list. Rate history available via Open Records.",leverage:"Contact elected mayor and council directly. File Open Records for all water testing results. Request annual Consumer Confidence Report — legally required.",contact:"(256) 772-0151 · townoftrianaal.gov",boardMeeting:"Town council meetings — contact town hall"},
+            {name:"TVA — Federal Power Monopoly",color:"#7f1d1d",icon:"⚡",serves:"All North Alabama wholesale electric (delivered through HU)",gov:"Federal government corporation. 9-member board appointed by President, confirmed by Senate. Zero PSC jurisdiction. Zero Alabama state oversight. Only Congress can reform TVA.",rates:"Wholesale rate hike Aug 2024: 5.25% (largest in 16 years). Three hikes in 18 months. Each passed directly to HU customers with no ability to choose a different provider.",leverage:"ONLY Congress can reform TVA. Contact Rep. Dale Strong, Sen. Britt, and Sen. Tuberville. All received energy PAC money and filed zero TVA oversight bills.",contact:"(888) 882-6443 · tva.com",boardMeeting:"TVA board meetings — Knoxville TN · public comment accepted"},
+          ].map((p,i)=>(
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:`4px solid ${p.color}`}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:12,flexWrap:"wrap"}}>
+                  <span style={{fontSize:22}}>{p.icon}</span>
+                  <div style={{fontSize:15,fontWeight:700,color:p.color}}>{p.name}</div>
+                </div>
+                {[
+                  {l:"SERVES",v:p.serves},
+                  {l:"GOVERNANCE — WHO CONTROLS THIS",v:p.gov},
+                  {l:"RECENT RATE CHANGES",v:p.rates},
+                  {l:"YOUR LEVERAGE",v:p.leverage},
+                  {l:"BOARD MEETINGS",v:p.boardMeeting},
+                ].map((row,j)=>(
+                  <div key={j} style={{marginBottom:10}}>
+                    <div style={{fontSize:8.5,fontWeight:700,color:p.color,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>{row.l}</div>
+                    <div style={{fontSize:12.5,color:"#374151",lineHeight:1.6}}>{row.v}</div>
+                  </div>
+                ))}
+                <div style={{marginTop:4,fontSize:11.5,color:"#1e3a5f",fontWeight:600}}>📞 {p.contact}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Action section */}
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"18px",marginTop:16}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Contact Congress — The Only People Who Can Reform TVA</div>
+        {[
+          {name:"Rep. Dale Strong (AL-5)",url:"https://dalestrong.house.gov/contact",note:"Received $284,000 from defense/energy PACs · zero TVA oversight bills"},
+          {name:"Sen. Katie Britt",url:"https://www.britt.senate.gov/contact",note:"Received $890,000 from energy PACs · seek Senate Energy Committee seat"},
+          {name:"Sen. Tommy Tuberville",url:"https://www.tuberville.senate.gov/contact",note:"Received $270,000 from energy PACs · introduced zero TVA oversight"},
+        ].map((c,i)=>(
+          <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#fff",borderRadius:4,marginBottom:8,border:"1px solid #93b4d4",flexWrap:"wrap",gap:8}}>
+            <div>
+              <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{c.name}</div>
+              <div style={{fontSize:10.5,color:"#6b7280"}}>{c.note}</div>
+            </div>
+            <a href={c.url} target="_blank" rel="noreferrer">
+              <button className="btn btn-navy" style={{fontSize:11.5}}>✉ Contact →</button>
+            </a>
+          </div>
+        ))}
+        <div style={{marginTop:10,padding:"10px 12px",background:"#fef2f2",borderRadius:4,border:"1px solid #fca5a5"}}>
+          <div style={{fontSize:11.5,color:"#7f1d1d",lineHeight:1.65}}>
+            <strong>Check your water quality free:</strong> Visit <a href="https://www.ewg.org/tapwater/" target="_blank" rel="noreferrer" style={{color:"#dc2626"}}>ewg.org/tapwater</a> — search your zip code to see every detected contaminant compared to health guidelines, not just EPA limits.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+
 
 // ─── BOARDS PAGE ──────────────────────────────────────────────
 function BoardsPage(){
