@@ -263,13 +263,50 @@ const PAGES={
 // ─── SHARED COMPONENTS ───────────────────────────────────────
 function Spin(){return <span className="spin"/>;}
 
+function AiResult({text}){
+  if(!text) return null;
+  // Split on section headers
+  const sections=text.split(/\n(?=##\s)/);
+  const sectionColors={'THE FACTS':'#1e3a5f','WHO BENEFITS':'#dc2626','WHO GETS HURT':'#dc2626','THE CONNECTIONS':'#b8860b','WHAT CAN CHANGE':'#16a34a'};
+  return(
+    <div>
+      {sections.map((section,si)=>{
+        const lines=section.split('\n').filter(l=>l.trim());
+        if(!lines.length) return null;
+        const isHeader=lines[0].startsWith('##');
+        const header=isHeader?lines[0].replace(/^#+\s*/,''):null;
+        const body=isHeader?lines.slice(1):lines;
+        const hColor=header?Object.entries(sectionColors).find(([k])=>header.toUpperCase().includes(k))?.[1]||'#1e3a5f':'#1e3a5f';
+        return(
+          <div key={si} style={{marginBottom:16}}>
+            {header&&<div style={{fontSize:9,fontWeight:800,color:hColor,letterSpacing:1.5,marginBottom:8,fontFamily:"'JetBrains Mono',monospace",textTransform:"uppercase",borderBottom:`2px solid ${hColor}22`,paddingBottom:5}}>{header}</div>}
+            {body.map((line,li)=>{
+              const txt=line.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/^[-•]\s*/,'').trim();
+              if(!txt) return null;
+              const isBullet=line.trim().startsWith('-')||line.trim().startsWith('•');
+              return isBullet?(
+                <div key={li} style={{display:"flex",gap:8,marginBottom:6,paddingLeft:4}}>
+                  <span style={{color:hColor,flexShrink:0,fontSize:11,marginTop:2}}>◈</span>
+                  <span style={{fontSize:13,color:"#2d2a22",lineHeight:1.7}}>{txt}</span>
+                </div>
+              ):(
+                <p key={li} style={{fontSize:13,color:"#2d2a22",lineHeight:1.75,marginBottom:5}}>{txt}</p>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function AiButton({prompt,label="🔍 Investigate — Full AI Analysis"}){
   const[r,setR]=useState(null);
   const[ld,setLd]=useState(false);
   async function go(){
     setLd(true);
     try{const x=await callAI(prompt);setR(x);}
-    catch(e){setR("Investigation unavailable — check your API connection.");}
+    catch(e){setR("Investigation unavailable — please try again.");}
     setLd(false);
   }
   if(r)return(
@@ -280,12 +317,11 @@ function AiButton({prompt,label="🔍 Investigate — Full AI Analysis"}){
     </div>
   );
   return(
-    <button className={`btn btn-gold btn-full${ld?" ":""}` } onClick={go} disabled={ld}>
+    <button className={`btn btn-gold btn-full`} onClick={go} disabled={ld}>
       {ld?<><Spin/> Investigating...</>:label}
     </button>
   );
 }
-
 function StatGrid({stats}){
   return(
     <div className="stats-grid">
@@ -615,7 +651,7 @@ function OfficialsPage(){
               <span><strong>Criminal:</strong> <span style={{color:selected.criminal==="No criminal record"||selected.criminal==="No record found"?"#16a34a":"#dc2626"}}>{selected.criminal}</span></span>
             </div>
             <div style={{display:"flex",borderBottom:"1px solid #e0d8cc",background:"#f8f6f2"}}>
-              {["bio","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 6px",border:"none",cursor:"pointer",fontSize:11,fontWeight:tab===t?700:500,color:tab===t?(selected.color||"#1e3a5f"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.color||"#1e3a5f"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
+              {["bio","record","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 4px",border:"none",cursor:"pointer",fontSize:10,fontWeight:tab===t?700:500,color:tab===t?(selected.color||"#1e3a5f"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.color||"#1e3a5f"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="record"?"On Record":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
             </div>
             <div style={{padding:"14px 20px",maxHeight:360,overflowY:"auto"}}>
               {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
