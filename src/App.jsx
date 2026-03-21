@@ -606,7 +606,7 @@ function EquityPage(){
       </div>
 
       <div className="tabs">
-        {[{id:"overview",label:"Overview"},{id:"hcs",label:"🏫 HCS Schools"},{id:"madison",label:"🏫 Madison County"},{id:"action",label:"✊ Take Action"}].map(t=>(
+        {[{id:"overview",label:"Overview"},{id:"hcs",label:"🏫 HCS Schools"},{id:"madison",label:"🏫 Madison County"},{id:"city",label:"🏫 Madison City"},{id:"action",label:"✊ Take Action"}].map(t=>(
           <button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>
         ))}
       </div>
@@ -743,6 +743,7 @@ function EquityPage(){
 
       {tab==="hcs"&&<SchoolsHCSTab/>}
       {tab==="madison"&&<SchoolsMadisonTab/>}
+      {tab==="city"&&<SchoolsMadisonCityTab/>}
       {tab==="action"&&<SchoolsActionTab/>}
     </div>
   );
@@ -776,12 +777,7 @@ function SchoolsHCSTab(){
      note:"73% Black, 16% Hispanic, 7% White. 93% minority. Despite spending MORE per student ($11,834) than Grissom ($7,893) due to federal Title I funds, math proficiency is 6% vs Grissom's 31%. This gap is structural — it reflects decades of neighborhood disinvestment, not school effort."},
   ];
 
-  const ms=[
-    {school:"Whitesburg STEM Magnet",area:"South/selective",math:62,read:71,c:SOUTH_COLOR,note:"Selective magnet — application required. Higher math proficiency than district avg."},
-    {school:"Hampton Cove Middle",area:"South/East suburban",math:54,read:68,c:SOUTH_COLOR,note:"Newer suburban area. Above district average."},
-    {school:"Davis Hills Middle",area:"North — Jemison feeder",math:18,read:32,c:NORTH_COLOR,note:"Primary feeder for Jemison HS. 18% math proficiency vs ~40% district average."},
-    {school:"McNair Junior High",area:"North — new on Jemison campus",math:null,read:null,c:NORTH_COLOR,note:"Ronald McNair Junior High opened with Jemison rebuild. Serves northwest Huntsville."},
-  ];
+
   function Card({school,area,apRate,mathProf,minority,econDis,rank,c,note,white,black,hispanic,perPupil}){
     // Determine label based on color
     const areaType = c===NORTH_COLOR?"NORTH":c===WEST_COLOR?"WEST":"SOUTH";
@@ -882,23 +878,6 @@ function SchoolsHCSTab(){
 
       </div>
       <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>HCS Middle Schools — Math Proficiency Gap</div>
-        {ms.map((s,i)=>(
-          <div key={i} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start",paddingBottom:10,borderBottom:i<ms.length-1?"1px solid #f0ebe2":"none"}}>
-            <div style={{width:8,height:8,borderRadius:"50%",background:s.c,flexShrink:0,marginTop:5}}/>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:3}}>
-                <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
-                <span style={{fontSize:11,color:"#6b7280"}}>{s.area}</span>
-              </div>
-              {s.math&&<div style={{fontSize:12,color:"#374151",marginBottom:2}}>Math: <strong>{s.math}%</strong> proficient · Reading: <strong>{s.read}%</strong> proficient</div>}
-              <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-            {/* Elementary Schools */}
-      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
         <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>HCS Elementary Schools — Where Gaps Begin</div>
         <div style={{fontSize:12,color:"#6b7280",marginBottom:10,lineHeight:1.6}}>By elementary school, the resource gap is already visible. AP readiness doesn't start in high school — it starts in kindergarten.</div>
         {[
@@ -967,14 +946,12 @@ function SchoolsHCSTab(){
            note:"55% Black, 30% Hispanic, 10% White. 72% free lunch. 5% math proficiency — among the lowest in Alabama. Feeds into Columbia High. The transition from Chapman to Columbia represents the west Huntsville pipeline that mirrors the north Huntsville pattern."},
           {school:"McNair Jr High (Davis Hills)",area:"North Huntsville — feeds Jemison High",zone:"NORTH",mathProf:2,econDis:87,white:5,black:72,hispanic:17,rank:"Bottom 13% AL / 1-star",c:"#dc2626",
            note:"72% Black, 17% Hispanic, 5% White. 87% free lunch. Only 2.48% of 7th-graders proficient in math — the lowest in HCS and among the lowest in the state. Highest student-to-teacher ratio in HCS (22.5:1). Feeds directly into Jemison High School."},
-        ].map((s,i)=>{
-          const zoneColor={"SOUTH":"#2563eb","EAST":"#2563eb","SOUTH/EAST":"#2563eb","WEST":"#9333ea","NORTH":"#dc2626"}[s.zone]||"#6b7280";
-          return(
+        ].map((s,i)=>(
           <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid "+s.c}}>
             <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
-                <span style={{fontSize:9,fontWeight:700,color:"#fff",background:zoneColor,borderRadius:8,padding:"1px 7px",letterSpacing:.5}}>{s.zone}</span>
+                <span style={{fontSize:9,fontWeight:700,color:"#fff",background:{"SOUTH":"#2563eb","EAST":"#2563eb","SOUTH/EAST":"#2563eb","WEST":"#9333ea","NORTH":"#dc2626"}[s.zone]||"#6b7280",borderRadius:8,padding:"1px 7px",letterSpacing:.5}}>{s.zone.replace("/","/​")}</span>
               </div>
               <span style={{fontSize:11,fontWeight:700,color:s.c,background:s.c+"15",padding:"2px 8px",borderRadius:8}}>{s.rank}</span>
             </div>
@@ -1010,8 +987,8 @@ function SchoolsHCSTab(){
             </div>
             <div style={{fontSize:11.5,color:"#374151",lineHeight:1.6,fontStyle:"italic"}}>{s.note}</div>
           </div>
-          );
-        })}
+          )
+        )}
         {/* Middle school disparity callout */}
         <div style={{background:"#fef2f2",borderRadius:4,padding:"10px 12px",marginTop:4,fontSize:13,color:"#7f1d1d",lineHeight:1.75}}>
           <strong>The math gap at middle school: Hampton Cove 66% proficient vs McNair 2% proficient.</strong> That is a 33-to-1 ratio — in the same city, the same district, the same budget allocation. By the time these students reach high school, the gap has been building for 9 years. Hampton Cove feeds Huntsville High. McNair feeds Jemison. The pipeline is not an accident.
@@ -1031,104 +1008,270 @@ function SchoolsHCSTab(){
 function SchoolsMadisonTab(){
   return(
     <div>
-      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderLeft:"4px solid #1e3a5f",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#1e3a5f"}}>
-        Madison County School System (MCSS) is separate from HCS — serving Hazel Green, Sparkman, Buckhorn, New Hope, and rural areas. Madison City Schools is a third separate district. Data from NCES 2023-24 and U.S. News.
+      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderLeft:"4px solid #374151",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12.5,color:"#1e3a5f",lineHeight:1.6}}>
+        <strong>Madison County Schools (MCSS)</strong> serves ~22,000 students across unincorporated Madison County — Harvest, Toney, Meridianville, New Hope, Hazel Green. It is the least-funded of the three systems yet faces the fastest unincorporated growth. Schools here are often compared unfavorably to Madison City — but they serve a fundamentally different population.
       </div>
+
+      {/* MCSS High Schools */}
       <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>MCSS High Schools — 2023-24</div>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>MCSS High Schools — NCES 2023-24</div>
         {[
-          {school:"Hazel Green High",area:"Hazel Green — rural north",ap:45,math:27,econDis:44,rank:"38th AL",note:"13 AP programs. 1,407 students. 44% economically disadvantaged."},
-          {school:"Sparkman High",area:"Harvest — suburban north",ap:45,math:26,econDis:39,rank:"64th AL",note:"1,770 students. 45% AP rate but 26% math proficient. Overcrowded — students report inflexible scheduling."},
-          {school:"Buckhorn High",area:"New Market — rural east",ap:null,math:null,econDis:null,rank:"60th AL",note:"Rival to Hazel Green ('Cotton Classic' rivalry). Serves eastern Madison County rural area."},
-          {school:"New Hope High",area:"New Hope — rural east",ap:null,math:null,econDis:null,rank:"52nd AL",note:"Smaller rural school serving eastern county. Lower minority enrollment than Sparkman/Hazel Green."},
+          {school:"Sparkman High School",area:"Harvest / north Madison County",mathProf:26,apRate:45,econDis:39,white:44,black:36,hispanic:10,rank:"#64 AL",students:1770,c:"#374151",
+           note:"44% White, 36% Black — most racially diverse MCSS school. Overcrowded since 2006 with a separate 9th-grade campus. Student-teacher ratio 20:1 — highest in MCSS. Despite challenges, 7 consecutive state girls basketball championships 2018-2024."},
+          {school:"Hazel Green High School",area:"Hazel Green / northwest county",mathProf:27,apRate:45,econDis:44,white:57,black:22,hispanic:12,rank:"#38 AL",students:1500,c:"#374151",
+           note:"57% White, 22% Black. Ranked 38th in Alabama — MCSS's top-performing high school. 25 National Merit Scholars. Strong science and academic programs despite serving a rural/suburban area with 44% economic disadvantage."},
+          {school:"New Hope High School",area:"Rural east Madison County",mathProf:24,apRate:35,econDis:50,white:72,black:10,hispanic:8,rank:"#52 AL",students:800,c:"#374151",
+           note:"72% White, 10% Black. Rural school serving east county. 50% economic disadvantage despite high white percentage — reflects rural white poverty that is less visible than urban poverty but equally real."},
+          {school:"Madison County High",area:"Rural south county",mathProf:20,apRate:28,econDis:55,white:60,black:22,hispanic:12,rank:"Bottom 50% AL",students:900,c:"#ea580c",
+           note:"60% White, 22% Black. Lowest-performing MCSS high school. Serves southern unincorporated areas with less infrastructure investment than Harvest corridor schools."},
         ].map((s,i)=>(
-          <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid #93b4d4"}}>
-            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:5}}>
-              <div><span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span><span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{s.area}</span></div>
-              <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:"#eff3f8",color:"#1e3a5f",border:"1px solid #93b4d4"}}>{s.rank}</span>
+          <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid "+s.c}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
+              <div>
+                <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+                <span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{s.area} · {s.students.toLocaleString()} students</span>
+              </div>
+              <span style={{fontSize:11,fontWeight:700,color:s.c,background:s.c+"15",padding:"2px 8px",borderRadius:8}}>{s.rank}</span>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:5}}>
-              {[["AP Rate",s.ap!=null?s.ap+"%":"N/A"],["Math Prof.",s.math!=null?s.math+"%":"N/A"],["Econ.Disadv.",s.econDis!=null?s.econDis+"%":"N/A"]].map(([l,v],j)=>(
-                <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3}}>
-                  <div style={{fontSize:8,color:"#6b7280",letterSpacing:.5,marginBottom:1}}>{l}</div>
-                  <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{v}</div>
+            {/* Race bar */}
+            <div style={{marginBottom:8}}>
+              <div style={{display:"flex",height:14,borderRadius:3,overflow:"hidden",gap:1,marginBottom:3}}>
+                <div style={{width:s.white+"%",background:"#e5e7eb",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.white>12&&<span style={{fontSize:8,fontWeight:700,color:"#374151"}}>{s.white}%W</span>}
+                </div>
+                <div style={{width:s.black+"%",background:"#1e3a5f",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.black>8&&<span style={{fontSize:8,fontWeight:700,color:"#fff"}}>{s.black}%B</span>}
+                </div>
+                <div style={{width:s.hispanic+"%",background:"#c9a84c",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.hispanic>8&&<span style={{fontSize:8,fontWeight:700,color:"#1e3a5f"}}>{s.hispanic}%H</span>}
+                </div>
+                <div style={{flex:1,background:"#d1d5db"}}/>
+              </div>
+              <div style={{display:"flex",gap:10,fontSize:9,color:"#6b7280",flexWrap:"wrap"}}>
+                <span>W: {s.white}%</span><span>B: {s.black}%</span><span>H: {s.hispanic}%</span>
+                <span style={{fontWeight:700,color:s.c}}>{100-s.white}% minority</span>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:6}}>
+              {[
+                {l:"Math Proficiency",v:s.mathProf+"%",color:s.mathProf>=35?"#16a34a":s.mathProf>=20?"#c9a84c":"#dc2626"},
+                {l:"AP Participation",v:s.apRate+"%",color:s.apRate>=40?"#16a34a":s.apRate>=25?"#c9a84c":"#dc2626"},
+                {l:"Free Lunch",v:s.econDis+"%",color:s.econDis<=30?"#16a34a":s.econDis<=50?"#c9a84c":"#dc2626"},
+              ].map(({l,v,color},j)=>(
+                <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3,border:"1px solid #e0d8cc"}}>
+                  <div style={{fontSize:8,color:"#6b7280",letterSpacing:.4,marginBottom:1,textTransform:"uppercase"}}>{l}</div>
+                  <div style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color}}>{v}</div>
                 </div>
               ))}
             </div>
-            <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
-          </div>
-        ))}
-      </div>
-      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Middle Schools — The Three-District Gap</div>
-        {[
-          {school:"Sparkman Middle",district:"MCSS",area:"Toney",math:24,read:54,econDis:60,note:"60% economically disadvantaged. 24% math proficient vs 41% MCSS district avg."},
-          {school:"Hazel Green Middle",district:"MCSS",area:"Hazel Green",math:null,read:null,econDis:null,note:"Feeds Hazel Green High. Rural area — limited extracurricular and facilities budget."},
-          {school:"Discovery Middle",district:"Madison City Schools ≠ MCSS",area:"Madison City",math:72,read:82,econDis:8,note:"Different district entirely. 8% econ. disadvantaged, 72% math proficient — next door to MCSS schools with 60% econ. disadvantaged."},
-        ].map((s,i)=>(
-          <div key={i} style={{padding:"10px 12px",marginBottom:8,borderRadius:4,background:"#f8f6f2",borderLeft:"3px solid "+(s.district.includes("Madison City")?"#c9a84c":"#93b4d4")}}>
-            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:4}}>
-              <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
-              <span style={{fontSize:10,fontWeight:700,color:s.district.includes("Madison City")?"#b8860b":"#6b7280"}}>{s.district}</span>
-            </div>
-            {s.math&&<div style={{fontSize:12,color:"#374151",marginBottom:3}}>Math: <strong>{s.math}%</strong> · Reading: <strong>{s.read}%</strong> · Econ. disadvantaged: <strong>{s.econDis}%</strong></div>}
-            <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
-          </div>
-        ))}
-        <div style={{background:"#1e3a5f",borderRadius:4,padding:"10px 12px",marginTop:10}}>
-          <div style={{fontSize:11,fontWeight:700,color:"#c9a84c",marginBottom:4}}>THE THREE-DISTRICT GAP IN ONE COUNTY</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.7}}>Madison County has three separate school systems: HCS (Huntsville City), MCSS (Madison County), and Madison City Schools. They compete for the same pool of educators and tax base but operate entirely independently. Discovery Middle (Madison City) shows 72% math proficiency and 8% economically disadvantaged — Sparkman Middle (MCSS, same county) shows 24% math proficiency and 60% economically disadvantaged. Same county. Three different outcomes.</div>
-        </div>
-      </div>
-            {/* MCSS Elementary Schools */}
-      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>MCSS Elementary Schools — Notable Comparisons</div>
-        {[
-          {school:"Harvest Elementary",area:"Harvest — Sparkman zone",econDis:48,note:"High enrollment pressure from rapid Harvest/Monrovia growth. Feeds overcrowded Sparkman pipeline.",c:"#ea580c"},
-          {school:"Hazel Green Elementary",area:"Hazel Green",econDis:52,note:"Adjacent to HGHS campus. Rural/suburban mix. Higher economic disadvantage than its high school."},
-          {school:"Moores Mill Cluster",area:"Southeast Madison County",econDis:35,note:"Serves more suburban areas near Huntsville city limits. Slightly better resourced than rural MCSS schools.",c:"#c9a84c"},
-          {school:"New Hope Elementary",area:"Rural east county",econDis:58,note:"Rural school with limited extracurricular funding. New Hope HS is ranked 52nd in AL despite these challenges.",c:"#dc2626"},
-        ].map((s,i)=>(
-          <div key={i} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start",paddingBottom:8,borderBottom:i<3?"1px solid #f0ebe2":"none"}}>
-            <div style={{width:10,height:10,borderRadius:"50%",background:s.c||"#93b4d4",flexShrink:0,marginTop:4}}/>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:2}}>
-                <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
-                <span style={{fontSize:10,color:"#6b7280"}}>{s.area}</span>
-              </div>
-              {s.econDis&&<div style={{fontSize:12,fontWeight:700,color:s.c||"#6b7280",marginBottom:2}}>{s.econDis}% economically disadvantaged</div>}
-              <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
-            </div>
+            <div style={{fontSize:11.5,color:"#374151",lineHeight:1.6,fontStyle:"italic"}}>{s.note}</div>
           </div>
         ))}
       </div>
 
-      {/* Recognition worth noting */}
-      <div className="card" style={{padding:"14px 16px",marginBottom:12,borderLeft:"4px solid #16a34a"}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#16a34a",letterSpacing:1.5,marginBottom:8,textTransform:"uppercase"}}>National Recognition — Madison County Schools</div>
+      {/* MCSS Middle Schools */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>MCSS Middle Schools</div>
         {[
-          {school:"New Century Tech Demo HS (HCS)",award:"Ranked top 10 in Alabama nationally",note:"Selective magnet school — high AP rates. Serves all HCS, not just one neighborhood."},
-          {school:"James Clemens HS (Madison City)",award:"Ranked top 10 in Alabama — 58% AP participation",note:"Consistently among Alabama's best public schools. Reflects Madison City's high property values and low economic disadvantage (25%)."},
-          {school:"Hazel Green HS (MCSS)",award:"25 National Merit Scholars, 200+ AP qualifying scores",note:"Strong academic program despite 44% economically disadvantaged. Girls basketball: 7 consecutive 6A state championships 2018-2024."},
-          {school:"Sparkman HS (MCSS)",award:"3 National Merit Semifinalists 2026, State Band Champions",note:"Strong arts and band program. SHS Indoor Drumline among top 5 in the world."},
-          {school:"Bob Jones HS (Madison City)",award:"Ranked top 30 in AL — 46% AP participation",note:"Part of Madison City Schools' strong academic tradition."},
+          {school:"Sparkman Middle School",area:"Harvest",mathProf:24,econDis:60,white:42,black:38,hispanic:12,note:"42% White, 38% Black. 60% free lunch. Discovery Middle (same county, Madison City) is 72% math proficient with 8% free lunch. Same county. Different world."},
+          {school:"Hazel Green Middle",area:"Hazel Green",mathProf:27,econDis:50,white:55,black:25,hispanic:12,note:"55% White, 25% Black. Slightly better resourced than Sparkman Middle. Feeds into the stronger Hazel Green HS pipeline."},
+          {school:"Discovery Middle (MCS)",area:"Madison City — comparison",mathProf:72,econDis:8,white:64,black:12,hispanic:10,note:"Madison City school included for comparison. 64% White, 8% free lunch, 72% math proficient. 9 miles from Sparkman Middle. Same county commission. $4,500+ more per student from property taxes alone."},
         ].map((s,i)=>(
-          <div key={i} style={{marginBottom:8,paddingBottom:8,borderBottom:i<4?"1px solid #f0fdf4":"none"}}>
-            <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f",marginBottom:2}}>{s.school}</div>
-            <div style={{fontSize:12,fontWeight:600,color:"#16a34a",marginBottom:2}}>🏆 {s.award}</div>
+          <div key={i} style={{marginBottom:8,padding:"10px 12px",borderRadius:4,border:"1px solid #e0d8cc",borderLeft:"3px solid "+(i===2?"#16a34a":"#374151"),background:i===2?"#f0fdf4":"#fafaf8"}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:5}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+              {i===2&&<span style={{fontSize:9,fontWeight:700,color:"#fff",background:"#16a34a",borderRadius:8,padding:"1px 7px"}}>MADISON CITY COMPARISON</span>}
+            </div>
+            <div style={{display:"flex",height:12,borderRadius:2,overflow:"hidden",gap:1,marginBottom:5}}>
+              <div style={{width:s.white+"%",background:"#e5e7eb"}}/><div style={{width:s.black+"%",background:"#1e3a5f"}}/><div style={{width:s.hispanic+"%",background:"#c9a84c"}}/><div style={{flex:1,background:"#d1d5db"}}/>
+            </div>
+            <div style={{display:"flex",gap:12,fontSize:11,marginBottom:4}}>
+              <span>W:{s.white}% B:{s.black}% H:{s.hispanic}%</span>
+              <span style={{fontWeight:700,color:s.mathProf>=50?"#16a34a":s.mathProf>=25?"#c9a84c":"#dc2626"}}>Math: {s.mathProf}%</span>
+              <span style={{color:"#6b7280"}}>Free lunch: {s.econDis}%</span>
+            </div>
             <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{s.note}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Three-district comparison */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #dc2626"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Three Districts — Same County — Three Outcomes</div>
+        <div style={{overflowX:"auto"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+            <thead>
+              <tr style={{background:"#1e3a5f",color:"#fff"}}>
+                {["Metric","Madison City (MCS)","Huntsville City (HCS)","Madison County (MCSS)"].map((h,i)=>(
+                  <th key={i} style={{padding:"8px 10px",textAlign:"left",fontSize:10,fontWeight:700,letterSpacing:.5}}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Students","~12,000","~24,000","~22,000"],
+                ["Est. Per-Pupil","~$10,000","~$12,917","~$8,409"],
+                ["Econ. Disadvantaged","~18%","~48%","~42%"],
+                ["Top HS Math Prof.","51% (Clemens)","44% (HHS)","27% (Hazel Green)"],
+                ["Lowest HS Math Prof.","~35%","6% (Jemison)","20% (MC High)"],
+                ["% White (district avg)","~60%","~44%","~55%"],
+                ["2026 Board Elections","All 5 seats","Districts 2,3,4","All seats"],
+              ].map((row,i)=>(
+                <tr key={i} style={{background:i%2===0?"#f8f6f2":"#fff",borderBottom:"1px solid #e0d8cc"}}>
+                  {row.map((cell,j)=>(
+                    <td key={j} style={{padding:"8px 10px",fontSize:j===0?12:12.5,fontWeight:j===0?600:400,color:j===0?"#374151":"#1e3a5f"}}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{background:"#fef2f2",borderRadius:4,padding:"9px 12px",marginTop:10,fontSize:12.5,color:"#7f1d1d",lineHeight:1.7}}>
+          MCSS spends <strong>$4,508 less per student</strong> than HCS yet serves a comparably disadvantaged population. The gap is driven almost entirely by property tax revenue — Madison City homes are assessed higher, generating more local funding per student. The county commission governs all three areas but has no authority over how these three separate school systems spend money. The only lever available is the school board ballot.
+        </div>
+      </div>
+
+      {/* Notable achievements */}
+      <div className="card" style={{padding:"14px 16px",marginBottom:12,borderLeft:"4px solid #16a34a"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#16a34a",letterSpacing:1.5,marginBottom:8,textTransform:"uppercase"}}>MCSS — What They Get Right Despite the Challenges</div>
+        {[
+          {school:"Sparkman High",award:"7 consecutive 6A state basketball championships — girls (2018-2024)"},
+          {school:"Sparkman HS Drumline",award:"Consistently top 5 nationally — SHS Indoor Drumline"},
+          {school:"Hazel Green High",award:"25 National Merit Scholars · Strong STEM programs · Ranked #38 in Alabama"},
+          {school:"New Hope High",award:"Ranked #52 in Alabama — strong academic record for a rural school its size"},
+        ].map((a,i)=>(
+          <div key={i} style={{display:"flex",gap:8,marginBottom:7,paddingBottom:7,borderBottom:i<3?"1px solid #d1fae5":"none"}}>
+            <span style={{fontSize:14,flexShrink:0}}>🏆</span>
+            <div>
+              <div style={{fontSize:12.5,fontWeight:700,color:"#1e3a5f"}}>{a.school}</div>
+              <div style={{fontSize:12,color:"#374151"}}>{a.award}</div>
+            </div>
           </div>
         ))}
       </div>
 
       <ActionButtons title="CONTACT MCSS" actions={[
-        {label:"Madison County Schools Board",href:"https://www.mcssk12.org/domain/2"},
-        {label:"Call MCSS",tel:"2568522557"},
-        {label:"Email MCSS Superintendent",email:"superintendent@mcssk12.org",subject:"School Resource Equity Data Request",body:"Dear Superintendent,\n\nI am requesting per-pupil resource allocation, AP course availability, and facility maintenance budget data broken down by individual school for the current school year.\n\n[Your Name]"},
+        {label:"MCSS Board — (256) 852-2557",tel:"2568522557"},
+        {label:"Email MCSS Superintendent",email:"superintendent@mcssk12.org",subject:"Constituent Request — School Funding Equity",body:"Dear MCSS Superintendent,\n\nI am requesting information on how MCSS plans to address the documented funding gap between Madison County Schools and Madison City Schools — specifically the estimated $4,500 per-pupil spending difference driven by property tax disparities.\n\nWhat advocacy is MCSS leadership doing at the state level to address the foundation program funding formula?\n\n[Your Name]"},
+        {label:"MCSS Board Meetings",href:"https://www.mcssk12.org"},
+        {label:"AL Legislature — School Funding",href:"https://www.legislature.state.al.us"},
       ]}/>
     </div>
   );
 }
+
+function SchoolsMadisonCityTab(){
+  return(
+    <div>
+      <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:4,padding:"10px 13px",marginBottom:14,fontSize:12.5,color:"#14532d",lineHeight:1.6}}>
+        <strong>Madison City Schools (MCS)</strong> is the fastest-growing district in Madison County, serving ~12,000 students in 14 schools with a budget of ~$120M/yr. It consistently outperforms both HCS and MCSS academically — but the reasons reveal as much about wealth sorting as school quality.
+      </div>
+
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Madison City High Schools — NCES 2023-24</div>
+        {[
+          {school:"James Clemens High School",area:"West Madison — largest MCS high school",mathProf:51,apRate:58,econDis:25,white:55,black:20,hispanic:13,rank:"Top 10 AL",students:2200,
+           note:"55% White, 20% Black, 13% Hispanic — the most diverse MCS high school. Named for Madison County's first African-American teacher. 58% AP participation. Ranked top 10 in Alabama consistently. Named after a historic figure while serving a relatively privileged population — its demographics reflect the city's rapid growth attracting higher-income families.",
+           c:"#16a34a"},
+          {school:"Bob Jones High School",area:"East Madison",mathProf:40,apRate:46,econDis:29,white:62,black:16,hispanic:10,rank:"Top 30 AL",students:1800,
+           note:"62% White, 16% Black. Top 30 in Alabama. Strong STEM and performing arts. East Madison serves older, more established neighborhoods with slightly higher economic advantage than west Madison.",
+           c:"#16a34a"},
+        ].map((s,i)=>(
+          <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #d1fae5",borderLeft:"4px solid "+s.c}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
+              <div>
+                <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+                <span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{s.area} · {s.students.toLocaleString()} students</span>
+              </div>
+              <span style={{fontSize:11,fontWeight:700,color:s.c,background:s.c+"20",padding:"2px 8px",borderRadius:8}}>{s.rank}</span>
+            </div>
+            <div style={{marginBottom:8}}>
+              <div style={{fontSize:9,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>Student Demographics</div>
+              <div style={{display:"flex",height:16,borderRadius:3,overflow:"hidden",gap:1,marginBottom:3}}>
+                <div style={{width:s.white+"%",background:"#e5e7eb",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.white>12&&<span style={{fontSize:8,fontWeight:700,color:"#374151"}}>{s.white}%W</span>}
+                </div>
+                <div style={{width:s.black+"%",background:"#1e3a5f",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.black>8&&<span style={{fontSize:8,fontWeight:700,color:"#fff"}}>{s.black}%B</span>}
+                </div>
+                <div style={{width:s.hispanic+"%",background:"#c9a84c",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {s.hispanic>8&&<span style={{fontSize:8,fontWeight:700,color:"#1e3a5f"}}>{s.hispanic}%H</span>}
+                </div>
+                <div style={{flex:1,background:"#d1d5db"}}/>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:6}}>
+              {[["Math Prof.",s.mathProf+"%",s.mathProf>=45?"#16a34a":"#c9a84c"],["AP Rate",s.apRate+"%","#16a34a"],["Free Lunch",s.econDis+"%","#374151"],["State Rank",s.rank,"#16a34a"]].map(([l,v,c],j)=>(
+                <div key={j} style={{padding:"5px 7px",background:"#f0fdf4",borderRadius:3,border:"1px solid #d1fae5"}}>
+                  <div style={{fontSize:8,color:"#6b7280",letterSpacing:.4,marginBottom:1}}>{l}</div>
+                  <div style={{fontSize:j===3?10:13,fontWeight:700,color:c,lineHeight:1.2}}>{v}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{fontSize:11.5,color:"#374151",lineHeight:1.65,fontStyle:"italic"}}>{s.note}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* The Madison City advantage explained */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #1e3a5f"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>Why MCS Outperforms — What the Numbers Actually Show</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+          {[["Econ. Disadvantaged","MCS ~18%","HCS ~48%   MCSS ~42%","The single biggest predictor of test scores is family income. MCS simply serves fewer low-income students."],
+            ["Per-Pupil Spending","MCS ~$10,000","HCS ~$12,917  MCSS ~$8,409","MCS spends LESS per student than HCS yet dramatically outperforms. Money follows need — higher spending at HCS reflects higher need, not higher quality."],
+            ["Population Growth","MCS +15%/yr","HCS stable  MCSS +12%","Rapid growth brings new residents self-selecting for schools — a self-reinforcing cycle of high earners choosing Madison for its schools, which then remain high-performing because of who attends."],
+          ].map(([l,v1,v2,note],i)=>(
+            <div key={i} style={{padding:"10px 12px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",marginBottom:6}}>{l}</div>
+              <div style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:"#16a34a",marginBottom:3}}>{v1}</div>
+              <div style={{fontSize:10,color:"#6b7280",marginBottom:6}}>{v2}</div>
+              <div style={{fontSize:10.5,color:"#374151",lineHeight:1.5,fontStyle:"italic"}}>{note}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:"#1e3a5f",borderRadius:4,padding:"10px 12px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#c9a84c",marginBottom:4}}>THE GROWTH RISK AHEAD</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.75}}>
+            Madison City is annexing new subdivisions faster than it can build schools. James Clemens is already near capacity. If rapid growth continues without planned school construction, MCS will face the same overcrowding that is choking Sparkman. Mayor Bartlett — a former MCS board president — now controls Madison Utilities board appointments. Whether she prioritizes school infrastructure over utility expansion will define her administration.
+          </div>
+        </div>
+      </div>
+
+      
+      {/* Uncomfortable truth */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #1e3a5f"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The Uncomfortable Truth About Madison City Schools</div>
+        <div style={{background:"#1e3a5f",borderRadius:4,padding:"12px 14px",marginBottom:10}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#c9a84c",marginBottom:6}}>ACHIEVEMENT WITHOUT EQUITY IS JUST GEOGRAPHY</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>Madison City Schools are excellent largely because of who lives in Madison — not because of superior teaching or funding. The district benefits from decades of residential sorting. Higher-income families moved to Madison partly to access its schools. Their children arrive better housed, better fed, with more books at home and more professional adult models. The schools then get credit for outcomes that community wealth largely produced. Meanwhile, students at Jemison and Sparkman arrive with compounded disadvantages and get blamed for low test scores. Same state. Same standards. Different starting lines.</div>
+        </div>
+        {[
+          {l:"Per-Pupil Spending",mcs:"~$10,000",hcs:"~$12,917",note:"MCS spends LESS per student than HCS yet dramatically outperforms — spending alone does not explain the gap."},
+          {l:"Economic Disadvantage",mcs:"~18%",hcs:"~48%",note:"Family income is the single strongest predictor of academic outcomes — more than teachers, funding, or facilities."},
+          {l:"% White Students",mcs:"~60%",hcs:"~44%",note:"Correlates with higher property values, more stable housing, and stronger parental professional networks."},
+        ].map((r,i)=>(
+          <div key={i} style={{display:"flex",gap:10,marginBottom:7,padding:"7px 10px",background:"#f8f6f2",borderRadius:3,border:"1px solid #e0d8cc"}}>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:700,color:"#1e3a5f",marginBottom:2}}>{r.l}</div>
+              <div style={{fontSize:11.5,color:"#6b7280",fontStyle:"italic"}}>{r.note}</div>
+            </div>
+            <div style={{textAlign:"right",flexShrink:0}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#16a34a"}}>MCS: {r.mcs}</div>
+              <div style={{fontSize:11,fontWeight:700,color:"#1e3a5f"}}>HCS: {r.hcs}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <ActionButtons title="CONTACT MCS" actions={[
+        {label:"MCS — (256) 772-2520",tel:"2567722520"},
+        {label:"Email MCS Superintendent",email:"superintendent@madisoncityschools.org",subject:"Constituent Request — Growth Planning",body:"Dear MCS Superintendent,\n\nAs Madison City continues rapid residential growth, I am requesting the board publish a capacity plan for James Clemens and Bob Jones High Schools addressing projected overcrowding over the next 5 years.\n\n[Your Name]"},
+        {label:"MCS Board Meetings",href:"https://www.madisoncityschools.org"},
+      ]}/>
+    </div>
+  );
+}
+
 
 function SchoolsActionTab(){
   return(
