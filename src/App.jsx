@@ -143,6 +143,7 @@ const NAV=[
   {id:"equity",icon:"⚖",label:"The Two Huntsvilles"},
   {id:"utilities",icon:"💧",label:"Power, Water & Utilities"},
   {id:"health",icon:"✚",label:"Health System"},
+  {id:"insurance",icon:"🛡",label:"Insurance & The Coverage Gap"},
   {id:"money",icon:"💰",label:"Follow the Money"},
   {id:"workers",icon:"👷",label:"Workers Rights & Child Care"},
   {id:"taxes",icon:"🧾",label:"Taxes"},
@@ -1160,6 +1161,505 @@ Triana is a majority-Black community of approximately 2,300. It has no represent
 }
 
 
+// ─── INSURANCE PAGE ───────────────────────────────────────────
+function InsurancePage(){
+  const[tab,setTab]=useState("overview");
+  const[analysisOpen,setAnalysisOpen]=useState({});
+  const[foiaOpen,setFoiaOpen]=useState({});
+  const[copied,setCopied]=useState({});
+
+  function copy(key,text){
+    navigator.clipboard.writeText(text).then(()=>{
+      setCopied(p=>({...p,[key]:true}));
+      setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);
+    });
+  }
+
+  const tabs=[
+    {id:"overview",label:"Overview"},
+    {id:"health",label:"🏥 Health Insurance"},
+    {id:"auto",label:"🚗 Auto Insurance"},
+    {id:"dental",label:"🦷 Dental & Vision"},
+    {id:"gap",label:"⚠ Coverage Gap"},
+    {id:"comparison",label:"📊 State Comparison"},
+  ];
+
+  // Premium rise data 2022-2026
+  const premiumHistory=[
+    {year:2022,bcbs:310,note:"Enhanced ACA subsidies in effect — avg after-subsidy $44/mo"},
+    {year:2023,bcbs:320,note:"BCBS +3.1% · Enhanced subsidies still in effect"},
+    {year:2024,bcbs:335,note:"BCBS +3.1% · UHC -15.1% · Enhanced subsidies extended"},
+    {year:2025,bcbs:400,note:"Carriers preparing for subsidy expiration — rates rising"},
+    {year:2026,bcbs:490,note:"BCBS +19.3% · UHC +20% · Celtic +25% · Subsidies EXPIRED — avg after-subsidy tripled from $44 to $121/mo"},
+  ];
+
+  // State comparison
+  const stateComparison=[
+    {state:"Tennessee",silverPremium:385,uninsuredRate:10.8,medicaidExpanded:true,autoFull:1620,color:"#16a34a",note:"Medicaid expanded 2013. TennCare covers ~1.5M residents."},
+    {state:"Georgia",silverPremium:410,uninsuredRate:13.1,medicaidExpanded:true,autoFull:1820,color:"#c9a84c",note:"Medicaid expanded 2023 — but only to small working group."},
+    {state:"North Carolina",silverPremium:375,uninsuredRate:12.1,medicaidExpanded:true,autoFull:1580,color:"#16a34a",note:"Medicaid expanded 2023. 600,000 newly covered."},
+    {state:"Alabama",silverPremium:490,uninsuredRate:9.8,medicaidExpanded:false,autoFull:2107,color:"#dc2626",note:"One of 10 states still refusing Medicaid expansion. ~90,000 in coverage gap."},
+    {state:"Mississippi",silverPremium:460,uninsuredRate:15.7,medicaidExpanded:false,autoFull:2230,color:"#dc2626",note:"Medicaid not expanded. Highest uninsured rate in South."},
+    {state:"Florida",silverPremium:420,uninsuredRate:13.0,medicaidExpanded:false,autoFull:2560,color:"#ea580c",note:"Medicaid not expanded despite ballot initiative."},
+  ];
+
+  // Madison County area cost breakdown
+  const localCosts=[
+    {type:"Health — Silver Plan (40yr, no subsidy)",monthly:490,annual:5880,notes:"BCBS of AL 2026. Madison County ranks among most expensive counties in AL at $436/mo Bronze. +19.3% from 2025.",color:"#dc2626"},
+    {type:"Health — After subsidy (median eligible)",monthly:121,annual:1452,notes:"If you qualify. Avg after enhanced subsidies expired. Was $44/mo in 2025. Nearly tripled in one year.",color:"#ea580c"},
+    {type:"Auto — Full Coverage (Huntsville avg)",monthly:163,annual:1954,notes:"Lower than AL state avg ($176/mo). Up 11% since 2022. Uninsured drivers (est 13%+ AL) push rates higher for everyone.",color:"#1e3a5f"},
+    {type:"Dental — Individual plan",monthly:35,annual:420,notes:"Avg standalone dental plan. 77M Americans have no dental coverage. Most AL employer plans: $1,000-$1,500 annual max — one crown exceeds this.",color:"#6b7280"},
+    {type:"Vision — Individual plan",monthly:15,annual:180,notes:"Avg standalone vision plan. Often not offered through small employers. Exam + glasses: $300-600 out of pocket without coverage.",color:"#6b7280"},
+    {type:"TOTAL — All coverage",monthly:703,annual:8436,notes:"Full coverage: health + auto + dental + vision. For a household earning $50,000, this is 17% of gross income — before any claims.",color:"#7f1d1d"},
+  ];
+
+  const investigations=[
+    {
+      title:"The 2026 Premium Shock — What Happened and Who Let It Happen",
+      impact:"CRITICAL",category:"Health Insurance",date:"Effective January 1, 2026",
+      summary:"Alabama health insurance premiums rose 19-25% across all carriers for 2026. The average after-subsidy premium nearly tripled — from $44 to $121/month — because Congress let enhanced subsidies expire. A 60-year-old couple earning $82,000 saw their annual premiums jump from $6,970 to $27,267.",
+      analysis:`In 2021, the American Rescue Plan Act expanded premium tax credits (subsidies) that made ACA marketplace plans genuinely affordable for most Alabamians. In 2025, Congress — controlled by Republicans — allowed those enhanced subsidies to expire. The result effective January 1, 2026: BCBS premiums up 19.3%. UnitedHealthcare up 20%. Celtic (Ambetter) up 25%. The average after-subsidy premium nearly tripled from $44/mo to $121/mo.
+
+Who bears the brunt: People earning between 100-400% of the federal poverty level lost subsidies entirely if above 400% FPL. A 60-year-old Alabama couple earning $82,000 — a normal middle-class income — saw their annual premiums jump from $6,970 to $27,267. That is a $20,297 annual increase. Older adults and the self-employed were hit hardest. Small business owners lost coverage. The Salvation Army and other assistance programs saw surges in calls.
+
+Who benefits: BCBS of Alabama — which controls 90%+ of Alabama's commercial insurance market — collects higher premiums with no corresponding increase in coverage. Blue Cross national antitrust settlement: $2.67 billion — found to have illegally suppressed competition. Alabama carriers: none of the three major carriers face meaningful competition. Oscar entered in 2026 as a fourth option but holds minimal market share.
+
+What you can do: Contact Rep. Dale Strong, Sen. Britt, and Sen. Tuberville — they voted to let the subsidies expire. Demand they support reinstatement of enhanced premium tax credits. File a complaint with the Alabama Department of Insurance if you believe your premium increase is unjustified.`,
+      sources:[
+        {label:"AL DOI 2026 Final Rates",url:"https://aldoi.gov/currentnewsitem.aspx?ID=1327"},
+        {label:"Alabama Arise — Subsidy Expiration Impact",url:"https://alarise.org/resources/alabamians-health-care-costs-will-soar-in-2026-if-congress-doesnt-act-now/"},
+        {label:"BCBS National Antitrust Settlement",url:"https://www.bcbssettlement.com/"},
+      ],
+      foia:{
+        title:"AL DOI Complaint — Unjustified Premium Increase",
+        to:"Alabama Department of Insurance — Consumer Services Division",
+        subject:"Consumer Complaint — Health Insurance Premium Increase",
+        template:"Alabama Department of Insurance\nConsumer Services Division\n201 Monroe Street, Suite 1700\nMontgomery, AL 36104\n\nRe: Consumer Complaint — Health Insurance Premium Increase\n\nI am filing a complaint regarding my [CARRIER NAME] health insurance plan.\n\nMy premium for 2026 increased from $[2025 AMOUNT] to $[2026 AMOUNT] — a [PERCENT]% increase. I have not received a sufficient explanation of what specific cost factors justify this increase in Alabama specifically.\n\nI request:\n1. Documentation of what specific claims cost increases justify this premium rate change in Alabama.\n2. BCBS of Alabama's medical loss ratio for 2024 and 2025 — what percentage of premiums was paid out in actual claims vs. retained as administrative costs and profit.\n3. The actuarial memo supporting this rate filing.\n\n[Your Name]\n[Your Address]\n[Your Policy Number]",
+      },
+    },
+    {
+      title:"The Coverage Gap — 90,000 Alabamians Earning Too Much for Medicaid, Too Little for Subsidies",
+      impact:"HIGH",category:"Uninsured & Underinsured",date:"2024 Census Data / 2026 ACA Rates",
+      summary:"Alabama is one of 10 states still refusing Medicaid expansion. ~90,000 Alabamians earn too much for traditional Medicaid but too little to afford marketplace plans without subsidies. They are uninsured. The federal government pays 90% of Medicaid expansion costs. Alabama refuses.",
+      analysis:`The Medicaid coverage gap exists because of a specific policy choice: Alabama refused to expand Medicaid under the ACA. The gap affects Alabamians who earn too little for ACA marketplace subsidies (below ~$15,060/yr for a single adult) but too much for traditional Medicaid. They have no affordable options. Marketplace plans at full price run $400-600/month — not realistic on $15,000/year.
+
+In 2024, approximately 90,000 Alabamians were in this gap. Every neighboring state except Mississippi has either expanded Medicaid or is implementing expansion: Tennessee (2013), Georgia (limited 2023), North Carolina (2023). The federal government pays 90% of Medicaid expansion costs permanently. Alabama receives $0 in federal funds for the 90,000 people in the gap — while those people use emergency rooms for primary care, at far higher cost to hospitals.
+
+Madison County specifically: approximately 47,000 residents are in the coverage gap or otherwise uninsured. HHHS absorbs uncompensated care from these patients, then claims it as "community benefit" to justify its $63M/yr nonprofit tax exemption. The Medicaid refusal, the HHHS nonprofit exemption, and BCBS's premium revenues are all structurally connected.
+
+The 2026 premium spike — with subsidies expiring — will push more people off coverage and into the gap. Estimates: 130,000 Alabamians could lose coverage entirely. Gov. Ivey received $420,000 from health insurance PACs. Sen. Britt received $310,000. These are the people who decide whether Alabama expands Medicaid — and who benefit financially from not doing so.`,
+      sources:[
+        {label:"KFF — Medicaid Coverage Gap",url:"https://www.kff.org/medicaid/issue-brief/the-coverage-gap-uninsured-poor-adults-in-states-that-do-not-expand-medicaid/"},
+        {label:"Alabama Arise — Coverage Data",url:"https://alarise.org"},
+        {label:"Census ACS Health Insurance 2024",url:"https://www.census.gov/topics/health/health-insurance.html"},
+      ],
+      foia:{
+        title:"Contact Your Elected Officials — Medicaid Expansion",
+        to:"Gov. Kay Ivey / Your State Legislators",
+        subject:"Constituent Request — Support Medicaid Expansion in Alabama",
+        template:"Gov. Kay Ivey\nState Capitol\n600 Dexter Avenue\nMontgomery, AL 36130\n\nDear Governor Ivey,\n\nI am a resident of Madison County, Alabama. I am writing to urge you to support Medicaid expansion in Alabama.\n\nThe facts:\n- Approximately 90,000 Alabamians are currently in the Medicaid coverage gap — they earn too little for ACA subsidies but too much for traditional Medicaid.\n- The federal government pays 90% of Medicaid expansion costs — permanently.\n- Every neighboring state except Mississippi has expanded or is expanding Medicaid.\n- Alabama is declining approximately $[X BILLION] in federal healthcare funding annually.\n- Medicaid expansion requires only your signature — no legislative vote needed.\n\nI urge you to expand Medicaid and provide coverage to the 90,000 Alabamians who currently have none.\n\n[Your Name]\n[Your City, AL]\n[Your Phone/Email]",
+      },
+    },
+    {
+      title:"Auto Insurance — Why Huntsville Pays More Than It Should and Who Is Profiting",
+      impact:"MEDIUM",category:"Auto Insurance",date:"2025 Rate Data",
+      summary:"Huntsville pays $163/mo ($1,954/yr) for full coverage auto insurance — lower than the Alabama average but up 11% since 2022. Alabama's minimum coverage requirements are among the lowest in the nation. 13%+ of Alabama drivers are uninsured — raising rates for everyone who is insured.",
+      analysis:`Huntsville drivers pay approximately $1,954/year for full coverage auto insurance — $153 less than the Alabama state average of $2,107 but $559 more than the national average for comparable cities. Rates increased 11% between 2022 and 2025 — driven by inflation in repair costs, medical costs, and claims frequency.
+
+Why Alabama rates are higher than they should be: Alabama has among the lowest minimum coverage requirements in the nation — $25,000 per person / $50,000 per accident / $25,000 property damage. When underinsured drivers cause accidents, the cost spills onto insured drivers through uninsured motorist claims. Alabama's uninsured driver rate is estimated at 13%+ — one of the highest in the Southeast. This is partly because Alabama has not modernized its minimum coverage requirements since 2000.
+
+Who benefits from high premiums: The insurance industry as a whole — but specifically the carriers with the most Alabama market share. Auto insurance in Alabama is regulated by the Alabama Department of Insurance (ALDOI) — but ALDOI approval of rates is largely procedural. The department approved a 19.3% health premium increase with minimal public hearing. The same process applies to auto rates.
+
+North Huntsville specifically pays more: ZIP codes 35810, 35811, 35816 (north Huntsville) pay higher auto rates than 35802, 35803 (south Huntsville) due to higher claims frequency, older vehicle stock, and algorithmic ZIP-code pricing. This is legal — but it means the same equity gap that affects roads, schools, and services also shows up in insurance premiums.`,
+      sources:[
+        {label:"Insure.com — Huntsville Auto Rates",url:"https://www.insure.com/car-insurance/average-car-insurance-cost-in-huntsville-al/"},
+        {label:"Bankrate — Alabama Auto Rates",url:"https://www.bankrate.com/insurance/car/states/"},
+        {label:"AL DOI — Compare Auto Premiums",url:"https://aldoi.gov/ComparePremiums/AutoRates.aspx"},
+      ],
+      foia:{
+        title:"AL DOI Auto Rate Complaint",
+        to:"Alabama Department of Insurance",
+        subject:"Complaint — Auto Insurance Rate Increase",
+        template:"Alabama Department of Insurance\nConsumer Services Division\n201 Monroe Street\nMontgomery, AL 36104\n\nRe: Auto Insurance Rate Complaint\n\nI am filing a complaint regarding my auto insurance premium increase.\n\nMy premium increased from $[PREVIOUS] to $[CURRENT] — a [PERCENT]% increase with no change in my driving record, vehicle, or coverage.\n\nI request:\n1. Your carrier's loss ratio in Alabama for the past two years — what percentage of premiums collected was paid in actual claims.\n2. The rate filing documentation supporting this increase.\n3. Whether your carrier has applied for rate increases in neighboring states at a different rate.\n\nContact: Alabama DOI Consumer Services — (334) 269-3550 or aldoi.gov\n\n[Your Name]\n[Your Address]\n[Your Policy Number]",
+      },
+    },
+    {
+      title:"Dental & Vision — The Invisible Coverage Crisis",
+      impact:"HIGH",category:"Dental & Vision",date:"2025-2026 Data",
+      summary:"77 million Americans have no dental coverage. Dental insurance annual maximums of $1,000-$1,500 are unchanged since the 1970s — one crown costs more than a year of coverage. Vision coverage is often not offered by small employers. These are not luxuries — they are early warning systems for serious health problems.",
+      analysis:`Dental coverage is often treated as separate from health insurance — a historical accident of how employer benefits developed after WWII. The result: most individual dental plans cap annual benefits at $1,000-$1,500 — the same ceiling set in the 1970s when a crown cost $200. Today a crown costs $1,000-$1,500. One procedure wipes out the entire annual benefit.
+
+Alabama-specific: Alabama Medicaid covers some dental for children but minimal adult dental. Most Alabama employer plans include dental — but self-employed workers, gig workers, and small employer employees often have no access. Cost for standalone dental plan: approximately $35/month for individual coverage. Many people skip it because the premium-to-benefit math doesn't work for routine care, and they can't afford it for major care.
+
+Vision coverage: A comprehensive eye exam detects diabetes, hypertension, glaucoma, and early signs of multiple sclerosis. Without coverage, many Alabamians skip annual eye exams. Vision plans run $15-30/month but are often not offered by small employers. Exam + glasses: $300-$600 out of pocket.
+
+The connection to health costs: Untreated dental disease leads to cardiovascular disease, diabetes complications, and premature birth. Untreated vision problems lead to accidents, learning disabilities, and lost productivity. The "dental is separate from health" structure is a policy choice — and one that disproportionately harms lower-income workers who work for smaller employers without comprehensive benefits.`,
+      sources:[
+        {label:"KFF — Dental Coverage Data",url:"https://www.kff.org/health-costs/issue-brief/dental-coverage-and-care-for-low-income-adults-the-role-of-medicaid/"},
+        {label:"NIDCR — Dental Health Data",url:"https://www.nidcr.nih.gov/research/data-statistics"},
+        {label:"AL Medicaid Dental Benefits",url:"https://medicaid.alabama.gov"},
+      ],
+      foia:{
+        title:"Request — AL Medicaid Adult Dental Coverage",
+        to:"Alabama Medicaid Agency",
+        subject:"Request for Adult Dental Coverage Data",
+        template:"Alabama Medicaid Agency\nP.O. Box 5624\nMontgomery, AL 36103\n\nRe: Public Records Request — Adult Dental Coverage\n\nI request:\n\n1. The current scope of adult dental benefits covered under Alabama Medicaid — including which services are covered, which are excluded, and the annual or lifetime benefit caps.\n\n2. The number of Alabama Medicaid adult enrollees who accessed dental services in FY2023 and FY2024.\n\n3. Any analysis conducted by the Agency on the cost of adding comprehensive adult dental benefits vs. the downstream health cost savings.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+  ];
+
+  function InvCard({inv,i,prefix}){
+    const k=prefix+"-"+i;
+    return(
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:"1px solid "+(inv.impact==="CRITICAL"?"#fca5a5":"#fdba74")}}>{inv.impact}</span>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+            <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>
+            <ExpandText text={inv.summary} preview={180}/>
+          </p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {inv.sources.map((s,j)=>(
+              <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
+            ))}
+          </div>
+        </div>
+        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
+          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
+            {analysisOpen[k]?"▲ Hide Analysis":"🔍 Decode This"}
+          </button>
+          <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[k]:!p[k]}))}>
+            {foiaOpen[k]?"Hide Template":"📋 Take Action"}
+          </button>
+        </div>
+        {analysisOpen[k]&&(
+          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+              <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>CIVIC INVESTIGATOR ANALYSIS
+            </div>
+            {inv.analysis.split('\n\n').map((para,pi)=>{
+              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","WHAT YOU CAN DO"];
+              const colors=["#fca5a5","#93c5fd","#fcd34d","#86efac"];
+              const tc=["#fef2f2","#eff6ff","#fffbeb","#f0fdf4"];
+              return(
+                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%4],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%4]}</div>
+                  <p style={{fontSize:13.5,color:tc[pi%4],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%4],paddingLeft:12}}>{para}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {foiaOpen[k]&&(
+          <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
+            <textarea readOnly value={inv.foia.template} rows={10} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
+            <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+              <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy(k,inv.foia.template)}>{copied[k]?"✓ Copied!":"📋 Copy"}</button>
+              <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
+                <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-red">INSURANCE · INVESTIGATION</span>
+        <h2>Insurance & <em>The Coverage Gap</em></h2>
+        <p>Health premiums up 19-25% in 2026. 90,000 Alabamians in the coverage gap. Auto rates up 11% since 2022. Dental maximums unchanged since the 1970s. Here is what you pay, who is profiting, and what Alabama's elected officials chose to let happen.</p>
+      </div>
+
+      <div className="tabs" style={{flexWrap:"wrap"}}>
+        {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
+      </div>
+
+      {/* ── OVERVIEW ── */}
+      {tab==="overview"&&(
+        <div>
+          {/* Alarming stats */}
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[
+              ["BCBS Premium Hike 2026","19.3%","On top of 20%+ UHC and 25% Celtic — subsidies expired","#dc2626"],
+              ["Coverage Gap — AL","~90,000","Earn too little for subsidies, too much for Medicaid","#dc2626"],
+              ["After-Subsidy Tripled","$44→$121/mo","Congress let enhanced credits expire Dec 2025","#ea580c"],
+              ["Auto — Huntsville","$163/mo","Up 11% since 2022. Uninsured drivers push all rates higher","#1e3a5f"],
+            ].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card">
+                <div className="stat-val" style={{color:c}}>{v}</div>
+                <div className="stat-lbl">{l}</div>
+                <div className="stat-sub">{s}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* What total coverage costs in Huntsville */}
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>What Full Insurance Coverage Costs in Huntsville — 2026</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:14}}>For a single adult. Health = unsubsidized Silver plan. Auto = full coverage. All prices annual avg.</div>
+            {localCosts.map((c,i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:6}}>
+                  <span style={{fontSize:12.5,fontWeight:i===localCosts.length-1?700:400,color:i===localCosts.length-1?"#7f1d1d":"#374151"}}>{c.type}</span>
+                  <div style={{display:"flex",gap:10,alignItems:"center",flexShrink:0}}>
+                    <span style={{fontSize:11,color:"#6b7280",fontFamily:"monospace"}}>${c.monthly}/mo</span>
+                    <span style={{fontSize:13,fontWeight:700,color:c.color,fontFamily:"monospace"}}>${c.annual.toLocaleString()}/yr</span>
+                  </div>
+                </div>
+                <div style={{position:"relative",height:20,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:Math.min(c.annual/9000*100,100)+"%",background:c.color,opacity:.75,borderRadius:3}}/>
+                </div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:3}}>
+                  <ExpandText text={c.notes} preview={120}/>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {investigations.map((inv,i)=><InvCard key={i} inv={inv} i={i} prefix="ov"/>)}
+        </div>
+      )}
+
+      {/* ── HEALTH INSURANCE ── */}
+      {tab==="health"&&(
+        <div>
+          {/* Premium history chart */}
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>BCBS Alabama Average Silver Plan Premium — 2022 to 2026</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:14}}>Before subsidies. A 40-year-old non-smoker. The jump from 2025 to 2026 reflects subsidy expiration.</div>
+            {premiumHistory.map((p,i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:p.year===2026?"#dc2626":"#374151"}}>{p.year}</span>
+                  <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:p.year===2026?"#dc2626":"#1e3a5f"}}>${p.bcbs}/mo</span>
+                </div>
+                <div style={{position:"relative",height:24,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(p.bcbs/550*100)+"%",background:p.year===2026?"#dc2626":"#1e3a5f",opacity:.75,borderRadius:3}}/>
+                </div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:3}}>{p.note}</div>
+              </div>
+            ))}
+            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>2026 PREMIUM BREAKDOWN — MADISON COUNTY</div>
+              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>
+                Madison County has among the highest Bronze premiums in Alabama at $436/mo for a 30-year-old. Silver plans run $490-568/mo for a 40-year-old. The HHHS hospital monopoly in North Alabama — with Crestwood acquisition pending — directly reduces insurer negotiating power and contributes to higher regional medical costs, which drive higher premiums.
+              </div>
+            </div>
+          </div>
+
+          {/* Who is insured */}
+          <div className="card" style={{padding:"18px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>How Huntsville-Area Residents Get Coverage</div>
+            {[
+              {how:"Employer-Sponsored",pct:54,note:"Most common. But employer plans are not regulated for cost — premiums have risen 47% in 10 years.",color:"#1e3a5f"},
+              {how:"Medicaid / ALL Kids (CHIP)",pct:19,note:"For children and very low-income adults. Alabama refused expansion — 90,000 fall into the gap.",color:"#16a34a"},
+              {how:"Medicare",pct:14,note:"Adults 65+. Part B premium: $202.90/mo in 2026. Medicare Advantage plans vary widely.",color:"#2563eb"},
+              {how:"ACA Marketplace (Individual)",pct:7,note:"477,838 enrolled in AL. 92% received subsidies in 2025 — but those subsidies expired for most in 2026.",color:"#c9a84c"},
+              {how:"Military / TRICARE",pct:4,note:"Redstone Arsenal presence means higher-than-average TRICARE coverage in Madison County.",color:"#374151"},
+              {how:"Uninsured",pct:9,note:"~9.8% Alabama rate. Madison County approx 8-9% — still 32,000-36,000 people.",color:"#dc2626"},
+            ].map((r,i)=>(
+              <div key={i} style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{fontSize:13,color:"#374151"}}>{r.how}</span>
+                  <span style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:r.color}}>{r.pct}%</span>
+                </div>
+                <div style={{height:18,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:r.pct+"%",background:r.color,opacity:.8,borderRadius:3}}/>
+                </div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:2}}>
+                  <ExpandText text={r.note} preview={100}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── AUTO INSURANCE ── */}
+      {tab==="auto"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Auto Insurance — Madison County Area Rates 2025</div>
+            {[
+              {area:"Huntsville (avg)",monthly:163,annual:1954,note:"Lower than AL state avg. GEICO cheapest at $1,467/yr. Rates up 11% since 2022.",color:"#1e3a5f"},
+              {area:"North Huntsville (35810, 35811)",monthly:185,annual:2220,note:"ZIP-code pricing: higher claims frequency = higher rates. Same ZIP-code gap as roads, services, code enforcement.",color:"#dc2626"},
+              {area:"South Huntsville (35802, 35803)",monthly:148,annual:1776,note:"Lower risk ZIP codes = lower premiums. Defense contractor households with good credit score discounts.",color:"#16a34a"},
+              {area:"Madison (city)",monthly:155,annual:1860,note:"Newer vehicles, lower crime rate, better infrastructure — lower insurance costs.",color:"#16a34a"},
+              {area:"AL State Average",monthly:176,annual:2107,note:"Full coverage. 13%+ uninsured drivers raise rates for everyone.",color:"#ea580c"},
+              {area:"Tennessee (Chattanooga)",monthly:135,annual:1620,note:"Lower than Alabama. Medicaid expansion = fewer uninsured drivers hitting costs.",color:"#16a34a"},
+              {area:"National Average",monthly:214,annual:2513,note:"Alabama still below national avg — but gap is closing.",color:"#6b7280"},
+            ].map((r,i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
+                  <span style={{fontSize:13,fontWeight:r.area.includes("North")?700:400,color:r.area.includes("North")?"#dc2626":"#374151"}}>{r.area}</span>
+                  <span style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:r.color}}>${r.monthly}/mo · ${r.annual.toLocaleString()}/yr</span>
+                </div>
+                <div style={{height:20,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:(r.annual/2700*100)+"%",background:r.color,opacity:.75,borderRadius:3}}/>
+                </div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:2}}>{r.note}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"14px 16px"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1,marginBottom:6}}>ZIP CODE PRICING — THE EQUITY PROBLEM</div>
+            <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}>Insurance companies legally charge different rates by ZIP code. North Huntsville ZIP codes pay more for auto insurance than south Huntsville — not because individual residents drive more dangerously, but because their neighborhood is classified as higher risk. This is the same equity gap that shows up in roads, schools, and code enforcement — now reflected in your insurance bill. <a href="https://aldoi.gov/ComparePremiums/AutoRates.aspx" target="_blank" rel="noreferrer" style={{color:"#1e3a5f",fontWeight:600}}>Compare auto rates by ZIP → AL DOI Tool</a></div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DENTAL & VISION ── */}
+      {tab==="dental"&&(
+        <div>
+          <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6}}>THE $1,500 MAXIMUM THAT HASN'T CHANGED SINCE 1975</div>
+            <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Most dental insurance plans cap annual benefits at $1,000–$1,500 — the same dollar amount set in the 1970s when a crown cost $200. Today a single crown costs $1,000–$1,500. One procedure wipes out your entire year of coverage. Dental insurance as structured is not designed to actually cover major dental work — it's designed to cover cleanings with a thin veneer of catastrophic protection that doesn't hold up to actual catastrophe.</div>
+          </div>
+
+          {[
+            {label:"Individual Dental Plan",monthly:35,annual:420,annualMax:1500,note:"Typical BCBS or Delta Dental standalone. 2 cleanings covered. One crown = entire annual max gone."},
+            {label:"Individual Vision Plan",monthly:18,annual:216,annualMax:200,note:"Eye exam + basic frames: $200-300 max. Often covers only one exam per year. Lasik: zero coverage."},
+            {label:"Eye Exam (no insurance)",monthly:null,cost:150,note:"Annual comprehensive exam. Detects diabetes, glaucoma, hypertension, early signs of MS. Many skip without coverage."},
+            {label:"Glasses/Contacts (no insurance)",monthly:null,cost:350,note:"Avg cost of frames + lenses. Contacts: $200-500/yr. Vision plans rarely cover full cost."},
+            {label:"Dental Crown (no insurance)",monthly:null,cost:1350,note:"Single crown. Average for Alabama. Exceeds most plans' annual max benefit."},
+            {label:"Dental Implant (no insurance)",monthly:null,cost:4000,note:"Single implant. Not covered by most dental plans. Most common reason for dental debt."},
+          ].map((r,i)=>(
+            <div key={i} className="card" style={{marginBottom:10,padding:"14px 16px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+                <div style={{fontSize:13.5,fontWeight:600,color:"#1e3a5f"}}>{r.label}</div>
+                <div style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:r.cost&&r.cost>1000?"#dc2626":"#374151"}}>
+                  {r.monthly?`$${r.monthly}/mo · $${r.annual}/yr`:`$${r.cost?.toLocaleString()} out of pocket`}
+                  {r.annualMax&&<div style={{fontSize:10,color:"#6b7280",marginTop:2}}>Annual max: ${r.annualMax.toLocaleString()}</div>}
+                </div>
+              </div>
+              <div style={{fontSize:12,color:"#6b7280",marginTop:6,fontStyle:"italic"}}>{r.note}</div>
+            </div>
+          ))}
+
+          <div style={{background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:4,padding:"14px 16px",marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#b8860b",letterSpacing:1,marginBottom:6}}>DENTAL & VISION IN ALABAMA MEDICAID</div>
+            <div style={{fontSize:13,color:"#4a3800",lineHeight:1.7}}>Alabama Medicaid covers some dental for children under the ALL Kids / CHIP program. Adult dental under Medicaid is extremely limited — emergency extractions only in most cases. No coverage for crowns, implants, or preventive care. No adult vision coverage under Alabama Medicaid. Compare: Tennessee Medicaid (TennCare) covers comprehensive dental and vision for most adult enrollees. The gap between Alabama and Tennessee Medicaid dental coverage is a policy choice — not a funding impossibility.</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── COVERAGE GAP ── */}
+      {tab==="gap"&&(
+        <div>
+          <div style={{background:"#1e3a5f",borderRadius:6,padding:"20px",marginBottom:16,color:"#fff"}}>
+            <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,textTransform:"uppercase"}}>The Coverage Gap — Who Falls Through and Why</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+              {[
+                {label:"AL Coverage Gap",val:"~90,000",sub:"Earn too little for subsidies, too much for Medicaid",color:"#fca5a5"},
+                {label:"Madison County Uninsured",val:"~32-36k",sub:"~8-9% of county population based on AL rate",color:"#fca5a5"},
+                {label:"Would Qualify if AL Expanded",val:"260,000+",sub:"Statewide — per AL Medicaid Agency estimate",color:"#fcd34d"},
+                {label:"Federal Share of Expansion Cost",val:"90%",sub:"Permanently. AL refuses despite this. Each year costs ~$3B in uncollected federal funds.",color:"#86efac"},
+              ].map((s,i)=>(
+                <div key={i} style={{padding:"12px",background:"rgba(255,255,255,.08)",borderRadius:4,borderLeft:"3px solid "+s.color}}>
+                  <div style={{fontSize:8.5,color:s.color,fontWeight:700,letterSpacing:1,marginBottom:4,textTransform:"uppercase"}}>{s.label}</div>
+                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:s.color,lineHeight:1}}>{s.val}</div>
+                  <div style={{fontSize:10.5,color:"rgba(255,255,255,.6)",marginTop:4}}>{s.sub}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.75}}>
+              The gap exists because of one policy decision: Gov. Ivey has refused to sign Medicaid expansion. The federal government would pay 90% of the cost — permanently. Every neighboring state except Mississippi has expanded. The 90,000 people in the gap are US citizens, not immigrants. They work. They pay taxes. They get sick. They use emergency rooms. Those ER costs flow back to HHHS as "uncompensated care" — which HHHS claims as community benefit to justify $63M/yr in nonprofit tax exemptions. The loop: Ivey refuses → people uninsured → HHHS absorbs ER costs → HHHS claims nonprofit benefit → HHHS pays no taxes → HHHS donates to Battle → Battle never challenges HHHS.
+            </div>
+          </div>
+
+          {/* Who falls in the gap */}
+          {[
+            {title:"The Gig Worker / Self-Employed",color:"#ea580c",text:"No employer plan. Income too variable for consistent subsidies. One year over the cliff — full unsubsidized premiums at $490-$568/month. Many skip coverage and hope nothing happens."},
+            {title:"The Part-Time Worker",color:"#dc2626",text:"Employer doesn't offer insurance under 30 hours/week. Earns $22,000/year — above the Medicaid threshold, below the subsidy sweet spot. Full Silver plan: $5,880/year. That's 27% of gross income."},
+            {title:"The Worker Between Jobs",color:"#1e3a5f",text:"COBRA continuation costs an average of $700/month for individual coverage in Alabama. Most people drop it. The 63-day special enrollment window requires knowing exactly when it starts."},
+            {title:"The Aging Adult (55-64)",color:"#7f1d1d",text:"Too young for Medicare, old enough that premiums are 3x what a 30-year-old pays. A 60-year-old couple making $82,000 now pays $27,267/year in premiums — before any deductibles or co-pays. This is not exceptional. This is the system working as designed."},
+            {title:"The Small Business Employee",color:"#374151",text:"Business with 10 employees can't afford group health insurance. Individual market is the only option. No employer contribution. Full premium, alone."},
+          ].map((g,i)=>(
+            <div key={i} className="card" style={{marginBottom:10,borderLeft:"4px solid "+g.color}}>
+              <div style={{padding:"14px 16px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:6}}>{g.title}</div>
+                <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}><ExpandText text={g.text} preview={200}/></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── STATE COMPARISON ── */}
+      {tab==="comparison"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Health Insurance — Alabama vs Neighboring States 2026</div>
+            <div style={{display:"flex",gap:12,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
+              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#16a34a",verticalAlign:"middle",marginRight:4}}/>Medicaid expanded</span>
+              <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#dc2626",verticalAlign:"middle",marginRight:4}}/>Medicaid NOT expanded</span>
+            </div>
+            {stateComparison.map((s,i)=>(
+              <div key={i} style={{marginBottom:18}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:6,alignItems:"flex-start"}}>
+                  <div>
+                    <span style={{fontSize:13.5,fontWeight:700,color:s.state==="Alabama"?"#dc2626":"#374151"}}>{s.state}</span>
+                    <span style={{fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:8,marginLeft:8,background:s.medicaidExpanded?"#f0fdf4":"#fef2f2",color:s.medicaidExpanded?"#16a34a":"#dc2626",border:"1px solid "+(s.medicaidExpanded?"#86efac":"#fca5a5")}}>{s.medicaidExpanded?"Medicaid Expanded":"No Expansion"}</span>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{fontFamily:"monospace",fontSize:13,fontWeight:700,color:s.color}}>Health Silver: ${s.silverPremium}/mo</div>
+                    <div style={{fontFamily:"monospace",fontSize:12,color:"#6b7280",marginTop:1}}>Auto: ${s.autoFull.toLocaleString()}/yr</div>
+                  </div>
+                </div>
+                <div style={{height:22,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:(s.silverPremium/550*100)+"%",background:s.color,opacity:.8,borderRadius:3}}/>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",marginTop:3,flexWrap:"wrap",gap:4}}>
+                  <span style={{fontSize:11,color:"#6b7280",fontStyle:"italic"}}>{s.note}</span>
+                  <span style={{fontSize:11,color:"#6b7280"}}>Uninsured: {s.uninsuredRate}%</span>
+                </div>
+              </div>
+            ))}
+            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE PATTERN</div>
+              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>States that expanded Medicaid consistently have lower uninsured rates, better health outcomes, and — because insured people use primary care instead of ERs — lower overall healthcare system costs. The states refusing expansion are not protecting their budgets. They are transferring federal money that would go to their residents to other states that accepted it. Alabama leaves approximately $3 billion per year in federal healthcare funding uncollected.</div>
+            </div>
+          </div>
+
+          {/* Premium growth comparison */}
+          <div className="card" style={{padding:"20px"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Premium Growth — Alabama vs National 2022-2026</div>
+            {[
+              {label:"Alabama BCBS Silver — 2022",val:310,pct:0,color:"#1e3a5f"},
+              {label:"Alabama BCBS Silver — 2024",val:335,pct:8,color:"#1e3a5f"},
+              {label:"Alabama BCBS Silver — 2026",val:490,pct:58,color:"#dc2626"},
+              {label:"Tennessee BCBS Silver — 2026",val:385,pct:24,color:"#16a34a"},
+              {label:"National Avg Silver — 2026",val:440,pct:35,color:"#6b7280"},
+            ].map((r,i)=>(
+              <div key={i} style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{fontSize:12.5,color:"#374151"}}>{r.label}</span>
+                  <span style={{fontFamily:"monospace",fontSize:12.5,fontWeight:700,color:r.color}}>${r.val}/mo {r.pct>0&&<span style={{fontSize:10,color:r.color}}>+{r.pct}% vs 2022</span>}</span>
+                </div>
+                <div style={{height:18,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:(r.val/550*100)+"%",background:r.color,opacity:.8,borderRadius:3}}/>
+                </div>
+              </div>
+            ))}
+            <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:8}}>Note: All figures are unsubsidized Silver plan premiums for a 40-year-old non-smoker. Subsidies dramatically reduce actual cost for those who qualify — but most middle-class Alabamians lost their subsidies when Congress let enhanced credits expire in 2025.</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
 // ─── HEALTH SYSTEM PAGE ───────────────────────────────────────
 function HealthPage(){
   const[tab,setTab]=useState("overview");
@@ -2109,6 +2609,7 @@ function Dashboard({go}){
       {id:"utilities",icon:"💧",label:"Power, Water & Utilities",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
       {id:"health",icon:"✚",label:"Health System",sub:"HHHS $2.4B monopoly · CEO $3.1M · Medicaid gap · $63M tax exemption"},
       {id:"money",icon:"💰",label:"Follow the Money",sub:"City budget · no-bid contracts · donor→policy · pay clocks"},
+      {id:"insurance",icon:"🛡",label:"Insurance & The Coverage Gap",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
       {id:"workers",icon:"👷",label:"Workers Rights & Child Care",sub:"$7.25/hr wage ban · $14,400/yr infant care · NLRB · right-to-work"},
       {id:"taxes",icon:"🧾",label:"Taxes",sub:"Property · grocery · income · corporate vs individual · millage calculator"},
     ]},
@@ -2388,6 +2889,7 @@ export default function App(){
     if(page==="equity")      return <EquityPage/>;
     if(page==="utilities")   return <UtilitiesPage/>;
     if(page==="health")      return <HealthPage/>;
+    if(page==="insurance")   return <InsurancePage/>;
     if(page==="money")       return <MoneyPage/>;
     if(page==="workers")     return <InvestPage id="workers"/>;
     if(page==="taxes")       return <InvestPage id="taxes"/>;
