@@ -2883,7 +2883,7 @@ function NetworkGraph({nodes,edges,title,subtitle}){
           const r=n.big?22:n.med?16:12;
           return(
             <g key={n.id} style={{cursor:"pointer"}} onMouseEnter={()=>setHover(n.id)} onMouseLeave={()=>setHover(null)} onClick={()=>setHover(v=>v===n.id?null:n.id)}>
-              <circle cx={n.x} cy={n.y} r={r+4} fill={n.color||"#1e3a5f"} opacity={active?.15:.08}/>
+              <circle cx={n.x} cy={n.y} r={r+4} fill={n.color||"#1e3a5f"} opacity={active?0.15:0.08}/>
               <circle cx={n.x} cy={n.y} r={r} fill={n.color||"#1e3a5f"} stroke={active?"#c9a84c":"rgba(255,255,255,.2)"} strokeWidth={active?2:1} filter={active?"url(#glow)":""}/>
               <text x={n.x} y={n.y+1} textAnchor="middle" dominantBaseline="middle" fontSize={n.big?8:7} fill="#fff" fontWeight="800" style={{pointerEvents:"none"}}>
                 {n.short||n.label.slice(0,6)}
@@ -2916,17 +2916,6 @@ function NetworkGraph({nodes,edges,title,subtitle}){
       })()}
       <div style={{fontSize:9.5,color:"rgba(255,255,255,.3)",marginTop:8}}>Tap or click any node to see connections · Source: FEC.gov, fcpa.alabama.gov, public records</div>
     </div>
-
-      {/* ── Bottom disclaimer ticker — Dashboard only ── */}
-      <div style={{position:"fixed",bottom:0,left:0,right:0,background:"rgba(13,26,43,.97)",borderTop:"1px solid rgba(201,168,76,.2)",height:26,overflow:"hidden",display:"flex",alignItems:"center",zIndex:60}}>
-        <style>{`@keyframes bticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}`}</style>
-        <div style={{display:"flex",whiteSpace:"nowrap",animation:"bticker 40s linear infinite",fontSize:9.5,color:"rgba(255,255,255,.38)",letterSpacing:.4,lineHeight:1}}>
-          {[1,2].map(k=>(
-            <span key={k} style={{paddingRight:60}}>⚠ DISCLAIMER — This app uses artificial intelligence to research and present public records. The same AI technology corporations and federal agencies use on you is used here — to inform you. All data sourced from FEC.gov, fcpa.alabama.gov, NCES, BLS, IRS Form 990s, Alabama Legislature, and local government filings. AI does not create facts — it surfaces them. Verify anything important at the original source.</span>
-          ))}
-        </div>
-      </div>
-      <div style={{height:30}}/>
   );
 }
 
