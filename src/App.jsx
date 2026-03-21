@@ -4351,7 +4351,6 @@ function TaxesPage(){
   const estimatedALTax=alIncomeTax(taxableIncome);
   const effectiveRate=(estimatedALTax/Math.max(incomeVal,1)*100).toFixed(1);
   const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
-  const[homeValue,setHomeValue]=useState(200000);
   const millage=0.00382;
   const estimatedTax=Math.round(homeValue*0.1*millage);
 
