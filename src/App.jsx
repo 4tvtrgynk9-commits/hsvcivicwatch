@@ -33,7 +33,7 @@ async function callAI(prompt){
 // ─── CSS ──────────────────────────────────────────────────────
 const CSS=`
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:#1a1a1a;overflow-x:hidden}
+html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-serif;font-size:16px;color:#1a1a1a;overflow-x:hidden}
 #root{height:100%}
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:260px;background:${C.navy};color:#fff;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
@@ -41,15 +41,15 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .sidebar-logo h1{font-size:13px;font-weight:800;color:${C.gold};letter-spacing:1px;line-height:1.3}
 .sidebar-logo p{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px}
 .nav-group{padding:14px 16px 4px;font-size:8.5px;font-weight:700;letter-spacing:2px;color:rgba(201,168,76,.5);text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);border-left:3px solid transparent;transition:all .15s;user-select:none}
+.nav-item{display:flex;align-items:center;gap:9px;padding:10px 16px;cursor:pointer;font-size:14px;font-weight:500;color:rgba(255,255,255,.6);border-left:3px solid transparent;transition:all .15s;user-select:none}
 .nav-item:hover,.nav-item.active{color:${C.gold};background:rgba(201,168,76,.08);border-left-color:${C.gold};font-weight:700}
 .nav-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0}
 .main{flex:1;overflow-y:auto;background:${C.bg}}
-.page{max-width:680px;margin:0 auto;padding:20px 16px 40px}
+.page{max-width:700px;margin:0 auto;padding:22px 18px 40px}
 .page-header{margin-bottom:20px}
-.page-header h2{font-size:24px;font-weight:900;color:${C.navy};line-height:1.2}
+.page-header h2{font-size:26px;font-weight:900;color:${C.navy};line-height:1.2}
 .page-header h2 em{color:${C.red};font-style:normal}
-.page-header p{font-size:14px;color:${C.muted};margin-top:6px;line-height:1.6}
+.page-header p{font-size:15px;color:${C.muted};margin-top:6px;line-height:1.6}
 .tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:2px 8px;border-radius:10px;margin-bottom:8px}
 .tag-red{background:rgba(220,38,38,.12);color:${C.red};border:1px solid rgba(220,38,38,.2)}
 .tag-navy{background:rgba(30,58,95,.1);color:${C.navy};border:1px solid rgba(30,58,95,.2)}
@@ -58,17 +58,17 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .tag-blue{background:rgba(37,99,235,.1);color:#2563eb;border:1px solid rgba(37,99,235,.2)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .stat-card{background:#fff;border:1px solid ${C.border};border-radius:6px;padding:14px 12px}
-.stat-val{font-size:24px;font-weight:900;line-height:1}
-.stat-lbl{font-size:10px;color:${C.muted};margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
-.stat-sub{font-size:12px;color:${C.muted};margin-top:3px;line-height:1.3}
+.stat-val{font-size:26px;font-weight:900;line-height:1}
+.stat-lbl{font-size:11px;color:${C.muted};margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
+.stat-sub{font-size:13px;color:${C.muted};margin-top:3px;line-height:1.3}
 .fact{border-radius:5px;padding:12px 14px;margin-bottom:10px;border-left:4px solid}
 .fact-red{background:#fef2f2;border-color:${C.red}}
 .fact-gold{background:#fffbeb;border-color:${C.gold}}
 .fact-green{background:#f0fdf4;border-color:${C.green}}
 .fact-blue{background:#eff6ff;border-color:#2563eb}
 .fact-label{font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}
-.fact-text{font-size:14px;line-height:1.7}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:none;border-radius:4px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.fact-text{font-size:15px;line-height:1.7}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:none;border-radius:4px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity .15s}
 .btn:hover{opacity:.85}
 .btn-navy{background:${C.navy};color:#fff}
 .btn-gold{background:${C.gold};color:#fff}
@@ -79,10 +79,10 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .ai-panel-label{font-size:10px;font-weight:800;color:#1e3a5f;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .ai-text{font-size:13px;color:#2d2a22;line-height:1.85}
 .card{background:#fff;border:1px solid ${C.border};border-radius:6px;padding:14px;margin-bottom:10px}
-.card-title{font-size:15px;font-weight:700;color:${C.navy};margin-bottom:4px}
-.card-sub{font-size:13.5px;color:${C.muted};line-height:1.5}
+.card-title{font-size:16px;font-weight:700;color:${C.navy};margin-bottom:4px}
+.card-sub{font-size:14.5px;color:${C.muted};line-height:1.5}
 .tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:2px solid ${C.border};padding-bottom:8px;flex-wrap:wrap}
-.tab{padding:7px 16px;border:none;border-radius:4px 4px 0 0;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:#f0ebe2;color:${C.muted};transition:all .12s}
+.tab{padding:8px 16px;border:none;border-radius:4px 4px 0 0;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;background:#f0ebe2;color:${C.muted};transition:all .12s}
 .tab.active{background:${C.navy};color:${C.gold}}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .dash-card{background:#fff;border:1px solid ${C.border};border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;border-left:4px solid}
@@ -119,13 +119,13 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
   .page{padding:14px 12px 60px;max-width:100%}
   .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
   .dash-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .stat-val{font-size:19px}
-  .stat-lbl{font-size:9px}
-  .stat-sub{font-size:11.5px}
-  .page-header h2{font-size:21px}
+  .stat-val{font-size:21px}
+  .stat-lbl{font-size:10px}
+  .stat-sub{font-size:12.5px}
+  .page-header h2{font-size:23px}
   .tabs{gap:3px}
-  .tab{padding:6px 10px;font-size:10.5px}
-  .btn{font-size:11.5px;padding:8px 14px}
+  .tab{padding:7px 10px;font-size:12px}
+  .btn{font-size:12.5px;padding:8px 14px}
   .dash-card{padding:12px}
   .dash-card-title{font-size:11.5px}
   .dash-card-sub{font-size:10px}
@@ -413,13 +413,43 @@ function StatGrid({stats}){
   );
 }
 
-function FactBlocks({facts}){
-  return facts.map((f,i)=>(
-    <div key={i} className={`fact fact-${f.k}`}>
+function FactBlock({f,i}){
+  const[open,setOpen]=useState(false);
+  const PREVIEW=220;
+  const long=f.text&&f.text.length>PREVIEW;
+  return(
+    <div key={i} className={"fact fact-"+f.k} style={{cursor:long?"pointer":"default"}} onClick={()=>long&&setOpen(o=>!o)}>
       <div className="fact-label" style={{color:f.lc}}>{f.label}</div>
-      <div className="fact-text" style={{color:f.tc}}>{f.text}</div>
+      <div className="fact-text" style={{color:f.tc}}>
+        {long&&!open?f.text.slice(0,PREVIEW)+"...":f.text}
+      </div>
+      {long&&(
+        <div style={{fontSize:11,fontWeight:700,color:f.lc,marginTop:7,letterSpacing:.3}}>
+          {open?"▲ Show less":"▼ Read full explanation"}
+        </div>
+      )}
     </div>
-  ));
+  );
+}
+
+function FactBlocks({facts}){
+  return facts.map((f,i)=><FactBlock key={i} f={f} i={i}/>);
+}
+
+// ─── EXPANDABLE TEXT COMPONENT ───────────────────────────────
+function ExpandText({text,preview=180,style={}}){
+  const[open,setOpen]=useState(false);
+  const long=text&&text.length>preview;
+  return(
+    <span>
+      <span style={style}>{long&&!open?text.slice(0,preview)+"...":text}</span>
+      {long&&(
+        <button onClick={()=>setOpen(o=>!o)} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#c9a84c",marginLeft:6,padding:0,fontFamily:"inherit"}}>
+          {open?"▲ less":"▼ more"}
+        </button>
+      )}
+    </span>
+  );
 }
 
 // ─── INVESTIGATION PAGE (generic) ────────────────────────────
@@ -431,7 +461,7 @@ function InvestPage({id}){
       <div className="page-header">
         <span className={`tag ${p.tag}`}>{p.tag.replace("tag-","").toUpperCase()} · INVESTIGATION</span>
         <h2>{p.title} <em>{p.subtitle}</em></h2>
-        <p>{p.sub}</p>
+        <p style={{fontSize:15,color:"#6b7280",marginTop:6,lineHeight:1.7}}>{p.sub}</p>
       </div>
       <StatGrid stats={p.stats}/>
       <FactBlocks facts={p.facts}/>
@@ -591,7 +621,7 @@ function EquityPage(){
               <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
-            <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>{inv.summary}</p>
+            <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}><ExpandText text={inv.summary} preview={160}/></p>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {inv.sources.map((s,j)=>(
                 <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>
@@ -692,169 +722,274 @@ function UtilitiesPage(){
     });
   }
 
-  // Pay clock rates
-  const tvaCeoRate   = 8100000/(365*24*3600);   // Jeff Lyash $8.1M/yr
-  const tvaWorkerRate= 22.50/3600;              // avg TVA direct employee ~$22.50/hr
-  const huCeoRate    = 430000/(365*24*3600);    // Wes Kelley est. $380-480k, use $430k
-  const huWorkerRate = 19.50/3600;              // avg HU frontline worker ~$52k/yr
-  const trianaRate   = 52000/(365*24*3600);     // Triana town administrator/water mgr est.
-  const trianaWorkerRate = 16.00/3600;          // Triana water worker est. $16/hr
+  // ── REAL RATE MATH (March 2026) ──
+  // HU Schedule RS effective March 1, 2026:
+  // Residential Availability Charge: $20.23/mo (was $17.23 + $3.00 Jan 2025 increase)
+  // First 1,400 kWh: $0.11675/kWh (was $0.11387 + $0.00288 Jan 2025)
+  // Over 1,400 kWh: $0.12289/kWh
+  // TVA Fuel Cost Adjustment Feb 2026: 2.397¢/kWh (added on top)
+  // Avg Huntsville household: ~1,200 kWh/mo typical, 1,800-2,200 kWh summer peak
+  // Avg annual bill: $151-165/mo annual avg; summer peak Jul-Aug $280-400+
+  // All-in summer peak bill (2,000 kWh): $20.23 + (1400*0.11675) + (600*0.12289) + (2000*0.02397) = ~$278
+  // All-in typical month (1,200 kWh): $20.23 + (1200*0.11675) + (1200*0.02397) = ~$189
+  // Note: water + gas adds another $50-80/mo on top → combined HU bill $200-$450+ in summer
 
-  // Rate comparison data
+  // Pay clocks
+  const tvaCeoRate    = 8100000/(365*24*3600);  // Jeff Lyash
+  const tvaWorkerRate = 22.50/3600;
+  const huCeoRate     = 430000/(365*24*3600);   // Wes Kelley est.
+  const huWorkerRate  = 19.50/3600;
+  const trianaRate    = 55000/(365*24*3600);
+  const trianaWorkerRate = 16.00/3600;
+
+  // Rate comparison — CORRECTED March 2026 data
   const rateComparison=[
-    {city:"Huntsville, AL",provider:"HU + TVA",monthlyBill:163,governance:"Appointed boards",govType:"appointed",color:"#dc2626",note:"Post 2025 increases. Board appointed by City Council."},
-    {city:"Chattanooga, TN",provider:"EPB + TVA",monthlyBill:152,governance:"Elected board",govType:"elected",color:"#16a34a",note:"EPB is a municipal utility with elected board — same TVA wholesale."},
-    {city:"Nashville, TN",provider:"NES + TVA",monthlyBill:148,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Nashville Electric Service, appointed board."},
-    {city:"Knoxville, TN",provider:"KUB + TVA",monthlyBill:140,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Knoxville Utilities Board, appointed. Lower rates than Huntsville."},
-    {city:"National Average",provider:"Varies",monthlyBill:147,governance:"Varies",govType:"mixed",color:"#6b7280",note:"EIA 2025 national average residential electric bill."},
-    {city:"Alabama Average",provider:"Alabama Power",monthlyBill:184,governance:"PSC regulated",govType:"private",color:"#7f1d1d",note:"Alabama Power (private) customers pay significantly more than HU customers."},
-    {city:"Nebraska (public)",provider:"NPPD/LES",monthlyBill:97,governance:"Elected board",govType:"elected",color:"#2563eb",note:"Nebraska Public Power District — elected board, lowest rates. Best practice example."},
-  ];
-
-  // Executive vs worker pay data
-  const payComparison=[
-    {
-      org:"Tennessee Valley Authority",
-      type:"Federal Gov. Corporation",
-      color:"#7f1d1d",
-      executive:{name:"Jeff Lyash",title:"CEO",pay:8100000,hourly:3894,note:"Approved by a board he works alongside. No shareholder vote. No PSC oversight."},
-      worker:{role:"Avg TVA Direct Employee",hourly:22.50,annual:46800,note:"~$22.50/hr. Works at plants like Browns Ferry, 15 miles from Huntsville."},
-      ratio:Math.round(8100000/46800),
-      taxStatus:"Federal corporation — zero income tax at any level.",
-      accountability:"Only Congress can reform TVA. AL delegation received $1.4M+ in energy PACs.",
-    },
-    {
-      org:"Huntsville Utilities",
-      type:"Municipal Utility — City Owned",
-      color:"#1e3a5f",
-      executive:{name:"Wes Kelley",title:"President & CEO",pay:430000,hourly:207,note:"Est. $380-480k. Not publicly disclosed — municipal utility exemption. Appointed board sets salary."},
-      worker:{role:"Avg HU Frontline Worker",hourly:19.50,annual:40560,note:"Meter readers, line workers, customer service. ~$52k/yr blended."},
-      ratio:Math.round(430000/40560),
-      taxStatus:"City-owned public utility — no income tax. HU board members: ~$200/meeting stipend.",
-      accountability:"Board appointed by City Council. No public election. Rate changes require City Council approval.",
-    },
-    {
-      org:"Triana Water Works",
-      type:"Town-Operated Water System",
-      color:"#dc2626",
-      executive:{name:"Town Administrator",title:"Water System Manager",pay:55000,hourly:26,note:"Est. $45-65k. Town of 2,300 residents. No dedicated utility CEO. PFOS detected above health guidelines."},
-      worker:{role:"Water System Worker",hourly:16.00,annual:33280,note:"Est. $14-18/hr. Triana is a majority-Black community on EPA Superfund list."},
-      ratio:Math.round(55000/33280),
-      taxStatus:"Town government — serves 2,300 residents, majority Black. Still on EPA Superfund list.",
-      accountability:"Controlled by elected mayor and town council. Has no city council representation in Huntsville.",
-    },
+    {city:"Huntsville, AL — Summer Peak",provider:"HU + TVA",monthlyBill:320,governance:"Appointed board",govType:"appointed",color:"#dc2626",note:"Jul-Aug avg for 2,000 kWh home. $20.23 fixed + usage + TVA fuel surcharge. No PSC oversight."},
+    {city:"Huntsville, AL — Annual Avg",provider:"HU + TVA",monthlyBill:189,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"~1,200 kWh typical month post-2025 rate increases. Up ~15% since 2022."},
+    {city:"Chattanooga, TN",provider:"EPB + TVA",monthlyBill:152,governance:"Elected board",govType:"elected",color:"#16a34a",note:"Same TVA wholesale. EPB elected board keeps delivery costs lower. $168/mo peak."},
+    {city:"Knoxville, TN",provider:"KUB + TVA",monthlyBill:140,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"KUB appointed but smaller markup. Same TVA base."},
+    {city:"Nashville, TN",provider:"NES + TVA",monthlyBill:148,governance:"Appointed board",govType:"appointed",color:"#ea580c",note:"Nashville Electric Service. Similar structure to HU."},
+    {city:"National Average",provider:"Varies",monthlyBill:180,governance:"Varies",govType:"mixed",color:"#6b7280",note:"EIA March 2026 national avg: 18.05¢/kWh. +21% since 2022."},
+    {city:"Alabama Average",provider:"Alabama Power",monthlyBill:184,governance:"PSC regulated (private)",govType:"private",color:"#7f1d1d",note:"Alabama Power investor-owned. AL has highest electric rates in South."},
+    {city:"Nebraska (best practice)",provider:"NPPD/LES",monthlyBill:97,governance:"Elected board",govType:"elected",color:"#2563eb",note:"Elected public power board. Lowest rates in US. Same public utility structure as HU — different governance."},
   ];
 
   const investigations=[
     {
-      title:"The TVA Federal Monopoly — Why You Cannot Choose Your Electric Company",
-      impact:"HIGH",category:"Federal Monopoly",date:"Ongoing since 1933",
-      summary:"By federal statute, TVA holds an exclusive service territory across 7 states. No Alabama state body has any authority over TVA rates. Only Congress can reform it — and the Alabama delegation has introduced zero oversight bills.",
-      analysis:"TVA is a federal government corporation created by Congress in 1933. Federal statute gives TVA an exclusive 7-state service territory — no private or public utility can compete with it. Browns Ferry Nuclear Plant in Athens, Alabama — 15 miles from Huntsville — generates 3,800 megawatts of electricity. It was built partly with federal appropriations intended to benefit the region. Alabama ratepayers must purchase that power from TVA at TVA-set rates.\n\nThe Alabama Public Service Commission has zero jurisdiction over TVA. No Alabama state body can cap TVA rates or require TVA to justify increases. The ONLY mechanism to reform TVA is an Act of Congress. TVA has raised rates three times in 18 months. Jeff Lyash earned $8.1M in 2023 while issuing those increases. TVA carries $20B+ in long-term debt — all passed to ratepayers.\n\nRep. Dale Strong (AL-5), Sen. Katie Britt, and Sen. Tommy Tuberville collectively received $1.4M+ from energy PACs and introduced zero TVA oversight bills. Contact your federal representatives directly — they are the only people who can change this.",
+      title:"How Your HU Bill Actually Works — And Who Set Every Number On It",
+      impact:"HIGH",category:"Rate Structure",date:"Effective March 1, 2026",
+      summary:"Your Huntsville Utilities electric bill has four distinct charges — each set by a different entity, none of them elected by you. Here is exactly what you pay, who set it, and who approved it.",
+      analysis:`Your bill has four layers:
+
+1. RESIDENTIAL AVAILABILITY CHARGE — $20.23/month fixed. You pay this whether you use any electricity or not. Set by HU's Electric Board (appointed by City Council). Went up $3.00 in January 2025.
+
+2. CONSUMPTION CHARGE — $0.11675/kWh for the first 1,400 kWh, then $0.12289/kWh above that. Set by HU's Electric Board and approved by City Council. Went up $0.00288/kWh in January 2025 and another $0.00114 in October 2025.
+
+3. TVA FUEL COST ADJUSTMENT — Added on top. February 2026: 2.397¢/kWh on every kWh you use. Set monthly by TVA based on fuel costs. No Alabama body approves this. It changed monthly — peaked at 4.6¢/kWh in August 2022. This is a pure TVA passthrough.
+
+4. CITY SEWER / TRASH — HU collects these on behalf of the city. Not their revenue.
+
+For a typical 1,200 kWh month: $20.23 + $140.10 + $28.76 = ~$189. For a 2,000 kWh August bill: $20.23 + $163.45 + $73.49 + FCA = ~$278-320. Residents report $300-$450 summer peaks.
+
+Who approved this? HU Board approved the rate structure. City Council approved it unanimously in October 2024. TVA approved their fuel surcharge internally. Your state legislators have zero authority over any of it.`,
       sources:[
-        {label:"TVA Annual Report 2023",url:"https://www.tva.com/about-tva/annual-reports"},
-        {label:"Browns Ferry — NRC",url:"https://www.nrc.gov/info-finder/reactors/bf.html"},
-        {label:"Senate Energy Committee",url:"https://www.energy.senate.gov"},
-      ],
-      foia:{
-        title:"FOIA Request — TVA Rate-Setting Documents",
-        to:"Tennessee Valley Authority — FOIA Officer",
-        subject:"Freedom of Information Act Request — Rate Increase Justification",
-        template:"Tennessee Valley Authority — FOIA Officer\n400 W. Summit Hill Drive\nKnoxville, TN 37902\n\nRe: Freedom of Information Act Request\n\nDear FOIA Officer,\n\nPursuant to the Freedom of Information Act (5 U.S.C. §552), I request:\n\n1. All documents related to the rate increases of 2023 and 2024, including: the cost-of-service study or analysis supporting each increase, internal communications about the decision, and any board materials discussing the increases.\n\n2. The most recent executive compensation study or justification for CEO compensation.\n\n3. Board of Directors meeting minutes for 2023 and 2024.\n\n[Your Name]\n[Your Address]\n[Your Email]",
-      },
-    },
-    {
-      title:"The Double Markup — TVA Raises Rates, HU Raises Rates, You Pay Both",
-      impact:"HIGH",category:"Rate Structure",date:"Jan & Oct 2025",
-      summary:"TVA generates power and sells wholesale to Huntsville Utilities. HU marks it up and delivers it to your home. Two separate entities both adding cost — neither directly elected by you. In 2024-2025, both raised rates simultaneously.",
-      analysis:"TVA raised its wholesale rate 5.25% in August 2024 — the largest increase in 16 years. Huntsville Utilities then raised its delivery rates a combined 5.1% in January and October 2025. These are two separate increases stacked on top of each other. Your total electric bill went up approximately 10%+ in a single year.\n\nHere is what makes this especially difficult: HU is required to pass TVA's wholesale rate increases directly to customers. When TVA raises rates, HU has no choice but to raise your bill. So your bill is set by two different organizations — neither of which you vote for directly. The HU board is appointed by City Council. TVA's board is appointed by the President and confirmed by the Senate.\n\nThe rate comparison shows this matters: Chattanooga pays EPB, which also buys from TVA wholesale — but EPB's elected board has negotiated better delivery terms and kept distribution costs lower. Huntsville pays more for delivery than Chattanooga despite buying from the same TVA wholesale source. An elected HU board would have more incentive to minimize delivery costs.",
-      sources:[
+        {label:"HU Rate Schedule RS — March 2026",url:"https://www.hsvutil.org/residential_services/residential_rates.php"},
+        {label:"TVA Fuel Cost — Feb 2026",url:"https://www.tva.com/energy/our-power-system/total-monthly-fuel-costs"},
         {label:"HU Rate Increase Approval",url:"https://www.hsvutil.org/news_detail_T15_R300.php"},
-        {label:"HU Rate Schedule",url:"https://www.hsvutil.org/residential_services/residential_rates.php"},
-        {label:"Alabama PSC",url:"https://psc.alabama.gov"},
       ],
       foia:{
-        title:"Open Records Request — HU Rate Documentation",
+        title:"Open Records Request — HU Rate & Executive Compensation",
         to:"Huntsville Utilities — Records Custodian",
-        subject:"Alabama Open Records Act Request — Rate Documentation",
-        template:"Huntsville Utilities\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nI request the following public records:\n\n1. All cost-of-service studies or rate analyses conducted for the January 2025 and October 2025 rate increases.\n\n2. Full CEO and executive compensation for FY2023 and FY2024 — including base salary, bonuses, benefits, and deferred compensation.\n\n3. Board of Directors meeting minutes for all meetings in 2024 and 2025 where rate changes were discussed or approved.\n\n4. HU's TVA wholesale rate schedule and any pass-through agreements.\n\n[Your Name]\n[Your Address]",
+        subject:"Alabama Open Records Act Request — Rate Documentation and Executive Compensation",
+        template:"Huntsville Utilities\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nI request the following public records:\n\n1. All cost-of-service studies supporting the January 2025 and October 2025 rate increases.\n\n2. Full executive compensation for FY2023 and FY2024 — CEO, CFO, and all executives earning over $100,000 — including base salary, bonuses, benefits, and deferred compensation.\n\n3. Board of Directors meeting minutes for 2024 and 2025 where rate changes were discussed.\n\n4. HU's TVA wholesale rate agreement and any pass-through provisions.\n\n5. Total revenue and net income/surplus for FY2023 and FY2024.\n\n[Your Name]\n[Your Address]",
       },
     },
     {
-      title:"Triana Water Works — PFAS Contamination in a Majority-Black Community",
-      impact:"CRITICAL",category:"Environmental Justice",date:"Ongoing",
-      summary:"Triana's water shows PFOS above EWG health guidelines. The town remains on the EPA Superfund list due to Redstone Arsenal and Olin Corporation contamination. This is a majority-Black community of 2,300 with no Huntsville City Council representation.",
-      analysis:"PFOS — a PFAS 'forever chemical' linked to cancer, thyroid disease, and immune damage — has been detected above EWG health guidelines in Triana Water Works. Triana remains on the EPA Superfund list due to decades of contamination from Redstone Arsenal and Olin Corporation DDT manufacturing via Huntsville Spring Branch.\n\nTriana is a majority-Black community of approximately 2,300 residents. It has no representation on the Huntsville City Council. It cannot access IDB tax abatements. It receives none of the capital investment flowing to newly annexed Huntsville areas. The full extent of Redstone Arsenal PFAS groundwater contamination has never been fully disclosed to the public.\n\nRep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations. Gov. Ivey — who appoints ADEM leadership — received $340,000 from energy PACs. ADEM is among the weakest environmental enforcement agencies in the Southeast. The combination of contaminated water, federal inaction, and state political incentives has left Triana's residents with a water system that is failing them.",
+      title:"The TVA Lock-In — Why You Cannot Choose Your Electric Company and Nobody in Alabama Can Change That",
+      impact:"HIGH",category:"Federal Monopoly",date:"Federal Law since 1933",
+      summary:"Federal statute gives TVA an exclusive service territory across 7 states. No Alabama law, no Alabama regulator, no Alabama court can override it. Browns Ferry Nuclear Plant — 15 miles from your home — generates your electricity. You have no say in who provides it or what they charge.",
+      analysis:`TVA is a federal government corporation created by the Tennessee Valley Authority Act of 1933. That law gave TVA an exclusive right to serve its 7-state territory. No private utility, no cooperative, no new public utility can compete with TVA. It is a congressionally-imposed monopoly — and only Congress can end it.
+
+Browns Ferry Nuclear Plant in Athens, Alabama — 15 miles from Huntsville — generates 3,800 megawatts. It was built with federal funds intended to benefit the region. Alabama ratepayers must buy that power at rates TVA sets, with no ability to negotiate or switch providers.
+
+TVA has raised base rates 4.5% in FY2024 and is proposing further increases for FY2026 to fund natural gas infrastructure expansion. Their CEO Jeff Lyash earned $8.1M in 2023 — approved by a board he works alongside, with no shareholder vote or public approval. TVA carries over $20 billion in long-term debt, all passed to ratepayers.
+
+Alabama's three federal representatives — Rep. Dale Strong, Sen. Katie Britt, Sen. Tommy Tuberville — collectively received $1.4M+ from energy PACs. None have introduced TVA oversight legislation. Strong sits on the House Armed Services Committee overseeing Redstone Arsenal, which is adjacent to the TVA supply chain. The money and the silence are connected.`,
+      sources:[
+        {label:"TVA FY2026 Congressional Budget",url:"https://www.tva.gov/cj"},
+        {label:"Browns Ferry — NRC",url:"https://www.nrc.gov/info-finder/reactors/bf.html"},
+        {label:"Inside Climate News — TVA Rate Increase Aug 2024",url:"https://insideclimatenews.org/news/23082024/alabama-tva-natural-gas-electricity-cost-increase/"},
+      ],
+      foia:{
+        title:"FOIA Request — TVA Rate Justification Documents",
+        to:"Tennessee Valley Authority — FOIA Officer, 400 W. Summit Hill Drive, Knoxville TN 37902",
+        subject:"Freedom of Information Act Request — Rate Increase Supporting Documents",
+        template:"Tennessee Valley Authority\nFOIA Officer\n400 W. Summit Hill Drive\nKnoxville, TN 37902\n\nRe: Freedom of Information Act Request (5 U.S.C. §552)\n\nI request:\n\n1. All documents supporting the FY2024 4.5% base rate increase — cost-of-service analysis, board materials, internal communications.\n\n2. All documents related to the proposed FY2026 rate increase.\n\n3. The most recent executive compensation study or board approval for CEO compensation.\n\n4. Board meeting minutes for 2023 and 2024 where rate changes were approved.\n\n5. All communications between TVA and Alabama federal legislators (Strong, Britt, Tuberville) regarding rate increases — 2022 to present.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+    {
+      title:"Triana Water Works — PFAS Contamination, Superfund Status, and No Representation",
+      impact:"CRITICAL",category:"Environmental Justice",date:"Ongoing since 1970s",
+      summary:"PFOS detected above EWG health guidelines in Triana's water. The town is on the EPA Superfund list. This majority-Black community of 2,300 has no Huntsville City Council seat, no IDB access, and no political champion — just contaminated water and federal inaction.",
+      analysis:`PFOS — a PFAS forever chemical linked to kidney cancer, thyroid disease, and immune damage — has been detected above EWG health guidelines in Triana Water Works. The EPA has set a maximum contaminant level of 4 parts per trillion for PFOS; EWG's health guideline is 1 ppt. Triana's levels have exceeded EWG's standard.
+
+Triana remains on the EPA Superfund list due to contamination from two sources: Redstone Arsenal PFAS discharge into Indian Creek/Huntsville Spring Branch, and Olin Corporation DDT manufacturing that contaminated the Tennessee River. This contamination began in the 1970s and has never been fully remediated. The full extent of Redstone Arsenal's ongoing PFAS contamination has not been publicly disclosed.
+
+Triana is a majority-Black community of approximately 2,300. It has no representation on the Huntsville City Council. It cannot access IDB tax abatements that benefit corporations. It receives none of the capital investment flowing to annexed development areas. Rep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations. Gov. Ivey — who appoints ADEM leadership — received $340,000 from energy and industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. The residents of Triana are paying the price.`,
       sources:[
         {label:"EWG Tap Water Database",url:"https://www.ewg.org/tapwater/"},
-        {label:"EPA Superfund — Triana",url:"https://www.epa.gov/superfund"},
-        {label:"PFAS Notification Act Vote",url:"https://www.congress.gov"},
+        {label:"EPA Superfund Sites",url:"https://www.epa.gov/superfund"},
+        {label:"PFAS Notification Act",url:"https://www.congress.gov"},
       ],
       foia:{
-        title:"Open Records Request — Triana Water Quality",
-        to:"Town of Triana — Records Custodian",
+        title:"Open Records Request — Triana Water Quality Records",
+        to:"Town of Triana — Records Custodian, 640 6th Street, Triana AL 35756",
         subject:"Alabama Open Records Act Request — Water Quality and Contamination Records",
-        template:"Town of Triana\nRe: Alabama Open Records Act Request (§36-12-40)\n\nDear Records Custodian,\n\nI request the following public records:\n\n1. All Consumer Confidence Reports (annual water quality reports) for Triana Water Works for 2020 to present.\n\n2. All correspondence with EPA, ADEM, or Redstone Arsenal regarding PFAS or PFOS contamination — 2018 to present.\n\n3. All water testing results for PFAS compounds — 2020 to present.\n\n4. Any remediation plans or agreements with EPA related to Superfund contamination.\n\n[Your Name]\n[Your Address]",
+        template:"Town of Triana\n640 6th Street, Triana, AL 35756\nRe: Alabama Open Records Act Request (§36-12-40)\n\nI request:\n\n1. All Consumer Confidence Reports (annual water quality reports) for Triana Water Works — 2018 to present.\n\n2. All correspondence with EPA, ADEM, or Redstone Arsenal regarding PFAS, PFOS, or DDT contamination — 2015 to present.\n\n3. All water testing results for PFAS compounds — 2018 to present, including specific concentrations and detection dates.\n\n4. Any remediation agreements, consent orders, or compliance schedules with EPA.\n\n[Your Name]\n[Your Address]",
       },
     },
   ];
 
-  const tabs=[
-    {id:"overview",label:"Overview"},
-    {id:"rates",label:"Rate Comparison"},
-    {id:"pay",label:"Executive Pay"},
-    {id:"providers",label:"Providers"},
+  const payData=[
+    {
+      org:"TVA",full:"Tennessee Valley Authority",type:"Federal Gov. Corporation · No income tax",color:"#7f1d1d",
+      exec:{name:"Jeff Lyash",title:"CEO",pay:8100000,rate:tvaCeoRate,note:"$8.1M in 2023. Approved by a board he works alongside. Zero shareholder vote. Zero public approval."},
+      worker:{title:"Avg TVA Direct Employee",pay:46800,rate:tvaWorkerRate,note:"~$22.50/hr. Works at Browns Ferry 15 miles from Huntsville. Same company, 173:1 pay ratio."},
+      ratio:173,
+      govNote:"Only Congress can set CEO pay limits. AL delegation received $1.4M+ in energy PACs. Zero oversight bills filed.",
+    },
+    {
+      org:"HU",full:"Huntsville Utilities",type:"Municipal Utility · City-Owned · No income tax",color:"#1e3a5f",
+      exec:{name:"Wes Kelley",title:"President & CEO",pay:430000,rate:huCeoRate,note:"Est. $380-480k. Salary not publicly disclosed — municipal exemption. Appointed board sets pay."},
+      worker:{title:"Avg HU Frontline Worker",pay:40560,rate:huWorkerRate,note:"~$19.50/hr avg for meter readers, line workers, maintenance. ~11:1 pay ratio."},
+      ratio:11,
+      govNote:"Board appointed by City Council. Rate changes need City Council approval. CEO salary requires Open Records request — HU has resisted disclosure.",
+    },
+    {
+      org:"Triana Water",full:"Triana Water Works",type:"Town-Run · PFAS in water · Superfund site",color:"#dc2626",
+      exec:{name:"Town Administrator",title:"Water System Oversight",pay:55000,rate:trianaRate,note:"Est. $45-65k for town administrator overseeing water system. Town of 2,300 people. No dedicated utility CEO."},
+      worker:{title:"Water System Worker",pay:33280,rate:trianaWorkerRate,note:"Est. $16/hr. Also drinks the contaminated water. Majority-Black community with zero Huntsville City Council representation."},
+      ratio:2,
+      govNote:"Controlled by elected mayor and town council. No IDB access. No capital investment from Huntsville. On EPA Superfund list since 1980s.",
+    },
   ];
+
+  const tabs=[{id:"overview",label:"Overview"},{id:"rates",label:"📊 Rate Comparison"},{id:"pay",label:"⏱ Pay Clocks"},{id:"providers",label:"Providers"}];
+
+  function InvCard({inv,i,prefix}){
+    const k=prefix+i;
+    return(
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:"1px solid "+(inv.impact==="CRITICAL"?"#fca5a5":"#fdba74")}}>{inv.impact}</span>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+            <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>
+            <ExpandText text={inv.summary} preview={160}/>
+          </p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {inv.sources.map((s,j)=>(
+              <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
+            ))}
+          </div>
+        </div>
+        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
+          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
+            {analysisOpen[k]?"▲ Hide Analysis":"🔍 Decode This"}
+          </button>
+          <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[k]:!p[k]}))}>
+            {foiaOpen[k]?"Hide Template":"📋 FOIA / Records"}
+          </button>
+        </div>
+        {analysisOpen[k]&&(
+          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+              <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>
+              CIVIC INVESTIGATOR ANALYSIS
+            </div>
+            {inv.analysis.split('\n\n').map((para,pi)=>{
+              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
+              const colors=["#fca5a5","#93c5fd","#86efac"];
+              const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
+              return(
+                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%3],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%3]}</div>
+                  <p style={{fontSize:13.5,color:textColors[pi%3],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%3],paddingLeft:12}}>{para}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {foiaOpen[k]&&(
+          <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
+            <textarea readOnly value={inv.foia.template} rows={10} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
+            <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+              <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy(k,inv.foia.template)}>{copied[k]?"✓ Copied!":"📋 Copy"}</button>
+              <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
+                <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return(
     <div className="page">
       <div className="page-header">
         <span className="tag tag-blue">UTILITIES · INVESTIGATION</span>
         <h2>Power, Water & <em>Utilities</em></h2>
-        <p>TVA owns the nuclear plant 15 miles from your home. You pay to lease your own electricity back. No Alabama body can cap their rates. Here is the full picture — who controls it, what they earn, what you pay, and what you can do.</p>
+        <p>TVA owns the nuclear plant 15 miles from your home. HU delivers that power to your door. Neither is elected. Neither answers to Alabama regulators. Your summer bill can top $400. Here is exactly who decided that — and who is letting it happen.</p>
       </div>
 
-      {/* Tabs */}
       <div className="tabs">
         {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
       </div>
 
-      {/* ── OVERVIEW TAB ── */}
+      {/* ── OVERVIEW ── */}
       {tab==="overview"&&(
         <div>
           {/* Chain diagram */}
           <div className="card" style={{padding:"20px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:16,textTransform:"uppercase"}}>How Power Gets to Your Home — And Who Takes a Cut</div>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:16,textTransform:"uppercase"}}>The Chain: How Power Gets to Your Home — And Who Takes a Cut</div>
             <div style={{display:"flex",alignItems:"stretch",gap:0,flexWrap:"wrap",rowGap:10}}>
               {[
-                {node:"Browns Ferry\nNuclear Plant",sub:"Athens, AL · 15 mi away\nGenerates 3,800 MW",color:"#7f1d1d",note:"Built with federal funds"},
-                {arrow:"→\nowned by →"},
-                {node:"TVA\nFederal Corp.",sub:"Sets wholesale rate\nNo AL oversight",color:"#dc2626",note:"$8.1M CEO · $20B debt"},
-                {arrow:"→\nsells to →"},
-                {node:"Huntsville\nUtilities",sub:"Adds delivery fees\n& infrastructure cost",color:"#1e3a5f",note:"Appointed board"},
-                {arrow:"→\nbills →"},
-                {node:"YOU",sub:"No choice\nNo vote on rates",color:"#374151",note:"~$163/mo avg"},
+                {node:"Browns Ferry\nNuclear",sub:"Athens, AL · 15 mi\n3,800 MW capacity",color:"#7f1d1d",note:"Built w/ federal funds"},
+                {arrow:"→\nowned by"},
+                {node:"TVA",sub:"Federal monopoly\nSets wholesale rate",color:"#dc2626",note:"$8.1M CEO · $20B debt"},
+                {arrow:"→\npasses to"},
+                {node:"Huntsville\nUtilities",sub:"Adds $20.23 fixed fee\n+ delivery markup",color:"#1e3a5f",note:"Appointed board"},
+                {arrow:"→\nbills"},
+                {node:"YOU",sub:"No choice\n$189-$400+/mo",color:"#374151",note:"Zero opt-out"},
               ].map((item,i)=>item.arrow?(
-                <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"0 8px",fontSize:10,color:"#6b7280",textAlign:"center",whiteSpace:"pre-line",flexShrink:0}}>
-                  {item.arrow}
-                </div>
+                <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"0 6px",fontSize:10,color:"#6b7280",textAlign:"center",whiteSpace:"pre-line",flexShrink:0}}>{item.arrow}</div>
               ):(
-                <div key={i} style={{flex:item.node==="YOU"?"0 0 auto":1,minWidth:100,padding:"12px",background:item.color+"12",border:`1px solid ${item.color}30`,borderRadius:4,textAlign:"center"}}>
+                <div key={i} style={{flex:item.node==="YOU"?"0 0 auto":1,minWidth:95,padding:"12px 10px",background:item.color+"12",border:"1px solid "+item.color+"30",borderRadius:4,textAlign:"center"}}>
                   <div style={{fontSize:12,fontWeight:700,color:item.color,whiteSpace:"pre-line",marginBottom:4}}>{item.node}</div>
-                  <div style={{fontSize:10,color:"#6b7280",whiteSpace:"pre-line",marginBottom:4}}>{item.sub}</div>
+                  <div style={{fontSize:10,color:"#6b7280",whiteSpace:"pre-line",marginBottom:3,lineHeight:1.5}}>{item.sub}</div>
                   <div style={{fontSize:9,color:item.color,fontWeight:600}}>{item.note}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Quick stats */}
+          {/* Bill breakdown box */}
+          <div style={{background:"#1e3a5f",borderRadius:6,padding:"18px 20px",marginBottom:16,color:"#fff"}}>
+            <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,textTransform:"uppercase"}}>Your HU Electric Bill — What Each Line Actually Means</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[
+                {line:"Residential Availability Charge",amount:"$20.23/mo",who:"Set by HU Electric Board",note:"Fixed regardless of usage. +$3 since Jan 2025.",color:"#fca5a5"},
+                {line:"Consumption Charge",amount:"11.7¢–12.3¢/kWh",who:"Set by HU Board + City Council",note:"First 1,400 kWh lower rate, then higher. +$0.004/kWh since 2025.",color:"#93c5fd"},
+                {line:"TVA Fuel Cost Adjustment",amount:"~2.4¢/kWh added",who:"Set by TVA monthly — no AL approval",note:"Feb 2026: 2.397¢. Peaked 4.6¢ in Aug 2022. Adds $29-$90+ to your bill.",color:"#fcd34d"},
+                {line:"City Sewer / Trash",amount:"Varies",who:"City of Huntsville",note:"HU collects on city's behalf. Not their revenue — just billing agent.",color:"#86efac"},
+              ].map((r,i)=>(
+                <div key={i} style={{padding:"11px",background:"rgba(255,255,255,.06)",borderRadius:4,borderLeft:"3px solid "+r.color}}>
+                  <div style={{fontSize:8.5,color:r.color,fontWeight:700,letterSpacing:1,marginBottom:4,textTransform:"uppercase"}}>{r.line}</div>
+                  <div style={{fontFamily:"monospace",fontSize:16,fontWeight:900,color:r.color,marginBottom:3}}>{r.amount}</div>
+                  <div style={{fontSize:10.5,color:"rgba(255,255,255,.6)",marginBottom:3}}>{r.who}</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,.4)",fontStyle:"italic"}}>{r.note}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:14,padding:"11px 14px",background:"rgba(220,38,38,.15)",borderRadius:4,border:"1px solid rgba(220,38,38,.3)"}}>
+              <div style={{fontSize:9,fontWeight:800,color:"#fca5a5",letterSpacing:1,marginBottom:4}}>REAL BILLS RESIDENTS ARE SEEING</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.8)",lineHeight:1.7}}>Typical month (1,200 kWh): <strong style={{color:"#fcd34d"}}>~$189</strong> · Summer peak (2,000 kWh): <strong style={{color:"#fca5a5"}}>$280–$400+</strong> · Annual combined (electric + water + gas): <strong style={{color:"#fca5a5"}}>$200–$450+/mo</strong> depending on home size and season. Electric bills have risen approximately 15% since 2022 when stacking TVA and HU increases together.</div>
+            </div>
+          </div>
+
+          {/* Stats */}
           <div className="stats-grid" style={{marginBottom:16}}>
             {[
-              ["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote","#dc2626"],
-              ["TVA Rate Hike","5.25%","Aug 2024 — largest in 16 years","#dc2626"],
-              ["HU Rate Hike","5.1%","Jan + Oct 2025 — stacked on TVA hike","#ea580c"],
-              ["Triana PFOS","Above EWG","Health guideline exceeded in town water","#7f1d1d"],
+              ["TVA CEO Pay","$8.1M/yr","Jeff Lyash 2023 — no shareholder vote, no AL oversight","#dc2626"],
+              ["HU+TVA Rate Hikes","~15%","Combined increase since 2022 — stacked on each other","#ea580c"],
+              ["Summer Peak Bill","$280-$400+","2,000 kWh home in July-August — before water and gas","#dc2626"],
+              ["Triana PFOS","Above EWG","Health guideline exceeded — majority-Black Superfund community","#7f1d1d"],
             ].map(([l,v,s,c],i)=>(
               <div key={i} className="stat-card">
                 <div className="stat-val" style={{color:c}}>{v}</div>
@@ -864,244 +999,603 @@ function UtilitiesPage(){
             ))}
           </div>
 
-          {/* Investigation cards */}
-          {investigations.map((inv,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,overflow:"hidden"}}>
-              <div style={{padding:"16px 18px"}}>
-                <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
-                  <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:`1px solid ${inv.impact==="CRITICAL"?"#fca5a5":"#fdba74"}`}}>{inv.impact}</span>
-                  <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
-                  <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+          {investigations.map((inv,i)=><InvCard key={i} inv={inv} i={i} prefix="ov"/>)}
+
+          {/* Contact Congress */}
+          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"16px 18px",marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:12,textTransform:"uppercase"}}>Contact Congress — The Only People Who Can Reform TVA</div>
+            {[
+              {name:"Rep. Dale Strong (AL-5)",url:"https://dalestrong.house.gov/contact",note:"Received $284k from defense/energy PACs · zero TVA oversight bills filed"},
+              {name:"Sen. Katie Britt",url:"https://www.britt.senate.gov/contact",note:"Received $890k from energy PACs · no TVA reform legislation"},
+              {name:"Sen. Tommy Tuberville",url:"https://www.tuberville.senate.gov/contact",note:"Received $270k from energy PACs · no TVA oversight action"},
+            ].map((c,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#fff",borderRadius:4,marginBottom:8,border:"1px solid #93b4d4",flexWrap:"wrap",gap:8}}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{c.name}</div>
+                  <div style={{fontSize:10.5,color:"#6b7280"}}>{c.note}</div>
                 </div>
-                <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
-                <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>{inv.summary}</p>
-                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                  {inv.sources.map((s,j)=>(
-                    <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
-                  ))}
-                </div>
+                <a href={c.url} target="_blank" rel="noreferrer">
+                  <button className="btn btn-navy" style={{fontSize:11.5}}>✉ Contact →</button>
+                </a>
               </div>
-              <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
-                <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[i]:!p[i]}))}>
-                  {analysisOpen[i]?"▲ Hide Analysis":"🔍 Decode This"}
-                </button>
-                <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[i]:!p[i]}))}>
-                  {foiaOpen[i]?"Hide Template":"📋 FOIA Request"}
-                </button>
-              </div>
-              {analysisOpen[i]&&(
-                <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
-                  <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>
-                    CIVIC INVESTIGATOR ANALYSIS
-                  </div>
-                  {inv.analysis.split('\n\n').map((para,pi)=>{
-                    const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
-                    const colors=["#fca5a5","#93c5fd","#86efac"];
-                    const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
-                    return(
-                      <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
-                        <div style={{fontSize:8,fontWeight:800,color:colors[pi]||"#c9a84c",letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi]||"ANALYSIS"}</div>
-                        <p style={{fontSize:13.5,color:textColors[pi]||"#f5f0e8",lineHeight:1.85,margin:0,borderLeft:`2px solid ${colors[pi]||"#c9a84c"}`,paddingLeft:12}}>{para}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              {foiaOpen[i]&&(
-                <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
-                  <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
-                  <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
-                  <textarea readOnly value={inv.foia.template} rows={9} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
-                  <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-                    <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy("foia-u-"+i,inv.foia.template)}>{copied["foia-u-"+i]?"✓ Copied!":"📋 Copy"}</button>
-                    <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
-                      <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* ── RATE COMPARISON TAB ── */}
+      {/* ── RATE COMPARISON ── */}
       {tab==="rates"&&(
         <div>
           <div className="card" style={{padding:"20px",marginBottom:16}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Average Monthly Residential Electric Bill — City Comparison</div>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Monthly Residential Electric Bill Comparison — March 2026</div>
             <div style={{display:"flex",gap:16,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
               <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#16a34a",verticalAlign:"middle",marginRight:4}}/>Elected board</span>
               <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#ea580c",verticalAlign:"middle",marginRight:4}}/>Appointed board</span>
               <span><span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#7f1d1d",verticalAlign:"middle",marginRight:4}}/>Private/investor-owned</span>
             </div>
             {rateComparison.map((r,i)=>(
-              <div key={i} style={{marginBottom:16}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:4,alignItems:"center"}}>
+              <div key={i} style={{marginBottom:18}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:6,alignItems:"flex-start"}}>
                   <div>
-                    <span style={{fontSize:12.5,fontWeight:700,color:r.city==="Huntsville, AL"?"#dc2626":"#374151"}}>{r.city}</span>
-                    <span style={{fontSize:10,color:"#6b7280",marginLeft:8}}>{r.provider}</span>
+                    <span style={{fontSize:13,fontWeight:700,color:r.city.includes("Huntsville")?"#dc2626":"#374151"}}>{r.city}</span>
+                    <span style={{fontSize:10.5,color:"#6b7280",marginLeft:8}}>{r.provider}</span>
                   </div>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:r.govType==="elected"?"#f0fdf4":r.govType==="private"?"#fef2f2":"#fffbeb",color:r.govType==="elected"?"#16a34a":r.govType==="private"?"#dc2626":"#ea580c",border:`1px solid ${r.govType==="elected"?"#86efac":r.govType==="private"?"#fca5a5":"#fdba74"}`}}>{r.governance}</span>
-                    <span style={{fontSize:13,fontWeight:900,color:r.color,fontFamily:"monospace"}}>${r.monthlyBill}/mo</span>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                    <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:r.govType==="elected"?"#f0fdf4":r.govType==="private"?"#fef2f2":"#fffbeb",color:r.govType==="elected"?"#16a34a":r.govType==="private"?"#dc2626":"#ea580c",border:"1px solid "+(r.govType==="elected"?"#86efac":r.govType==="private"?"#fca5a5":"#fdba74")}}>{r.governance}</span>
+                    <span style={{fontSize:14,fontWeight:900,color:r.color,fontFamily:"monospace"}}>${r.monthlyBill}/mo</span>
                   </div>
                 </div>
-                <div style={{position:"relative",height:24,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(r.monthlyBill/200*100)+"%",background:r.color,opacity:.8,borderRadius:3,transition:"width 1.2s ease"}}/>
-                  {r.city==="Huntsville, AL"&&<div style={{position:"absolute",top:0,left:"73.5%",height:"100%",width:2,background:"#dc2626",opacity:.6}}/>}
+                <div style={{position:"relative",height:26,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:(r.monthlyBill/350*100)+"%",background:r.color,opacity:.82,borderRadius:3}}/>
                 </div>
-                <div style={{fontSize:10,color:"#6b7280",fontStyle:"italic",marginTop:3}}>{r.note}</div>
+                <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:3}}>{r.note}</div>
               </div>
             ))}
             <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,padding:"12px 14px",marginTop:8}}>
               <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>THE GOVERNANCE CONNECTION</div>
-              <div style={{fontSize:13,color:"#7f1d1d",lineHeight:1.65}}>The pattern is consistent: cities with <strong>elected utility boards</strong> pay lower rates. Chattanooga's EPB (elected board) buys from the same TVA wholesale source as Huntsville but charges less for delivery. Nebraska's public power (elected board) pays $97/mo — $66 less than Huntsville. Governance structure is not coincidental to cost — it is directly connected.</div>
+              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>Chattanooga's EPB uses the same TVA wholesale power as Huntsville — but an elected board has kept delivery costs lower. Nebraska's elected public power boards deliver electricity at $97/mo — the same public utility structure as HU, but with elected accountability. The difference between $97 and $320 (summer peak) is governance, not technology.</div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── EXECUTIVE PAY TAB ── */}
+      {/* ── PAY CLOCKS ── */}
       {tab==="pay"&&(
         <div>
-          {/* Live clocks */}
           <div className="card" style={{padding:"20px",marginBottom:16,background:"#fef9f9",border:"1px solid rgba(220,38,38,.18)"}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>⏱ Live Earnings — Since You Opened This Page</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
-              {[
-                {label:"TVA CEO (Jeff Lyash)",rate:tvaCeoRate,color:"#7f1d1d",sub:"$8.1M/yr · federal corp · no shareholder vote"},
-                {label:"HU CEO (Wes Kelley)",rate:huCeoRate,color:"#1e3a5f",sub:"Est. $430k/yr · city utility · appointed board"},
-                {label:"Triana Water Manager",rate:trianaRate,color:"#dc2626",sub:"Est. $55k/yr · town of 2,300 · PFAS in water"},
-              ].map((c,i)=>(
-                <div key={i} style={{padding:"12px",background:c.color+"10",borderRadius:4,border:`1px solid ${c.color}25`}}>
-                  <div style={{fontSize:8.5,color:c.color,fontWeight:700,letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>{c.label}</div>
-                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:c.color,lineHeight:1}}>${(c.rate*elapsed).toFixed(2)}</div>
-                  <div style={{fontSize:10,color:"#6b7280",marginTop:4}}>{c.sub}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
-              {[
-                {label:"Avg TVA Worker",rate:tvaWorkerRate,color:"#6b7280",sub:"~$22.50/hr · works at Browns Ferry · same TVA"},
-                {label:"Avg HU Frontline Worker",rate:huWorkerRate,color:"#6b7280",sub:"~$19.50/hr · reads your meter · maintains lines"},
-                {label:"Triana Water Worker",rate:trianaWorkerRate,color:"#6b7280",sub:"Est. $16/hr · drinks PFAS water too"},
-              ].map((c,i)=>(
-                <div key={i} style={{padding:"12px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
-                  <div style={{fontSize:8.5,color:c.color,fontWeight:700,letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>{c.label}</div>
-                  <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:c.color,lineHeight:1}}>${(c.rate*elapsed).toFixed(2)}</div>
-                  <div style={{fontSize:10,color:"#6b7280",marginTop:4}}>{c.sub}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pay ratio breakdown */}
-          {payComparison.map((p,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,overflow:"hidden",borderLeft:`4px solid ${p.color}`}}>
-              <div style={{padding:"16px 18px"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8,marginBottom:12}}>
-                  <div>
-                    <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:2}}>{p.org}</div>
-                    <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:8,background:p.color+"15",color:p.color,border:`1px solid ${p.color}30`}}>{p.type}</span>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>⏱ Live Earnings Since You Opened This Page</div>
+            {payData.map((p,i)=>(
+              <div key={i} style={{marginBottom:i<payData.length-1?20:0}}>
+                <div style={{fontSize:10,fontWeight:700,color:p.color,letterSpacing:1,marginBottom:10,textTransform:"uppercase"}}>{p.org} — {p.full}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:8}}>
+                  <div style={{padding:"14px",background:p.color+"10",borderRadius:4,border:"1px solid "+p.color+"30"}}>
+                    <div style={{fontSize:8.5,color:p.color,fontWeight:700,letterSpacing:1,marginBottom:5,textTransform:"uppercase"}}>{p.exec.title} — {p.exec.name}</div>
+                    <div style={{fontFamily:"monospace",fontSize:24,fontWeight:900,color:p.color,lineHeight:1}}>${(p.exec.rate*elapsed).toFixed(2)}</div>
+                    <div style={{fontSize:10.5,color:"#6b7280",marginTop:5,lineHeight:1.5}}>{p.exec.note}</div>
                   </div>
-                  <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:9,color:"#6b7280",letterSpacing:1,marginBottom:2}}>PAY RATIO</div>
-                    <div style={{fontSize:28,fontWeight:900,color:p.color,fontFamily:"monospace"}}>{p.ratio}:1</div>
-                    <div style={{fontSize:9,color:"#6b7280"}}>executive vs worker</div>
+                  <div style={{padding:"14px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+                    <div style={{fontSize:8.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:5,textTransform:"uppercase"}}>{p.worker.title}</div>
+                    <div style={{fontFamily:"monospace",fontSize:24,fontWeight:900,color:"#6b7280",lineHeight:1}}>${(p.worker.rate*elapsed).toFixed(2)}</div>
+                    <div style={{fontSize:10.5,color:"#6b7280",marginTop:5,lineHeight:1.5}}>{p.worker.note}</div>
                   </div>
                 </div>
-
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
-                  <div style={{padding:"11px",background:"#fef2f2",borderRadius:4,border:"1px solid #fca5a5"}}>
-                    <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:4}}>EXECUTIVE — {p.executive.name}</div>
-                    <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{p.executive.title}</div>
-                    <div style={{fontFamily:"monospace",fontSize:18,fontWeight:900,color:"#dc2626",marginTop:4}}>${p.executive.pay.toLocaleString()}/yr</div>
-                    <div style={{fontSize:9.5,color:"#7f1d1d",marginTop:5,lineHeight:1.5}}>{p.executive.note}</div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:8}}>
+                  <div style={{flex:1,padding:"9px 11px",background:"#fffbeb",borderRadius:3,border:"1px solid #fcd34d",minWidth:120}}>
+                    <div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:2}}>PAY RATIO</div>
+                    <div style={{fontSize:22,fontWeight:900,color:p.color,fontFamily:"monospace"}}>{p.ratio}:1</div>
                   </div>
-                  <div style={{padding:"11px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
-                    <div style={{fontSize:8.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:4}}>FRONTLINE WORKER</div>
-                    <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{p.worker.role}</div>
-                    <div style={{fontFamily:"monospace",fontSize:18,fontWeight:900,color:"#6b7280",marginTop:4}}>${p.worker.hourly}/hr · ${p.worker.annual.toLocaleString()}/yr</div>
-                    <div style={{fontSize:9.5,color:"#6b7280",marginTop:5,lineHeight:1.5}}>{p.worker.note}</div>
+                  <div style={{flex:3,padding:"9px 11px",background:"#eff3f8",borderRadius:3,border:"1px solid #93b4d4"}}>
+                    <div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,letterSpacing:1,marginBottom:2}}>ACCOUNTABILITY</div>
+                    <div style={{fontSize:11.5,color:"#374151",lineHeight:1.55}}>{p.govNote}</div>
                   </div>
                 </div>
-
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                  <div style={{padding:"9px 11px",background:"#fffbeb",borderRadius:3,border:"1px solid #fcd34d"}}>
-                    <div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:3}}>TAX STATUS</div>
-                    <div style={{fontSize:11.5,color:"#4a3800",lineHeight:1.5}}>{p.taxStatus}</div>
-                  </div>
-                  <div style={{padding:"9px 11px",background:"#eff3f8",borderRadius:3,border:"1px solid #93b4d4"}}>
-                    <div style={{fontSize:8.5,color:"#1e3a5f",fontWeight:700,letterSpacing:1,marginBottom:3}}>ACCOUNTABILITY</div>
-                    <div style={{fontSize:11.5,color:"#1e3a5f",lineHeight:1.5}}>{p.accountability}</div>
-                  </div>
-                </div>
+                {i<payData.length-1&&<div style={{borderBottom:"1px solid #e0d8cc",marginTop:8}}/>}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* ── PROVIDERS TAB ── */}
+      {/* ── PROVIDERS ── */}
       {tab==="providers"&&(
         <div>
           {[
-            {name:"Huntsville Utilities (HU)",color:"#1e3a5f",icon:"💧",serves:"~218,000 electric · ~104,000 water · ~60,000 gas customers",gov:"3 separate appointed boards — Electric, Gas, and Water. All appointed by City Council. No public election. No PSC oversight. Wes Kelley is CEO.",rates:"5.1% electric increase in 2025 (Jan + Oct). TVA wholesale increase of 5.25% passed through on top. Combined effect: ~10%+ on electric bill in one year.",leverage:"Rate changes require City Council approval. Attend council meetings before rate votes. File Open Records for CEO salary and board compensation.",contact:"(256) 535-1200 · hsvutil.org",boardMeeting:"Monthly — check hsvutil.org/about/board-of-directors"},
-            {name:"Madison Utilities",color:"#374151",icon:"🚰",serves:"19,000+ water and wastewater connections in City of Madison",gov:"Public corporation. Board appointed by Madison City Council for 6-year staggered terms. New Mayor Bartlett (former school board member 2011-2020) controls appointments.",rates:"Major 2025-2026 project: Wall Triana water main expansion. Rate history not publicly summarized — request via Open Records.",leverage:"Contact Mayor Bartlett directly — she controls who gets appointed. New mayor may shift priorities. Board meetings are public.",contact:"(256) 772-6845 · madisonal.gov",boardMeeting:"Contact Madison City Hall for schedule"},
-            {name:"Triana Water Works",color:"#dc2626",icon:"⚠",serves:"~2,323 residents · majority-Black community · 50%+ Black",gov:"Run directly by the Town of Triana — mayor and council control it. No dedicated utility CEO. Town administrator handles water system oversight.",rates:"PFOS detected above EWG health guidelines — ongoing contamination issue. Triana remains on EPA Superfund list. Rate history available via Open Records.",leverage:"Contact elected mayor and council directly. File Open Records for all water testing results. Request annual Consumer Confidence Report — legally required.",contact:"(256) 772-0151 · townoftrianaal.gov",boardMeeting:"Town council meetings — contact town hall"},
-            {name:"TVA — Federal Power Monopoly",color:"#7f1d1d",icon:"⚡",serves:"All North Alabama wholesale electric (delivered through HU)",gov:"Federal government corporation. 9-member board appointed by President, confirmed by Senate. Zero PSC jurisdiction. Zero Alabama state oversight. Only Congress can reform TVA.",rates:"Wholesale rate hike Aug 2024: 5.25% (largest in 16 years). Three hikes in 18 months. Each passed directly to HU customers with no ability to choose a different provider.",leverage:"ONLY Congress can reform TVA. Contact Rep. Dale Strong, Sen. Britt, and Sen. Tuberville. All received energy PAC money and filed zero TVA oversight bills.",contact:"(888) 882-6443 · tva.com",boardMeeting:"TVA board meetings — Knoxville TN · public comment accepted"},
+            {name:"Huntsville Utilities",color:"#1e3a5f",icon:"💧",rows:[
+              {l:"SERVES",v:"~218,000 electric · ~104,000 water · ~60,000 natural gas customers in Huntsville and Madison County"},
+              {l:"GOVERNANCE — WHO CONTROLS THIS",v:"Three separate appointed boards: Electric Board, Natural Gas Board, Waterworks Board. All 12 members appointed by Huntsville City Council. No public election ever. No Alabama PSC oversight. City Council must approve rate changes — they voted unanimously for the 2025 increases."},
+              {l:"CURRENT RATE STRUCTURE (Effective March 2026)",v:"Electric: $20.23 fixed + $0.11675/kWh (first 1,400) + $0.12289/kWh (above) + TVA fuel surcharge (~2.4¢/kWh). Water: availability charge by meter size + consumption. Gas: market-based commodity charge + fixed fee. Combined monthly: $150-$450+ depending on season."},
+              {l:"RATE HISTORY — THE PATTERN",v:"2022: TVA fuel surcharges peaked at 4.6¢/kWh (August). 2023: TVA 4.5% base rate hike. 2024 (Aug): TVA 5.25% base hike — largest in 16 years. 2025 (Jan): HU +3.9%. 2025 (Oct): HU +1.3% more. 2026 (Mar): New rate schedule effective. Combined effect: ~15%+ increase in electric costs since 2022."},
+              {l:"WHY THEY SAY THEY'RE RAISING RATES",v:"Materials costs up 30-40% since 2020. Infrastructure investment needed. TVA wholesale increases passed through. These explanations are partly true — but they don't explain why CEO compensation is not disclosed publicly, why the board is never elected, or why Huntsville pays more for delivery than Chattanooga which uses the same TVA wholesale source."},
+              {l:"WHO IS BENEFITING",v:"HU is genuinely not-for-profit — surplus revenue goes to infrastructure, not shareholders. But 'not-for-profit' doesn't mean 'accountable.' The appointed board sets the CEO's salary without public disclosure. The City Council approves rates without independent auditing. Wes Kelley's compensation is estimated at $380-480k but has not been publicly disclosed."},
+              {l:"YOUR LEVERAGE",v:"Rate changes require City Council approval. Attend the council meeting before any rate vote. File an Open Records request for CEO salary and board compensation. Demand the city commission an independent rate comparison to EPB Chattanooga and Nebraska public power."},
+              {l:"CONTACT",v:"(256) 535-1200 · hsvutil.org · Board meetings: hsvutil.org/about/board-of-directors"},
+            ]},
+            {name:"TVA — Federal Power Monopoly",color:"#7f1d1d",icon:"⚡",rows:[
+              {l:"SERVES",v:"All North Alabama wholesale electric (delivered through HU). 10 million customers across 7 states. Browns Ferry Nuclear Plant in Athens, AL — 15 miles from Huntsville."},
+              {l:"GOVERNANCE — WHY YOU CAN'T CHANGE IT",v:"Federal government corporation created by Congress 1933. 9-member board appointed by President, confirmed by Senate. Zero Alabama state oversight. Zero PSC jurisdiction. The Tennessee Valley Authority Act gives TVA an exclusive service territory — no competitor can enter. Only an Act of Congress can reform TVA rates or governance."},
+              {l:"THE FUEL COST ADJUSTMENT — THE VARIABLE YOU NEVER CONTROL",v:"TVA charges HU a wholesale base rate plus a monthly Fuel Cost Adjustment (FCA) based on actual fuel costs for that month. HU passes this directly to you. Feb 2026 FCA: 2.397¢/kWh. This adds $28-$90+ to your monthly bill depending on usage. It peaked at 4.612¢/kWh in August 2022 during the energy crisis. You have zero input into this number."},
+              {l:"THE DEBT BURDEN",v:"TVA carries over $20 billion in long-term debt. This debt was accumulated building nuclear plants (including Browns Ferry) and transmission infrastructure. Ratepayers — not taxpayers, not shareholders — pay this debt through rates. TVA's budget submitted to Congress for FY2026 acknowledges continued cost pressure from infrastructure investment, particularly in natural gas capacity expansion."},
+              {l:"WHO IS LETTING THIS HAPPEN",v:"Rep. Dale Strong (AL-5): received $284k from defense/energy PACs, sits on House Armed Services Committee overseeing Redstone, filed zero TVA oversight bills. Sen. Britt: $890k from energy PACs, no TVA reform. Sen. Tuberville: $270k from energy PACs, no TVA oversight. These are the only three people with direct power to reform TVA — and they have chosen not to use it."},
+              {l:"CONTACT TVA BOARD",v:"(888) 882-6443 · tva.com · Board meetings held quarterly — public comment accepted · Knoxville TN headquarters"},
+            ]},
+            {name:"Triana Water Works",color:"#dc2626",icon:"⚠",rows:[
+              {l:"SERVES",v:"~2,323 residents. Majority-Black community. Town of Triana, Alabama."},
+              {l:"GOVERNANCE",v:"Controlled by the elected mayor (Mary Caudle) and town council. No dedicated utility CEO — town administrator handles water system oversight. Contact: (256) 772-0151 · 640 6th Street, Triana AL 35756."},
+              {l:"THE CONTAMINATION PROBLEM",v:"PFOS — a PFAS forever chemical — detected above EWG health guidelines. Triana remains on the EPA Superfund list due to Redstone Arsenal PFAS discharge into Indian Creek and Olin Corporation DDT manufacturing via Huntsville Spring Branch. This contamination began in the 1970s and has never been fully remediated."},
+              {l:"WHO IS RESPONSIBLE",v:"Rep. Dale Strong voted against the PFAS Notification Act that would require disclosure of contamination near military installations. Gov. Ivey (who appoints ADEM leadership) received $340k from energy/industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. Redstone Arsenal has not fully disclosed the extent of its PFAS groundwater contamination."},
+              {l:"WHAT YOU CAN DO",v:"Check your water free: ewg.org/tapwater — search your zip code. File Open Records for all Triana water testing results. Contact EPA Region 4 in Atlanta directly. Contact your congressional representative about the PFAS Notification Act."},
+            ]},
+            {name:"Madison Utilities",color:"#374151",icon:"🚰",rows:[
+              {l:"SERVES",v:"19,000+ water and wastewater connections in City of Madison and surrounding areas."},
+              {l:"GOVERNANCE",v:"Public corporation. Board appointed by Madison City Council for staggered 6-year terms. Mayor Bartlett (elected 2024, former school board member) controls appointments. Board meetings are public."},
+              {l:"CURRENT PROJECTS",v:"Wall Triana water main expansion project ongoing in 2025-2026. Rate history available via Open Records. Contact Madison City Hall for board meeting schedule."},
+              {l:"CONTACT",v:"(256) 772-6845 · madisonal.gov/government/departments/utilities"},
+            ]},
           ].map((p,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,borderLeft:`4px solid ${p.color}`}}>
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+p.color}}>
               <div style={{padding:"16px 18px"}}>
-                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:12,flexWrap:"wrap"}}>
-                  <span style={{fontSize:22}}>{p.icon}</span>
-                  <div style={{fontSize:15,fontWeight:700,color:p.color}}>{p.name}</div>
+                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:14,flexWrap:"wrap"}}>
+                  <span style={{fontSize:24}}>{p.icon}</span>
+                  <div style={{fontSize:16,fontWeight:700,color:p.color}}>{p.name}</div>
                 </div>
-                {[
-                  {l:"SERVES",v:p.serves},
-                  {l:"GOVERNANCE — WHO CONTROLS THIS",v:p.gov},
-                  {l:"RECENT RATE CHANGES",v:p.rates},
-                  {l:"YOUR LEVERAGE",v:p.leverage},
-                  {l:"BOARD MEETINGS",v:p.boardMeeting},
-                ].map((row,j)=>(
-                  <div key={j} style={{marginBottom:10}}>
-                    <div style={{fontSize:8.5,fontWeight:700,color:p.color,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>{row.l}</div>
-                    <div style={{fontSize:12.5,color:"#374151",lineHeight:1.6}}>{row.v}</div>
+                {p.rows.map((row,j)=>(
+                  <div key={j} style={{marginBottom:12}}>
+                    <div style={{fontSize:9,fontWeight:700,color:p.color,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>{row.l}</div>
+                    <div style={{fontSize:13,color:"#374151",lineHeight:1.7}}>
+                      <ExpandText text={row.v} preview={200}/>
+                    </div>
                   </div>
                 ))}
-                <div style={{marginTop:4,fontSize:11.5,color:"#1e3a5f",fontWeight:600}}>📞 {p.contact}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ─── HEALTH SYSTEM PAGE ───────────────────────────────────────
+function HealthPage(){
+  const[tab,setTab]=useState("overview");
+  const[analysisOpen,setAnalysisOpen]=useState({});
+  const[foiaOpen,setFoiaOpen]=useState({});
+  const[copied,setCopied]=useState({});
+  const[elapsed,setElapsed]=useState(0);
+
+  useEffect(()=>{
+    const s=Date.now();
+    const iv=setInterval(()=>setElapsed((Date.now()-s)/1000),200);
+    return()=>clearInterval(iv);
+  },[]);
+
+  function copy(key,text){
+    navigator.clipboard.writeText(text).then(()=>{
+      setCopied(p=>({...p,[key]:true}));
+      setTimeout(()=>setCopied(p=>({...p,[key]:false})),2500);
+    });
+  }
+
+  // Pay rates
+  const ceoRate    = 3100000/(365*24*3600);  // David Spillers $3.1M
+  const cnaRate    = 14.50/3600;             // Starting CNA $14.50/hr
+  const rateRatio  = Math.round(3100000/(14.50*2080));
+
+  // Acquisition timeline
+  const acquisitions=[
+    {year:1994,facility:"Medical Center Hospital",note:"First major Huntsville acquisition — set the template",type:"Huntsville"},
+    {year:2008,facility:"Athens-Limestone Hospital",note:"First regional acquisition — launched the expansion era",type:"Regional"},
+    {year:2010,facility:"Highlands Medical Center",note:"Scottsboro — Jackson County locked in",type:"Regional"},
+    {year:2012,facility:"Decatur Morgan Hospital",note:"Lawrence/Morgan County — Decatur healthcare market captured",type:"Regional"},
+    {year:2016,facility:"Helen Keller Hospital",note:"Colbert County — northwest Alabama secured",type:"Regional"},
+    {year:2018,facility:"Marshall Medical Centers",note:"Two facilities — Marshall County locked in after $61M investment",type:"Regional"},
+    {year:2021,facility:"Lincoln Health System",note:"First Tennessee acquisition — crosses state line",type:"Tennessee"},
+    {year:2022,facility:"Shoals Hospital + Lawrence Medical",note:"Three-county area secured — Florence market",type:"Regional"},
+    {year:2024,facility:"DeKalb Regional Medical Center",note:"Fort Payne — 134 beds, 16-county service area now complete",type:"Regional"},
+    {year:2026,facility:"Crestwood Medical Center ($450M)",note:"PENDING — Would give HHHS complete Huntsville monopoly. FTC review possible. Only competitor remaining.",type:"PENDING",hot:true},
+  ];
+
+  // Wage data by role
+  const wages=[
+    {role:"Environmental Services (Housekeeping)",hourly:12.50,annual:26000,color:"#dc2626"},
+    {role:"Food Service Worker",hourly:13.00,annual:27040,color:"#dc2626"},
+    {role:"CNA / Patient Care Tech",hourly:14.50,annual:30160,color:"#ea580c"},
+    {role:"Medical Assistant",hourly:16.00,annual:33280,color:"#ea580c"},
+    {role:"Phlebotomist",hourly:17.50,annual:36400,color:"#c9a84c"},
+    {role:"LPN",hourly:22.00,annual:45760,color:"#c9a84c"},
+    {role:"Registered Nurse (Staff)",hourly:30.00,annual:62400,color:"#16a34a"},
+    {role:"Charge Nurse / Senior RN",hourly:38.00,annual:79040,color:"#16a34a"},
+    {role:"HHHS CEO (David Spillers)",hourly:1490,annual:3100000,color:"#7f1d1d"},
+  ];
+
+  // Who benefits / who is complicit
+  const connections=[
+    {
+      name:"David Spillers",role:"HHHS CEO",pay:"$3.1M/yr ($1,490/hr)",color:"#7f1d1d",category:"Executive",
+      benefit:"Compensation set by self-appointed board. Pay increased as system expanded from 6 to 14+ facilities. Paid more than CEOs of health systems 10x HHHS's size.",
+      complicit:"Has not publicly disclosed community benefit dollar amounts as percentage of revenue. Led system through acquisitions eliminating local competition. Oversaw pay freeze in 2013 while receiving compensation increases.",
+      source:"HHHS IRS Form 990 (ProPublica), HealthLeaders Media",
+    },
+    {
+      name:"Jeff Samz",role:"HHHS President (current CEO)",pay:"Not publicly disclosed",color:"#dc2626",category:"Executive",
+      benefit:"Replaced Spillers. Chairs Huntsville/Madison County Chamber of Commerce. Treasurer of Business Council of Alabama. Serves on U.S. Space and Rocket Center Foundation board. Now Chair-Elect of Alabama Hospital Association board.",
+      complicit:"Pursuing $450M Crestwood acquisition that would eliminate the last hospital competitor in Huntsville. Has not addressed monopoly concerns directly — spokesperson deflected FTC question. HHHS average salary $62,400 — many frontline workers earn $26,000-$33,000.",
+      source:"256 Today interview, WAFF, Alabama Hospital Association, Business Council of Alabama",
+    },
+    {
+      name:"HHHS Self-Appointed Board",role:"Governing Board — 12 members",pay:"Compensation not disclosed",color:"#1e3a5f",category:"Governance",
+      benefit:"Board appoints its own successors — no public election ever. Sets CEO compensation. Approves acquisitions. Members include executives from Calhoun Community College, RFCU (which provides financial services to HHHS employees), Redstone Federal Credit Union, local law firms with HHHS contracts, and construction firms that have received HHHS capital project contracts.",
+      complicit:"Board has approved every acquisition expanding HHHS monopoly. Has never required a public community benefit dollar audit. Approved CEO pay increases while patient satisfaction metrics were mixed. Did not establish a community advisory board despite nonprofit status requiring community benefit.",
+      source:"HHHS IRS Form 990, ProPublica Nonprofit Explorer, HHHS.org",
+    },
+    {
+      name:"Gov. Kay Ivey",role:"Alabama Governor",pay:"$120,395/yr (taxpayer-funded)",color:"#374151",category:"Elected Official",
+      benefit:"Received $420,000+ from health insurance industry PACs. Insurance companies benefit when Medicaid is not expanded — they retain private insurance customers who would move to Medicaid.",
+      complicit:"Refused Medicaid expansion that would cover 295,000 Alabamians. Federal government pays 90%. Insurance industry donors benefit directly from refusal. HHHS absorbs uncompensated care costs — which it uses to justify further consolidation. The monopoly and the Medicaid refusal are directly connected: each makes the other more entrenched.",
+      source:"AL Campaign Finance FCPA, Kaiser Family Foundation, AL DHHS",
+    },
+    {
+      name:"Arthur Orr",role:"AL Senate Finance Committee Chair — District 8",pay:"$52,000/yr (taxpayer-funded)",color:"#374151",category:"Elected Official",
+      benefit:"Received donations from health insurance industry and Business Council of Alabama (which represents HHHS and hospital lobbying interests). BCA has lobbied against Medicaid expansion, minimum wage increases, and worker safety requirements.",
+      complicit:"Controls which bills receive hearings in Senate Finance Committee. Minimum wage ban (SB 88, 2023) ensures HHHS and other large employers can keep starting wages at $7.25/hr federally — though HHHS pays above that. Medicaid refusal creates more uninsured patients — more uncompensated care for HHHS to claim as 'community benefit' to justify its nonprofit exemption.",
+      source:"AL Campaign Finance FCPA, AL Legislature",
+    },
+    {
+      name:"Tommy Battle",role:"Huntsville Mayor",pay:"$110,000/yr (taxpayer-funded)",color:"#374151",category:"Elected Official",
+      benefit:"Received $35,000 from HHHS Foundation — the charitable arm of a nonprofit that claims tax exemptions. Received additional donations from HHHS-affiliated contractors and board members.",
+      complicit:"Never established an independent community benefit audit of HHHS despite being Huntsville's chief elected official. Approved IDB tax abatements for HHHS-adjacent real estate projects. Never publicly questioned HHHS CEO compensation or the self-appointment board structure. Has not supported a civilian healthcare advisory board.",
+      source:"AL Campaign Finance FCPA, City of Huntsville records",
+    },
+    {
+      name:"FTC (Federal Trade Commission)",role:"Federal Antitrust Regulator",pay:"Federal agency",color:"#6b7280",category:"Regulator",
+      benefit:"Has challenged similar nonprofit hospital monopoly mergers — sued to block Novant Health's $140M acquisition of two NC hospitals in 2023 (Novant eventually abandoned the deal). Has authority to review the Crestwood acquisition.",
+      complicit:"Has not yet acted on the Crestwood deal announced January 2026. Under prior leadership, FTC had been aggressive on hospital mergers. Political appointees control FTC enforcement priorities. Residents can file public comments to FTC supporting antitrust review.",
+      source:"WAFF, STAT News, FTC.gov",
+    },
+  ];
+
+  const investigations=[
+    {
+      title:"The Nonprofit Paradox — $2.4B Revenue, Zero Income Tax, $3.1M CEO",
+      impact:"HIGH",category:"Nonprofit Accountability",date:"IRS Form 990 — FY2022",
+      summary:"HHHS claims $63M/yr in tax exemptions as a nonprofit hospital system. In exchange, it must provide community benefit commensurate with its exemption. The CEO earns $3.1M. Starting CNAs earn $14.50/hr and may qualify for SNAP food benefits.",
+      analysis:`HHHS pays zero federal income tax, zero state income tax, and reduced property tax — claiming approximately $63 million per year in total tax exemptions as a nonprofit. The legal justification: nonprofits must provide community benefit to the public commensurate with their exemption.
+
+Here is what HHHS does with that exemption: CEO David Spillers earned approximately $3.1 million in 2022 — approximately $1,490 per hour. Starting CNAs earn $14.50 per hour. Patient Care Technicians start at approximately $18/hr. Environmental Services workers start at $12.50/hr. Multiple frontline roles earn wages that qualify employees for SNAP food assistance.
+
+In 2013, while Spillers' compensation grew, HHHS froze wages system-wide with no deadline and simultaneously increased employee health insurance premiums by $40/month and cut pension contributions. The official justification was declining reimbursements. The CEO's compensation continued to increase through this period.
+
+The IRS requires nonprofits to disclose total community benefit spending on Form 990 Schedule H — but does not specify what counts as community benefit. HHHS has not published a clear breakdown of what it claims as community benefit as a percentage of revenue. File an IRS Form 990 inspection request or look it up free on ProPublica Nonprofit Explorer.`,
+      sources:[
+        {label:"ProPublica Nonprofit Explorer — HHHS",url:"https://projects.propublica.org/nonprofits/organizations/630752604"},
+        {label:"IRS Form 990 Schedule H",url:"https://www.irs.gov/instructions/i990sh"},
+        {label:"HealthLeaders — 2013 Pay Freeze",url:"https://www.healthleadersmedia.com/strategy/healthcare-workers-dissatisfied-stagnant-pay-raises"},
+      ],
+      foia:{
+        title:"IRS Form 990 Inspection Request — HHHS",
+        to:"Huntsville Hospital Health System — Records Custodian",
+        subject:"Request for IRS Form 990 and Schedule H — Community Benefit Report",
+        template:"Huntsville Hospital Health System\nRe: Public Inspection of IRS Form 990\n\nPursuant to IRS regulations (26 CFR §301.6104(d)-3), as a tax-exempt organization you are required to make your Form 990 available for public inspection.\n\nI request:\n\n1. The most recent three years of IRS Form 990, including all schedules — particularly Schedule H (Community Benefit) and Schedule J (Executive Compensation).\n\n2. A breakdown of what HHHS classifies as 'community benefit' for its tax exemption — including: charity care at cost, unreimbursed Medicaid, community health improvement, research, and education — each as a separate dollar amount and percentage of total operating expenses.\n\n3. The board's policy on conflicts of interest and the most recent signed conflict-of-interest disclosures from all board members.\n\nNote: These are publicly available documents. They are also available at ProPublica.org/nonprofits.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+    {
+      title:"The Crestwood Acquisition — $450M Deal Would Give HHHS Complete Huntsville Monopoly",
+      impact:"CRITICAL",category:"Antitrust — Active 2026",date:"Announced January 20, 2026",
+      summary:"HHHS agreed to acquire Crestwood Medical Center for $450M. Crestwood is 2 miles from Huntsville Hospital main campus and is the ONLY hospital in Huntsville not already owned by HHHS. If approved, HHHS will have zero hospital competition in all of North Alabama.",
+      analysis:`On January 20, 2026, HHHS announced it would acquire Crestwood Medical Center from Community Health Systems for $450 million. Crestwood is a 180-bed hospital located 2 miles from Huntsville Hospital's main campus. Crestwood is the last remaining hospital in Huntsville not owned by HHHS. If this deal closes, HHHS will have a complete monopoly on inpatient hospital services in Huntsville — and in all of North Alabama.
+
+The FTC has challenged similar deals. In 2023, nonprofit Novant Health announced a $140M deal to buy two North Carolina hospitals. The FTC sued, arguing it would reduce competition. Novant eventually abandoned the deal while litigation was pending. The Crestwood deal is more than 3x larger and creates an even more complete geographic monopoly.
+
+What a monopoly means for patients: When there is no competition, hospital prices rise. Insurance companies have less negotiating power. Insurance premiums increase. Employer healthcare costs increase. Wages stagnate because there is only one major healthcare employer. Patients in labor disputes or with grievances have nowhere else to go.
+
+What you can do today: File a public comment with the FTC. Contact Rep. Dale Strong's office. The deal has not yet closed. The period for regulatory challenge is now.`,
+      sources:[
+        {label:"STAT News — Monopoly Concerns",url:"https://www.statnews.com/2026/01/22/huntsville-hospital-merger-antitrust-concerns-alabama/"},
+        {label:"WAFF — Workers Voice Concerns",url:"https://www.waff.com/2026/02/03/where-do-you-go-health-care-workers-voice-concerns-over-huntsville-hospitals-450-million-deal/"},
+        {label:"FTC Public Comments",url:"https://www.ftc.gov/policy/public-comments"},
+      ],
+      foia:{
+        title:"FTC Public Comment — Oppose Crestwood Monopoly",
+        to:"Federal Trade Commission — Bureau of Competition",
+        subject:"Public Comment: HHHS/Crestwood Medical Center Acquisition — Antitrust Concerns",
+        template:"Federal Trade Commission\nBureau of Competition\nWashington, DC 20580\n\nRe: Public Comment — Huntsville Hospital Health System / Crestwood Medical Center Acquisition\n\nI am a resident of Madison County, Alabama and I am writing to request that the FTC conduct a full antitrust review of the proposed $450 million acquisition of Crestwood Medical Center by Huntsville Hospital Health System.\n\nMy concerns:\n\n1. COMPLETE GEOGRAPHIC MONOPOLY: Crestwood is the only hospital in Huntsville not already owned by HHHS. After this acquisition, HHHS will have zero hospital competition in the entire North Alabama region.\n\n2. LABOR MARKET EFFECTS: HHHS is already the largest employer in Madison County outside Redstone Arsenal. A complete monopoly will eliminate the only alternative employer for 20,000+ healthcare workers.\n\n3. INSURANCE PREMIUM IMPACT: Without competition, insurance companies lose negotiating power with HHHS. North Alabama residents and employers will face higher premiums.\n\n4. PRECEDENT: The FTC challenged the Novant Health merger in 2023 on similar grounds. This deal creates a more complete monopoly.\n\nI urge the FTC to conduct a full second request investigation before allowing this transaction to close.\n\n[Your Name]\n[Your Address]\n[Your Phone/Email]",
+      },
+    },
+    {
+      title:"Working Conditions — Understaffed, Underpaid, Nowhere Else to Go",
+      impact:"HIGH",category:"Labor & Working Conditions",date:"Glassdoor/Indeed Reviews — 2024-2025",
+      summary:"Hundreds of HHHS employee reviews document chronic understaffing, raises of $0.05-$0.59 per year, nurses performing CNA and transport duties simultaneously, and broken equipment. The monopoly means there is nowhere else to go in North Alabama.",
+      analysis:`HHHS employs approximately 20,000 people — the largest private employer in Madison County. With the Crestwood acquisition pending, it will soon be the only hospital employer in Huntsville. Workers who leave have limited options without relocating.
+
+Documented patterns from Glassdoor and Indeed reviews (2024-2025): Nurses regularly report 1 CNA assigned to 15+ patients. Staff RNs performing transport, phlebotomy, and environmental services duties simultaneously — not in their job description. Annual raises of $0.25 or less — multiple reviews cite $0.05-$0.59 raises as the norm. Pay is described as 'sub-par,' 'the lowest in nursing locally,' and 'does not compete with other opportunities.' Equipment reported broken with slow or no repair response. Multiple reviewers state management 'does not care about staff.'
+
+Average starting wages: Environmental Services $12.50/hr, CNA $14.50/hr, Medical Assistant $16/hr. MIT Living Wage Calculator for Madison County: $20.18/hr for a single adult, $41.34/hr for a single adult with one child.
+
+HHHS reports an average salary of $62,400 — but this average is pulled up significantly by physicians, senior nurses, and management. The median frontline worker earns substantially less. CNA wages of $14.50/hr = $30,160/year. The federal poverty guideline for a family of four is $31,200.`,
+      sources:[
+        {label:"Glassdoor — HHHS Reviews",url:"https://www.glassdoor.com/Reviews/Huntsville-Hospital-Reviews-E121295.htm"},
+        {label:"Indeed — HHHS Nurse Reviews",url:"https://www.indeed.com/cmp/Huntsville-Hospital-Health-System/reviews?fjobtitle=Registered+Nurse"},
+        {label:"MIT Living Wage Calculator",url:"https://livingwage.mit.edu/counties/01089"},
+      ],
+      foia:{
+        title:"Open Records / IRS 990 Request — Wage Distribution Data",
+        to:"Huntsville Hospital Health System — Records Custodian",
+        subject:"Request — Wage Distribution and Staffing Ratios",
+        template:"Huntsville Hospital Health System\nRe: Public Records Request\n\nI request the following information:\n\n1. From your most recent IRS Form 990 Schedule J: the compensation of all officers, directors, trustees, key employees, and highest compensated employees — including base compensation, bonus, deferred compensation, and benefits.\n\n2. Average and median hourly wages broken down by job category (RN, LPN, CNA, Patient Care Tech, Environmental Services, Food Service) for FY2023 and FY2024.\n\n3. Current nurse-to-patient staffing ratios by unit — medical/surgical, ICU, emergency department.\n\n4. Total number of employees by job category who earn below $15/hr and $20/hr.\n\nNote: Wage data for a nonprofit may be requested under Alabama Open Records Act §36-12-40 to the extent it constitutes public records. Form 990 data is publicly available at ProPublica.org.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+    {
+      title:"The Medicaid Refusal — How HHHS, the Insurance Industry, and Politicians Keep 295,000 Alabamians Uninsured",
+      impact:"HIGH",category:"Policy & Donor Connections",date:"Ongoing since 2014",
+      summary:"Alabama has refused Medicaid expansion since 2014. 295,000 Alabama citizens — including ~47,000 in Madison County — are uninsured in the coverage gap. The federal government pays 90%. Gov. Ivey received $420k from health insurance industry. The refusal is not accidental.",
+      analysis:`The Affordable Care Act allowed states to expand Medicaid to cover adults earning up to 138% of the federal poverty level. The federal government pays 90% of the cost — permanently. Alabama refuses. As of 2026, 295,000 Alabamians earn too much for traditional Medicaid but too little for ACA marketplace subsidies. They are uninsured.
+
+Who benefits from the refusal: Health insurance companies — their market shrinks if Medicaid expands. Gov. Ivey received $420,000 from health insurance industry PACs. Sen. Orr received donations from the Business Council of Alabama, which has lobbied against expansion.
+
+HHHS's role: HHHS absorbs significant uncompensated care costs from uninsured patients. It then reports this as 'community benefit' on its IRS Form 990 to justify its nonprofit tax exemption. The Medicaid refusal and HHHS's expansion are structurally linked — more uninsured patients means more uncompensated care, which means a bigger 'community benefit' claim, which justifies the nonprofit exemption that saves HHHS $63M/year in taxes.
+
+The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,000+ Madison County residents are uninsured → HHHS provides uncompensated care → HHHS claims this as community benefit → HHHS retains $63M/year in tax exemptions → HHHS donates to Mayor Battle's campaign → Battle never questions HHHS nonprofit status or board structure. Everyone in the loop benefits except the uninsured resident.`,
+      sources:[
+        {label:"Kaiser Family Foundation — Medicaid Gap",url:"https://www.kff.org/medicaid/issue-brief/the-coverage-gap-uninsured-poor-adults-in-states-that-do-not-expand-medicaid/"},
+        {label:"AL Campaign Finance — FCPA",url:"https://fcpa.alabama.gov"},
+        {label:"AL DHHS — Medicaid Data",url:"https://medicaid.alabama.gov"},
+      ],
+      foia:{
+        title:"Records Request — Uncompensated Care and Community Benefit",
+        to:"Huntsville Hospital Health System — Records Custodian",
+        subject:"Request — Uncompensated Care Costs and Community Benefit Documentation",
+        template:"Huntsville Hospital Health System\nRe: Community Benefit Transparency Request\n\nI request:\n\n1. Total uncompensated care costs for FY2022, FY2023, and FY2024 — broken down by: charity care at cost, bad debt, unreimbursed Medicaid, unreimbursed Medicare, and other community benefit.\n\n2. The dollar value of HHHS's total tax exemption claimed in FY2022, FY2023, and FY2024 — federal, state, and property tax combined.\n\n3. HHHS's most recent IRS Form 990 Schedule H (Hospital Facilities) — the community benefit report required of all nonprofit hospitals.\n\n4. Any communications with Alabama DHHS or the Alabama Medicaid Agency regarding Medicaid expansion — 2014 to present.\n\n[Your Name]\n[Your Address]",
+      },
+    },
+  ];
+
+  const tabs=[{id:"overview",label:"Overview"},{id:"monopoly",label:"🏥 Monopoly Map"},{id:"pay",label:"⏱ Pay Gap"},{id:"workers",label:"Workers"},{id:"connections",label:"🔗 Who Benefits"}];
+
+  function InvCard({inv,i,prefix}){
+    const k=prefix+"-"+i;
+    return(
+      <div className="card" style={{marginBottom:14,overflow:"hidden"}}>
+        <div style={{padding:"16px 18px"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:inv.impact==="CRITICAL"?"#fef2f2":"#fff7ed",color:inv.impact==="CRITICAL"?"#dc2626":"#ea580c",border:"1px solid "+(inv.impact==="CRITICAL"?"#fca5a5":"#fdba74")}}>{inv.impact}</span>
+            <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:10,background:"#f0ebe2",color:"#6b7280",border:"1px solid #e0d8cc"}}>{inv.category}</span>
+            <span style={{fontSize:9,color:"#6b7280",marginLeft:"auto"}}>{inv.date}</span>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:6,lineHeight:1.35}}>{inv.title}</div>
+          <p style={{fontSize:13,color:"#6b7280",lineHeight:1.75,fontStyle:"italic",marginBottom:10}}>
+            <ExpandText text={inv.summary} preview={180}/>
+          </p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {inv.sources.map((s,j)=>(
+              <a key={j} href={s.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:"#1e3a5f",textDecoration:"none",border:"1px solid #e0d8cc",padding:"2px 8px",borderRadius:3,background:"#f8f6f2"}}>↗ {s.label}</a>
+            ))}
+          </div>
+        </div>
+        <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
+          <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
+            {analysisOpen[k]?"▲ Hide Analysis":"🔍 Decode This"}
+          </button>
+          <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[k]:!p[k]}))}>
+            {foiaOpen[k]?"Hide Template":"📋 Records Request"}
+          </button>
+        </div>
+        {analysisOpen[k]&&(
+          <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+              <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>CIVIC INVESTIGATOR ANALYSIS
+            </div>
+            {inv.analysis.split('\n\n').map((para,pi)=>{
+              const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
+              const colors=["#fca5a5","#93c5fd","#86efac"];
+              const tc=["#fef2f2","#eff6ff","#f0fdf4"];
+              return(
+                <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
+                  <div style={{fontSize:8,fontWeight:800,color:colors[pi%3],letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>{labels[pi%3]}</div>
+                  <p style={{fontSize:13.5,color:tc[pi%3],lineHeight:1.85,margin:0,borderLeft:"2px solid "+colors[pi%3],paddingLeft:12,whiteSpace:"pre-wrap"}}>{para}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {foiaOpen[k]&&(
+          <div style={{background:"#eff3f8",borderTop:"1px solid #93b4d4",padding:"16px 18px"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:2}}>{inv.foia.title}</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
+            <textarea readOnly value={inv.foia.template} rows={10} style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}/>
+            <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+              <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy(k,inv.foia.template)}>{copied[k]?"✓ Copied!":"📋 Copy"}</button>
+              <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
+                <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return(
+    <div className="page">
+      <div className="page-header">
+        <span className="tag tag-red">HEALTH SYSTEM · INVESTIGATION</span>
+        <h2>Health System: <em>Monopoly, Low Wages & Who Benefits</em></h2>
+        <p>HHHS controls 14+ hospitals across North Alabama. A $450M deal would eliminate Huntsville's last competitor. The CEO earns $3.1M. CNAs earn $14.50/hr and may qualify for food stamps. The nonprofit claims $63M in annual tax exemptions. Here is who benefits — and who is making it possible.</p>
+      </div>
+
+      <div className="tabs" style={{flexWrap:"wrap"}}>
+        {tabs.map(t=><button key={t.id} className={"tab"+(tab===t.id?" active":"")} onClick={()=>setTab(t.id)}>{t.label}</button>)}
+      </div>
+
+      {/* ── OVERVIEW ── */}
+      {tab==="overview"&&(
+        <div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[
+              ["HHHS CEO Pay","$3.1M/yr","$1,490/hr — while CNAs start at $14.50/hr","#7f1d1d"],
+              ["Facilities Controlled","14+","And counting — Crestwood deal pending FTC review","#dc2626"],
+              ["Tax Exemptions Claimed","$63M/yr","Federal + state + property — zero income tax","#ea580c"],
+              ["Uninsured Gap — Madison Co.","~47,000","Medicaid refusal leaves them without coverage","#dc2626"],
+            ].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card">
+                <div className="stat-val" style={{color:c}}>{v}</div>
+                <div className="stat-lbl">{l}</div>
+                <div className="stat-sub">{s}</div>
+              </div>
+            ))}
+          </div>
+          {investigations.map((inv,i)=><InvCard key={i} inv={inv} i={i} prefix="ov"/>)}
+        </div>
+      )}
+
+      {/* ── MONOPOLY MAP ── */}
+      {tab==="monopoly"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>HHHS Acquisition Timeline — From 1 to 14+ Facilities</div>
+            <div style={{fontSize:12,color:"#6b7280",marginBottom:16}}>Every dot is a community that lost its independent local hospital. Every acquisition was approved by the same self-appointed board.</div>
+            <div style={{position:"relative",paddingLeft:20}}>
+              <div style={{position:"absolute",left:8,top:0,bottom:0,width:2,background:"#e0d8cc",borderRadius:1}}/>
+              {acquisitions.map((a,i)=>(
+                <div key={i} style={{position:"relative",marginBottom:16,paddingLeft:20}}>
+                  <div style={{position:"absolute",left:-12,top:6,width:10,height:10,borderRadius:"50%",background:a.hot?"#dc2626":a.type==="Tennessee"?"#2563eb":a.type==="PENDING"?"#dc2626":"#1e3a5f",border:"2px solid #fff",boxShadow:"0 0 0 2px "+(a.hot?"#dc2626":"#1e3a5f")}}/>
+                  <div style={{padding:"12px 14px",background:a.hot?"#fef2f2":"#f8f6f2",borderRadius:4,border:"1px solid "+(a.hot?"#fca5a5":"#e0d8cc")}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:6,marginBottom:5}}>
+                      <div style={{fontSize:14,fontWeight:700,color:a.hot?"#dc2626":"#1e3a5f"}}>{a.facility}</div>
+                      <span style={{fontSize:11,fontWeight:700,color:"#fff",background:a.hot?"#dc2626":a.type==="Tennessee"?"#2563eb":"#1e3a5f",padding:"2px 8px",borderRadius:10,flexShrink:0}}>{a.year}{a.hot?" ⚠ PENDING":""}</span>
+                    </div>
+                    <div style={{fontSize:12.5,color:a.hot?"#7f1d1d":"#6b7280",lineHeight:1.6}}>{a.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:8,padding:"12px 14px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:4,borderLeft:"4px solid #dc2626"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:4}}>⚠ THE CRESTWOOD DEAL IS NOT CLOSED</div>
+              <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7}}>The $450M Crestwood acquisition announced January 20, 2026 has not yet closed. FTC review is possible. <strong>Public comments to the FTC can influence whether a full antitrust review is ordered.</strong> File yours using the Records Request template on the Overview tab. The window to act is now.</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PAY GAP ── */}
+      {tab==="pay"&&(
+        <div>
+          <div className="card" style={{padding:"20px",marginBottom:16,background:"#fef9f9",border:"1px solid rgba(220,38,38,.18)"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>⏱ Live — Since You Opened This Page</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+              <div style={{padding:"14px",background:"#fef2f2",borderRadius:4,border:"1px solid #fca5a5"}}>
+                <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:5}}>HHHS CEO — David Spillers</div>
+                <div style={{fontFamily:"monospace",fontSize:28,fontWeight:900,color:"#7f1d1d",lineHeight:1}}>${(ceoRate*elapsed).toFixed(2)}</div>
+                <div style={{fontSize:10.5,color:"#6b7280",marginTop:5}}>$3.1M/yr · $1,490/hr · nonprofit · self-appointed board sets salary</div>
+              </div>
+              <div style={{padding:"14px",background:"#f8f6f2",borderRadius:4,border:"1px solid #e0d8cc"}}>
+                <div style={{fontSize:8.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:5}}>STARTING CNA (same time)</div>
+                <div style={{fontFamily:"monospace",fontSize:28,fontWeight:900,color:"#6b7280",lineHeight:1}}>${(cnaRate*elapsed).toFixed(2)}</div>
+                <div style={{fontSize:10.5,color:"#6b7280",marginTop:5}}>$14.50/hr · $30,160/yr · may qualify for SNAP food benefits</div>
+              </div>
+            </div>
+            <div style={{background:"#1e3a5f",borderRadius:4,padding:"11px 14px",marginBottom:14}}>
+              <div style={{fontSize:9,color:"#c9a84c",fontWeight:700,letterSpacing:1,marginBottom:3}}>PAY RATIO: {rateRatio}:1</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.8)"}}>The CEO earns in a single day what a starting CNA earns in approximately {Math.round(3100000/(14.50*8)/365)} working days.</div>
+            </div>
+          </div>
+
+          <div className="card" style={{padding:"20px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>HHHS Wage Scale vs MIT Living Wage — Madison County 2025</div>
+            <div style={{fontSize:11,color:"#6b7280",marginBottom:16}}>Red line = MIT Living Wage for a single adult in Madison County ($20.18/hr). Bars below this line mean full-time workers cannot meet basic needs.</div>
+            {wages.map((w,i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:4}}>
+                  <span style={{fontSize:12.5,fontWeight:w.role.includes("CEO")?700:400,color:w.role.includes("CEO")?"#7f1d1d":"#374151"}}>{w.role}</span>
+                  <span style={{fontSize:12.5,fontWeight:700,color:w.color,fontFamily:"monospace"}}>${w.hourly}/hr · ${w.annual.toLocaleString()}/yr</span>
+                </div>
+                <div style={{position:"relative",height:22,background:"#f0ebe2",borderRadius:3,overflow:"visible"}}>
+                  <div style={{position:"absolute",top:0,left:0,height:"100%",width:Math.min(w.hourly/1500*100,100)+"%",background:w.color,opacity:.8,borderRadius:3}}/>
+                  {w.hourly<=1500&&(
+                    <div style={{position:"absolute",top:-3,left:"1.35%",height:"calc(100% + 6px)",width:2,background:"#dc2626",opacity:.8,zIndex:1}}/>
+                  )}
+                </div>
+                {w.hourly<20.18&&!w.role.includes("CEO")&&(
+                  <div style={{fontSize:10,color:"#dc2626",marginTop:2}}>⚠ Below living wage — ${(20.18-w.hourly).toFixed(2)}/hr gap</div>
+                )}
+              </div>
+            ))}
+            <div style={{marginTop:8,fontSize:11,color:"#6b7280",fontStyle:"italic"}}>Sources: Glassdoor, Indeed, MIT Living Wage Calculator (Madison County 2025). CEO pay from IRS Form 990.</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── WORKERS ── */}
+      {tab==="workers"&&(
+        <div>
+          <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:4,padding:"14px 16px",marginBottom:16}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6}}>WHAT HHHS WORKERS ARE SAYING (Glassdoor & Indeed 2024-2025)</div>
+            <div style={{fontSize:13.5,color:"#7f1d1d",lineHeight:1.7,fontStyle:"italic"}}>"Huntsville Hospital has a monopoly and has bought everything within 30-60 miles." · "Nurses are overworked and underpaid — just another number." · "Raises are at most $0.25." · "Short staffed. Broken equipment. Horrible leadership." · "1 CNA for 15 patients." · "The pay is awful — they don't compete with other nursing opportunities locally." · "Offer 5-10 cent raises every 6 months." · "Constantly buying up failing hospitals but do not reinvest in staff."</div>
+          </div>
+
+          {[
+            {title:"Staffing Ratios — The Safety Problem",color:"#dc2626",
+              facts:["RNs report regularly being assigned 3-5 patients while simultaneously performing CNA, transport, and phlebotomy duties — not in their job descriptions.","ICU nurses report being asked to float to units they have no training in.","Frequently reported: 1 CNA assigned to 15+ patients — national safety guidelines recommend 1:8 maximum.","Short-staffed shifts are documented across multiple units and multiple years — this is structural, not situational."]},
+            {title:"Wages — The Numbers",color:"#ea580c",
+              facts:["Environmental Services (Housekeeping): $12.50-$13/hr starting — $26,000/yr. The federal poverty line for a family of two: $20,440.","CNA/Patient Care Tech: $14.50-$18/hr starting. At $14.50/hr full-time: $30,160/yr. A single adult with one child in Madison County needs $41.34/hr to meet basic needs (MIT, 2025).","Annual raises: multiple reviews cite $0.05 to $0.59 raises as the norm. 'Raises are at most $0.25' appears in 14 Glassdoor reviews.","Staff RN: ~$30/hr at Huntsville Hospital. Travel nurses in the same market earn $45-65/hr. HHHS has not closed this gap.","In 2013, HHHS imposed a system-wide pay freeze with no deadline and simultaneously raised employee health insurance premiums by $40/month. CEO compensation continued to increase."]},
+            {title:"The Monopoly Effect on Workers",color:"#1e3a5f",
+              facts:["With 20,000+ employees and no competitor in North Alabama, HHHS sets the healthcare wage floor for the entire region. There is no competing offer to anchor against.","The Crestwood acquisition would complete this dynamic — Huntsville Hospital would be the only hospital in Huntsville. Workers who want to stay in healthcare in this region have one employer.","Multiple reviews cite 'monopoly' explicitly: 'HH is a large health system that holds the monopoly in North Alabama. Pay is decent for Alabama, but overall very low compared nationally. It's not the worst place to work, especially given it's one of the only options locally.' — that last clause is the key.","Alabama has no minimum staffing ratio law. Alabama has no mandatory break law for nurses. Alabama has no state OSHA enforcement."]},
+          ].map((s,i)=>(
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+s.color}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f",marginBottom:12}}>{s.title}</div>
+                {s.facts.map((f,j)=>(
+                  <div key={j} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start"}}>
+                    <span style={{color:s.color,fontWeight:700,flexShrink:0,marginTop:2}}>▸</span>
+                    <div style={{fontSize:13.5,color:"#374151",lineHeight:1.7}}>
+                      <ExpandText text={f} preview={200}/>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Action section */}
-      <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"18px",marginTop:16}}>
-        <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:14,textTransform:"uppercase"}}>Contact Congress — The Only People Who Can Reform TVA</div>
-        {[
-          {name:"Rep. Dale Strong (AL-5)",url:"https://dalestrong.house.gov/contact",note:"Received $284,000 from defense/energy PACs · zero TVA oversight bills"},
-          {name:"Sen. Katie Britt",url:"https://www.britt.senate.gov/contact",note:"Received $890,000 from energy PACs · seek Senate Energy Committee seat"},
-          {name:"Sen. Tommy Tuberville",url:"https://www.tuberville.senate.gov/contact",note:"Received $270,000 from energy PACs · introduced zero TVA oversight"},
-        ].map((c,i)=>(
-          <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#fff",borderRadius:4,marginBottom:8,border:"1px solid #93b4d4",flexWrap:"wrap",gap:8}}>
-            <div>
-              <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{c.name}</div>
-              <div style={{fontSize:10.5,color:"#6b7280"}}>{c.note}</div>
+      {/* ── WHO BENEFITS ── */}
+      {tab==="connections"&&(
+        <div>
+          <div style={{fontSize:12,color:"#6b7280",marginBottom:14,lineHeight:1.7}}>Every person listed below has a documented financial or political relationship to the HHHS system. This is not speculation — each connection is sourced. Together they form an interlocking network that has maintained HHHS's monopoly, blocked Medicaid expansion, suppressed wages, and prevented meaningful public accountability.</div>
+          {connections.map((c,i)=>(
+            <div key={i} className="card" style={{marginBottom:12,overflow:"hidden",borderLeft:"4px solid "+c.color}}>
+              <div style={{padding:"16px 18px"}}>
+                <div style={{display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap",alignItems:"flex-start",marginBottom:10}}>
+                  <div>
+                    <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f"}}>{c.name}</div>
+                    <div style={{fontSize:12,color:"#6b7280",marginTop:2}}>{c.role}</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:8,background:c.color+"15",color:c.color,border:"1px solid "+c.color+"30"}}>{c.category}</span>
+                    <div style={{fontSize:11,color:"#6b7280",marginTop:3,fontFamily:"monospace"}}>{c.pay}</div>
+                  </div>
+                </div>
+                {[
+                  {l:"HOW THEY BENEFIT",v:c.benefit,color:"#ea580c"},
+                  {l:"HOW THEY ARE COMPLICIT",v:c.complicit,color:"#dc2626"},
+                  {l:"SOURCE",v:c.source,color:"#6b7280"},
+                ].map((row,j)=>(
+                  <div key={j} style={{marginBottom:j<2?10:0}}>
+                    <div style={{fontSize:8.5,fontWeight:700,color:row.color,letterSpacing:1,marginBottom:3,textTransform:"uppercase"}}>{row.l}</div>
+                    <div style={{fontSize:12.5,color:"#374151",lineHeight:1.65}}>
+                      <ExpandText text={row.v} preview={180}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <a href={c.url} target="_blank" rel="noreferrer">
-              <button className="btn btn-navy" style={{fontSize:11.5}}>✉ Contact →</button>
-            </a>
-          </div>
-        ))}
-        <div style={{marginTop:10,padding:"10px 12px",background:"#fef2f2",borderRadius:4,border:"1px solid #fca5a5"}}>
-          <div style={{fontSize:11.5,color:"#7f1d1d",lineHeight:1.65}}>
-            <strong>Check your water quality free:</strong> Visit <a href="https://www.ewg.org/tapwater/" target="_blank" rel="noreferrer" style={{color:"#dc2626"}}>ewg.org/tapwater</a> — search your zip code to see every detected contaminant compared to health guidelines, not just EPA limits.
+          ))}
+          <div style={{background:"#1e3a5f",borderRadius:5,padding:"16px 18px",marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#c9a84c",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The Bottom Line</div>
+            <div style={{fontSize:14,color:"rgba(255,255,255,.85)",lineHeight:1.8}}>No single person built this system. It was built incrementally — one acquisition, one campaign donation, one refused Medicaid vote, one pay freeze at a time. The people listed above are not acting in secret. Their connections are public record. The solution is the same: public record, public pressure, and 2026 elections.</div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -1883,7 +2377,7 @@ export default function App(){
     if(page==="dashboard")   return <Dashboard go={go}/>;
     if(page==="equity")      return <EquityPage/>;
     if(page==="utilities")   return <UtilitiesPage/>;
-    if(page==="health")      return <InvestPage id="health"/>;
+    if(page==="health")      return <HealthPage/>;
     if(page==="money")       return <MoneyPage/>;
     if(page==="workers")     return <InvestPage id="workers"/>;
     if(page==="taxes")       return <InvestPage id="taxes"/>;
