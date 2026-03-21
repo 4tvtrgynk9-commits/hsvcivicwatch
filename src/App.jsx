@@ -4204,6 +4204,8 @@ export default function App(){
         </div>
         <style>{`
           @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+          .desktop-ticker{display:block}
+          @media(max-width:768px){.desktop-ticker{display:none}}
           @media(max-width:768px){.topbar{height:auto!important}}
         `}</style>
         {/* Overlay */}
@@ -4229,7 +4231,15 @@ export default function App(){
         </div>
         {/* Main */}
         <div className="main" ref={mainRef}>
-          <div style={{paddingTop:0}}>
+          {/* Desktop ticker — hidden on mobile (mobile gets it in topbar) */}
+          <div className="desktop-ticker" style={{background:"#1e3a5f",padding:"5px 0",overflow:"hidden"}}>
+            <div style={{display:"flex",gap:0,animation:"ticker 22s linear infinite",whiteSpace:"nowrap"}}>
+              {["⚡ TVA rate hike #3 in 18 months — delegation introduced zero oversight bills","✚ Huntsville Hospital (HHHS) CEO earns $3.1M — nonprofit claims $63M/yr in tax exemptions","⚖ 61% of Madison County Jail is pretrial — not convicted of anything","🏫 CHOOSE Act vouchers: 67% of recipients were already in private school","🗺 Alabama maps violated Voting Rights Act — Supreme Court ruled 5-4","📡 HPD deployed 47 license plate readers — no public vote held","💧 Triana water shows PFAS (cancer-linked forever chemicals) above health guidelines","🏠 North Huntsville road score 41 vs South 72 — same tax rate","⚖ Kratom is a Class C felony in Alabama — legal in 43 states","💰 No-bid $1.84M contract to campaign donor — no competitive bidding","🏦 Industrial Development Board $127M+ in corporate tax abatements — no audit","👶 Infant care in Huntsville $14,400/yr — more than UAH tuition","🚔 HPD overtime up 34% to $6.2M/yr — no public explanation given"].map((t,i)=>(
+                <span key={i} style={{fontSize:11.5,color:"rgba(255,255,255,.65)",padding:"0 28px"}}><span style={{color:"#c9a84c",marginRight:6}}>◈</span>{t}</span>
+              ))}
+            </div>
+          </div>
+          <div>
             {renderPage()}
           </div>
         </div>
