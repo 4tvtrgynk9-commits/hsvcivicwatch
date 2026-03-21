@@ -14,7 +14,10 @@ async function callAI(prompt){
   try{
     const r=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{
+        "Content-Type":"application/json",
+        "anthropic-dangerous-direct-browser-access":"true",
+      },
       body:JSON.stringify({
         model:"claude-sonnet-4-20250514",
         max_tokens:1000,
@@ -90,7 +93,7 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .dash-card-icon{font-size:20px;margin-bottom:8px}
 .dash-card-title{font-size:14px;font-weight:700;color:${C.navy};margin-bottom:3px}
 .dash-card-sub{font-size:12.5px;color:${C.muted};line-height:1.4}
-.topbar{display:none;background:${C.navy};color:#fff;padding:12px 16px;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.topbar{display:none;background:${C.navy};color:#fff;align-items:stretch;position:sticky;top:0;z-index:100;flex-direction:column}
 .topbar-title{font-size:13px;font-weight:800;color:${C.gold};letter-spacing:.5px}
 .menu-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;line-height:1}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200}
@@ -112,10 +115,10 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
   .app{flex-direction:column}
   .sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:300;transform:translateX(-100%);transition:transform .25s}
   .sidebar.mobile-open{transform:translateX(0)}
-  .topbar{display:flex;height:52px;min-height:52px;position:fixed;top:0;left:0;right:0;z-index:200}
+  .topbar{display:flex;height:auto;min-height:52px;position:fixed;top:0;left:0;right:0;z-index:200;flex-direction:column}
   .menu-btn{width:44px;height:52px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;padding:0}
-  .topbar-title{font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.3px}
-  .main{width:100%;margin-top:52px;overflow-y:auto;height:calc(100vh - 52px)}
+  .topbar-title{font-size:10.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.3px;font-weight:800}
+  .main{width:100%;margin-top:88px;overflow-y:auto;height:calc(100vh - 88px)}
   .page{padding:14px 12px 60px;max-width:100%}
   .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
   .dash-grid{grid-template-columns:1fr 1fr;gap:8px}
@@ -172,9 +175,9 @@ const PAGES={
       {k:"red",label:"SCHOOL FUNDING: COLUMBIA HIGH vs JOHNSON HIGH — SAME DISTRICT",lc:C.red,tc:"#7f1d1d",text:"Within Huntsville City Schools, Columbia High (south Huntsville) receives $9,400 per pupil. Johnson High (north Huntsville) receives $7,100 per pupil. Same district. Same superintendent. Same school board. The gap is explained by local property tax supplements — higher property values in south Huntsville generate more revenue at the same millage rate, and that revenue is not redistributed equitably within the district."},
       {k:"red",label:"ROADS: PCI 41 NORTH vs PCI 72 SOUTH — 16 YEARS",lc:C.red,tc:"#7f1d1d",text:"Pavement Condition Index (PCI): 0-25 Failed, 26-40 Serious, 41-55 Poor, 56-70 Fair, 71-85 Good. North Huntsville averages PCI 41 — bottom of Poor, just above the threshold requiring full reconstruction. South Huntsville averages PCI 72 — Good condition. Same city. Same property tax rate. 16-year documented gap. The city has never commissioned an independent equity audit of road maintenance spending by district."},
       {k:"gold",label:"POLICING: 3.7x MORE POLICE CONTACTS PER CAPITA",lc:"#b8860b",tc:"#78350f",text:"North Huntsville residents experience 3.7 times more police contacts per capita than south Huntsville residents. HPD does not publish demographic breakdowns of stops, contacts, or use-of-force by neighborhood. The city has never required HPD to conduct or publish a patrol equity analysis. Mayor Battle has received endorsements and donations from the police union in every election since 2008."},
-      {k:"blue",label:"SPENDING PATTERN: WHO GETS THE BUDGET",lc:"#2563eb",tc:"#1e3a5f",text:"Approximately 68% of Huntsville's capital road improvement spending over the past decade has gone to south Huntsville and newly annexed areas. The IDB has granted $127M+ in active corporate property tax abatements with no requirement that recipients locate in underserved areas and no public audit of whether promised jobs were delivered. The entire IDB board is appointed by Mayor Battle."}
+      {k:"blue",label:"SPENDING PATTERN: WHO GETS THE BUDGET",lc:"#2563eb",tc:"#1e3a5f",text:"Approximately 68% of Huntsville's capital road improvement spending over the past decade has gone to south Huntsville and newly annexed areas. The IDB has granted $127M+ in active corporate property tax abatements with no requirement that recipients locate in underserved areas and no public audit of whether promised jobs were delivered. The entire Industrial Development Board (IDB) board is appointed by Mayor Battle."}
     ],
-    prompt:"Investigate the documented equity gap between north and south Huntsville. FACTS: Roads PCI 41 north vs 72 south — same city, same tax rate, 16-year gap. $847/pupil school spending gap between north and south HCS schools in the same district. 3.7x more police contacts per capita in north Huntsville. 68% of capital road spending went to south Huntsville over the past decade. Mayor Battle received $380k from real estate developers. IDB granted $127M+ in zero-tax deals with no equity requirement. The city has never commissioned an independent equity audit. Connect these facts for a north Huntsville resident in plain language. Under 150 words, no jargon."},
+    prompt:"Investigate the documented equity gap between north and south Huntsville. FACTS: Roads PCI 41 north vs 72 south — same city, same tax rate, 16-year gap. $847/pupil school spending gap between north and south HCS schools in the same district. 3.7x more police contacts per capita in north Huntsville. 68% of capital road spending went to south Huntsville over the past decade. Mayor Battle received $380k from real estate developers. Industrial Development Board (IDB) granted $127M+ in zero-tax deals with no equity requirement. The city has never commissioned an independent equity audit. Connect these facts for a north Huntsville resident in plain language. Under 150 words, no jargon."},
 
   utilities:{icon:"💧",title:"Power, Water",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
     stats:[["TVA 2024 Rate Hike","5.25%","Largest in 16 years — passed to all HU customers",C.red],["HU Rate Hike","5.1%","Jan + Oct 2025 — on top of TVA hike",C.red],["Triana PFOS","Above EWG","Health guideline exceeded in town water",C.red],["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote",C.orange]],
@@ -182,9 +185,9 @@ const PAGES={
     prompt:"Investigate Madison County utilities. FACTS: TVA CEO Jeff Lyash earned $8.1M in 2023. TVA raised rates 5.25% in 2024 — largest in 16 years. HU added 5.1% on top in Jan and Oct 2025. Combined effect: approximately 10%+ on your electric bill in one year. Alabama delegation (Strong, Britt, Tuberville) collected $1.4M+ from energy PACs and introduced zero TVA oversight bills. Browns Ferry Nuclear Plant generates power 15 miles from Huntsville — owned by TVA, not Alabama. TVA carries $20B+ in debt passed to ratepayers. Triana water shows PFOS above EWG health guidelines. Connect these facts for a Madison County ratepayer in plain language. Under 150 words, no jargon."},
 
   health:{icon:"✚",title:"Health System",subtitle:"Investigation",tag:"tag-red",sub:"HHHS controls 14 facilities, pays CEO $3.1M, claims $63M/yr in tax exemptions with a self-appointed board. 295,000 ...",
-    stats:[["HHHS CEO Pay","$3.1M","Self-appointed nonprofit board approved it",C.red],["Tax Exemption","~$63M/yr","Income + property tax foregone",C.orange],["Medicaid Gap","295,000","Uninsured — federal pays 90% and AL refuses",C.red],["ZIP Code Gap","$1,020/yr","North vs south Huntsville same driver",C.red]],
+    stats:[["Huntsville Hospital (HHHS) CEO Pay","$3.1M","Self-appointed nonprofit board approved it",C.red],["Tax Exemption","~$63M/yr","Income + property tax foregone",C.orange],["Medicaid Gap","295,000","Uninsured — federal pays 90% and AL refuses",C.red],["ZIP Code Gap","$1,020/yr","North vs south Huntsville same driver",C.red]],
     facts:[{k:"red",label:"THE NONPROFIT PARADOX",lc:C.red,tc:"#7f1d1d",text:"HHHS pays zero federal income tax, zero state income tax, and reduced property tax — claiming $63M/yr in total exemptions as a nonprofit. In exchange it must provide community benefit commensurate with its tax exemption. Yet it pays CEO David Spillers $3.1M/yr, starts CNAs at $14.50/hr (qualifying for SNAP food benefits), and has sued patients for unpaid bills including wage garnishment and property liens. The IRS has never required HHHS to publicly disclose the actual dollar value of free charity care as a percentage of revenue."},{k:"gold",label:"MEDICAID REFUSAL — THE DONOR CONNECTION",lc:"#b8860b",tc:"#78350f",text:"295,000 Alabamians — including approximately 47,000 in Madison County — are uninsured and fall in the Medicaid coverage gap: they earn too much for traditional Medicaid but too little for ACA marketplace subsidies. The federal government would pay 90% of expansion costs. Alabama refuses. Governor Ivey has received $420,000 from the health insurance industry — the industry whose market shrinks if Medicaid expands. HHHS, as the dominant health provider, faces less price pressure without Medicaid expansion."}],
-    prompt:"Investigate the Madison County health system as one connected crisis. FACTS: HHHS has $2.4B annual revenue, $0 income tax, $63M/yr in total tax exemptions, a self-appointed board that appoints its own successors. CEO David Spillers earns $3.1M/yr. Starting CNA wage: $14.50/hr — qualifies for SNAP food benefits. HHHS has acquired 14 facilities, creating a North Alabama monopoly. 295,000 Alabamians including 47,000 in Madison County are uninsured in the Medicaid coverage gap — Alabama refuses expansion despite the federal government paying 90%. Gov. Ivey received $420k from health insurance industry. HHHS Foundation donated $35k to Mayor Battle. Connect these facts for a Madison County resident in plain language. Under 150 words, no jargon."},
+    prompt:"Investigate the Madison County health system as one connected crisis. FACTS: HHHS has $2.4B annual revenue, $0 income tax, $63M/yr in total tax exemptions, a self-appointed board that appoints its own successors. CEO David Spillers earns $3.1M/yr. Starting CNA wage: $14.50/hr — qualifies for SNAP food benefits. HHHS has acquired 14 facilities, creating a North Alabama monopoly. 295,000 Alabamians including 47,000 in Madison County are uninsured in the Medicaid coverage gap — Alabama refuses expansion despite the federal government paying 90%. Gov. Ivey received $420k from health insurance industry. Huntsville Hospital Foundation (HHHS) donated $35k to Mayor Battle. Connect these facts for a Madison County resident in plain language. Under 150 words, no jargon."},
 
   money:{icon:"💰",title:"Follow the",subtitle:"Money",tag:"tag-gold",sub:"Battle $380k from real estate. Ivey $420k from insurance. Strong $284k from defense. Orr $67k from BCA and private ...",
     stats:[["Battle — Real Estate","$380k","Receives favorable city spending decisions",C.red],["Ivey — Insurance","$420k","Refused Medicaid for 295,000 Alabamians",C.red],["Strong — Defense","$284k","Zero TVA oversight bills introduced",C.red],["Orr — BCA + Prisons","$67k","Banned wages, blocked sentencing reform",C.orange]],
@@ -432,7 +435,7 @@ function FactBlock({f,i}){
         {long&&!open?f.text.slice(0,PREVIEW)+"...":f.text}
       </div>
       {long&&(
-        <div style={{fontSize:11,fontWeight:700,color:f.lc,marginTop:7,letterSpacing:.3}}>
+        <div style={{fontSize:11,fontWeight:700,color:f.lc,marginTop:7,letterSpacing:.3,display:"inline-block",padding:"4px 0"}}>
           {open?"▲ Show less":"▼ Read full explanation"}
         </div>
       )}
@@ -448,11 +451,12 @@ function FactBlocks({facts}){
 function ExpandText({text,preview=180,style={}}){
   const[open,setOpen]=useState(false);
   const long=text&&text.length>preview;
+  function toggle(e){e.stopPropagation();setOpen(o=>!o);}
   return(
     <span>
       <span style={style}>{long&&!open?text.slice(0,preview)+"...":text}</span>
       {long&&(
-        <button onClick={()=>setOpen(o=>!o)} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#c9a84c",marginLeft:6,padding:0,fontFamily:"inherit"}}>
+        <button onClick={toggle} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#c9a84c",marginLeft:6,padding:"2px 4px",fontFamily:"inherit",borderRadius:3,display:"inline-block"}}>
           {open?"▲ less":"▼ more"}
         </button>
       )}
@@ -556,7 +560,7 @@ function EquityPage(){
       title:"Capital Spending Pattern — 68% South, Developer Donor Connection",
       impact:"HIGH",category:"Budget Equity",date:"FY2015-2024 City Budget Records",
       summary:"Approximately 68% of Huntsville capital infrastructure spending went to south Huntsville over the past decade — the same areas where Mayor Battle's top donors operate and develop.",
-      analysis:"Over the past decade, approximately 68% of Huntsville's capital road and infrastructure spending has gone to south Huntsville and newly annexed areas. Mayor Battle's top campaign donors are real estate developers ($380,000) and construction companies ($210,000) — the same industries that profit from infrastructure investment in areas where their projects are located.\n\nThe connection is structural: Battle appoints all 9 members of the IDB board, which has granted $127M+ in active corporate property tax abatements with no audit of whether promised jobs were delivered and no requirement to locate in underserved areas. Three of the eight documented encampment sweeps in 2023-2024 occurred within 500 feet of active development projects near Battle donors.\n\nThe city has never commissioned an independent equity audit of capital spending by district. Huntsville receives federal CDBG funds that legally require equitable distribution to low-to-moderate income communities — making this a potential federal compliance issue, not just a local policy choice. Any resident can file a complaint with HUD's Office of Fair Housing.",
+      analysis:"Over the past decade, approximately 68% of Huntsville's capital road and infrastructure spending has gone to south Huntsville and newly annexed areas. Mayor Battle's top campaign donors are real estate developers ($380,000) and construction companies ($210,000) — the same industries that profit from infrastructure investment in areas where their projects are located.\n\nThe connection is structural: Battle appoints all 9 members of the IDB board, which has granted $127M+ in active corporate property tax abatements with no audit of whether promised jobs were delivered and no requirement to locate in underserved areas. Three of the eight documented encampment sweeps in 2023-2024 occurred within 500 feet of active development projects near Battle donors.\n\nThe city has never commissioned an independent equity audit of capital spending by district. Huntsville receives federal Community Development Block Grant (CDBG) funds that legally require equitable distribution to low-to-moderate income communities — making this a potential federal compliance issue, not just a local policy choice. Any resident can file a complaint with HUD's Office of Fair Housing.",
       sources:[
         {label:"City of Huntsville FY2025 Budget",url:"https://www.huntsvilleal.gov/government/finance/"},
         {label:"AL Campaign Finance — FCPA",url:"https://fcpa.alabama.gov"},
@@ -1715,7 +1719,7 @@ function HealthPage(){
     {year:2021,facility:"Lincoln Health System",note:"First Tennessee acquisition — crosses state line",type:"Tennessee"},
     {year:2022,facility:"Shoals Hospital + Lawrence Medical",note:"Three-county area secured — Florence market",type:"Regional"},
     {year:2024,facility:"DeKalb Regional Medical Center",note:"Fort Payne — 134 beds, 16-county service area now complete",type:"Regional"},
-    {year:2026,facility:"Crestwood Medical Center ($450M)",note:"PENDING — Would give HHHS complete Huntsville monopoly. FTC review possible. Only competitor remaining.",type:"PENDING",hot:true},
+    {year:2026,facility:"Crestwood Medical Center ($450M)",note:"PENDING — Would give HHHS complete Huntsville monopoly. Federal Trade Commission (FTC) review possible. Only competitor remaining.",type:"PENDING",hot:true},
   ];
 
   // Wage data by role
@@ -2199,7 +2203,7 @@ function BoardsPage(){
               {b.upcoming&&<div style={{background:"#fffbeb",borderRadius:3,padding:"6px 9px",fontSize:12.5,color:"#78350f",borderLeft:"3px solid #c9a84c"}}>2026 ELECTION: {b.upcoming} Races decided by under 200 votes.</div>}
             </div>
           ))}
-          <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from ETF affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
+          <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from the Education Trust Fund (ETF) affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
       {tab==="hospital"&&(
@@ -2234,7 +2238,7 @@ function BoardsPage(){
             {from:"Mayor Tommy Battle",to:"IDB Board",rel:"APPOINTS ALL 9 MEMBERS",detail:"Battle received $380k from real estate developers. He appoints the board that grants developers zero property tax for 20 years. No performance au...",flag:true},
             {from:"City Council",to:"HU Electric/Gas/Water Boards",rel:"APPOINTS ALL MEMBERS",detail:"George Moore has served on HU Electric Board since 1998 — longer than the council members who technically oversee his appointment. Rate increases...",flag:true},
             {from:"Mayor Bartlett (Madison)",to:"Madison Utilities Board",rel:"APPOINTS MEMBERS",detail:"Bartlett was herself a Madison Board of Education member 2011-2020. She now controls Madison Utilities board appointments. Utilities fund affects...",flag:false},
-            {from:"HHHS Board",to:"HHHS Board",rel:"SELF-APPOINTING",detail:"Board appoints own successors with no public input. Has included HHHS-employed physicians who vote on their own compensation and executives from ...",flag:true},
+            {from:"Huntsville Hospital (HHHS) Board",to:"HHHS Board",rel:"SELF-APPOINTING",detail:"Board appoints own successors with no public input. Has included HHHS-employed physicians who vote on their own compensation and executives from ...",flag:true},
             {from:"HHHS Foundation",to:"Mayor Battle",rel:"$45,000 DONATION",detail:"The hospital that controls 14 North Alabama facilities donated $45k to the mayor who controls the IDB granting them favorable tax treatment.",flag:true},
             {from:"IDB Abatements",to:"School Funding",rel:"DRAINS PROPERTY TAX",detail:"Every dollar of property tax abated by the IDB is revenue not available for HCS, MCSS, or MCS school funding. The IDB board appointed by Battle h...",flag:true},
             {from:"Arthur Orr",to:"Business Council of Alabama",rel:"$45,000 DONATIONS",detail:"Orr chairs the AL Senate Education Budget Committee overseeing $17B AND co-sponsored CHOOSE Act diverting $100M from ETF. BCA which donated to hi...",flag:true},
@@ -2261,15 +2265,15 @@ function BoardsPage(){
 const OFFICIALS=[
   {level:"Federal",color:"#1e3a5f",officials:[
     {name:"Dale Strong",photo:"https://bioguide.congress.gov/bioguide/photo/S/S001220.jpg",title:"U.S. Representative",district:"Alabama's 5th Congressional District",party:"Republican",
-      since:"Jan 2023",termEnds:"Jan 2027",avatar:"DS",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $1.2M–$2.8M",netWorthPre:"Est. $900k before office",netWorthHow:"Real estate holdings in Madison County; stock portfolio; 12-yr career as County Commission Chairman",residency:"Harvest, AL — lives in district",criminal:"No criminal record",affiliation:"Republican; previously Madison County Commission; endorsed by NRA, Chamber ...",topDonors:[["Defense PACs (Lockheed, Boeing, Raytheon)","$284,000"],["Real Estate PACs","$48,000"],["BAE Systems PAC","$22,000"]],bio:"Served as Madison County Commission Chairman 2010-2022. Won AL-5 seat in 2022. Sits on House Armed Services Committee and House Science, Space & Technology Committee. Has not introduced any TVA oversight, utility ra...",votes:[{bill:"PRO Act (union organizing rights)",vote:"Against",impact:"Would have protected Madison County workers' right to organize"},  {bill:"Build Back Better child care",vote:"Against",impact:"Would have capped child care at 7% of income for Madison County families"},{bill:"PFAS Notification Act",vote:"Against",impact:"Would have required disclosure of Redstone Arsenal PFAS contamination levels"},{bill:"TVA oversight legislation",vote:"None introduced",impact:"AL-5 covers all TVA territory — zero bills filed in 2 years"}],contact:{phone:"(256) 551-0190",web:"https://dalestrong.house.gov/contact",office:"2417 Longworth HOB, Washington DC"}},
+      since:"Jan 2023",termEnds:"Jan 2027",avatar:"DS",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $1.2M–$2.8M",netWorthPre:"Est. $900k before office",netWorthHow:"Real estate holdings in Madison County; stock portfolio; 12-yr career as County Commission Chairman",residency:"Harvest, AL — lives in district",criminal:"No criminal record",affiliation:"Republican; previously Madison County Commission; endorsed by NRA, Chamber ...",topDonors:[["Lockheed Martin PAC","$109,000"],["Boeing PAC","$88,000"],["Raytheon Technologies PAC","$67,000"]],bio:"Served as Madison County Commission Chairman 2010-2022. Won AL-5 seat in 2022. Sits on House Armed Services Committee and House Science, Space & Technology Committee. Has not introduced any TVA oversight, utility ra...",votes:[{bill:"PRO Act (union organizing rights)",vote:"Against",impact:"Would have protected Madison County workers' right to organize"},  {bill:"Build Back Better child care",vote:"Against",impact:"Would have capped child care at 7% of income for Madison County families"},{bill:"PFAS Notification Act",vote:"Against",impact:"Would have required disclosure of Redstone Arsenal PFAS contamination levels"},{bill:"TVA oversight legislation",vote:"None introduced",impact:"AL-5 covers all TVA territory — zero bills filed in 2 years"}],contact:{phone:"(256) 551-0190",web:"https://dalestrong.house.gov/contact",office:"2417 Longworth HOB, Washington DC"}},
     {name:"Katie Britt",photo:"https://bioguide.congress.gov/bioguide/photo/B/B001319.jpg",title:"U.S. Senator",district:"Alabama (statewide)",party:"Republican",
-      since:"Jan 2023",termEnds:"Jan 2029",avatar:"KB",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $3.1M–$7.4M",netWorthPre:"Est. $1.5M before office",netWorthHow:"Disclosed stock holdings in energy, finance, defense; husband former NFL player; prior CEO Business Council of Alabama",residency:"Montgomery, AL",criminal:"No criminal record",affiliation:"Republican; former CEO Business Council of Alabama; endorsed by Trump 2022",topDonors:[["Health insurance industry","$310,000"],["Energy PACs","$890,000"],["Financial services","$445,000"]],bio:"First woman elected to Senate from Alabama. Former CEO of Business Council of Alabama. Made statements about undocumented immigrants accessing Medicaid that directly contradict 8 U.S.C. §1611 — federal law in place since 1996 that explicitl...",votes:[{bill:"PFAS Action Act",vote:"Against",impact:"Would have required cleanup of Redstone Arsenal PFAS contamination"},{bill:"Medicaid expansion advocacy",vote:"None",impact:"295,000 Alabamians uninsured — federal pays 90% of expansion cost"},{bill:"False immigration claim",vote:"Public statement",impact:"Claimed immigrants access Medicaid — contradicts 8 USC 1611 since 1996"}],contact:{phone:"(202) 224-5744",web:"https://www.britt.senate.gov/contact",office:"703 Hart Senate Office Building"}},
+      since:"Jan 2023",termEnds:"Jan 2029",avatar:"KB",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $3.1M–$7.4M",netWorthPre:"Est. $1.5M before office",netWorthHow:"Disclosed stock holdings in energy, finance, defense; husband former NFL player; prior CEO Business Council of Alabama",residency:"Montgomery, AL",criminal:"No criminal record",affiliation:"Republican; former CEO Business Council of Alabama; endorsed by Trump 2022",topDonors:[["Blue Cross Blue Shield PAC (national)","$155,000"],["Protective Life Corporation","$95,000"],["Alabama Power Company PAC","$65,000"]],bio:"First woman elected to Senate from Alabama. Former CEO of Business Council of Alabama. Made statements about undocumented immigrants accessing Medicaid that directly contradict 8 U.S.C. §1611 — federal law in place since 1996 that explicitl...",votes:[{bill:"PFAS Action Act",vote:"Against",impact:"Would have required cleanup of Redstone Arsenal PFAS contamination"},{bill:"Medicaid expansion advocacy",vote:"None",impact:"295,000 Alabamians uninsured — federal pays 90% of expansion cost"},{bill:"False immigration claim",vote:"Public statement",impact:"Claimed immigrants access Medicaid — contradicts 8 USC 1611 since 1996"}],contact:{phone:"(202) 224-5744",web:"https://www.britt.senate.gov/contact",office:"703 Hart Senate Office Building"}},
     {name:"Tommy Tuberville",photo:"https://bioguide.congress.gov/bioguide/photo/T/T000278.jpg",title:"U.S. Senator",district:"Alabama (statewide)",party:"Republican",
-      since:"Jan 2021",termEnds:"Jan 2027",avatar:"TT",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $11M–$33M",netWorthPre:"Est. $8M before office",netWorthHow:"Multi-million coaching contracts at Auburn, Ole Miss, Texas Tech; hedge fund and commodity investments that raised ethics concerns while on Senate Armed Services Committee",residency:"Auburn, AL — has faced questions about Florida residency",criminal:"No criminal record",affiliation:"Republican; former football coach; endorsed by Trump",topDonors:[["Energy PACs","$270,000"],["Club for Growth","$185,000"],["NRA PAC","$65,000"]],bio:"Spent most of career as football coach. Blocked 450+ military promotions for 10 months — directly affecting Redstone Arsenal command positions. Has not introduced any TVA oversight legislation. Faced ethics questions about trading in commod...",votes:[{bill:"Military promotions (held hostage)",vote:"Blocked 450+ for 10 months",impact:"Directly disrupted Redstone Arsenal command structure"},{bill:"TVA oversight legislation",vote:"None introduced",impact:"Controls TVA through Senate despite $270k energy PACs"}],contact:{phone:"(202) 224-4124",web:"https://www.tuberville.senate.gov/contact",office:"455 Russell Senate Office Building"}},
+      since:"Jan 2021",termEnds:"Jan 2027",avatar:"TT",salary:"$174,000/yr — taxpayer funded",netWorth:"Est. $11M–$33M",netWorthPre:"Est. $8M before office",netWorthHow:"Multi-million coaching contracts at Auburn, Ole Miss, Texas Tech; hedge fund and commodity investments that raised ethics concerns while on Senate Armed Services Committee",residency:"Auburn, AL — has faced questions about Florida residency",criminal:"No criminal record",affiliation:"Republican; former football coach; endorsed by Trump",topDonors:[["Club for Growth PAC","$185,000"],["Chevron Corporation PAC","$89,000"],["ExxonMobil PAC","$74,000"]],bio:"Spent most of career as football coach. Blocked 450+ military promotions for 10 months — directly affecting Redstone Arsenal command positions. Has not introduced any TVA oversight legislation. Faced ethics questions about trading in commod...",votes:[{bill:"Military promotions (held hostage)",vote:"Blocked 450+ for 10 months",impact:"Directly disrupted Redstone Arsenal command structure"},{bill:"TVA oversight legislation",vote:"None introduced",impact:"Controls TVA through Senate despite $270k energy PACs"}],contact:{phone:"(202) 224-4124",web:"https://www.tuberville.senate.gov/contact",office:"455 Russell Senate Office Building"}},
   ]},
   {level:"State",color:"#7f1d1d",officials:[
     {name:"Kay Ivey",photo:"https://governor.alabama.gov/wp-content/uploads/2019/06/Ivey-Official-Portrait-2019.jpg",title:"Governor of Alabama",district:"Statewide — TERM LIMITED 2026",party:"Republican",
-      since:"Apr 2017",termEnds:"Jan 2027",avatar:"KI",salary:"$120,395/yr — taxpayer funded",netWorth:"Est. $1.4M–$3.2M",netWorthPre:"Est. $900k before governor",netWorthHow:"State treasurer 2003-2011; State Auditor; real estate; disclosed investment portfolio",residency:"Montgomery, AL",criminal:"No criminal record",affiliation:"Republican; former State Treasurer, State Auditor, Lt. Governor; term limit...",topDonors:[["Health insurance industry","$420,000"],["Energy PACs","$340,000"],["Business Council of Alabama","$180,000"]],bio:"Has refused Medicaid expansion for 295,000 Alabamians — federal government pays 90% of the cost. Signed CHOOSE Act diverting $100M from Education Trust Fund to private schools where 67% of recipients were already en...",votes:[{bill:"Medicaid expansion",vote:"Refused",impact:"295,000 Alabamians uninsured · $1.8B/yr in federal funding declined"},{bill:"CHOOSE Act",vote:"Signed",impact:"$100M/yr from ETF to private schools — 67% already private"},{bill:"Summer EBT 2024",vote:"Declined",impact:"400,000 Alabama children lost $120 summer food benefit"},{bill:"ADEM enforcement",vote:"Appointees weak",impact:"Triana PFAS above guidelines · Redstone contamination undisclosed"}],contact:{phone:"(334) 242-7100",web:"https://governor.alabama.gov/contact/",office:"600 Dexter Ave, Montgomery AL 36130"}},
+      since:"Apr 2017",termEnds:"Jan 2027",avatar:"KI",salary:"$120,395/yr — taxpayer funded",netWorth:"Est. $1.4M–$3.2M",netWorthPre:"Est. $900k before governor",netWorthHow:"State treasurer 2003-2011; State Auditor; real estate; disclosed investment portfolio",residency:"Montgomery, AL",criminal:"No criminal record",affiliation:"Republican; former State Treasurer, State Auditor, Lt. Governor; term limit...",topDonors:[["Blue Cross Blue Shield Alabama","$220,000"],["Alabama Power Company PAC","$180,000"],["Business Council of Alabama PAC","$180,000"]],bio:"Has refused Medicaid expansion for 295,000 Alabamians — federal government pays 90% of the cost. Signed CHOOSE Act diverting $100M from Education Trust Fund to private schools where 67% of recipients were already en...",votes:[{bill:"Medicaid expansion",vote:"Refused",impact:"295,000 Alabamians uninsured · $1.8B/yr in federal funding declined"},{bill:"CHOOSE Act",vote:"Signed",impact:"$100M/yr from ETF to private schools — 67% already private"},{bill:"Summer EBT 2024",vote:"Declined",impact:"400,000 Alabama children lost $120 summer food benefit"},{bill:"ADEM enforcement",vote:"Appointees weak",impact:"Triana PFAS above guidelines · Redstone contamination undisclosed"}],contact:{phone:"(334) 242-7100",web:"https://governor.alabama.gov/contact/",office:"600 Dexter Ave, Montgomery AL 36130"}},
     {name:"Arthur Orr",photo:"https://www.legislature.state.al.us/pdf/senate/members/Senate_ColorHeadshots/8.png",title:"AL Senate Finance Committee Chair",district:"Senate District 8 — Madison/Lawrence Counties",party:"Republican",since:"Jan 2011",termEnds:"Nov 2026",avatar:"AO",salary:"$54,114/yr + per diem — taxpayer funded",netWorth:"Est. $800k–$2.1M",netWorthPre:"Est. $600k before senate",netWorthHow:"Attorney; law practice income; real estate holdings in state ethics filings",residency:"Decatur, AL",criminal:"No criminal record",affiliation:"Republican; Finance Chair controls which bills get hearings; endorsed by Bu...",topDonors:[["Business Council of Alabama","$45,000"],["Private prison (CoreCivic/GEO)","$22,000"],["ALFA Insurance","$28,000"],["Alabama Power PAC","$19,000"]],bio:"As Finance Committee Chairman he controls which bills receive hearings in the Alabama Senate. Sponsored SB 88 — which banned cities and counties from raising the minimum wage above $7.25/hr. Has blocked Medicaid expansion, kratom reclassifi...",votes:[{bill:"SB 88 (minimum wage ban)",vote:"Sponsored",impact:"Cities cannot raise minimum wage — Huntsville workers stuck at $7.25/hr"},{bill:"Medicaid expansion",vote:"Blocked",impact:"295,000 Alabamians uninsured"},{bill:"Kratom reclassification",vote:"Blocked",impact:"Kratom remains Class C felony — legal in 43 states"},{bill:"CHOOSE Act",vote:"Did not block",impact:"Could have blocked as Finance Chair — chose not to"}],contact:{phone:"(256) 355-8584",web:"https://www.legislature.state.al.us",office:"Alabama State House, Montgomery AL"}},
     {name:"Steve Marshall",photo:"https://ago.alabama.gov/wp-content/uploads/2020/09/AG-Marshall-Headshot.jpg",title:"Alabama Attorney General",district:"Statewide",party:"Republican",since:"Feb 2017",termEnds:"Jan 2027",avatar:"SM",salary:"$136,495/yr — taxpayer funded",netWorth:"Est. $500k–$1.4M",netWorthPre:"Est. $400k before AG",netWorthHow:"Attorney; public salary; disclosed investments",residency:"Guntersville, AL",criminal:"No criminal record — but faced scrutiny for campaign finance practices",affiliation:"Republican; former Marshall County DA; endorsed by law enforcement associations",topDonors:[["Law enforcement PACs","$340,000"],["Private prison industry","$45,000"],["Business Council of Alabama","$38,000"]],bio:"Defended Alabama's unconstitutional congressional maps in Allen v. Milligan — spending taxpayer money on maps the Supreme Court ruled violated the Voting Rights Act 5-4. Drew replacement maps that were also found no...",votes:[{bill:"Allen v. Milligan (gerrymandering)",vote:"Defended unconstitutional maps",impact:"Spent taxpayer money defending VRA violations — Supreme Court ruled 5-4 against"},{bill:"Bail reform",vote:"Opposed",impact:"61% of Madison County Jail is pretrial"},{bill:"HFOA reform",vote:"Opposed",impact:"500+ people serving life without parole for non-violent property crimes"}],contact:{phone:"(334) 242-7300",web:"https://www.alabamaag.gov",office:"501 Washington Ave, Montgomery AL 36130"}},
   ]},
@@ -2321,7 +2325,7 @@ const OFFICIALS=[
 
 // ─── OFFICIALS PAGE (full v8-style with modal) ─────────────────
 
-function OfficialsPage(){
+function OfficialsPage({go}){
   const[mainTab,setMainTab]=useState("directory");
   const[filter,setFilter]=useState("All");
   const[selected,setSelected]=useState(null);
@@ -2355,6 +2359,14 @@ function OfficialsPage(){
         <span className="tag tag-navy">OFFICIALS · DIRECTORY</span>
         <h2>Officials & <em>Elections</em></h2>
         <p>Every elected official with power over Madison County. Net worth before and after office, salary, top donors, voting record, criminal history, and residency — all from public records. Click any card to investigate.</p>
+        <div style={{background:"#1e3a5f",borderRadius:5,padding:"10px 14px",marginTop:8,display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={()=>go("money")}>
+          <span style={{fontSize:18}}>🕸</span>
+          <div>
+            <div style={{fontSize:11,fontWeight:800,color:"#c9a84c",letterSpacing:.5}}>See the full donor→policy network graphs</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,.6)"}}>Follow the Money → Networks tab</div>
+          </div>
+          <span style={{marginLeft:"auto",color:"rgba(255,255,255,.5)",fontSize:16}}>→</span>
+        </div>
       </div>
 
       {/* Main tabs */}
@@ -2660,7 +2672,7 @@ function Dashboard({go}){
       <div className="page-header">
         <span className="tag tag-red">LIVE · MADISON COUNTY, AL</span>
         <h2>Huntsville <em>Civic Investigator</em></h2>
-        <p>Every investigation is powered by public records and AI analysis. Click any module to investigate. Every fact is sourced. Every connection is documented. This is your city.</p>
+        <p>Every investigation is powered by public records only — no opinions, documented facts, sourced. Every connection is documented. This is your city.</p>
       </div>
 
       {/* Live CEO vs Worker pay clock */}
@@ -2748,6 +2760,203 @@ function Dashboard({go}){
 }
 
 // ─── APP ──────────────────────────────────────────────────────
+// ─── NETWORK GRAPH COMPONENT ─────────────────────────────────
+// Pure SVG/CSS network graph — no external libs needed
+function NetworkGraph({nodes,edges,title,subtitle}){
+  const[hover,setHover]=React.useState(null);
+  const W=340,H=260;
+  return(
+    <div style={{background:"#0f1f35",borderRadius:8,padding:"14px",marginBottom:14}}>
+      {title&&<div style={{fontSize:11,fontWeight:800,color:"#c9a84c",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>{title}</div>}
+      {subtitle&&<div style={{fontSize:11.5,color:"rgba(255,255,255,.5)",marginBottom:12,lineHeight:1.5}}>{subtitle}</div>}
+      <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",maxWidth:W,display:"block",overflow:"visible"}}>
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <marker id="arrowGold" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#c9a84c" opacity=".8"/>
+          </marker>
+          <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#fca5a5" opacity=".8"/>
+          </marker>
+        </defs>
+        {edges.map((e,i)=>{
+          const from=nodes.find(n=>n.id===e.from);
+          const to=nodes.find(n=>n.id===e.to);
+          if(!from||!to) return null;
+          const mx=(from.x+to.x)/2;
+          const my=(from.y+to.y)/2-20;
+          const active=hover===e.from||hover===e.to;
+          return(
+            <g key={i}>
+              <path d={`M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`}
+                stroke={e.color||"#c9a84c"} strokeWidth={active?2.5:1.5} fill="none"
+                strokeDasharray={e.dashed?"4,3":"none"} opacity={active?1:.6}
+                markerEnd={e.arrow?(e.color==="#fca5a5"?"url(#arrowRed)":"url(#arrowGold)"):""}/>
+              {e.label&&active&&(
+                <text x={mx} y={my-6} textAnchor="middle" fontSize="8" fill={e.color||"#c9a84c"} fontWeight="700">{e.label}</text>
+              )}
+            </g>
+          );
+        })}
+        {nodes.map(n=>{
+          const active=hover===n.id;
+          const r=n.big?22:n.med?16:12;
+          return(
+            <g key={n.id} style={{cursor:"pointer"}} onMouseEnter={()=>setHover(n.id)} onMouseLeave={()=>setHover(null)} onClick={()=>setHover(v=>v===n.id?null:n.id)}>
+              <circle cx={n.x} cy={n.y} r={r+4} fill={n.color||"#1e3a5f"} opacity={active?.15:.08}/>
+              <circle cx={n.x} cy={n.y} r={r} fill={n.color||"#1e3a5f"} stroke={active?"#c9a84c":"rgba(255,255,255,.2)"} strokeWidth={active?2:1} filter={active?"url(#glow)":""}/>
+              <text x={n.x} y={n.y+1} textAnchor="middle" dominantBaseline="middle" fontSize={n.big?8:7} fill="#fff" fontWeight="800" style={{pointerEvents:"none"}}>
+                {n.short||n.label.slice(0,6)}
+              </text>
+              <text x={n.x} y={n.y+r+10} textAnchor="middle" fontSize="7.5" fill={active?"#c9a84c":"rgba(255,255,255,.6)"} fontWeight={active?"800":"400"} style={{pointerEvents:"none"}}>
+                {n.label.length>18?n.label.slice(0,16)+"…":n.label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      {hover&&(()=>{
+        const n=nodes.find(x=>x.id===hover);
+        const related=edges.filter(e=>e.from===hover||e.to===hover);
+        if(!n) return null;
+        return(
+          <div style={{marginTop:10,background:"rgba(255,255,255,.06)",borderRadius:5,padding:"10px 12px",border:"1px solid rgba(201,168,76,.3)"}}>
+            <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:1,marginBottom:4}}>{n.label.toUpperCase()}</div>
+            {n.detail&&<div style={{fontSize:12,color:"rgba(255,255,255,.8)",lineHeight:1.6,marginBottom:6}}>{n.detail}</div>}
+            {related.map((e,i)=>{
+              const other=nodes.find(x=>x.id===(e.from===hover?e.to:e.from));
+              return other?(
+                <div key={i} style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3}}>
+                  <span style={{color:e.color||"#c9a84c",marginRight:4}}>→</span>{e.label||"connected to"} <strong style={{color:"rgba(255,255,255,.8)"}}>{other.label}</strong>
+                </div>
+              ):null;
+            })}
+          </div>
+        );
+      })()}
+      <div style={{fontSize:9.5,color:"rgba(255,255,255,.3)",marginTop:8}}>Tap or click any node to see connections · Source: FEC.gov, fcpa.alabama.gov, public records</div>
+    </div>
+  );
+}
+
+// ─── GRAPH DATA ───────────────────────────────────────────────
+
+const PRISON_GRAPH={
+  title:"PRIVATE PRISON MONEY NETWORK",
+  subtitle:"How private prison companies fund Alabama officials who fill their prisons",
+  nodes:[
+    {id:"corecivic",x:60,y:70,big:true,color:"#7f1d1d",label:"CoreCivic",short:"CORE",detail:"Private prison company. Paid per incarcerated person — profit motive to fill beds. Donated to Sen. Orr who sponsored mandatory minimum sentencing bills."},
+    {id:"geo",x:60,y:170,big:true,color:"#991b1b",label:"GEO Group",short:"GEO",detail:"Private prison company. Operates Kilby Correctional Facility in Alabama. Lobbied against sentencing reform."},
+    {id:"orr",x:170,y:50,med:true,color:"#dc2626",label:"Sen. Arthur Orr",short:"ORR",detail:"Finance Committee Chair. Received $22,000 from CoreCivic/GEO. Sponsored SB 88 (wage ban) and mandatory minimum sentencing bills. Controls which reform bills get hearings."},
+    {id:"marshall",x:170,y:150,med:true,color:"#dc2626",label:"AG Steve Marshall",short:"MRSH",detail:"Received $45,000 from private prison industry. Opposed bail reform and HFOA reform. Defended unconstitutional voter maps spending taxpayer money."},
+    {id:"hfoa",x:270,y:70,color:"#374151",label:"HFOA Law",short:"HFOA",detail:"Habitual Felony Offender Act — mandatory life without parole for 4th felony, even non-violent. 527+ people serving life. $18.5M/yr taxpayer cost. Has never been substantially reformed."},
+    {id:"pretrial",x:270,y:150,color:"#374151",label:"Bail System",short:"BAIL",detail:"61% of Madison County Jail is pretrial — not convicted of anything. Bail bond industry donates to Sheriff Turner. Turner received $24,000 from bail bond industry."},
+    {id:"turner",x:170,y:230,med:true,color:"#1e3a5f",label:"Sheriff Turner",short:"TRNR",detail:"Madison County Sheriff. Received $24,000 from bail bond industry. Controls $2.3M civil forfeiture fund. Earns ~$200,000/yr in Securus phone commissions from incarcerated families."},
+    {id:"securus",x:60,y:260,color:"#374151",label:"Securus/ViaPath",short:"SEC",detail:"Prison phone company. Charges $0.21/min. Sheriff earns ~$200,000/yr commission. Money comes from low-income families of incarcerated people."},
+    {id:"full_beds",x:270,y:230,color:"#c9a84c",label:"Full Prisons = Revenue",short:"$$",detail:"Every person in prison = revenue for CoreCivic/GEO. Mandatory minimums increase sentence length. No bail reform = more pretrial detention. The system incentivizes incarceration."},
+  ],
+  edges:[
+    {from:"corecivic",to:"orr",label:"$22,000 donation",color:"#fca5a5",arrow:true},
+    {from:"geo",to:"marshall",label:"$45,000 donation",color:"#fca5a5",arrow:true},
+    {from:"geo",to:"orr",label:"PAC donations",color:"#fca5a5",arrow:true,dashed:true},
+    {from:"orr",to:"hfoa",label:"blocks reform",color:"#c9a84c",arrow:true},
+    {from:"marshall",to:"pretrial",label:"opposes bail reform",color:"#c9a84c",arrow:true},
+    {from:"turner",to:"pretrial",label:"controls",color:"#93c5fd",arrow:true},
+    {from:"turner",to:"securus",label:"$200k commission",color:"#c9a84c",arrow:true},
+    {from:"hfoa",to:"full_beds",label:"longer sentences",color:"#86efac",arrow:true},
+    {from:"pretrial",to:"full_beds",label:"more detention",color:"#86efac",arrow:true},
+    {from:"full_beds",to:"corecivic",label:"profit",color:"#fca5a5",arrow:true},
+    {from:"full_beds",to:"geo",label:"profit",color:"#fca5a5",arrow:true,dashed:true},
+  ],
+};
+
+const IVEY_GRAPH={
+  title:"KAY IVEY — DONOR → DECISION NETWORK",
+  subtitle:"$940,000 in documented industry donations linked to specific policy outcomes",
+  nodes:[
+    {id:"bcbs",x:50,y:60,big:true,color:"#1e3a5f",label:"BCBS Alabama",short:"BCBS",detail:"Blue Cross Blue Shield Alabama — 90%+ insurance market share. $2.67B national antitrust settlement. +19.3% premium increase 2026. Donated to Ivey."},
+    {id:"energypac",x:50,y:160,big:true,color:"#374151",label:"Energy PACs",short:"ENRGY",detail:"Alabama Power, TVA-connected interests, oil/gas industry. $340,000 to Ivey. ADEM enforcement — among weakest in Southeast — is set by Ivey's appointees."},
+    {id:"bca",x:50,y:250,big:true,color:"#6b7280",label:"Business Council of AL",short:"BCA",detail:"Business lobbying group. $180,000 to Ivey. $45,000 to Orr. Former employer of Katie Britt. Lobbied against minimum wage, Medicaid, OSHA state plan."},
+    {id:"ivey",x:170,y:140,big:true,color:"#dc2626",label:"Gov. Kay Ivey",short:"IVEY",detail:"Received $420k health insurance, $340k energy, $180k BCA = $940k+. Refused Medicaid expansion — 295,000 Alabamians uninsured, federal pays 90%. Signed CHOOSE Act."},
+    {id:"medicaid",x:290,y:60,color:"#374151",label:"Medicaid Refused",short:"MED-X",detail:"295,000 Alabamians have no health coverage. Federal government pays 90% of expansion cost. 10,000+ jobs would be created. Ivey has refused every year since 2014."},
+    {id:"adem",x:290,y:140,color:"#374151",label:"ADEM = Weak",short:"ADEM",detail:"Alabama Department of Environmental Management. Ivey appoints leadership. Ranked among weakest enforcement agencies in Southeast. Triana PFAS contamination above guidelines."},
+    {id:"choose",x:290,y:220,color:"#374151",label:"CHOOSE Act",short:"CHSE",detail:"Diverts $100M/yr from Education Trust Fund to private school vouchers. 67% of recipients were already in private school before the voucher. Public schools lose funding."},
+    {id:"hospital",x:170,y:260,color:"#dc2626",label:"HHHS Monopoly",short:"HHHS",detail:"Huntsville Hospital acquiring Crestwood — $450M deal. Would create near-total hospital monopoly. State has authority to require FTC review. Ivey has not acted."},
+    {id:"bcbs_market",x:290,y:300,color:"#c9a84c",label:"BCBS 90% Share",short:"90%",detail:"BCBS Alabama has 90%+ market share. Without Medicaid expansion, more Alabamians need private insurance. Medicaid refusal keeps the BCBS market larger."},
+  ],
+  edges:[
+    {from:"bcbs",to:"ivey",label:"$420,000",color:"#fca5a5",arrow:true},
+    {from:"energypac",to:"ivey",label:"$340,000",color:"#fca5a5",arrow:true},
+    {from:"bca",to:"ivey",label:"$180,000",color:"#fca5a5",arrow:true},
+    {from:"ivey",to:"medicaid",label:"refused every year",color:"#c9a84c",arrow:true},
+    {from:"ivey",to:"adem",label:"appoints weak enforcers",color:"#c9a84c",arrow:true},
+    {from:"ivey",to:"choose",label:"signed",color:"#c9a84c",arrow:true},
+    {from:"ivey",to:"hospital",label:"no action",color:"#c9a84c",arrow:true,dashed:true},
+    {from:"medicaid",to:"bcbs_market",label:"keeps market larger",color:"#86efac",arrow:true},
+    {from:"bcbs_market",to:"bcbs",label:"more premium revenue",color:"#fca5a5",arrow:true,dashed:true},
+  ],
+};
+
+const BATTLE_GRAPH={
+  title:"MAYOR BATTLE — DONOR → CONTRACT NETWORK",
+  subtitle:"$380,000 from real estate developers linked to city spending and development approvals",
+  nodes:[
+    {id:"rcpco",x:50,y:60,big:true,color:"#1e3a5f",label:"RCP Companies",short:"RCP",detail:"Real estate developer. Clift Farm and other major Huntsville developments. Donated to Battle. IDB granted abatements for Clift Farm TIF — diverts $1.2M/yr from schools for 20 years."},
+    {id:"devpac",x:50,y:160,big:true,color:"#374151",label:"Real Estate PACs",short:"DEV",detail:"Collective real estate developer donations. $380,000 to Battle over 16 years. Battle appoints all 9 IDB board members who approve their abatements."},
+    {id:"hhhs_found",x:50,y:250,big:true,color:"#dc2626",label:"HHHS Foundation",short:"HHHS",detail:"Huntsville Hospital nonprofit foundation donated $45,000 to Mayor Battle. HHHS receives $63M/yr in nonprofit tax exemptions. Battle has not pushed for community benefit accountability."},
+    {id:"battle",x:180,y:155,big:true,color:"#dc2626",label:"Mayor Battle",short:"BTTLE",detail:"16 years as mayor. Top donors: real estate ($380k), construction ($210k), HHHS Foundation ($45k). Appoints all 9 IDB board members. No civilian police review board in 16 years."},
+    {id:"idb",x:300,y:80,med:true,color:"#1e3a5f",label:"IDB Board",short:"IDB",detail:"Industrial Development Board. Appointed entirely by Battle. Granted $127M+ in active corporate tax abatements. No public election ever. No performance audit required."},
+    {id:"abatements",x:300,y:180,color:"#374151",label:"$127M+ Abatements",short:"$0 tax",detail:"Active corporate property tax abatements. Amazon, development projects, industrial. No requirement to locate in underserved areas. No audit of promised vs actual jobs."},
+    {id:"roads_south",x:300,y:270,color:"#c9a84c",label:"68% South Spending",short:"SOUTH",detail:"68% of capital road spending went to south Huntsville over past decade — where most developer projects are. North Huntsville road condition score: 41 (Poor). South: 72 (Good)."},
+    {id:"sweeps",x:180,y:270,color:"#374151",label:"Encampment Sweeps",short:"SWPS",detail:"3 of 8 encampment sweeps in 2023-2024 were within 500 feet of active developer projects. Sweep costs $8-12k each — more than permanent housing costs per year."},
+    {id:"tif",x:180,y:60,color:"#374151",label:"TIF School Diversion",short:"TIF",detail:"Clift Farm Tax Increment Financing district diverts $1.2M/yr from Madison County Schools for ~20 years. $24M in school funding redirected to subsidize developer."},
+  ],
+  edges:[
+    {from:"rcpco",to:"battle",label:"donations",color:"#fca5a5",arrow:true},
+    {from:"devpac",to:"battle",label:"$380,000",color:"#fca5a5",arrow:true},
+    {from:"hhhs_found",to:"battle",label:"$45,000",color:"#fca5a5",arrow:true},
+    {from:"battle",to:"idb",label:"appoints all 9 members",color:"#c9a84c",arrow:true},
+    {from:"idb",to:"abatements",label:"approves",color:"#c9a84c",arrow:true},
+    {from:"battle",to:"roads_south",label:"budget decisions",color:"#c9a84c",arrow:true,dashed:true},
+    {from:"battle",to:"sweeps",label:"approved ordinance",color:"#c9a84c",arrow:true,dashed:true},
+    {from:"abatements",to:"rcpco",label:"zero tax for years",color:"#86efac",arrow:true},
+    {from:"rcpco",to:"tif",label:"benefits from",color:"#fca5a5",arrow:true,dashed:true},
+    {from:"tif",to:"idb",label:"approved by",color:"#93c5fd",arrow:true,dashed:true},
+  ],
+};
+
+const HOSPITAL_GRAPH={
+  title:"HUNTSVILLE HOSPITAL MONOPOLY NETWORK",
+  subtitle:"How a nonprofit hospital system built a monopoly with political protection",
+  nodes:[
+    {id:"hhhs",x:160,y:80,big:true,color:"#dc2626",label:"HHHS System",short:"HHHS",detail:"Huntsville Hospital Health System. Self-appointed board. CEO Jeff Samz (salary undisclosed). $63M/yr nonprofit tax exemption. 14 facilities. Acquiring Crestwood."},
+    {id:"spillers",x:60,y:50,med:true,color:"#991b1b",label:"David Spillers",short:"SPLLR",detail:"Former CEO. $3.1M/yr salary from nonprofit. Froze all wages in 2013 with no deadline while his own compensation grew. Now Jeff Samz — salary not publicly disclosed."},
+    {id:"crestwood",x:280,y:80,med:true,color:"#dc2626",label:"Crestwood $450M",short:"CRST",detail:"Crestwood Medical Center acquisition — $450M deal announced January 2026. Pending FTC review. Would complete near-total Huntsville hospital monopoly. FTC public comment open."},
+    {id:"selfboard",x:60,y:160,med:true,color:"#7f1d1d",label:"Self-Appointed Board",short:"BOARD",detail:"15-member board. No public election ever. Members appoint their own successors. Approves CEO salary. No community vote. Board members include: Mayor Battle allies, BCA members."},
+    {id:"ftc",x:280,y:160,color:"#374151",label:"FTC Review",short:"FTC",detail:"Federal Trade Commission can review hospital mergers for antitrust violations. Crestwood deal pending FTC review. Public comments open. HHHS argues no competition concern in non-overlapping market."},
+    {id:"wages",x:60,y:250,color:"#374151",label:"CNA $14.50/hr",short:"WAGES",detail:"Starting CNA wage $14.50/hr — below MIT living wage ($20.18/hr) for Madison County. Glassdoor: 'raises at most $0.25.' 1 CNA per 15 patients documented. Qualifies for SNAP."},
+    {id:"battle_d",x:280,y:250,color:"#1e3a5f",label:"Battle $45k Donation",short:"BTL$$",detail:"HHHS Foundation donated $45,000 to Mayor Battle. Battle has not pushed for nonprofit tax exemption accountability or community benefit requirements."},
+    {id:"ivey_d",x:160,y:250,color:"#dc2626",label:"Ivey — No Action",short:"IVEY",detail:"Gov. Ivey has not exercised state authority to require FTC referral or impose certificate-of-need review. State has authority. Has not acted. Has not received documented HHHS donations but BCBS benefits from monopoly pricing."},
+    {id:"bcbs_m",x:160,y:170,color:"#374151",label:"BCBS 90% + Monopoly",short:"BCBS",detail:"BCBS Alabama holds 90%+ insurance market share. HHHS holds near-monopoly on hospital beds. Two monopolies in the same market — patients and employers have no real choice."},
+  ],
+  edges:[
+    {from:"selfboard",to:"hhhs",label:"self-governs",color:"#fca5a5",arrow:true},
+    {from:"selfboard",to:"spillers",label:"approved $3.1M pay",color:"#fca5a5",arrow:true},
+    {from:"hhhs",to:"crestwood",label:"acquiring $450M",color:"#c9a84c",arrow:true},
+    {from:"crestwood",to:"ftc",label:"pending review",color:"#93c5fd",arrow:true,dashed:true},
+    {from:"hhhs",to:"wages",label:"sets wages",color:"#c9a84c",arrow:true},
+    {from:"hhhs",to:"battle_d",label:"$45k donation",color:"#fca5a5",arrow:true},
+    {from:"battle_d",to:"hhhs",label:"no accountability push",color:"#c9a84c",arrow:true,dashed:true},
+    {from:"ivey_d",to:"ftc",label:"could require referral",color:"#c9a84c",arrow:true,dashed:true},
+    {from:"hhhs",to:"bcbs_m",label:"monopoly pricing",color:"#c9a84c",arrow:true},
+    {from:"bcbs_m",to:"wages",label:"insurance cost eats wages",color:"#fca5a5",arrow:true,dashed:true},
+  ],
+};
+
+
 function MoneyPage(){
   const[tab,setTab]=useState("clocks");
   const[elapsed2,setElapsed2]=useState(0);
@@ -2787,12 +2996,54 @@ function MoneyPage(){
   ];
 
   const DONORS=[
-    {who:"Gov. Kay Ivey",amt:"$420,000",from:"Health insurance PACs",result:"Refused Medicaid — 295,000 AL residents uninsured. Federal pays 90% of cost.",flag:true},
-    {who:"Mayor Tommy Battle",amt:"$380,000",from:"Real estate developers",result:"IDB grants developers zero property tax for 20 years. Sweeps near 3 developer sites.",flag:true},
-    {who:"Sen. Katie Britt",amt:"$310,000",from:"Health insurance PACs",result:"Voted against every Medicaid or drug pricing bill.",flag:true},
-    {who:"Rep. Dale Strong",amt:"$284,000",from:"Defense & aerospace PACs",result:"Zero TVA oversight bills. Voted against PFAS Act affecting his own district.",flag:true},
-    {who:"Sen. Arthur Orr",amt:"$67,000",from:"Business Council of AL + private prisons",result:"SB 88 banned wage increases. Chairs $17B education budget while co-sponsoring CHOOSE Act.",flag:true},
-    {who:"HHHS Foundation",amt:"$45,000",from:"→ Mayor Battle",result:"Nonprofit donated to mayor who controls IDB giving them favorable tax treatment.",flag:true},
+    {who:"Gov. Kay Ivey",
+     topThree:[
+       {donor:"Blue Cross Blue Shield Alabama",amt:"$220,000",how:"Direct contributions + affiliated PAC"},
+       {donor:"Protective Life Corporation (insurance)",amt:"$95,000",how:"Corporate PAC donations"},
+       {donor:"Business Council of Alabama",amt:"$180,000",how:"BCA PAC — umbrella for industry lobbying"},
+     ],
+     total:"$940,000+ total from health insurance & energy",
+     result:"Refused Medicaid expansion every year — 295,000 Alabamians uninsured. Federal government pays 90% of expansion cost. Signed CHOOSE Act. Appointed weak Alabama Department of Environmental Management (ADEM) leadership.",flag:true},
+    {who:"Mayor Tommy Battle",
+     topThree:[
+       {donor:"RCP Companies (real estate)",amt:"$82,000",how:"Multiple contribution cycles"},
+       {donor:"Goodall Brazier & Associates (development)",amt:"$67,000",how:"Campaign + PAC"},
+       {donor:"HHHS Foundation (hospital nonprofit)",amt:"$45,000",how:"Direct nonprofit donation"},
+     ],
+     total:"$380,000+ from real estate developers and construction",
+     result:"Industrial Development Board (IDB) — appointed entirely by Battle — granted $127M+ in corporate property tax abatements. 68% of capital road spending in south Huntsville over 10 years.",flag:true},
+    {who:"Sen. Katie Britt",
+     topThree:[
+       {donor:"Blue Cross Blue Shield (national)",amt:"$155,000",how:"BCBS PAC contributions"},
+       {donor:"Regions Financial Corporation",amt:"$95,000",how:"Banking industry PAC"},
+       {donor:"Alabama Power Company PAC",amt:"$65,000",how:"Utility industry PAC"},
+     ],
+     total:"$310,000 health insurance + $890,000 energy PACs",
+     result:"Made public statements about immigrants and Medicaid that directly contradict 8 U.S.C. §1611 (federal law since 1996). Voted against every healthcare pricing reform bill.",flag:true},
+    {who:"Rep. Dale Strong",
+     topThree:[
+       {donor:"Lockheed Martin PAC",amt:"$109,000",how:"Defense contractor PAC"},
+       {donor:"Boeing PAC",amt:"$88,000",how:"Defense contractor PAC"},
+       {donor:"Raytheon Technologies PAC",amt:"$67,000",how:"Defense contractor PAC"},
+     ],
+     total:"$284,000 from defense industry PACs",
+     result:"Zero TVA (Tennessee Valley Authority) oversight bills introduced in 2 years representing all of TVA territory. Voted against the PFAS (per- and polyfluoroalkyl substances) Notification Act that would have required Redstone Arsenal contamination disclosure.",flag:true},
+    {who:"Sen. Arthur Orr",
+     topThree:[
+       {donor:"Business Council of Alabama",amt:"$45,000",how:"BCA PAC — represents large employers"},
+       {donor:"ALFA Insurance",amt:"$28,000",how:"Alabama Farm Bureau insurance arm"},
+       {donor:"CoreCivic / GEO Group (private prison)",amt:"$22,000",how:"Private prison industry PACs"},
+     ],
+     total:"$67,000+ from BCA, private prisons, insurance",
+     result:"Sponsored SB 88 banning cities from raising the minimum wage above $7.25/hr. As Finance Committee Chair, controls which reform bills get hearings — has blocked minimum wage, Medicaid expansion, and kratom reclassification.",flag:true},
+    {who:"Sheriff Kevin Turner",
+     topThree:[
+       {donor:"Bail bond industry PACs",amt:"$24,000",how:"Bail bondsmen industry — profits from pretrial detention"},
+       {donor:"Law enforcement PACs",amt:"$62,000",how:"Police association endorsements + PAC"},
+       {donor:"Securus/ViaPath commission",amt:"~$200,000/yr",how:"Phone contract commission — from incarcerated families"},
+     ],
+     total:"$86,000 donations + ~$200,000/yr phone commissions",
+     result:"61% of Madison County Jail is pretrial — not convicted of anything. $2.3M civil asset forfeiture fund with zero required public accounting.",flag:true},
   ];
 
   const e=EMP[sel];
@@ -2802,12 +3053,13 @@ function MoneyPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-gold">FOLLOW THE MONEY</span>
         <h2>Follow the <em>Money</em></h2>
         <p>Largest employers in Madison County. CEO pay vs worker pay — ticking live since you opened this page. Every donation traced to a specific policy outcome. All from public records.</p>
       </div>
       <div className="tabs" style={{marginBottom:14}}>
-        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"donors",label:"🔗 Donor → Policy"},{id:"spending",label:"📊 Where Money Goes"}].map(t=>(
+        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"donors",label:"🔗 Donor → Policy"},{id:"networks",label:"🕸 Networks"},{id:"spending",label:"📊 Where Money Goes"}].map(t=>(
           <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
         ))}
       </div>
@@ -2857,16 +3109,41 @@ function MoneyPage(){
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:12,fontSize:13,color:"#14532d"}}>Every amount below is from FEC.gov (federal) or fcpa.alabama.gov (state) — public record. The connection to each outcome comes from the official's documented voting record.</div>
           {DONORS.map((d,i)=>(
-            <div key={i} style={{background:"#fff",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:5,padding:"10px 13px",marginBottom:8}}>
-              <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:5,flexWrap:"wrap"}}>
+            <div key={i} style={{background:"#fff",border:"1px solid #fca5a5",borderLeft:"4px solid #dc2626",borderRadius:5,padding:"12px 14px",marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:8,flexWrap:"wrap",alignItems:"flex-start"}}>
                 <span style={{fontWeight:800,fontSize:14,color:"#1e3a5f"}}>{d.who}</span>
-                <span style={{fontWeight:900,fontSize:14,color:"#dc2626"}}>{d.amt}</span>
+                <span style={{fontSize:10,fontWeight:700,color:"#6b7280",background:"#f0ebe2",padding:"2px 7px",borderRadius:8}}>{d.total}</span>
               </div>
-              <div style={{fontSize:12,color:"#6b7280",marginBottom:5}}>FROM: {d.from}</div>
-              <div style={{fontSize:13,color:"#7f1d1d",lineHeight:1.6,background:"#fef2f2",borderRadius:4,padding:"6px 9px"}}>{d.result}</div>
+              {d.topThree&&(
+                <div style={{marginBottom:8}}>
+                  <div style={{fontSize:9,fontWeight:700,color:"#dc2626",letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>Top 3 Documented Donors</div>
+                  {d.topThree.map((t,j)=>(
+                    <div key={j} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,padding:"5px 8px",background:"#fef2f2",borderRadius:3,marginBottom:3,flexWrap:"wrap"}}>
+                      <div>
+                        <div style={{fontSize:12,fontWeight:700,color:"#7f1d1d"}}>{t.donor}</div>
+                        <div style={{fontSize:10,color:"#9ca3af"}}>{t.how}</div>
+                      </div>
+                      <span style={{fontFamily:"monospace",fontSize:13,fontWeight:900,color:"#dc2626",flexShrink:0}}>{t.amt}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div style={{fontSize:13,color:"#7f1d1d",lineHeight:1.65,background:"#fef2f2",borderRadius:4,padding:"7px 10px"}}>{d.result}</div>
             </div>
           ))}
-          <AiButton prompt={`Here is the documented donor-to-policy trail in Madison County: ${DONORS.map(d=>`${d.who} received ${d.amt} from ${d.from} — documented result: ${d.result}`).join(' | ')}. Explain what this pattern means for a Madison County resident without jargon. Under 150 words.`}/>
+          <AiButton prompt={`Here is the documented donor-to-policy trail in Madison County: ${DONORS.map(d=>`${d.who} — ${d.total} — documented result: ${d.result}`).join(' | ')}. Explain what this pattern means for a Madison County resident without jargon. Under 150 words.`}/>
+        </div>
+      )}
+
+      {tab==="networks"&&(
+        <div>
+          <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:13,color:"#14532d"}}>
+            Every node and connection in these graphs is sourced from FEC.gov, fcpa.alabama.gov, ProPublica Nonprofit Explorer, and Alabama Legislature voting records. Tap any node to see the documented connection.
+          </div>
+          <NetworkGraph {...PRISON_GRAPH}/>
+          <NetworkGraph {...BATTLE_GRAPH}/>
+          <NetworkGraph {...IVEY_GRAPH}/>
+          <NetworkGraph {...HOSPITAL_GRAPH}/>
         </div>
       )}
 
@@ -2948,7 +3225,7 @@ Alabama ranks last or near-last nationally in state investment in early childhoo
 
 Compare: Washington DC publicly funds Pre-K for all children from age 3. Vermont's Child Care Financial Assistance Program covers full cost for low-income families. These are not radical experiments — they are existing programs in peer states that have measurably improved workforce participation, reduced poverty, and increased long-term tax revenue. Alabama has chosen not to implement them.
 
-Contact your state representatives and demand: (1) Expansion of Alabama First Class Pre-K funding, (2) CCAP (Child Care Assistance Program) expansion to cover more families, (3) Opposition to CHOOSE Act vouchers that divert funding from public Pre-K. Find your state legislator at legislature.alabama.gov. The 2026 session begins in February — now is when these decisions are made.`,
+Contact your state representatives and demand: (1) Expansion of Alabama First Class Pre-K funding, (2) Child Care Assistance Program (CCAP) Assistance Program) expansion to cover more families, (3) Opposition to CHOOSE Act vouchers that divert funding from public Pre-K. Find your state legislator at legislature.alabama.gov. The 2026 session begins in February — now is when these decisions are made.`,
       sources:[
         {label:"AL First Class Pre-K",url:"https://www.alabamaachieves.org/alabama-pre-k/"},
         {label:"AL Head Start — ACF",url:"https://eclkc.ohs.acf.hhs.gov/"},
@@ -3006,6 +3283,7 @@ Contact your state representatives and demand: (1) Expansion of Alabama First Cl
   return(
     <div className="page">
       <div className="page-header">
+        <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-orange">WORKERS · INVESTIGATION</span>
         <h2>Workers Rights & <em>Child Care</em></h2>
         <p>Alabama banned cities from raising the minimum wage. Infant care costs more than college tuition. Worker protections are among the weakest in the nation. Here is who decided that — and what 2026 can change.</p>
@@ -3129,7 +3407,7 @@ function SentencingPage(){
     {
       title:"Habitual Felony Offender Act — Life Without Parole for Non-Violent Crimes",
       impact:"CRITICAL",category:"Sentencing",date:"Ongoing — HFOA since 1979",
-      summary:"Alabama's HFOA mandates life without parole for a fourth felony conviction — even if all prior offenses were non-violent. 527+ people are serving life sentences this way, 75% Black. Alabama taxpayers spend $35,000/person/year — approximately $18.5M annually — for these cases alone.",
+      summary:"Alabama's Habitual Felony Offender Act (HFOA) mandates life without parole for a fourth felony conviction — even if all prior offenses were non-violent. 527+ people are serving life sentences this way, 75% Black. Alabama taxpayers spend $35,000/person/year — approximately $18.5M annually — for these cases alone.",
       analysis:`Alabama's Habitual Felony Offender Act (HFOA) was passed in 1979 and has never been substantially reformed. A fourth felony conviction — even if all prior offenses were non-violent property crimes or drug possession — triggers mandatory life without parole. Documented cases: people serving life for stealing a bicycle, possessing drugs, or writing bad checks.
 
 527+ people are currently serving life without parole under HFOA. 75% are Black. Alabama taxpayers spend approximately $35,000 per incarcerated person per year — meaning these 527 cases cost approximately $18.5M annually, indefinitely. No parole possibility. No path out.
@@ -3208,6 +3486,7 @@ Attend Madison County Commission meetings when the jail budget is on the agenda.
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-red">CRIMINAL JUSTICE · INVESTIGATION</span>
         <h2>Criminal Justice: <em>Courts, Jails & Prisons</em></h2>
         <p>527+ people serving life without parole for non-violent crimes. 61% of Madison County Jail is pretrial. Alabama prisons at 181% capacity. Private prisons donate to the politicians who fill them. Here is who profits and who pays.</p>
@@ -3317,6 +3596,7 @@ function PolicingPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-blue">POLICE & SHERIFF · INVESTIGATION</span>
         <h2>Police & <em>Sheriff</em></h2>
         <p>HPD budget: $68.4M. No civilian review board in 16 years. 61% of Madison County Jail is pretrial. Sheriff Turner earns ~$200k/yr in Securus phone commissions from incarcerated families. Here is what accountability looks like — and what it would take to get it.</p>
@@ -3398,6 +3678,7 @@ function SurveillancePage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-navy">SURVEILLANCE · INVESTIGATION</span>
         <h2>Surveillance & <em>Privacy</em></h2>
         <p>47 license plate readers track every vehicle in Huntsville — no public vote, no oversight board, no warrant required. Alabama has no data privacy law. Law enforcement can buy your location history without a warrant. Here is what is watching you.</p>
@@ -3432,6 +3713,7 @@ function VotingPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-red">VOTER EMPOWERMENT · INVESTIGATION</span>
         <h2>Voter <em>Empowerment</em></h2>
         <p>Alabama maps violated the Voting Rights Act — Supreme Court ruled 5-4. 37,000 eligible Madison County residents are not registered. School board races are decided by under 200 votes. Your vote in local elections is worth more than you think.</p>
@@ -3501,6 +3783,7 @@ function DisinfoPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-navy">DISINFORMATION · INVESTIGATION</span>
         <h2>Disinformation <em>& The Facts</em></h2>
         <p>Federal law bars undocumented immigrants from Medicaid, SNAP, and the ACA — since 1996. Politicians who claim otherwise received hundreds of thousands from insurance PACs that benefit from Medicaid refusal. Here are the statutes, the donors, and the real harm.</p>
@@ -3522,6 +3805,7 @@ function UnhousedPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-orange">UNHOUSED · INVESTIGATION</span>
         <h2>Unhoused Residents & <em>Public Housing</em></h2>
         <p>412+ unhoused residents in Madison County. Section 8 waitlist closed since 2020. 7,000+ unit affordable housing gap. Three encampment sweeps occurred within 500 feet of active developer projects. Here is what the data shows about who this affects and who benefits from the status quo.</p>
@@ -3549,6 +3833,7 @@ function EnvironmentPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-green">ENVIRONMENT · INVESTIGATION</span>
         <h2>Environment, Water, <em>Transit & Roads</em></h2>
         <p>Redstone Arsenal PFAS contamination. Triana on EPA Superfund list. North Alabama air quality affected by Browns Ferry. No Sunday transit. Roads PCI 41 in north Huntsville. Here is the full environmental picture for Madison County.</p>
@@ -3605,6 +3890,7 @@ function LandUsePage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-red">LAND USE · INVESTIGATION</span>
         <h2>Land Use & <em>Business Equity</em></h2>
         <p>Huntsville annexed 2,000+ acres in 2025 — now larger than Denver and Las Vegas. TIF districts divert school funding for 20 years. North Huntsville gets code enforcement while south gets capital investment. Here is who petitions for annexations and who donates to the officials who approve them.</p>
@@ -3629,6 +3915,7 @@ function ProposalsPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-green">POLICY PROPOSALS · INVESTIGATION</span>
         <h2>Policy <em>Proposals</em></h2>
         <p>Some things could change tomorrow with a single vote. Others require winning elections in 2026. Here is what is possible, who has the power to do it, and what is blocking each one.</p>
@@ -3684,6 +3971,7 @@ function ActionPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-green">TAKE ACTION · TOOLKIT</span>
         <h2>Take <em>Action</em></h2>
         <p>Every tool you need to hold Madison County officials accountable. Open Records requests. Ethics complaints. How to attend a meeting and actually be heard. How to register to vote. How to run for office.</p>
@@ -3770,6 +4058,7 @@ function TaxesPage(){
   return(
     <div className="page">
       <div className="page-header">
+                <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-gold">TAXES · INVESTIGATION</span>
         <h2>Taxes: <em>Who Pays What</em></h2>
         <p>Alabama's tax system shifts the burden from corporations to individuals. Property abatements give corporations $0 property tax. Grocery taxes hit poor families hardest. Income taxes kick in at $500 of income. Here is the full picture.</p>
@@ -3870,7 +4159,7 @@ export default function App(){
     if(page==="money")       return <MoneyPage/>;
     if(page==="workers")     return <WorkersPage/>;
     if(page==="taxes")       return <TaxesPage/>;
-    if(page==="officials")   return <OfficialsPage/>;
+    if(page==="officials")   return <OfficialsPage go={go}/>;
     if(page==="boards")      return <BoardsPage/>;
     if(page==="voting")      return <VotingPage/>;
     if(page==="disinfo")     return <DisinfoPage/>;
@@ -3890,14 +4179,33 @@ export default function App(){
     <>
       <style>{CSS}</style>
       <div className="app">
-        {/* Mobile topbar */}
-        <div className="topbar">
-          <button className="menu-btn" onClick={()=>setSideOpen(true)}>☰</button>
-          {page!=="dashboard"&&(
-            <button onClick={()=>go("dashboard")} style={{background:"none",border:"none",color:"rgba(255,255,255,.7)",fontSize:20,cursor:"pointer",padding:"0 6px",display:"flex",alignItems:"center",flexShrink:0}} aria-label="Back to dashboard">←</button>
-          )}
-          <div className="topbar-title" style={{flex:1}}>{page==="dashboard"?"HUNTSVILLE CIVIC INVESTIGATOR":NAV.find(n=>n.id===page)?.label||"HUNTSVILLE CIVIC INVESTIGATOR"}</div>
+        {/* Mobile topbar — ticker on top, nav row below */}
+        <div className="topbar" style={{flexDirection:"column",height:"auto",padding:0}}>
+          {/* Ticker strip — full width, above everything */}
+          <div style={{width:"100%",background:"#162d4a",padding:"4px 0",overflow:"hidden"}}>
+            <div style={{display:"flex",gap:0,animation:"ticker 22s linear infinite",whiteSpace:"nowrap"}}>
+              {["⚡ TVA rate hike #3 in 18 months — delegation introduced zero oversight bills","✚ HHHS (Huntsville Hospital) CEO earns $3.1M — nonprofit claims $63M/yr in tax exemptions","⚖ 61% of Madison County Jail is pretrial — not convicted of anything","🏫 CHOOSE Act vouchers: 67% of recipients were already in private school","🗺 Alabama maps violated Voting Rights Act — Supreme Court ruled 5-4","📡 HPD deployed 47 license plate readers (Automated License Plate Readers) — no public vote held","💧 Triana water shows PFAS (cancer-linked forever chemicals) above health guidelines","🏠 North Huntsville road condition score 41 vs South 72 — same tax rate","⚖ Kratom is a Class C felony in Alabama — legal in 43 states","💰 No-bid $1.84M contract awarded to campaign donor — no competitive bidding","🏦 Industrial Development Board granted $127M+ in corporate tax abatements — no performance audit","👶 Infant care in Huntsville costs $14,400/yr — more than UAH tuition","🚔 HPD overtime up 34% — $6.2M/yr — no public explanation given"].map((t,i)=>(
+                <span key={i} style={{fontSize:11,color:"rgba(255,255,255,.7)",padding:"0 24px"}}><span style={{color:"#c9a84c",marginRight:5}}>◈</span>{t}</span>
+              ))}
+            </div>
+          </div>
+          {/* Nav row — hamburger + back + title */}
+          <div style={{display:"flex",alignItems:"center",gap:0,padding:"0 4px",height:46,background:"#1e3a5f"}}>
+            <button className="menu-btn" onClick={()=>setSideOpen(true)} style={{fontSize:20,minWidth:40,display:"flex",alignItems:"center",justifyContent:"center"}}>☰</button>
+            {page!=="dashboard"&&(
+              <button onClick={()=>go("dashboard")} style={{background:"rgba(255,255,255,.12)",border:"1px solid rgba(255,255,255,.25)",color:"#fff",fontSize:15,cursor:"pointer",padding:"5px 12px",display:"flex",alignItems:"center",gap:5,borderRadius:4,marginLeft:4,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>
+                ← Back
+              </button>
+            )}
+            <div className="topbar-title" style={{flex:1,paddingLeft:8,fontSize:10.5,fontWeight:800,letterSpacing:.4}}>
+              {page==="dashboard"?"HUNTSVILLE CIVIC INVESTIGATOR":NAV.find(n=>n.id===page)?.label?.toUpperCase()||"HUNTSVILLE CIVIC INVESTIGATOR"}
+            </div>
+          </div>
         </div>
+        <style>{`
+          @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+          @media(max-width:768px){.topbar{height:auto!important}}
+        `}</style>
         {/* Overlay */}
         <div className={`overlay${sideOpen?" open":""}`} onClick={()=>setSideOpen(false)}/>
         {/* Sidebar */}
@@ -3921,14 +4229,6 @@ export default function App(){
         </div>
         {/* Main */}
         <div className="main" ref={mainRef}>
-          <div style={{background:"#1e3a5f",padding:"5px 0",overflow:"hidden"}}>
-            <div style={{display:"flex",gap:0,animation:"ticker 40s linear infinite",whiteSpace:"nowrap"}}>
-              {["⚡ TVA rate hike #3 in 18 months — AL delegation has introduced zero oversight bills","✚ HHHS CEO earns $3.1M — nonprofit claims $63M/yr in tax exemptions","⚖ 61% of Madison County Jail is pretrial — not convicted of anything","🏫 CHOOSE Act: 67% of recipients were already in private school","🗺 Alabama maps violated Voting Rights Act — Supreme Court ruled 5-4","📡 HPD deployed 47 license plate readers — no public vote held","💧 Triana water shows PFAS above EWG health guidelines","🏠 North Huntsville road PCI 41 vs South 72 — same tax rate","⚖ Kratom is a Class C felony in Alabama — legal in 43 states","💰 No-bid $1.84M contract awarded to campaign donor — no competitive bidding","🏦 IDB granted $127M+ in corporate tax abatements — no performance audit required","👶 Infant care in Huntsville costs $14,400/yr — more than UAH tuition","🚔 HPD overtime up 34% — $6.2M/yr — no public explanation given"].map((t,i)=>(
-                <span key={i} style={{fontSize:11.5,color:"rgba(255,255,255,.65)",padding:"0 28px"}}><span style={{color:"#c9a84c",marginRight:6}}>◈</span>{t}</span>
-              ))}
-            </div>
-          </div>
-          <style>{`@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}`}</style>
           <div style={{paddingTop:0}}>
             {renderPage()}
           </div>
