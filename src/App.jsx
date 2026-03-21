@@ -442,7 +442,10 @@ function InvestPage({id}){
 
 // ─── EQUITY PAGE — THE TWO HUNTSVILLES ───────────────────────
 function EquityPage(){
+  const[foiaOpen,setFoiaOpen]=useState({});
+  const[analysisOpen,setAnalysisOpen]=useState({});
   const[copied,setCopied]=useState({});
+
   function copy(key,text){
     navigator.clipboard.writeText(text).then(()=>{
       setCopied(p=>({...p,[key]:true}));
@@ -464,7 +467,7 @@ function EquityPage(){
       title:"Road Maintenance — The 16-Year Documented Gap",
       impact:"HIGH",category:"Infrastructure Equity",date:"FY2024 Public Works Data",
       summary:"The City of Huntsville owns pavement condition data showing a sustained gap between north and south road quality — despite identical tax rates paid by all residents.",
-      prompt:"Analyze road maintenance equity in Huntsville, Alabama. North Huntsville road PCI average: 41 (Poor, requires reconstruction). South Huntsville: 72 (Good). Same city, same tax rate. Capital road spending past decade: approximately 68% in south Huntsville. North Huntsville is 58% Black residents, lower median income. Federal CDBG funds require equitable distribution. Mayor Battle received $380,000 from real estate developers who benefit from south Huntsville investment. Pothole complaint response: north takes 2-3x longer. Decode for a north Huntsville resident — what is happening, who benefits, what can residents do? Under 150 words, no jargon.",
+      analysis:"North Huntsville roads average a Pavement Condition Index of 41 — the bottom of 'Poor,' just above the threshold that requires full reconstruction, not patching. South Huntsville averages 72 — Good condition. Both areas pay identical city property tax and sales tax rates.\n\nOver the past decade, approximately 68% of Huntsville's capital road improvement spending went to south Huntsville and newly annexed areas. Mayor Battle has received $380,000 from real estate developers who operate primarily in those same areas. The IDB board — appointed entirely by Battle — has granted $127M+ in corporate tax abatements with no requirement to locate in underserved communities.\n\nWhat you can do: File an Open Records request for the full PCI database broken down by council district. Attend City Council budget hearings and ask specifically why north Huntsville road maintenance has lagged for 16 consecutive years. Contact your City Council member in Districts 1 or 3 and demand a formal equity audit.",
       sources:[
         {label:"City of Huntsville Public Works",url:"https://www.huntsvilleal.gov/residents/public-works/"},
         {label:"HUD CDBG Equity Requirements",url:"https://www.hud.gov/program_offices/comm_planning/cdbg"},
@@ -481,7 +484,7 @@ function EquityPage(){
       title:"School Funding Inequity — Same District, $2,300 Gap Per Child",
       impact:"HIGH",category:"Education Equity",date:"HCS FY2024 Budget Data",
       summary:"Within the same Huntsville City School district, per-pupil spending varies by $2,300 depending on which neighborhood a child lives in. The HCS board has authority to fix this and has not.",
-      prompt:"Analyze school funding inequity within Huntsville City Schools. HCS serves all of Huntsville under one district. Per-pupil spending: south Huntsville schools approximately $9,400, north Huntsville approximately $7,100. Advanced Placement courses: south schools average 14, north average 6. Teacher retention: south 8.2 years average, north 4.1 years. HCS Board has not adopted an equity-based resource allocation formula. Board members are elected — Districts 2, 3, and 4 on November 2026 ballot. Decode for a north Huntsville parent: what the board could do today, why they have not, what parents can demand. Under 150 words, no jargon.",
+      analysis:"Columbia High in south Huntsville receives approximately $9,400 per pupil. Johnson High in north Huntsville receives approximately $7,100. Same district. Same superintendent. Same school board. The $2,300 gap exists because local property tax revenue supplements state funding — and higher-value properties in south Huntsville generate more revenue at the same millage rate, without equitable redistribution within the district.\n\nThe gap compounds: south Huntsville schools offer an average of 14 Advanced Placement courses; north Huntsville schools offer 6. Teacher retention in the south averages 8.2 years; in the north, 4.1 years. Newer school facilities have been concentrated in the south for the past decade.\n\nThe HCS Board has authority to adopt a weighted student funding formula that would equalize per-pupil spending across the district. It has not done so. Board elections for Districts 2, 3, and 4 are on the November 2026 ballot — decided by under 200 votes at 11% turnout.",
       sources:[
         {label:"HCS FY2024 Budget",url:"https://www.huntsvillecityschools.org/departments/finance"},
         {label:"AL State Department of Education",url:"https://www.alsde.edu"},
@@ -498,7 +501,7 @@ function EquityPage(){
       title:"Over-Policing North Huntsville — 2x Patrol Hours, Same Crime Rate",
       impact:"HIGH",category:"Public Safety Equity",date:"HPD 2024 Patrol Data",
       summary:"HPD deploys significantly more proactive patrol hours in north Huntsville despite comparable crime rates — creating measurable downstream consequences including higher arrest rates, more bail system involvement, and more debt.",
-      prompt:"Analyze police patrol distribution inequity in Huntsville. HPD deploys approximately 2x the proactive patrol hours per resident in north Huntsville vs south. North Huntsville is 58% Black; south is 78% white. Per-capita violent crime rates differ by approximately 18%, not 200%. Traffic stop rate: north residents stopped 2.4x more often than south. Citation rates per stop are nearly identical — disparity is in stops, not outcomes. Consequences: more minor arrests, more bail system involvement, more private probation debt, job loss, housing instability. HPD has not published patrol deployment analysis. City Council has not requested one in 16 years. Decode for a north Huntsville resident — what this means, why it matters, what can be demanded. Under 150 words, no jargon.",
+      analysis:"HPD deploys approximately twice the proactive patrol hours per resident in north Huntsville compared to south — despite per-capita violent crime rates that differ by only about 18%, not 200%. North Huntsville residents are stopped in traffic at 2.4 times the rate of south Huntsville residents. Citation rates per stop are nearly identical — meaning the disparity is in how many people are stopped, not in what officers find.\n\nThe consequences compound: more stops lead to more minor arrests, more bail system involvement, more private probation debt, more job loss, and more housing instability. It is a documented cycle that concentrates financial and legal burden in north Huntsville.\n\nMayor Battle has not proposed a civilian police review board in 16 years in office. The police union has endorsed him in every election. HPD does not publish patrol deployment data by neighborhood — which is itself a transparency problem. File an Open Records request for patrol hours and traffic stop data broken down by district.",
       sources:[
         {label:"HPD Annual Report 2024",url:"https://www.huntsvilleal.gov/residents/police/"},
         {label:"Stanford Open Policing Project",url:"https://openpolicing.stanford.edu"},
@@ -514,8 +517,8 @@ function EquityPage(){
     {
       title:"Capital Spending Pattern — 68% South, Developer Donor Connection",
       impact:"HIGH",category:"Budget Equity",date:"FY2015-2024 City Budget Records",
-      summary:"Approximately 68% of Huntsville capital infrastructure spending went to south Huntsville over the past decade — the same areas where Mayor Battle top donors operate and develop.",
-      prompt:"Investigate capital spending and donor connections in Huntsville. Approximately 68% of capital road improvement spending FY2015-2024 concentrated in south Huntsville. Mayor Battle top campaign donors: real estate developers $380,000, construction companies $210,000. IDB has granted $127M+ in active corporate property tax abatements — board appointed entirely by Battle. Three of eight 2023-2024 encampment sweeps within 500 feet of active development projects. City has never commissioned an independent equity audit of capital spending by district. CDBG regulations require cities demonstrate benefit to low-to-moderate income residents. Connect donors to spending decisions. Decode for a Madison County resident — who benefits, who pays, what would change this pattern. Under 150 words, no jargon.",
+      summary:"Approximately 68% of Huntsville capital infrastructure spending went to south Huntsville over the past decade — the same areas where Mayor Battle's top donors operate and develop.",
+      analysis:"Over the past decade, approximately 68% of Huntsville's capital road and infrastructure spending has gone to south Huntsville and newly annexed areas. Mayor Battle's top campaign donors are real estate developers ($380,000) and construction companies ($210,000) — the same industries that profit from infrastructure investment in areas where their projects are located.\n\nThe connection is structural: Battle appoints all 9 members of the IDB board, which has granted $127M+ in active corporate property tax abatements with no audit of whether promised jobs were delivered and no requirement to locate in underserved areas. Three of the eight documented encampment sweeps in 2023-2024 occurred within 500 feet of active development projects near Battle donors.\n\nThe city has never commissioned an independent equity audit of capital spending by district. Huntsville receives federal CDBG funds that legally require equitable distribution to low-to-moderate income communities — making this a potential federal compliance issue, not just a local policy choice. Any resident can file a complaint with HUD's Office of Fair Housing.",
       sources:[
         {label:"City of Huntsville FY2025 Budget",url:"https://www.huntsvilleal.gov/government/finance/"},
         {label:"AL Campaign Finance — FCPA",url:"https://fcpa.alabama.gov"},
@@ -530,18 +533,6 @@ function EquityPage(){
     },
   ];
 
-  const[aiResults,setAiResults]=useState({});
-  const[aiLoading,setAiLoading]=useState({});
-  const[foiaOpen,setFoiaOpen]=useState({});
-
-  async function investigate(i,prompt){
-    if(aiResults[i]){setAiResults(p=>({...p,[i]:null}));return;}
-    setAiLoading(p=>({...p,[i]:true}));
-    try{const r=await callAI(prompt);setAiResults(p=>({...p,[i]:r}));}
-    catch(e){setAiResults(p=>({...p,[i]:"Analysis unavailable — please try again."}));}
-    setAiLoading(p=>({...p,[i]:false}));
-  }
-
   return(
     <div className="page">
       <div className="page-header">
@@ -553,25 +544,28 @@ function EquityPage(){
       {/* Visual comparison bars */}
       <div className="card" style={{padding:"20px",marginBottom:16}}>
         <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Service Quality Comparison — North vs South Huntsville</div>
-        <div style={{fontSize:11,color:"#6b7280",marginBottom:16}}>Colored bar = North Huntsville. Light bar = South Huntsville. Higher = better service or more enforcement.</div>
+        <div style={{display:"flex",gap:16,fontSize:11,color:"#6b7280",marginBottom:16,flexWrap:"wrap"}}>
+          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#dc2626",verticalAlign:"middle",marginRight:4}}/>Colored = North Huntsville</span>
+          <span><span style={{display:"inline-block",width:12,height:12,borderRadius:2,background:"#93b4d4",verticalAlign:"middle",marginRight:4}}/>Blue-gray = South Huntsville</span>
+        </div>
         {metrics.map((m,i)=>(
           <div key={i} style={{marginBottom:18}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,flexWrap:"wrap",gap:4}}>
-              <span style={{fontSize:12.5,color:"#6b7280",fontWeight:500}}>{m.label}</span>
+            <div style={{marginBottom:5}}>
+              <span style={{fontSize:12.5,color:"#374151",fontWeight:600}}>{m.label}</span>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"90px 1fr 90px",gap:8,alignItems:"center"}}>
+            <div style={{display:"grid",gridTemplateColumns:"100px 1fr 100px",gap:8,alignItems:"center"}}>
               <div style={{fontSize:11,fontWeight:700,color:m.color,textAlign:"right"}}>{m.northLabel}</div>
-              <div style={{position:"relative",height:26,background:"#f0ebe2",borderRadius:3,overflow:"hidden"}}>
-                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.south+"%",background:"#e0d8cc",borderRadius:3}}/>
-                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:m.color,opacity:.75,borderRadius:3}}/>
+              <div style={{position:"relative",height:28,background:"#dbeafe",borderRadius:3,overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.south+"%",background:"#93b4d4",borderRadius:3}}/>
+                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:m.color,opacity:.85,borderRadius:3}}/>
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 8px",justifyContent:"space-between"}}>
-                  <span style={{fontSize:9,color:"rgba(255,255,255,.8)",fontWeight:700}}>N</span>
-                  <span style={{fontSize:9,color:"rgba(0,0,0,.2)",fontWeight:700}}>S</span>
+                  <span style={{fontSize:9,color:"rgba(255,255,255,.9)",fontWeight:800}}>N</span>
+                  <span style={{fontSize:9,color:"rgba(255,255,255,.7)",fontWeight:700}}>S</span>
                 </div>
               </div>
-              <div style={{fontSize:11,color:"#aaa"}}>{m.southLabel}</div>
+              <div style={{fontSize:11,fontWeight:600,color:"#93b4d4"}}>{m.southLabel}</div>
             </div>
-            <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:4,paddingLeft:98}}>{m.note}</div>
+            <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic",marginTop:4,paddingLeft:108}}>{m.note}</div>
           </div>
         ))}
       </div>
@@ -587,7 +581,7 @@ function EquityPage(){
         ))}
       </div>
 
-      {/* Investigation cards with AI + FOIA */}
+      {/* Investigation cards — pre-generated analysis, no API call */}
       {investigations.map((inv,i)=>(
         <div key={i} className="card" style={{marginBottom:14,overflow:"hidden"}}>
           <div style={{padding:"16px 18px"}}>
@@ -608,21 +602,35 @@ function EquityPage(){
           </div>
 
           <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",background:"#fafaf8"}}>
-            <button className="btn btn-gold" onClick={()=>investigate(i,inv.prompt)} disabled={!!aiLoading[i]} style={{fontSize:11.5}}>
-              {aiLoading[i]?<><span className="spin"/>Analyzing...</>:aiResults[i]?"Hide Analysis":"◈ Decode This"}
+            <button className="btn btn-gold" onClick={()=>setAnalysisOpen(p=>({...p,[i]:!p[i]}))} style={{fontSize:11.5}}>
+              {analysisOpen[i]?"▲ Hide Analysis":"🔍 Decode This"}
             </button>
             <button className="btn btn-ghost" onClick={()=>setFoiaOpen(p=>({...p,[i]:!p[i]}))} style={{fontSize:11.5}}>
               {foiaOpen[i]?"Hide Template":"📋 FOIA Request"}
             </button>
           </div>
 
-          {aiResults[i]&&(
-            <div style={{background:"linear-gradient(135deg,#fffdf5,#fffbeb)",borderTop:"2px solid rgba(201,168,76,.2)",padding:"16px 18px"}}>
-              <div style={{fontSize:9,fontWeight:800,color:"#b8860b",letterSpacing:1.5,marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
-                <span style={{width:6,height:6,borderRadius:"50%",background:"#c9a84c",display:"inline-block"}}/>
-                AI ANALYSIS · CIVIC INVESTIGATOR
+          {analysisOpen[i]&&(
+            <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",padding:"18px 20px"}}>
+              <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{width:7,height:7,borderRadius:"50%",background:"#c9a84c",display:"inline-block",boxShadow:"0 0 6px #c9a84c"}}/>
+                CIVIC INVESTIGATOR ANALYSIS
               </div>
-              <p style={{fontSize:13.5,color:"#2d2a22",lineHeight:1.9,whiteSpace:"pre-wrap"}}>{aiResults[i]}</p>
+              {inv.analysis.split('\n\n').map((para,pi)=>{
+                const labels=["WHAT'S HAPPENING","THE CONNECTIONS","WHAT YOU CAN DO"];
+                const colors=["#fca5a5","#93c5fd","#86efac"];
+                const textColors=["#fef2f2","#eff6ff","#f0fdf4"];
+                return(
+                  <div key={pi} style={{marginBottom:pi<inv.analysis.split('\n\n').length-1?14:0}}>
+                    <div style={{fontSize:8,fontWeight:800,color:colors[pi]||"#c9a84c",letterSpacing:1.8,marginBottom:6,textTransform:"uppercase"}}>
+                      {labels[pi]||"ANALYSIS"}
+                    </div>
+                    <p style={{fontSize:13.5,color:textColors[pi]||"#f5f0e8",lineHeight:1.85,margin:0,borderLeft:`2px solid ${colors[pi]||"#c9a84c"}`,paddingLeft:12}}>
+                      {para}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -632,15 +640,15 @@ function EquityPage(){
               <div style={{fontSize:11,color:"#6b7280",marginBottom:8}}>To: {inv.foia.to}</div>
               <textarea
                 readOnly
-                value={inv.foia.template.replace(/\n/g,"\n")}
-                rows={8}
+                value={inv.foia.template}
+                rows={9}
                 style={{width:"100%",padding:"10px",fontSize:11.5,lineHeight:1.6,borderRadius:3,border:"1px solid #93b4d4",background:"#fff",color:"#1e3a5f",fontFamily:"monospace",resize:"vertical"}}
               />
               <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-                <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy("foia-"+i,inv.foia.template.replace(/\\n/g,"\n"))}>
+                <button className="btn btn-navy" style={{fontSize:11.5}} onClick={()=>copy("foia-"+i,inv.foia.template)}>
                   {copied["foia-"+i]?"✓ Copied!":"📋 Copy to Clipboard"}
                 </button>
-                <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template.replace(/\\n/g,"\n"))}>
+                <a href={"mailto:?subject="+encodeURIComponent(inv.foia.subject)+"&body="+encodeURIComponent(inv.foia.template)}>
                   <button className="btn btn-ghost" style={{fontSize:11.5}}>✉ Open in Email</button>
                 </a>
               </div>
@@ -656,6 +664,8 @@ function EquityPage(){
     </div>
   );
 }
+
+
 
 // ─── SCHOOLS PAGE ─────────────────────────────────────────────
 function SchoolsPage(){const nav=React.useContext?React.useContext(null):null;return null;}
