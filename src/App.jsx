@@ -375,101 +375,6 @@ function SchoolsPage(){
 }
 
 // ─── OFFICIALS PAGE ───────────────────────────────────────────
-function OfficialsPage(){
-  const[tab,setTab]=useState("officials");
-  const CATS=[
-    {id:"federal",label:"Federal",officials:[
-      {name:"Dale Strong",title:"U.S. Rep AL 5th",donors:"Defense PACs $284k",key:"Voted against PRO Act, child care, drug pricing, PFAS notification. Zero TVA oversight bills."},
-      {name:"Katie Britt",title:"U.S. Senator",donors:"Insurance $310k, Energy $890k",key:"Made false immigration benefit claims vs 8 USC 1611. No Medicaid advocacy. Zero TVA bills."},
-      {name:"Tommy Tuberville",title:"U.S. Senator",donors:"Energy $270k",key:"Blocked 450+ military promotions at Redstone Arsenal. Zero TVA oversight bills."},
-    ]},
-    {id:"state",label:"State",officials:[
-      {name:"Kay Ivey",title:"Governor (term-limited 2026)",donors:"Insurance $420k, Energy $340k",key:"Refused Medicaid for 295,000. Signed CHOOSE Act. Refused Summer EBT school meals."},
-      {name:"Arthur Orr",title:"Senate Finance Chair",donors:"BCA $45k, Private prison $22k",key:"Sponsored SB 88 banning local wages. Blocked Medicaid and kratom reform. Blocked sentencing reform."},
-      {name:"Steve Marshall",title:"Attorney General",donors:"Law enforcement $340k, Private prison $45k",key:"Defended unconstitutional voting maps at taxpayer expense. Opposes bail reform and forfeiture reform."},
-      {name:"Mike Ball",title:"State Rep District 10",donors:"Law enforcement $28k, BCA $22k",key:"Voted against Medicaid for 18,000 Madison County citizens while citing immigration healthcare burden."},
-    ]},
-    {id:"county",label:"County",officials:[
-      {name:"Rex Vaughn",title:"Commission Chairman (At-Large)",donors:"Appointed March 2026",key:"Just appointed. Controls county budget and services for all unincorporated communities."},
-      {name:"Phil Vandiver",title:"Commissioner District 4",donors:"Agricultural interests",key:"District 4 covers Harvest, Toney, Monrovia, Meridianville — areas with no city government."},
-      {name:"Violet Edwards",title:"Commissioner District 6",donors:"Democratic community support",key:"First Black woman on Madison County Commission. Represents north Huntsville areas."},
-      {name:"Kevin Turner",title:"Sheriff",donors:"Law enforcement $62k, Bail bond $24k",key:"61% pretrial jail. Securus $200k/yr commission conflict. $2.3M forfeiture fund no public accounting."},
-    ]},
-    {id:"huntsville",label:"Huntsville",officials:[
-      {name:"Tommy Battle",title:"Mayor (5th term)",donors:"Real estate $380k, Construction $210k",key:"16 years, north PCI 41 vs south PCI 72. Zero civilian police oversight proposals. Stadium deal."},
-      {name:"Michelle Watkins",title:"City Council D1 (first Black woman)",donors:"Grassroots community",key:"Elected Sept 2024. Historic. Represents north Huntsville. First term — watch her votes."},
-      {name:"Jennie Robinson",title:"City Council D3 (Council President)",donors:"South Huntsville business $52k",key:"Council President since Nov 2025. Voted for budgets that underinvest in north Huntsville."},
-    ]},
-    {id:"madison",label:"Madison City",officials:[
-      {name:"Ranae Bartlett",title:"Mayor (sworn Nov 2025)",donors:"Local community fundraising",key:"First new mayor in decade. Former school board 2011-2020. Priority: get tax dollars back to North AL."},
-    ]},
-  ];
-  const ELECTIONS=[
-    {office:"Governor — OPEN SEAT",date:"Nov 2026",urgent:true,note:"Ivey TERM LIMITED. Most consequential AL election in years. Governor appoints ADEM, DOI Commissioner, prison oversight. Real change possible."},
-    {office:"AL Senate Finance Chair (Orr)",date:"Nov 2026",urgent:true,note:"Orr controls which bills get hearings. Replacing him is the single most impactful possible change in AL Senate for Madison County residents."},
-    {office:"U.S. Senate (Tuberville)",date:"Nov 2026",urgent:false,note:"Blocked 450+ Redstone military promotions. Zero TVA bills. Doug Jones won this seat in 2017."},
-    {office:"U.S. House AL 5th (Strong)",date:"Nov 2026",urgent:false,note:"$284k defense PACs, zero TVA bills. Vulnerable on healthcare and utility costs."},
-    {office:"Madison County Sheriff (Turner)",date:"Nov 2026",urgent:false,note:"Key issues: end Securus conflict, bail reform, forfeiture transparency."},
-    {office:"Huntsville City Council D2, D3, D4",date:"Nov 2026",urgent:false,note:"Three seats determine council direction on road equity, police oversight, development. Under 200 votes each."},
-    {office:"HCS School Board D2, D3, D4",date:"Nov 2026",urgent:false,note:"$310M budget. 11% turnout. 2,000 organized voters can flip any seat."},
-    {office:"AL Attorney General (Marshall)",date:"Nov 2026",urgent:false,note:"$45k private prison PACs. Defended unconstitutional maps. Opposes bail reform."},
-  ];
-
-  const[selCat,setSelCat]=useState("federal");
-  const cat=CATS.find(c=>c.id===selCat)||CATS[0];
-
-  return(
-    <div className="page">
-      <div className="page-header">
-        <span className="tag tag-navy">OFFICIALS · DIRECTORY</span>
-        <h2>Officials & <em>Elections</em></h2>
-        <p>Every elected official with power over Madison County — federal, state, county, Huntsville, Madison City. Click a category to see their records and donor connections.</p>
-      </div>
-      <div className="tabs">
-        {[{id:"officials",label:"Officials"},{id:"elections",label:"2026 Elections"}].map(t=>(
-          <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
-        ))}
-      </div>
-      {tab==="officials"&&(
-        <div>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
-            {CATS.map(c=><button key={c.id} onClick={()=>setSelCat(c.id)} style={{padding:"5px 12px",borderRadius:12,border:"1px solid #e0d8cc",background:selCat===c.id?C.navy:"#fff",color:selCat===c.id?"#fff":C.muted,fontSize:11,fontWeight:600,cursor:"pointer"}}>{c.label}</button>)}
-          </div>
-          {cat.officials.map((off,i)=>(
-            <div key={i} className="card" style={{borderLeft:`4px solid ${C.navy}`,marginBottom:8}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:6}}>
-                <div>
-                  <div style={{fontSize:13.5,fontWeight:800,color:C.navy}}>{off.name}</div>
-                  <div style={{fontSize:11,color:C.muted,marginTop:2}}>{off.title}</div>
-                </div>
-                <div style={{fontSize:9,color:C.red,fontWeight:700,textAlign:"right",flexShrink:0}}>{off.donors}</div>
-              </div>
-              <div style={{fontSize:12,color:"#374151",lineHeight:1.5}}>{off.key}</div>
-              <AiButton label={`🔍 Investigate ${off.name.split(" ")[0]} ${off.name.split(" ")[1]||""}`} prompt={`Investigate ${off.name} (${off.title}) and their record affecting Madison County residents. Key facts: ${off.donors}, ${off.key}. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE.`}/>
-            </div>
-          ))}
-        </div>
-      )}
-      {tab==="elections"&&(
-        <div>
-          <div className="alert-banner"><div className="alert-label">2026 IS THE MOST IMPORTANT YEAR FOR MADISON COUNTY IN A DECADE</div><div className="alert-text">Governor's race is an OPEN SEAT. All three federal races on the ballot. Sheriff, three city council seats, three school board seats. 37,000 eligible Madison County residents are not registered to vote.</div></div>
-          {ELECTIONS.map((e,i)=>(
-            <div key={i} className="card" style={{borderLeft:`4px solid ${e.urgent?C.red:C.navy}`,marginBottom:8}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:4}}>
-                <div style={{fontSize:13,fontWeight:800,color:C.navy}}>{e.urgent&&<span style={{fontSize:9,fontWeight:700,color:C.red,background:"#fef2f2",padding:"1px 6px",borderRadius:8,marginRight:6,border:"1px solid #fca5a5"}}>HIGH PRIORITY</span>}{e.office}</div>
-                <span style={{fontSize:9,fontWeight:700,color:"#b8860b",background:"#fffbeb",padding:"2px 8px",borderRadius:8,border:"1px solid #fcd34d",flexShrink:0}}>{e.date}</span>
-              </div>
-              <div style={{fontSize:12,color:"#374151",lineHeight:1.5}}>{e.note}</div>
-            </div>
-          ))}
-          <a href="https://www.alabamavotes.gov/RegisterToVote" target="_blank" rel="noreferrer">
-            <button className="btn btn-full" style={{background:C.green,color:"#fff",marginTop:8}}>✓ Register to Vote / Check Registration →</button>
-          </a>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── UTILITIES PAGE ───────────────────────────────────────────
 function UtilitiesPage(){
@@ -626,6 +531,7 @@ const OFFICIALS=[
 ];
 
 // ─── OFFICIALS PAGE (full v8-style with modal) ─────────────────
+
 function OfficialsPage(){
   const[filter,setFilter]=useState("All");
   const[selected,setSelected]=useState(null);
@@ -636,7 +542,7 @@ function OfficialsPage(){
   async function investigate(off){
     setLd(true);
     try{
-      const x=await callAI(`Investigate ${off.name} (${off.title}). Key facts: salary ${off.salary}, net worth ${off.netWorth} (before office: ${off.netWorthPre}), top donors: ${off.topDonors.map(d=>d[0]+' '+d[1]).join(', ')}, residency: ${off.residency}, criminal record: ${off.criminal}. Bio: ${off.bio}. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE.`);
+      const x=await callAI(`Investigate ${off.name} (${off.title}). Salary: ${off.salary}. Net worth: ${off.netWorth} (before office: ${off.netWorthPre}). Top donors: ${off.topDonors.map(d=>d[0]+' '+d[1]).join(', ')}. Residency: ${off.residency}. Criminal record: ${off.criminal}. Key record: ${off.bio.substring(0,300)}. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE.`);
       setR(x);
     }catch(e){setR("Investigation unavailable.");}
     setLd(false);
@@ -650,7 +556,7 @@ function OfficialsPage(){
       <div className="page-header">
         <span className="tag tag-navy">OFFICIALS · DIRECTORY</span>
         <h2>Officials & <em>Elections</em></h2>
-        <p>Every elected official with power over Madison County. Net worth, salary, donors, voting record, criminal history, and residency — all from public records. Click any official to investigate.</p>
+        <p>Every elected official with power over Madison County. Net worth before and after office, salary, top donors, voting record, criminal history, and residency — all from public records. Click any card to investigate.</p>
       </div>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
         {levels.map(l=><button key={l} onClick={()=>setFilter(l)} style={{padding:"6px 14px",borderRadius:12,border:"1px solid #e0d8cc",background:filter===l?"#1e3a5f":"#fff",color:filter===l?"#c9a84c":"#6b7280",fontSize:11,fontWeight:700,cursor:"pointer"}}>{l}</button>)}
@@ -659,79 +565,54 @@ function OfficialsPage(){
         <div key={gi} style={{marginBottom:20}}>
           <div style={{fontSize:8.5,fontWeight:700,letterSpacing:2,color:group.color,marginBottom:10,textTransform:"uppercase"}}>{group.level} OFFICIALS</div>
           {group.officials.map((off,oi)=>(
-            <div key={oi} onClick={()=>{setSelected(off);setTab("bio");setR(null);}} style={{background:"#fff",border:"1px solid #e0d8cc",borderLeft:`4px solid ${group.color}`,borderRadius:6,padding:"13px 14px",marginBottom:8,cursor:"pointer",transition:"all .15s"}} onMouseEnter={e=>e.currentTarget.style.boxShadow="0 2px 12px rgba(0,0,0,.08)"} onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
+            <div key={oi} onClick={()=>{setSelected(off);setTab("bio");setR(null);}} style={{background:"#fff",border:"1px solid #e0d8cc",borderLeft:`4px solid ${group.color}`,borderRadius:6,padding:"13px 14px",marginBottom:8,cursor:"pointer"}} >
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
                 <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <div style={{width:36,height:36,borderRadius:"50%",background:group.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:"#fff",flexShrink:0}}>{off.avatar}</div>
-                  <div>
-                    <div style={{fontSize:13.5,fontWeight:800,color:"#1e3a5f"}}>{off.name}</div>
-                    <div style={{fontSize:11,color:"#6b7280",marginTop:1}}>{off.title}</div>
-                  </div>
+                  <div style={{width:38,height:38,borderRadius:"50%",background:group.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:"#fff",flexShrink:0}}>{off.avatar}</div>
+                  <div><div style={{fontSize:13.5,fontWeight:800,color:"#1e3a5f"}}>{off.name}</div><div style={{fontSize:11,color:"#6b7280",marginTop:1}}>{off.title}</div></div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
                   <div style={{fontSize:10,fontWeight:700,color:"#dc2626"}}>{off.netWorth}</div>
-                  <div style={{fontSize:9,color:"#6b7280"}}>net worth</div>
-                  <div style={{fontSize:9,color:"#6b7280",marginTop:2}}>{off.salary.split("—")[0].trim()}</div>
+                  <div style={{fontSize:9,color:"#6b7280"}}>net worth est.</div>
                 </div>
               </div>
-              <div style={{fontSize:11.5,color:"#374151",marginTop:8,lineHeight:1.5}}>{off.bio.substring(0,140)}...</div>
-              <div style={{fontSize:10,color:"#1e3a5f",marginTop:6,fontWeight:700}}>Click to investigate →</div>
+              <div style={{fontSize:11.5,color:"#374151",marginTop:8,lineHeight:1.5}}>{off.bio.substring(0,160)}...</div>
+              <div style={{display:"flex",gap:12,marginTop:8,fontSize:10,color:"#6b7280"}}>
+                <span>💰 {off.salary.split("—")[0].trim()}</span>
+                <span>🏠 {off.residency}</span>
+                <span style={{color:off.criminal==="No criminal record"||off.criminal==="No record found"?"#16a34a":"#dc2626"}}>⚖ {off.criminal}</span>
+              </div>
+              <div style={{fontSize:10,color:"#1e3a5f",marginTop:6,fontWeight:700}}>Click to full investigation →</div>
             </div>
           ))}
         </div>
       ))}
-
-      {/* Modal */}
       {selected&&(
         <div style={{position:"fixed",inset:0,zIndex:500,background:"rgba(30,58,95,.6)",backdropFilter:"blur(3px)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"20px",overflowY:"auto"}} onClick={e=>{if(e.target===e.currentTarget){setSelected(null);setR(null);}}}>
-          <div style={{background:"#fff",borderRadius:8,width:"100%",maxWidth:700,border:`3px solid ${selected.color||"#1e3a5f"}`,boxShadow:"0 20px 60px rgba(0,0,0,.25)",overflow:"hidden",marginTop:20}}>
-            {/* Header */}
-            <div style={{background:selected.color||"#1e3a5f",padding:"20px 22px",display:"flex",gap:14,alignItems:"flex-start"}}>
-              <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:"#fff",flexShrink:0,border:"2px solid rgba(255,255,255,.4)"}}>{selected.avatar}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:20,fontWeight:900,color:"#fff"}}>{selected.name}</div>
-                <div style={{fontSize:12,color:"rgba(255,255,255,.8)",marginTop:2}}>{selected.title} · {selected.district}</div>
-                <div style={{display:"flex",gap:6,marginTop:7,flexWrap:"wrap"}}>
-                  {[`In office since ${selected.since}`,`Term ends ${selected.termEnds}`,selected.party].map((t,i)=><span key={i} style={{fontSize:9,color:"rgba(255,255,255,.65)",background:"rgba(255,255,255,.12)",padding:"2px 8px",borderRadius:2}}>{t}</span>)}
-                </div>
-              </div>
-              <button onClick={()=>{setSelected(null);setR(null);}} style={{background:"rgba(255,255,255,.2)",border:"none",color:"#fff",width:30,height:30,borderRadius:"50%",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
+          <div style={{background:"#fff",borderRadius:8,width:"100%",maxWidth:680,border:`3px solid ${selected.color||"#1e3a5f"}`,boxShadow:"0 20px 60px rgba(0,0,0,.25)",overflow:"hidden",marginTop:20}}>
+            <div style={{background:selected.color||"#1e3a5f",padding:"18px 20px",display:"flex",gap:12,alignItems:"flex-start"}}>
+              <div style={{width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:"#fff",flexShrink:0}}>{selected.avatar}</div>
+              <div style={{flex:1}}><div style={{fontSize:19,fontWeight:900,color:"#fff"}}>{selected.name}</div><div style={{fontSize:11,color:"rgba(255,255,255,.8)",marginTop:2}}>{selected.title} · {selected.district}</div><div style={{display:"flex",gap:5,marginTop:6,flexWrap:"wrap"}}>{[`Since ${selected.since}`,`Ends ${selected.termEnds}`,selected.party].map((t,i)=><span key={i} style={{fontSize:9,color:"rgba(255,255,255,.65)",background:"rgba(255,255,255,.12)",padding:"2px 7px",borderRadius:2}}>{t}</span>)}</div></div>
+              <button onClick={()=>{setSelected(null);setR(null);}} style={{background:"rgba(255,255,255,.2)",border:"none",color:"#fff",width:28,height:28,borderRadius:"50%",cursor:"pointer",fontSize:15,flexShrink:0}}>×</button>
             </div>
-            {/* Net worth bar */}
-            <div style={{background:"#fffbeb",borderBottom:"1px solid #fcd34d",padding:"11px 22px",display:"flex",gap:20,flexWrap:"wrap"}}>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>NET WORTH NOW</div><div style={{fontSize:17,fontWeight:900,color:"#b8860b"}}>{selected.netWorth}</div></div>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>BEFORE OFFICE</div><div style={{fontSize:17,fontWeight:900,color:"#6b7280"}}>{selected.netWorthPre}</div></div>
+            <div style={{background:"#fffbeb",borderBottom:"1px solid #fcd34d",padding:"10px 20px",display:"flex",gap:16,flexWrap:"wrap"}}>
+              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>NET WORTH NOW</div><div style={{fontSize:16,fontWeight:900,color:"#b8860b"}}>{selected.netWorth}</div></div>
+              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>BEFORE OFFICE</div><div style={{fontSize:16,fontWeight:900,color:"#6b7280"}}>{selected.netWorthPre}</div></div>
               <div style={{flex:1}}><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>HOW THEY BUILT IT</div><div style={{fontSize:11,color:"#4a3800",lineHeight:1.4}}>{selected.netWorthHow}</div></div>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>TAXPAYER SALARY</div><div style={{fontSize:12,fontWeight:700,color:"#1e3a5f"}}>{selected.salary}</div></div>
+              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>SALARY</div><div style={{fontSize:11,fontWeight:700,color:"#1e3a5f"}}>{selected.salary}</div></div>
             </div>
-            {/* Quick facts row */}
-            <div style={{background:"#f8f6f2",borderBottom:"1px solid #e0d8cc",padding:"9px 22px",display:"flex",gap:20,flexWrap:"wrap",fontSize:11}}>
+            <div style={{background:"#f8f6f2",borderBottom:"1px solid #e0d8cc",padding:"8px 20px",display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
               <span><strong>Residency:</strong> {selected.residency}</span>
-              <span><strong>Criminal record:</strong> <span style={{color:selected.criminal==="No criminal record"||selected.criminal==="No record found"?"#16a34a":"#dc2626"}}>{selected.criminal}</span></span>
-              <span><strong>Affiliation:</strong> {selected.affiliation.substring(0,60)}</span>
+              <span><strong>Criminal:</strong> <span style={{color:selected.criminal==="No criminal record"||selected.criminal==="No record found"?"#16a34a":"#dc2626"}}>{selected.criminal}</span></span>
             </div>
-            {/* Tabs */}
             <div style={{display:"flex",borderBottom:"1px solid #e0d8cc",background:"#f8f6f2"}}>
-              {["bio","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"10px 8px",border:"none",cursor:"pointer",fontSize:11.5,fontWeight:tab===t?700:500,color:tab===t?(selected.color||"#1e3a5f"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.color||"#1e3a5f"}`:"2px solid transparent",fontFamily:"inherit",textTransform:"capitalize"}}>{t==="bio"?"Profile":t==="donors"?"Donors & Money":t==="votes"?"Voting Record":"Contact"}</button>)}
+              {["bio","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 6px",border:"none",cursor:"pointer",fontSize:11,fontWeight:tab===t?700:500,color:tab===t?(selected.color||"#1e3a5f"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.color||"#1e3a5f"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
             </div>
-            {/* Tab content */}
-            <div style={{padding:"16px 22px",maxHeight:380,overflowY:"auto"}}>
-              {tab==="bio"&&<div>
-                <p style={{fontSize:13,lineHeight:1.8,color:"#374151",marginBottom:14}}>{selected.bio}</p>
-                {!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><div className="ai-text">{r}</div><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}
-              </div>}
-              {tab==="donors"&&<div>
-                <div style={{fontSize:8.5,color:"#6b7280",letterSpacing:1,marginBottom:10,fontWeight:700}}>TOP DONORS — PUBLIC RECORD (FEC.GOV / FCPA.ALABAMA.GOV)</div>
-                {selected.topDonors.map(([donor,amt],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"9px 12px",marginBottom:6,background:i===0?"#fef2f2":"#f8f6f2",borderRadius:4,borderLeft:`3px solid ${i===0?"#dc2626":"#e0d8cc"}`}}><span style={{fontSize:12,color:"#374151"}}>{donor}</span><span style={{fontSize:13,fontWeight:700,color:"#dc2626"}}>{amt}</span></div>)}
-                <a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:8}}>Search AL Campaign Finance →</button></a>
-              </div>}
-              {tab==="votes"&&<div>
-                {selected.votes.length===0?<p style={{color:"#6b7280",fontSize:13}}>Voting record under research — check back for updates.</p>:selected.votes.map((v,i)=><div key={i} style={{background:"#f8f6f2",borderRadius:4,padding:"10px 12px",marginBottom:8,borderLeft:`3px solid ${v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")?"#dc2626":v.vote.includes("NO")||v.vote.includes("None")?"#ea580c":"#16a34a"}`}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:4}}><span style={{fontSize:12,fontWeight:700,color:"#1e3a5f",flex:1}}>{v.bill}</span><span style={{fontSize:10,fontWeight:700,color:v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")?"#dc2626":v.vote.includes("NO")?"#ea580c":"#16a34a",flexShrink:0,padding:"2px 8px",background:"rgba(0,0,0,.04)",borderRadius:3}}>{v.vote}</span></div><div style={{fontSize:11.5,color:"#6b7280"}}>{v.impact}</div></div>)}
-              </div>}
-              {tab==="contact"&&<div>
-                {[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=><div key={i} style={{padding:"9px 12px",background:"#f8f6f2",borderRadius:4,marginBottom:8}}><div style={{fontSize:8.5,color:"#6b7280",letterSpacing:1,marginBottom:3}}>{l}</div><div style={{fontSize:13,fontWeight:600,color:"#1e3a5f"}}>{v}</div></div>)}
-                <a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a>
-              </div>}
+            <div style={{padding:"14px 20px",maxHeight:360,overflowY:"auto"}}>
+              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><div className="ai-text">{r}</div><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
+              {tab==="donors"&&<div><div style={{fontSize:8.5,color:"#6b7280",letterSpacing:1,marginBottom:10,fontWeight:700}}>TOP DONORS — PUBLIC RECORD</div>{selected.topDonors.map(([donor,amt],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",marginBottom:5,background:i===0?"#fef2f2":"#f8f6f2",borderRadius:4,borderLeft:`3px solid ${i===0?"#dc2626":"#e0d8cc"}`}}><span style={{fontSize:11.5,color:"#374151"}}>{donor}</span><span style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>{amt}</span></div>)}<a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:8}}>Search AL Campaign Finance →</button></a></div>}
+              {tab==="votes"&&<div>{selected.votes.length===0?<p style={{color:"#6b7280",fontSize:12}}>Voting record under research.</p>:selected.votes.map((v,i)=><div key={i} style={{background:"#f8f6f2",borderRadius:4,padding:"9px 11px",marginBottom:7,borderLeft:`3px solid ${v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a"}`}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}><span style={{fontSize:11.5,fontWeight:700,color:"#1e3a5f",flex:1}}>{v.bill}</span><span style={{fontSize:9,fontWeight:700,color:v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a",padding:"2px 7px",background:"rgba(0,0,0,.04)",borderRadius:3,flexShrink:0}}>{v.vote}</span></div><div style={{fontSize:11,color:"#6b7280"}}>{v.impact}</div></div>)}</div>}
+              {tab==="contact"&&<div>{[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=><div key={i} style={{padding:"8px 11px",background:"#f8f6f2",borderRadius:4,marginBottom:7}}><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>{l}</div><div style={{fontSize:12.5,fontWeight:600,color:"#1e3a5f"}}>{v}</div></div>)}<a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a></div>}
             </div>
           </div>
         </div>
@@ -908,7 +789,6 @@ export default function App(){
     if(page==="officials") return <OfficialsPage/>;
     if(page==="utilities") return <UtilitiesPage/>;
     if(page==="boards")    return <BoardsPage/>;
-    if(page==="officials") return <OfficialsPage/>;
     if(PAGES[page])        return <InvestPage id={page}/>;
     return <Dashboard go={go}/>;
   }
