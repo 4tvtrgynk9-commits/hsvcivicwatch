@@ -21,7 +21,7 @@ async function callAI(prompt){
 // ─── CSS ──────────────────────────────────────────────────────
 const CSS=`
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-serif;color:#1a1a1a;overflow-x:hidden}
+html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:#1a1a1a;overflow-x:hidden}
 #root{height:100%}
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:260px;background:${C.navy};color:#fff;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
@@ -29,15 +29,15 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .sidebar-logo h1{font-size:13px;font-weight:800;color:${C.gold};letter-spacing:1px;line-height:1.3}
 .sidebar-logo p{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px}
 .nav-group{padding:14px 16px 4px;font-size:8.5px;font-weight:700;letter-spacing:2px;color:rgba(201,168,76,.5);text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:500;color:rgba(255,255,255,.6);border-left:3px solid transparent;transition:all .15s;user-select:none}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);border-left:3px solid transparent;transition:all .15s;user-select:none}
 .nav-item:hover,.nav-item.active{color:${C.gold};background:rgba(201,168,76,.08);border-left-color:${C.gold};font-weight:700}
 .nav-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0}
 .main{flex:1;overflow-y:auto;background:${C.bg}}
 .page{max-width:680px;margin:0 auto;padding:20px 16px 40px}
 .page-header{margin-bottom:20px}
-.page-header h2{font-size:22px;font-weight:900;color:${C.navy};line-height:1.2}
+.page-header h2{font-size:24px;font-weight:900;color:${C.navy};line-height:1.2}
 .page-header h2 em{color:${C.red};font-style:normal}
-.page-header p{font-size:12.5px;color:${C.muted};margin-top:6px;line-height:1.6}
+.page-header p{font-size:14px;color:${C.muted};margin-top:6px;line-height:1.6}
 .tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:2px 8px;border-radius:10px;margin-bottom:8px}
 .tag-red{background:rgba(220,38,38,.12);color:${C.red};border:1px solid rgba(220,38,38,.2)}
 .tag-navy{background:rgba(30,58,95,.1);color:${C.navy};border:1px solid rgba(30,58,95,.2)}
@@ -46,17 +46,17 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .tag-blue{background:rgba(37,99,235,.1);color:#2563eb;border:1px solid rgba(37,99,235,.2)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .stat-card{background:#fff;border:1px solid ${C.border};border-radius:6px;padding:14px 12px}
-.stat-val{font-size:22px;font-weight:900;line-height:1}
-.stat-lbl{font-size:8.5px;color:${C.muted};margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
-.stat-sub{font-size:10.5px;color:${C.muted};margin-top:3px;line-height:1.3}
+.stat-val{font-size:24px;font-weight:900;line-height:1}
+.stat-lbl{font-size:10px;color:${C.muted};margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
+.stat-sub{font-size:12px;color:${C.muted};margin-top:3px;line-height:1.3}
 .fact{border-radius:5px;padding:12px 14px;margin-bottom:10px;border-left:4px solid}
 .fact-red{background:#fef2f2;border-color:${C.red}}
 .fact-gold{background:#fffbeb;border-color:${C.gold}}
 .fact-green{background:#f0fdf4;border-color:${C.green}}
 .fact-blue{background:#eff6ff;border-color:#2563eb}
-.fact-label{font-size:8.5px;font-weight:700;letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}
-.fact-text{font-size:12.5px;line-height:1.7}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:none;border-radius:4px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.fact-label{font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}
+.fact-text{font-size:14px;line-height:1.7}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:none;border-radius:4px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:opacity .15s}
 .btn:hover{opacity:.85}
 .btn-navy{background:${C.navy};color:#fff}
 .btn-gold{background:${C.gold};color:#fff}
@@ -64,20 +64,20 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .btn-ghost{background:transparent;color:${C.muted};border:1px solid ${C.border}}
 .btn-full{width:100%;justify-content:center;margin-bottom:10px}
 .ai-panel{background:#f8f6f2;border:1px solid #e0d8cc;border-left:4px solid #1e3a5f;border-radius:5px;padding:14px 16px;margin-bottom:12px}
-.ai-panel-label{font-size:8px;font-weight:800;color:#1e3a5f;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.ai-panel-label{font-size:10px;font-weight:800;color:#1e3a5f;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .ai-text{font-size:13px;color:#2d2a22;line-height:1.85}
 .card{background:#fff;border:1px solid ${C.border};border-radius:6px;padding:14px;margin-bottom:10px}
-.card-title{font-size:13.5px;font-weight:700;color:${C.navy};margin-bottom:4px}
-.card-sub{font-size:12px;color:${C.muted};line-height:1.5}
+.card-title{font-size:15px;font-weight:700;color:${C.navy};margin-bottom:4px}
+.card-sub{font-size:13.5px;color:${C.muted};line-height:1.5}
 .tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:2px solid ${C.border};padding-bottom:8px;flex-wrap:wrap}
-.tab{padding:6px 14px;border:none;border-radius:4px 4px 0 0;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit;background:#f0ebe2;color:${C.muted};transition:all .12s}
+.tab{padding:7px 16px;border:none;border-radius:4px 4px 0 0;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:#f0ebe2;color:${C.muted};transition:all .12s}
 .tab.active{background:${C.navy};color:${C.gold}}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .dash-card{background:#fff;border:1px solid ${C.border};border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;border-left:4px solid}
 .dash-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
 .dash-card-icon{font-size:20px;margin-bottom:8px}
-.dash-card-title{font-size:12.5px;font-weight:700;color:${C.navy};margin-bottom:3px}
-.dash-card-sub{font-size:11px;color:${C.muted};line-height:1.4}
+.dash-card-title{font-size:14px;font-weight:700;color:${C.navy};margin-bottom:3px}
+.dash-card-sub{font-size:12.5px;color:${C.muted};line-height:1.4}
 .topbar{display:none;background:${C.navy};color:#fff;padding:12px 16px;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
 .topbar-title{font-size:13px;font-weight:800;color:${C.gold};letter-spacing:.5px}
 .menu-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;line-height:1}
@@ -89,12 +89,12 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .clamp-box{background:#fff;border:1px solid ${C.border};border-radius:5px;padding:12px 14px;margin-bottom:10px;cursor:pointer;border-left:3px solid ${C.navy}}
 .clamp-title{font-size:12.5px;font-weight:600;color:${C.navy};line-height:1.4}
 .alert-banner{background:#fef2f2;border:1px solid #fca5a5;border-left:4px solid ${C.red};border-radius:4px;padding:10px 13px;margin-bottom:14px}
-.alert-label{font-size:8.5px;font-weight:700;color:${C.red};letter-spacing:1px;margin-bottom:3px}
-.alert-text{font-size:12px;color:#7f1d1d;line-height:1.6}
+.alert-label{font-size:10px;font-weight:700;color:${C.red};letter-spacing:1px;margin-bottom:3px}
+.alert-text{font-size:13.5px;color:#7f1d1d;line-height:1.6}
 .source-bar{background:#eff3f8;border:1px solid #93b4d4;border-radius:4px;padding:11px 13px;margin-top:14px}
-.source-label{font-size:8.5px;font-weight:700;color:${C.navy};letter-spacing:1px;margin-bottom:6px}
+.source-label{font-size:10px;font-weight:700;color:${C.navy};letter-spacing:1px;margin-bottom:6px}
 .source-links{display:flex;gap:8px;flex-wrap:wrap}
-.source-link{font-size:10.5px;color:${C.navy};text-decoration:none;border:1px solid #93b4d4;padding:3px 8px;border-radius:3px;background:#fff}
+.source-link{font-size:12px;color:${C.navy};text-decoration:none;border:1px solid #93b4d4;padding:3px 8px;border-radius:3px;background:#fff}
 .source-link:hover{background:${C.navy};color:#fff}
 @media(max-width:768px){
   .app{flex-direction:column}
@@ -107,10 +107,10 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
   .page{padding:14px 12px 60px;max-width:100%}
   .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
   .dash-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .stat-val{font-size:17px}
-  .stat-lbl{font-size:7.5px}
-  .stat-sub{font-size:10px}
-  .page-header h2{font-size:19px}
+  .stat-val{font-size:19px}
+  .stat-lbl{font-size:9px}
+  .stat-sub{font-size:11.5px}
+  .page-header h2{font-size:21px}
   .tabs{gap:3px}
   .tab{padding:6px 10px;font-size:10.5px}
   .btn{font-size:11.5px;padding:8px 14px}
@@ -189,7 +189,7 @@ const PAGES={
     facts:[{k:"red",label:"THE CAPTIVE MARKET PROBLEM",lc:C.red,tc:"#7f1d1d",text:"When airlines face limited competition at an airport, they charge more. Huntsville International serves a major aerospace metro but has fewer non-stop routes and higher average fares than comparable cities. The econ..."},{k:"gold",label:"ALGORITHMIC PRICING — THE INVISIBLE TAX",lc:"#b8860b",tc:"#78350f",text:"RealPage software is used by landlords to set rents using shared market data. The DOJ sued RealPage for antitrust violations — coordinating prices without a formal cartel agreement. If your landlord uses RealPage, y..."}],
     prompt:"Investigate Huntsville airport pricing and algorithmic pricing affecting Madison County residents. Why do HSV flights cost more than peer airports? What is RealPage and how does algorithmic rent coordination work? Who are the major Madison County landlords using algorithmic pricing? What is the DOJ antitrust case status? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."},
 
-  sentencing:{icon:"⚖",title:"Criminal Justice:",subtitle:"Courts, Jails & Prisons",tag:"tag-red",sub:"Kratom is a felony. Sitting in jail without a conviction because you can't afford bail. Life for stealing a bicycle...", 75% of those sentenced to die in prison under HFOA are Black. Private prison companies donate to the officials maintaining every one of these laws.",
+  sentencing:{icon:"⚖",title:"Criminal Justice:",subtitle:"Courts, Jails & Prisons",tag:"tag-red",sub:"Kratom is a felony. Sitting in jail without conviction because you can't afford bail. Life for stealing a bicycle. Private prisons donate to officials who block reform.",
     stats:[["HFOA Life Without Parole","527+ people","Many for non-violent property crimes",C.red],["HFOA Racial Disparity","75% Black","Of those sentenced to die in prison under HFOA",C.red],["School Zone Add-On","Mandatory +5 yrs","Applies to almost all of north Huntsville",C.red],["Private Prison to Marshall","$45k","AG who has opposed every single reform",C.red]],
     facts:[{k:"red",label:"THE HABITUAL FELONY OFFENDER ACT — LIFE FOR A BICYCLE",lc:C.red,tc:"#7f1d1d",text:"Alabama's HFOA mandates life without parole for a fourth felony conviction — even if all prior offenses were non-violent property crimes. Documented cases: Johnny Holly got life without parole in 1980 for stealing a..."},{k:"orange",label:"LOW-LEVEL CRIMES — THE FULL PICTURE",lc:C.orange,tc:"#78350f",text:"Beyond HFOA: Kratom possession is a Class C felony — same as meth — legal in 43 states. Cannabis possession for 'personal use' is a misdemeanor but prior drug convictions escalate it to a felony. Marijuana within 3 ..."},{k:"gold",label:"WHO PROFITS FROM THESE LAWS",lc:"#b8860b",tc:"#78350f",text:"CoreCivic and GEO Group are paid per incarcerated person. Private probation companies charge supervision fees directly to the people they supervise — a system where profit depends on people staying in the system. AG..."}],
     prompt:"Investigate Alabama's full sentencing structure and its documented harms in Madison County. THE FACTS: Habitual Felony Offender Act — 527+ people serving life without parole for non-violent crimes, 75% Black, documented cases include life for stealing a toolbox and life for a $16 bicycle, Willie Simmons in prison since 1982 for a $9 theft who would get 20 years maximum today. School zone enhancement adds mandatory 5 years covering nearly all of north Huntsville due to school density but rarely triggers in south Huntsville — same law, same drug, different zip code. Kratom is a Class C felony in Alabama legal in 43 states. Private probation companies charge supervision fees creating a profit motive to keep people in the system. Drug paraphernalia possession with prior drug conviction is a Class B felony up to 20 years. 3.7x Black vs white drug arrest rate with same usage rates. Alabama prisons 181% capacity $17k per person per year. AG Marshall $45k private prison PACs, Orr $22k, both oppose all reform. WHO BENEFITS: CoreCivic, GEO Group, private probation companies, officials receiving their donations. WHO GETS HURT: Black residents of north Huntsville, people trapped in private probation debt cycles, families of the 500+ dying in prison for property crimes. THE CONNECTIONS: trace Marshall $45k private prison PACs to opposing bail reform, HFOA reform, probation reform. WHAT CAN CHANGE: HFOA retroactive review, end private probation, bail reform, kratom reclassification, school zone reform."},
@@ -313,7 +313,7 @@ function AiResult({text}){
   return(
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       {paragraphs.map((p,i)=>(
-        <p key={i} style={{fontSize:13,color:"#2d2a22",lineHeight:1.8,margin:0,padding:"8px 0",borderBottom:i<paragraphs.length-1?"1px solid #f0ebe2":"none"}}>{p.trim()}</p>
+        <p key={i} style={{fontSize:14,color:"#2d2a22",lineHeight:1.8,margin:0,padding:"8px 0",borderBottom:i<paragraphs.length-1?"1px solid #f0ebe2":"none"}}>{p.trim()}</p>
       ))}
     </div>
   );
@@ -341,18 +341,18 @@ function AiResult({text}){
         const meta=metaKey?sectionMeta[metaKey]:{color:'#374151',bg:'#f8f6f2',border:'#e0d8cc',icon:'◈'};
         return(
           <div key={si} style={{background:meta.bg,border:`1px solid ${meta.border}`,borderLeft:`4px solid ${meta.color}`,borderRadius:5,padding:"10px 13px"}}>
-            {rawHeader&&<div style={{fontSize:8.5,fontWeight:800,color:meta.color,letterSpacing:1.2,marginBottom:7,textTransform:"uppercase",display:"flex",alignItems:"center",gap:5}}><span>{meta.icon}</span>{rawHeader}</div>}
+            {rawHeader&&<div style={{fontSize:10,fontWeight:800,color:meta.color,letterSpacing:1.2,marginBottom:7,textTransform:"uppercase",display:"flex",alignItems:"center",gap:5}}><span>{meta.icon}</span>{rawHeader}</div>}
             {body.map((line,li)=>{
               const txt=line.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/^[-•]\s*/,'').trim();
               if(!txt) return null;
               const isBullet=line.trim().startsWith('-')||line.trim().startsWith('•');
               return isBullet?(
                 <div key={li} style={{display:"flex",gap:7,marginBottom:5}}>
-                  <span style={{color:meta.color,flexShrink:0,fontSize:10,marginTop:3}}>◈</span>
-                  <span style={{fontSize:12.5,color:"#2d2a22",lineHeight:1.65}}>{txt}</span>
+                  <span style={{color:meta.color,flexShrink:0,fontSize:11.5,marginTop:3}}>◈</span>
+                  <span style={{fontSize:14,color:"#2d2a22",lineHeight:1.65}}>{txt}</span>
                 </div>
               ):(
-                <p key={li} style={{fontSize:12.5,color:"#374151",lineHeight:1.7,marginBottom:4}}>{txt}</p>
+                <p key={li} style={{fontSize:14,color:"#374151",lineHeight:1.7,marginBottom:4}}>{txt}</p>
               );
             })}
           </div>
@@ -375,7 +375,7 @@ function AiButton({prompt,label="🔍 Break It Down"}){
     <div className="ai-panel">
       <div className="ai-panel-label">💬 SUMMARY</div>
       <AiResult text={r}/>
-      <button className="btn btn-ghost" onClick={()=>setR(null)} style={{marginTop:10,fontSize:11}}>Clear</button>
+      <button className="btn btn-ghost" onClick={()=>setR(null)} style={{marginTop:10,fontSize:12.5}}>Clear</button>
     </div>
   );
   return(
@@ -462,27 +462,27 @@ function UtilitiesPage(){
       {tab==="providers"&&(
         <div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
-            {PROVIDERS.map(x=><button key={x.id} onClick={()=>setSel(x.id)} style={{padding:"5px 12px",borderRadius:12,border:"1px solid #e0d8cc",background:sel===x.id?x.color:"#fff",color:sel===x.id?"#fff":C.muted,fontSize:11,fontWeight:600,cursor:"pointer"}}>{x.name.split(" ")[0]}{x.name.includes("TVA")?" TVA":""}</button>)}
+            {PROVIDERS.map(x=><button key={x.id} onClick={()=>setSel(x.id)} style={{padding:"5px 12px",borderRadius:12,border:"1px solid #e0d8cc",background:sel===x.id?x.color:"#fff",color:sel===x.id?"#fff":C.muted,fontSize:12.5,fontWeight:600,cursor:"pointer"}}>{x.name.split(" ")[0]}{x.name.includes("TVA")?" TVA":""}</button>)}
           </div>
           <div className="card" style={{borderLeft:`4px solid ${p.color}`}}>
             <div style={{fontWeight:800,fontSize:14,color:p.color,marginBottom:4}}>{p.name}</div>
-            <div style={{fontSize:11.5,color:C.muted,marginBottom:8}}>{p.serves}</div>
+            <div style={{fontSize:13,color:C.muted,marginBottom:8}}>{p.serves}</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-              {p.services.split(" · ").map((s,i)=><span key={i} style={{fontSize:9,fontWeight:700,color:C.navy,background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:10,padding:"2px 8px"}}>{s}</span>)}
+              {p.services.split(" · ").map((s,i)=><span key={i} style={{fontSize:10.5,fontWeight:700,color:C.navy,background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:10,padding:"2px 8px"}}>{s}</span>)}
             </div>
-            <div style={{marginBottom:10}}><div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:5}}>GOVERNANCE — WHO CONTROLS THIS</div><div style={{fontSize:12,color:"#374151",lineHeight:1.6}}>{p.gov}</div></div>
-            <div style={{marginBottom:10}}><div style={{fontSize:8.5,color:C.red,fontWeight:700,letterSpacing:1,marginBottom:6}}>RECENT RATE CHANGES</div>
+            <div style={{marginBottom:10}}><div style={{fontSize:10,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:5}}>GOVERNANCE — WHO CONTROLS THIS</div><div style={{fontSize:13.5,color:"#374151",lineHeight:1.6}}>{p.gov}</div></div>
+            <div style={{marginBottom:10}}><div style={{fontSize:10,color:C.red,fontWeight:700,letterSpacing:1,marginBottom:6}}>RECENT RATE CHANGES</div>
               {p.rates.map((r,i)=>(
                 <div key={i} style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:3,padding:"8px 10px",marginBottom:6}}>
                   <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}>
-                    <span style={{fontSize:11.5,fontWeight:700,color:C.navy}}>{r.what}</span>
-                    <span style={{fontSize:9,fontWeight:700,color:C.red,flexShrink:0}}>{r.amount} · {r.when}</span>
+                    <span style={{fontSize:13,fontWeight:700,color:C.navy}}>{r.what}</span>
+                    <span style={{fontSize:10.5,fontWeight:700,color:C.red,flexShrink:0}}>{r.amount} · {r.when}</span>
                   </div>
-                  <div style={{fontSize:11,color:C.muted}}>{r.why}</div>
+                  <div style={{fontSize:12.5,color:C.muted}}>{r.why}</div>
                 </div>
               ))}
             </div>
-            <div style={{background:"#fffbeb",borderRadius:3,padding:"9px 11px",marginBottom:10}}><div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:4}}>YOUR LEVERAGE</div><div style={{fontSize:12,color:"#78350f"}}>{p.recourse}</div></div>
+            <div style={{background:"#fffbeb",borderRadius:3,padding:"9px 11px",marginBottom:10}}><div style={{fontSize:10,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:4}}>YOUR LEVERAGE</div><div style={{fontSize:13.5,color:"#78350f"}}>{p.recourse}</div></div>
             <AiButton prompt={`Investigate ${p.name} for Madison County ratepayers. Governance: ${p.gov}. Rate history: ${p.rates.map(r=>r.what+" "+r.amount).join(", ")}. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words.`} label={`🔍 Investigate ${p.name}`}/>
           </div>
         </div>
@@ -490,8 +490,8 @@ function UtilitiesPage(){
       {tab==="compare"&&(
         <div>
           <div className="fact fact-red"><div className="fact-label" style={{color:C.red}}>THE DOUBLE MARKUP PROBLEM</div><div className="fact-text" style={{color:"#7f1d1d"}}>TVA generates power → sells wholesale to HU → HU marks up → you pay. Two entities adding cost, neither elected. In 2024-2025: TVA +5.25% + HU +5.1% = ~10%+ on your electric bill in one year. Neit...</div></div>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,marginBottom:14}}>
-            <thead><tr>{["Utility","Avg Monthly","Oversight","Your Recourse"].map(h=><th key={h} style={{background:C.navy,color:C.gold,padding:"8px 10px",textAlign:"left",fontSize:10}}>{h}</th>)}</tr></thead>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13.5,marginBottom:14}}>
+            <thead><tr>{["Utility","Avg Monthly","Oversight","Your Recourse"].map(h=><th key={h} style={{background:C.navy,color:C.gold,padding:"8px 10px",textAlign:"left",fontSize:11.5}}>{h}</th>)}</tr></thead>
             <tbody>
               {[["Huntsville (HU+TVA)","~$146–165","Appointed boards","Attend City Council · elect better reps"],["National Average","~$137","Varies","Many states have elected utility boards"],["Nebraska (public)","~$90–100","Elected board","Vote directly for board members"]].map((row,i)=>(
                 <tr key={i} style={{background:i===0?"#fef2f2":"#fff"}}>
@@ -511,12 +511,12 @@ function UtilitiesPage(){
             {icon:"⚖",title:"Contact Congress — TVA Reform",sub:"Only Congress can reform TVA. AL delegation received $1.4M+ energy PACs and introduced zero oversight bills.",links:[{l:"Rep. Strong",u:"https://dalestrong.house.gov/contact"},{l:"Sen. Britt",u:"https://www.britt.senate.gov/contact"},{l:"Sen. Tuberville",u:"https://www.tuberville.senate.gov/contact"}]},
           ].map((t,i)=>(
             <div key={i} className="card" style={{marginBottom:10}}>
-              <div style={{display:"flex",gap:9,marginBottom:6}}><span style={{fontSize:18}}>{t.icon}</span><div style={{fontWeight:700,color:C.navy,fontSize:13}}>{t.title}</div></div>
-              <div style={{fontSize:12,color:"#374151",lineHeight:1.6,marginBottom:t.template?8:0}}>{t.sub}</div>
-              {t.sub2&&<div style={{fontSize:11,color:C.muted,marginTop:4}}>{t.sub2}</div>}
-              {t.template&&<pre style={{fontSize:10.5,background:"#f8f6f2",padding:"8px 10px",borderRadius:3,whiteSpace:"pre-wrap",color:"#374151",lineHeight:1.5,marginTop:6}}>{t.template}</pre>}
-              {t.url&&<a href={t.url} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{marginTop:8,fontSize:11}}>{t.btn} →</button></a>}
-              {t.links&&<div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>{t.links.map((l,j)=><a key={j} href={l.u} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:11}}>↗ {l.l}</button></a>)}</div>}
+              <div style={{display:"flex",gap:9,marginBottom:6}}><span style={{fontSize:20}}>{t.icon}</span><div style={{fontWeight:700,color:C.navy,fontSize:14}}>{t.title}</div></div>
+              <div style={{fontSize:13.5,color:"#374151",lineHeight:1.6,marginBottom:t.template?8:0}}>{t.sub}</div>
+              {t.sub2&&<div style={{fontSize:12.5,color:C.muted,marginTop:4}}>{t.sub2}</div>}
+              {t.template&&<pre style={{fontSize:12,background:"#f8f6f2",padding:"8px 10px",borderRadius:3,whiteSpace:"pre-wrap",color:"#374151",lineHeight:1.5,marginTop:6}}>{t.template}</pre>}
+              {t.url&&<a href={t.url} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{marginTop:8,fontSize:12.5}}>{t.btn} →</button></a>}
+              {t.links&&<div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>{t.links.map((l,j)=><a key={j} href={l.u} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:12.5}}>↗ {l.l}</button></a>)}</div>}
             </div>
           ))}
         </div>
@@ -551,15 +551,15 @@ function BoardsPage(){
             {name:"Madison Utilities Board",appt:"Madison City Council",terms:"6-year staggered terms",members:"Public corporation board — component unit of Madison City. New Mayor Bartlett was herself a Madison Board of Education member 2011-2020.",power:"Controls water and wastewater rates for 19,000+ Madison City connections. Major 2025-2026 project: Wall Triana water main.",flag:"New Mayor Bartlett's prior school board experience gives her unusual insight into appointed board dynamics. Her appointments to this board in 2026 will signal...",recourse:"Contact Mayor Bartlett directly. She controls who gets appointed.",contact:"100 Hughes Rd, Madison AL 35758"},
           ].map((b,i)=>(
             <div key={i} className="card" style={{borderLeft:"4px solid #1e3a5f",marginBottom:10}}>
-              <div style={{fontWeight:800,fontSize:13,color:"#1e3a5f",marginBottom:6}}>{b.name}</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8,fontSize:11}}>
+              <div style={{fontWeight:800,fontSize:14,color:"#1e3a5f",marginBottom:6}}>{b.name}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8,fontSize:12.5}}>
                 <div><span style={{color:"#6b7280"}}>Appointed by: </span><strong style={{color:"#1e3a5f"}}>{b.appt}</strong></div>
                 <div><span style={{color:"#6b7280"}}>Terms: </span><strong style={{color:"#1e3a5f"}}>{b.terms}</strong></div>
               </div>
-              <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Members:</strong> {b.members}</div>
-              <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Controls:</strong> {b.power}</div>
-              <div style={{background:"#fef2f2",borderRadius:3,padding:"7px 9px",fontSize:11,color:"#7f1d1d",borderLeft:"3px solid #dc2626",marginBottom:6}}>{b.flag}</div>
-              <div style={{background:"#f0fdf4",borderRadius:3,padding:"7px 9px",fontSize:11,color:"#14532d",borderLeft:"3px solid #16a34a"}}><strong>Your recourse:</strong> {b.recourse}</div>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Members:</strong> {b.members}</div>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Controls:</strong> {b.power}</div>
+              <div style={{background:"#fef2f2",borderRadius:3,padding:"7px 9px",fontSize:12.5,color:"#7f1d1d",borderLeft:"3px solid #dc2626",marginBottom:6}}>{b.flag}</div>
+              <div style={{background:"#f0fdf4",borderRadius:3,padding:"7px 9px",fontSize:12.5,color:"#14532d",borderLeft:"3px solid #16a34a"}}><strong>Your recourse:</strong> {b.recourse}</div>
             </div>
           ))}
           <AiButton prompt="Investigate the appointed boards controlling Madison County utilities and tax abatements — HU Electric/Gas/Water boards (George Moore serving since 1998), IDB ($127M+ abatements, no performance audit), Madison Utilities board. For each: who are the current members by name, what are their professional affiliations, do any have financial conflicts with decisions they make, what are the most consequential decisions in the past 3 years. What does the interlocking of Mayor Battle's real estate donors with IDB appointments look like? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
@@ -575,18 +575,18 @@ function BoardsPage(){
           ].map((b,i)=>(
             <div key={i} className="card" style={{borderLeft:`4px solid ${b.elected?"#16a34a":"#dc2626"}`,marginBottom:10}}>
               <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:6}}>
-                <div style={{fontWeight:800,fontSize:13,color:"#1e3a5f"}}>{b.name}</div>
-                <span style={{fontSize:8,fontWeight:700,color:b.elected?"#16a34a":"#dc2626",background:b.elected?"#f0fdf4":"#fef2f2",padding:"2px 8px",borderRadius:8,border:`1px solid ${b.elected?"#86efac":"#fca5a5"}`,flexShrink:0,height:"fit-content"}}>{b.elected?"✓ ELECTED":"APPOINTED"}</span>
+                <div style={{fontWeight:800,fontSize:14,color:"#1e3a5f"}}>{b.name}</div>
+                <span style={{fontSize:9.5,fontWeight:700,color:b.elected?"#16a34a":"#dc2626",background:b.elected?"#f0fdf4":"#fef2f2",padding:"2px 8px",borderRadius:8,border:`1px solid ${b.elected?"#86efac":"#fca5a5"}`,flexShrink:0,height:"fit-content"}}>{b.elected?"✓ ELECTED":"APPOINTED"}</span>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:8}}>
                 <div className="stat-card" style={{padding:"8px 10px"}}><div className="stat-val" style={{fontSize:15,color:"#1e3a5f"}}>{b.budget}</div><div className="stat-lbl">Annual Budget</div></div>
                 <div className="stat-card" style={{padding:"8px 10px"}}><div className="stat-val" style={{fontSize:15,color:"#374151"}}>{b.students}</div><div className="stat-lbl">Students</div></div>
                 <div className="stat-card" style={{padding:"8px 10px"}}><div className="stat-val" style={{fontSize:15,color:"#ea580c"}}>11%</div><div className="stat-lbl">Voter Turnout</div></div>
               </div>
-              <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Members:</strong> {b.members} · {b.districts}</div>
-              <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Controls:</strong> {b.power}</div>
-              <div style={{background:"#fef2f2",borderRadius:3,padding:"7px 9px",fontSize:11,color:"#7f1d1d",borderLeft:"3px solid #dc2626",marginBottom:6}}>{b.flag}</div>
-              {b.upcoming&&<div style={{background:"#fffbeb",borderRadius:3,padding:"6px 9px",fontSize:11,color:"#78350f",borderLeft:"3px solid #c9a84c"}}>2026 ELECTION: {b.upcoming} Races decided by under 200 votes.</div>}
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Members:</strong> {b.members} · {b.districts}</div>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.5,marginBottom:6}}><strong>Controls:</strong> {b.power}</div>
+              <div style={{background:"#fef2f2",borderRadius:3,padding:"7px 9px",fontSize:12.5,color:"#7f1d1d",borderLeft:"3px solid #dc2626",marginBottom:6}}>{b.flag}</div>
+              {b.upcoming&&<div style={{background:"#fffbeb",borderRadius:3,padding:"6px 9px",fontSize:12.5,color:"#78350f",borderLeft:"3px solid #c9a84c"}}>2026 ELECTION: {b.upcoming} Races decided by under 200 votes.</div>}
             </div>
           ))}
           <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from ETF affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
@@ -602,17 +602,17 @@ function BoardsPage(){
           <div className="fact fact-red"><div className="fact-label" style={{color:"#dc2626"}}>THE SELF-PERPETUATING BOARD</div><div className="fact-text" style={{color:"#7f1d1d"}}>The HHHS board appoints its own successors. No public vote. No community election. Ever. In the history of HHHS. The board approved $3.1M CEO pay. The board approved every hospital acquisition th...</div></div>
           <div className="fact fact-gold"><div className="fact-label" style={{color:"#b8860b"}}>THE NONPROFIT PARADOX</div><div className="fact-text" style={{color:"#78350f"}}>HHHS pays $0 income tax on $2.4B in revenue, reduced property tax, and claims $63M/yr in total exemptions. In exchange it must provide community benefit. Yet it starts CNAs at $14.50/hr (qualifyi...</div></div>
           <div style={{marginBottom:12}}>
-            <div style={{fontSize:8.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:8}}>⚠ HHHS BOARD — SELF-APPOINTED, NO PUBLIC VOTE EVER</div>
-            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:5,padding:"10px 12px",marginBottom:8,fontSize:11.5,color:"#7f1d1d"}}>The HHHS board appoints its own successors. No election in the hospital's history. Full current membership requires reviewing their IRS Form 990 — available free at ProPublica Nonprofit Explorer. Past members have included HHHS-employed physicians voting on their own compensation and executives from organizations doing business with the hospital.</div>
+            <div style={{fontSize:10,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:8}}>⚠ HHHS BOARD — SELF-APPOINTED, NO PUBLIC VOTE EVER</div>
+            <div style={{background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:5,padding:"10px 12px",marginBottom:8,fontSize:13,color:"#7f1d1d"}}>The HHHS board appoints its own successors. No election in the hospital's history. Full current membership requires reviewing their IRS Form 990 — available free at ProPublica Nonprofit Explorer. Past members have included HHHS-employed physicians voting on their own compensation and executives from organizations doing business with the hospital.</div>
             {[{name:"David Spillers",role:"President & CEO — $3.1M/yr",note:"Compensation approved by the same board he works alongside. Board has limited independence from management."},
               {name:"Board of Directors (15 members)",role:"Self-Appointed — Zero Public Vote",note:"To see current members: visit ProPublica.org/nonprofit-explorer and search 'Huntsville Hospital' (EIN 63-0288816). Or submit an Open Records request to HHHS directly."},
             ].map((m,i)=>(
               <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"9px 11px",background:"#fff",border:"1px solid #e0d8cc",borderRadius:4,marginBottom:6}}>
-                <div style={{width:38,height:38,borderRadius:"50%",background:"#991b1b",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:10,fontWeight:800,flexShrink:0}}>{m.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
-                <div><div style={{fontWeight:700,fontSize:12.5,color:"#1e3a5f"}}>{m.name}</div><div style={{fontSize:10,color:"#6b7280",marginBottom:2}}>{m.role}</div><div style={{fontSize:11,color:"#374151",lineHeight:1.5}}>{m.note}</div></div>
+                <div style={{width:38,height:38,borderRadius:"50%",background:"#991b1b",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11.5,fontWeight:800,flexShrink:0}}>{m.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
+                <div><div style={{fontWeight:700,fontSize:14,color:"#1e3a5f"}}>{m.name}</div><div style={{fontSize:11.5,color:"#6b7280",marginBottom:2}}>{m.role}</div><div style={{fontSize:12.5,color:"#374151",lineHeight:1.5}}>{m.note}</div></div>
               </div>
             ))}
-            <a href="https://projects.propublica.org/nonprofits/organizations/630288816" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:4}}>View HHHS IRS 990 at ProPublica →</button></a>
+            <a href="https://projects.propublica.org/nonprofits/organizations/630288816" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:12.5,marginTop:4}}>View HHHS IRS 990 at ProPublica →</button></a>
           </div>
           <AiButton prompt="Investigate HHHS nonprofit monopoly governance. Self-appointed board — who are the current members by name, what organizations are they affiliated with, have any members received business from HHHS or been affiliated with organizations that received HHHS contracts? CEO David Spillers $3.1M vs CNAs $14.50/hr. $63M/yr tax exemption vs community benefit provided. 14-facility acquisition creating North Alabama monopoly. FTC has not acted. AL Legislature could amend charter. HHHS Foundation donated $45k to Mayor Battle. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."/>
         </div>
@@ -631,11 +631,11 @@ function BoardsPage(){
           ].map((c,i)=>(
             <div key={i} className="card" style={{borderLeft:`4px solid ${c.flag?"#dc2626":"#1e3a5f"}`,marginBottom:8}}>
               <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
-                <span style={{fontSize:12,fontWeight:700,color:"#1e3a5f"}}>{c.from}</span>
-                <span style={{fontSize:9,fontWeight:800,color:c.flag?"#dc2626":"#374151",background:c.flag?"#fef2f2":"#f0ebe2",padding:"2px 8px",borderRadius:8,border:`1px solid ${c.flag?"#fca5a5":"#e0d8cc"}`}}>{c.rel}</span>
-                <span style={{fontSize:12,fontWeight:700,color:"#1e3a5f"}}>{c.to}</span>
+                <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{c.from}</span>
+                <span style={{fontSize:10.5,fontWeight:800,color:c.flag?"#dc2626":"#374151",background:c.flag?"#fef2f2":"#f0ebe2",padding:"2px 8px",borderRadius:8,border:`1px solid ${c.flag?"#fca5a5":"#e0d8cc"}`}}>{c.rel}</span>
+                <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{c.to}</span>
               </div>
-              <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5}}>{c.detail}</div>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.5}}>{c.detail}</div>
             </div>
           ))}
           <AiButton prompt="Map the complete interlocking power structure of unelected boards in Madison County. Who sits on multiple boards simultaneously? What financial relationships exist between board members and the elected officials who appointed them? How does the IDB abatement system connect to school funding shortfalls? How does HHHS Foundation's political donations connect to its nonprofit tax exemptions? Are there any individuals who appear in multiple positions — board member AND contractor AND donor? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
@@ -738,37 +738,37 @@ function OfficialsPage(){
         <p>Every elected official with power over Madison County. Net worth before and after office, salary, top donors, voting record, criminal history, and residency — all from public records. Click any card to investigate.</p>
       </div>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
-        {levels.map(l=><button key={l} onClick={()=>setFilter(l)} style={{padding:"6px 14px",borderRadius:12,border:"1px solid #e0d8cc",background:filter===l?"#1e3a5f":"#fff",color:filter===l?"#c9a84c":"#6b7280",fontSize:11,fontWeight:700,cursor:"pointer"}}>{l}</button>)}
+        {levels.map(l=><button key={l} onClick={()=>setFilter(l)} style={{padding:"6px 14px",borderRadius:12,border:"1px solid #e0d8cc",background:filter===l?"#1e3a5f":"#fff",color:filter===l?"#c9a84c":"#6b7280",fontSize:12.5,fontWeight:700,cursor:"pointer"}}>{l}</button>)}
       </div>
       {filtered.map((group,gi)=>(
         <div key={gi} style={{marginBottom:20}}>
-          <div style={{fontSize:8.5,fontWeight:700,letterSpacing:2,color:group.color,marginBottom:10,textTransform:"uppercase"}}>{group.level} OFFICIALS</div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,color:group.color,marginBottom:10,textTransform:"uppercase"}}>{group.level} OFFICIALS</div>
           {group.officials.map((off,oi)=>(
             <div key={oi} onClick={()=>{setSelected(off);setTab("bio");setR(null);}} style={{background:"#fff",border:"1px solid #e0d8cc",borderLeft:`4px solid ${off.party==="Republican"?"#dc2626":off.party==="Democrat"?"#2563eb":"#7c3aed"}`,borderRadius:6,padding:"13px 14px",marginBottom:8,cursor:"pointer"}} >
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
                 <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <div style={{width:42,height:42,borderRadius:"50%",background:off.party==="Republican"?"#991b1b":off.party==="Democrat"?"#1e40af":"#5b21b6",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:"#fff",flexShrink:0,overflow:"hidden",border:"2px solid rgba(255,255,255,.3)"}}>
+                  <div style={{width:42,height:42,borderRadius:"50%",background:off.party==="Republican"?"#991b1b":off.party==="Democrat"?"#1e40af":"#5b21b6",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13.5,fontWeight:900,color:"#fff",flexShrink:0,overflow:"hidden",border:"2px solid rgba(255,255,255,.3)"}}>
                   {off.photo?<img src={off.photo} alt={off.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}} onError={e=>{e.target.style.display="none";}}/>:<span>{off.avatar}</span>}
                 </div>
                   <div>
                     <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2}}>
-                      <div style={{fontSize:13,fontWeight:800,color:"#1e3a5f"}}>{off.name}</div>
-                      <span style={{fontSize:7.5,fontWeight:800,padding:"1px 5px",borderRadius:8,background:off.party==="Republican"?"#fef2f2":off.party==="Democrat"?"#eff6ff":"#f5f3ff",color:off.party==="Republican"?"#dc2626":off.party==="Democrat"?"#2563eb":"#7c3aed",border:`1px solid ${off.party==="Republican"?"#fca5a5":off.party==="Democrat"?"#93c5fd":"#c4b5fd"}`,flexShrink:0,whiteSpace:"nowrap"}}>{off.party==="Republican"?"R":"D"}</span>
+                      <div style={{fontSize:14,fontWeight:800,color:"#1e3a5f"}}>{off.name}</div>
+                      <span style={{fontSize:9,fontWeight:800,padding:"1px 5px",borderRadius:8,background:off.party==="Republican"?"#fef2f2":off.party==="Democrat"?"#eff6ff":"#f5f3ff",color:off.party==="Republican"?"#dc2626":off.party==="Democrat"?"#2563eb":"#7c3aed",border:`1px solid ${off.party==="Republican"?"#fca5a5":off.party==="Democrat"?"#93c5fd":"#c4b5fd"}`,flexShrink:0,whiteSpace:"nowrap"}}>{off.party==="Republican"?"R":"D"}</span>
                     </div>
-                    <div style={{fontSize:11,color:"#6b7280",marginTop:1}}>{off.title}</div></div>
+                    <div style={{fontSize:12.5,color:"#6b7280",marginTop:1}}>{off.title}</div></div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{fontSize:10,fontWeight:700,color:"#dc2626"}}>{off.netWorth}</div>
-                  <div style={{fontSize:9,color:"#6b7280"}}>net worth est.</div>
+                  <div style={{fontSize:11.5,fontWeight:700,color:"#dc2626"}}>{off.netWorth}</div>
+                  <div style={{fontSize:10.5,color:"#6b7280"}}>net worth est.</div>
                 </div>
               </div>
-              <div style={{fontSize:11.5,color:"#374151",marginTop:8,lineHeight:1.5}}>{off.bio.substring(0,160)}...</div>
-              <div style={{display:"flex",gap:12,marginTop:8,fontSize:10,color:"#6b7280"}}>
+              <div style={{fontSize:13,color:"#374151",marginTop:8,lineHeight:1.5}}>{off.bio.substring(0,160)}...</div>
+              <div style={{display:"flex",gap:12,marginTop:8,fontSize:11.5,color:"#6b7280"}}>
                 <span>💰 {off.salary.split("—")[0].trim()}</span>
                 <span>🏠 {off.residency}</span>
                 <span style={{color:off.criminal==="No criminal record"||off.criminal==="No record found"?"#16a34a":"#dc2626"}}>⚖ {off.criminal}</span>
               </div>
-              <div style={{fontSize:10,color:"#1e3a5f",marginTop:6,fontWeight:700}}>Click to full investigation →</div>
+              <div style={{fontSize:11.5,color:"#1e3a5f",marginTop:6,fontWeight:700}}>Click to full investigation →</div>
             </div>
           ))}
         </div>
@@ -777,48 +777,48 @@ function OfficialsPage(){
         <div style={{position:"fixed",inset:0,zIndex:500,background:"rgba(30,58,95,.6)",backdropFilter:"blur(3px)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"20px",overflowY:"auto"}} onClick={e=>{if(e.target===e.currentTarget){setSelected(null);setR(null);}}}>
           <div style={{background:"#fff",borderRadius:8,width:"100%",maxWidth:680,border:`3px solid ${selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"}`,boxShadow:"0 20px 60px rgba(0,0,0,.25)",overflow:"hidden",marginTop:20}}>
             <div style={{background:selected.party==="Republican"?"#991b1b":selected.party==="Democrat"?"#1e40af":"#5b21b6",padding:"18px 20px",display:"flex",gap:12,alignItems:"flex-start"}}>
-              <div style={{width:58,height:58,borderRadius:"50%",background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:"#fff",flexShrink:0,overflow:"hidden",border:"2px solid rgba(255,255,255,.4)"}}>
+              <div style={{width:58,height:58,borderRadius:"50%",background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:"#fff",flexShrink:0,overflow:"hidden",border:"2px solid rgba(255,255,255,.4)"}}>
                 {selected.photo?<img src={selected.photo} alt={selected.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top"}} onError={e=>{e.target.style.display="none";}}/>:<span>{selected.avatar}</span>}
               </div>
-              <div style={{flex:1}}><div style={{fontSize:19,fontWeight:900,color:"#fff"}}>{selected.name}</div><div style={{fontSize:11,color:"rgba(255,255,255,.8)",marginTop:2}}>{selected.title} · {selected.district}</div><div style={{display:"flex",gap:5,marginTop:6,flexWrap:"wrap"}}>{[`Since ${selected.since}`,`Ends ${selected.termEnds}`,selected.party].map((t,i)=><span key={i} style={{fontSize:9,color:"rgba(255,255,255,.65)",background:"rgba(255,255,255,.12)",padding:"2px 7px",borderRadius:2}}>{t}</span>)}</div></div>
+              <div style={{flex:1}}><div style={{fontSize:19,fontWeight:900,color:"#fff"}}>{selected.name}</div><div style={{fontSize:12.5,color:"rgba(255,255,255,.8)",marginTop:2}}>{selected.title} · {selected.district}</div><div style={{display:"flex",gap:5,marginTop:6,flexWrap:"wrap"}}>{[`Since ${selected.since}`,`Ends ${selected.termEnds}`,selected.party].map((t,i)=><span key={i} style={{fontSize:10.5,color:"rgba(255,255,255,.65)",background:"rgba(255,255,255,.12)",padding:"2px 7px",borderRadius:2}}>{t}</span>)}</div></div>
               <button onClick={()=>{setSelected(null);setR(null);}} style={{background:"rgba(255,255,255,.2)",border:"none",color:"#fff",width:28,height:28,borderRadius:"50%",cursor:"pointer",fontSize:15,flexShrink:0}}>×</button>
             </div>
             <div style={{background:"#fffbeb",borderBottom:"1px solid #fcd34d",padding:"10px 20px",display:"flex",gap:16,flexWrap:"wrap"}}>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>NET WORTH NOW</div><div style={{fontSize:16,fontWeight:900,color:"#b8860b"}}>{selected.netWorth}</div></div>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>BEFORE OFFICE</div><div style={{fontSize:16,fontWeight:900,color:"#6b7280"}}>{selected.netWorthPre}</div></div>
-              <div style={{flex:1}}><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>HOW THEY BUILT IT</div><div style={{fontSize:11,color:"#4a3800",lineHeight:1.4}}>{selected.netWorthHow}</div></div>
-              <div><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>SALARY</div><div style={{fontSize:11,fontWeight:700,color:"#1e3a5f"}}>{selected.salary}</div></div>
+              <div><div style={{fontSize:9.5,color:"#6b7280",letterSpacing:1,marginBottom:2}}>NET WORTH NOW</div><div style={{fontSize:17,fontWeight:900,color:"#b8860b"}}>{selected.netWorth}</div></div>
+              <div><div style={{fontSize:9.5,color:"#6b7280",letterSpacing:1,marginBottom:2}}>BEFORE OFFICE</div><div style={{fontSize:17,fontWeight:900,color:"#6b7280"}}>{selected.netWorthPre}</div></div>
+              <div style={{flex:1}}><div style={{fontSize:9.5,color:"#6b7280",letterSpacing:1,marginBottom:2}}>HOW THEY BUILT IT</div><div style={{fontSize:12.5,color:"#4a3800",lineHeight:1.4}}>{selected.netWorthHow}</div></div>
+              <div><div style={{fontSize:9.5,color:"#6b7280",letterSpacing:1,marginBottom:2}}>SALARY</div><div style={{fontSize:12.5,fontWeight:700,color:"#1e3a5f"}}>{selected.salary}</div></div>
             </div>
-            <div style={{background:"#f8f6f2",borderBottom:"1px solid #e0d8cc",padding:"8px 20px",display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
+            <div style={{background:"#f8f6f2",borderBottom:"1px solid #e0d8cc",padding:"8px 20px",display:"flex",gap:16,flexWrap:"wrap",fontSize:12.5}}>
               <span><strong>Residency:</strong> {selected.residency}</span>
               <span><strong>Criminal:</strong> <span style={{color:selected.criminal==="No criminal record"||selected.criminal==="No record found"?"#16a34a":"#dc2626"}}>{selected.criminal}</span></span>
             </div>
             <div style={{display:"flex",borderBottom:"1px solid #e0d8cc",background:"#f8f6f2"}}>
-              {["bio","record","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 4px",border:"none",cursor:"pointer",fontSize:10,fontWeight:tab===t?700:500,color:tab===t?(selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="record"?"On Record":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
+              {["bio","record","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 4px",border:"none",cursor:"pointer",fontSize:11.5,fontWeight:tab===t?700:500,color:tab===t?(selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="record"?"On Record":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
             </div>
             <div style={{padding:"14px 20px",maxHeight:360,overflowY:"auto"}}>
-              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Break It Down"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
+              {tab==="bio"&&<div><p style={{fontSize:14,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Break It Down"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:12.5,marginTop:8}}>Clear</button></div>}</div>}
               {tab==="record"&&<div>
                 {(!selected.quotes||selected.quotes.length===0)?
-                  <div style={{padding:"20px",textAlign:"center",color:"#6b7280",fontSize:13}}>Record research ongoing — check back for updates. Use the AI Investigation in the Profile tab for a current analysis.</div>:
+                  <div style={{padding:"20px",textAlign:"center",color:"#6b7280",fontSize:14}}>Record research ongoing — check back for updates. Use the AI Investigation in the Profile tab for a current analysis.</div>:
                   selected.quotes.map((q,i)=>(
                     <div key={i} style={{marginBottom:10,borderRadius:5,overflow:"hidden",border:`1px solid ${q.flip?"#fca5a5":q.type==="environment"?"#86efac":q.type==="healthcare"?"#93c5fd":"#fcd34d"}`,borderLeft:`4px solid ${q.flip?"#dc2626":q.type==="environment"?"#16a34a":q.type==="healthcare"?"#2563eb":"#b8860b"}`}}>
                       <div style={{padding:"8px 12px",background:q.flip?"#fef2f2":q.type==="environment"?"#f0fdf4":q.type==="healthcare"?"#eff6ff":"#fffbeb",display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-                        <span style={{fontSize:8,fontWeight:800,padding:"2px 8px",borderRadius:8,background:"rgba(0,0,0,.06)",color:q.flip?"#dc2626":q.type==="environment"?"#16a34a":q.type==="healthcare"?"#2563eb":"#b8860b"}}>{q.flip?"⚠ SAID ONE THING, DID ANOTHER":q.type==="environment"?"🌿 ENVIRONMENT":q.type==="healthcare"?"✚ HEALTHCARE":"📋 ON RECORD"}</span>
-                        {q.date&&<span style={{fontSize:8,color:"#6b7280"}}>{q.date}</span>}
-                        {q.source&&<span style={{fontSize:8,color:"#6b7280"}}>· {q.source}</span>}
+                        <span style={{fontSize:9.5,fontWeight:800,padding:"2px 8px",borderRadius:8,background:"rgba(0,0,0,.06)",color:q.flip?"#dc2626":q.type==="environment"?"#16a34a":q.type==="healthcare"?"#2563eb":"#b8860b"}}>{q.flip?"⚠ SAID ONE THING, DID ANOTHER":q.type==="environment"?"🌿 ENVIRONMENT":q.type==="healthcare"?"✚ HEALTHCARE":"📋 ON RECORD"}</span>
+                        {q.date&&<span style={{fontSize:9.5,color:"#6b7280"}}>{q.date}</span>}
+                        {q.source&&<span style={{fontSize:9.5,color:"#6b7280"}}>· {q.source}</span>}
                       </div>
                       <div style={{padding:"10px 12px",background:"#fff"}}>
-                        {q.quote&&<div style={{fontSize:12.5,fontStyle:"italic",color:"#1e3a5f",marginBottom:7,lineHeight:1.6,padding:"6px 10px",background:"#eff3f8",borderRadius:3,borderLeft:"3px solid #93b4d4"}}>"{q.quote}"</div>}
-                        <div style={{fontSize:12,color:q.flip?"#7f1d1d":"#374151",lineHeight:1.65}}>{q.fact}</div>
+                        {q.quote&&<div style={{fontSize:14,fontStyle:"italic",color:"#1e3a5f",marginBottom:7,lineHeight:1.6,padding:"6px 10px",background:"#eff3f8",borderRadius:3,borderLeft:"3px solid #93b4d4"}}>"{q.quote}"</div>}
+                        <div style={{fontSize:13.5,color:q.flip?"#7f1d1d":"#374151",lineHeight:1.65}}>{q.fact}</div>
                       </div>
                     </div>
                   ))
                 }
               </div>}
-                            {tab==="donors"&&<div><div style={{fontSize:8.5,color:"#6b7280",letterSpacing:1,marginBottom:10,fontWeight:700}}>TOP DONORS — PUBLIC RECORD</div>{selected.topDonors.map(([donor,amt],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",marginBottom:5,background:i===0?"#fef2f2":"#f8f6f2",borderRadius:4,borderLeft:`3px solid ${i===0?"#dc2626":"#e0d8cc"}`}}><span style={{fontSize:11.5,color:"#374151"}}>{donor}</span><span style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>{amt}</span></div>)}<a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:8}}>Search AL Campaign Finance →</button></a></div>}
-              {tab==="votes"&&<div>{selected.votes.length===0?<p style={{color:"#6b7280",fontSize:12}}>Voting record under research.</p>:selected.votes.map((v,i)=><div key={i} style={{background:"#f8f6f2",borderRadius:4,padding:"9px 11px",marginBottom:7,borderLeft:`3px solid ${v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a"}`}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}><span style={{fontSize:11.5,fontWeight:700,color:"#1e3a5f",flex:1}}>{v.bill}</span><span style={{fontSize:9,fontWeight:700,color:v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a",padding:"2px 7px",background:"rgba(0,0,0,.04)",borderRadius:3,flexShrink:0}}>{v.vote}</span></div><div style={{fontSize:11,color:"#6b7280"}}>{v.impact}</div></div>)}</div>}
-              {tab==="contact"&&<div>{[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=><div key={i} style={{padding:"8px 11px",background:"#f8f6f2",borderRadius:4,marginBottom:7}}><div style={{fontSize:8,color:"#6b7280",letterSpacing:1,marginBottom:2}}>{l}</div><div style={{fontSize:12.5,fontWeight:600,color:"#1e3a5f"}}>{v}</div></div>)}<a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a></div>}
+                            {tab==="donors"&&<div><div style={{fontSize:10,color:"#6b7280",letterSpacing:1,marginBottom:10,fontWeight:700}}>TOP DONORS — PUBLIC RECORD</div>{selected.topDonors.map(([donor,amt],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",marginBottom:5,background:i===0?"#fef2f2":"#f8f6f2",borderRadius:4,borderLeft:`3px solid ${i===0?"#dc2626":"#e0d8cc"}`}}><span style={{fontSize:13,color:"#374151"}}>{donor}</span><span style={{fontSize:13.5,fontWeight:700,color:"#dc2626"}}>{amt}</span></div>)}<a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:12.5,marginTop:8}}>Search AL Campaign Finance →</button></a></div>}
+              {tab==="votes"&&<div>{selected.votes.length===0?<p style={{color:"#6b7280",fontSize:13.5}}>Voting record under research.</p>:selected.votes.map((v,i)=><div key={i} style={{background:"#f8f6f2",borderRadius:4,padding:"9px 11px",marginBottom:7,borderLeft:`3px solid ${v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a"}`}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}><span style={{fontSize:13,fontWeight:700,color:"#1e3a5f",flex:1}}>{v.bill}</span><span style={{fontSize:10.5,fontWeight:700,color:v.vote.includes("Against")||v.vote.includes("Blocked")||v.vote.includes("Refused")||v.vote.includes("Opposed")||v.vote.includes("NO")?"#dc2626":"#16a34a",padding:"2px 7px",background:"rgba(0,0,0,.04)",borderRadius:3,flexShrink:0}}>{v.vote}</span></div><div style={{fontSize:12.5,color:"#6b7280"}}>{v.impact}</div></div>)}</div>}
+              {tab==="contact"&&<div>{[["Phone",selected.contact.phone],["Office",selected.contact.office]].map(([l,v],i)=><div key={i} style={{padding:"8px 11px",background:"#f8f6f2",borderRadius:4,marginBottom:7}}><div style={{fontSize:9.5,color:"#6b7280",letterSpacing:1,marginBottom:2}}>{l}</div><div style={{fontSize:14,fontWeight:600,color:"#1e3a5f"}}>{v}</div></div>)}<a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a></div>}
             </div>
           </div>
         </div>
@@ -895,54 +895,54 @@ function Dashboard({go}){
 
       {/* Live CEO vs Worker pay clock */}
       <div style={{background:"#fff",border:"1px solid rgba(220,38,38,.2)",borderRadius:6,padding:"16px 18px",marginBottom:20}}>
-        <div style={{fontSize:9,color:"#6b7280",letterSpacing:1.5,marginBottom:10,fontWeight:700}}>⏱ LIVE SINCE YOU OPENED THIS PAGE — HUNTSVILLE HOSPITAL</div>
+        <div style={{fontSize:10.5,color:"#6b7280",letterSpacing:1.5,marginBottom:10,fontWeight:700}}>⏱ LIVE SINCE YOU OPENED THIS PAGE — HUNTSVILLE HOSPITAL</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
           <div>
-            <div style={{fontSize:9,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:4}}>HHHS CEO EARNINGS</div>
+            <div style={{fontSize:10.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:4}}>HHHS CEO EARNINGS</div>
             <div style={{fontFamily:"monospace",fontSize:28,fontWeight:900,color:"#dc2626",lineHeight:1}}>${(ceoPerSec*elapsed).toFixed(2)}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginTop:4}}>~$1,490/hr · $3.1M/yr · nonprofit</div>
+            <div style={{fontSize:12.5,color:"#6b7280",marginTop:4}}>~$1,490/hr · $3.1M/yr · nonprofit</div>
           </div>
           <div>
-            <div style={{fontSize:9,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:4}}>CNA EARNINGS (same time)</div>
+            <div style={{fontSize:10.5,color:"#6b7280",fontWeight:700,letterSpacing:1,marginBottom:4}}>CNA EARNINGS (same time)</div>
             <div style={{fontFamily:"monospace",fontSize:28,fontWeight:900,color:"#6b7280",lineHeight:1}}>${(cnaPerSec*elapsed).toFixed(2)}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginTop:4}}>$15/hr starting · may qualify for SNAP</div>
+            <div style={{fontSize:12.5,color:"#6b7280",marginTop:4}}>$15/hr starting · may qualify for SNAP</div>
           </div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
           <div>
-            <div style={{fontSize:9,color:"#7f1d1d",fontWeight:700,letterSpacing:1,marginBottom:4}}>TVA CEO EARNINGS (same time)</div>
-            <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:"#7f1d1d",lineHeight:1}}>${(tvaCeoPerSec*elapsed).toFixed(2)}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginTop:4}}>$8.1M/yr · federal corporation · zero shareholder vote</div>
+            <div style={{fontSize:10.5,color:"#7f1d1d",fontWeight:700,letterSpacing:1,marginBottom:4}}>TVA CEO EARNINGS (same time)</div>
+            <div style={{fontFamily:"monospace",fontSize:24,fontWeight:900,color:"#7f1d1d",lineHeight:1}}>${(tvaCeoPerSec*elapsed).toFixed(2)}</div>
+            <div style={{fontSize:12.5,color:"#6b7280",marginTop:4}}>$8.1M/yr · federal corporation · zero shareholder vote</div>
           </div>
           <div>
-            <div style={{fontSize:9,color:"#1e3a5f",fontWeight:700,letterSpacing:1,marginBottom:4}}>HU CEO EARNINGS (same time)</div>
-            <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:"#1e3a5f",lineHeight:1}}>${(huCeoPerSec*elapsed).toFixed(2)}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginTop:4}}>Est. $380k–$480k/yr · city-owned utility · appointed board</div>
+            <div style={{fontSize:10.5,color:"#1e3a5f",fontWeight:700,letterSpacing:1,marginBottom:4}}>HU CEO EARNINGS (same time)</div>
+            <div style={{fontFamily:"monospace",fontSize:24,fontWeight:900,color:"#1e3a5f",lineHeight:1}}>${(huCeoPerSec*elapsed).toFixed(2)}</div>
+            <div style={{fontSize:12.5,color:"#6b7280",marginTop:4}}>Est. $380k–$480k/yr · city-owned utility · appointed board</div>
           </div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
           <div>
-            <div style={{fontSize:9,color:"#16a34a",fontWeight:700,letterSpacing:1,marginBottom:4}}>AVG HU WORKER EARNINGS (same time)</div>
-            <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:"#16a34a",lineHeight:1}}>${(huWorkerPerSec*elapsed).toFixed(2)}</div>
-            <div style={{fontSize:11,color:"#6b7280",marginTop:4}}>~$52k/yr avg · reads your meter · maintains your lines</div>
+            <div style={{fontSize:10.5,color:"#16a34a",fontWeight:700,letterSpacing:1,marginBottom:4}}>AVG HU WORKER EARNINGS (same time)</div>
+            <div style={{fontFamily:"monospace",fontSize:24,fontWeight:900,color:"#16a34a",lineHeight:1}}>${(huWorkerPerSec*elapsed).toFixed(2)}</div>
+            <div style={{fontSize:12.5,color:"#6b7280",marginTop:4}}>~$52k/yr avg · reads your meter · maintains your lines</div>
           </div>
           <div style={{display:"flex",alignItems:"center"}}>
-            <div style={{fontSize:11,color:"#7f1d1d",lineHeight:1.6}}>None of these organizations require your vote. All affect your monthly bill, your taxes, or both. The CEO-to-worker pay ratio at HHHS is approximately <strong>207:1</strong>.</div>
+            <div style={{fontSize:12.5,color:"#7f1d1d",lineHeight:1.6}}>None of these organizations require your vote. All affect your monthly bill, your taxes, or both. The CEO-to-worker pay ratio at HHHS is approximately <strong>207:1</strong>.</div>
           </div>
         </div>
-        <div style={{background:"#fef2f2",borderRadius:4,padding:"8px 12px",fontSize:11.5,color:"#7f1d1d"}}>
+        <div style={{background:"#fef2f2",borderRadius:4,padding:"8px 12px",fontSize:13,color:"#7f1d1d"}}>
           Both work in Huntsville. The CEO works at a nonprofit that paid <strong>$0 in income tax</strong> on $2.4B in revenue. The CNA may qualify for SNAP. <span style={{cursor:"pointer",textDecoration:"underline",fontWeight:700}} onClick={()=>go("health")}>Full investigation →</span>
         </div>
       </div>
 
       {/* Active alerts */}
-      <div style={{fontSize:9,color:"#6b7280",letterSpacing:1.5,marginBottom:8,fontWeight:700}}>ACTIVE INVESTIGATIONS & ALERTS</div>
+      <div style={{fontSize:10.5,color:"#6b7280",letterSpacing:1.5,marginBottom:8,fontWeight:700}}>ACTIVE INVESTIGATIONS & ALERTS</div>
       <div style={{marginBottom:20}}>
         {alerts.map((a,i)=>(
           <div key={i} onClick={()=>go(a.page)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",marginBottom:6,background:"#fff",border:"1px solid #e0d8cc",borderLeft:`3px solid ${a.color}`,borderRadius:"0 4px 4px 0",cursor:"pointer"}}>
-            <span style={{fontSize:9,fontWeight:700,color:a.color,background:`${a.color}18`,padding:"1px 6px",borderRadius:8,flexShrink:0,minWidth:60,textAlign:"center"}}>{a.level}</span>
-            <span style={{fontSize:12,color:"#374151",flex:1}}>{a.text}</span>
-            <span style={{fontSize:11,color:"#6b7280",flexShrink:0}}>→</span>
+            <span style={{fontSize:10.5,fontWeight:700,color:a.color,background:`${a.color}18`,padding:"1px 6px",borderRadius:8,flexShrink:0,minWidth:60,textAlign:"center"}}>{a.level}</span>
+            <span style={{fontSize:13.5,color:"#374151",flex:1}}>{a.text}</span>
+            <span style={{fontSize:12.5,color:"#6b7280",flexShrink:0}}>→</span>
           </div>
         ))}
       </div>
@@ -953,7 +953,7 @@ function Dashboard({go}){
       </div>
       {GROUPS.map((g,gi)=>(
         <div key={gi} style={{marginBottom:24}}>
-          <div style={{fontSize:8.5,fontWeight:700,letterSpacing:2,color:g.color,marginBottom:10,textTransform:"uppercase"}}>{g.label}</div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,color:g.color,marginBottom:10,textTransform:"uppercase"}}>{g.label}</div>
           <div className="dash-grid">
             {g.items.map((item,i)=>(
               <div key={i} className="dash-card" style={{borderLeftColor:g.color}} onClick={()=>go(item.id)}>
@@ -1007,7 +1007,7 @@ export default function App(){
         <div className="topbar">
           <button className="menu-btn" onClick={()=>setSideOpen(true)}>☰</button>
           {page!=="dashboard"&&(
-            <button onClick={()=>go("dashboard")} style={{background:"none",border:"none",color:"rgba(255,255,255,.7)",fontSize:18,cursor:"pointer",padding:"0 6px",display:"flex",alignItems:"center",flexShrink:0}} aria-label="Back to dashboard">←</button>
+            <button onClick={()=>go("dashboard")} style={{background:"none",border:"none",color:"rgba(255,255,255,.7)",fontSize:20,cursor:"pointer",padding:"0 6px",display:"flex",alignItems:"center",flexShrink:0}} aria-label="Back to dashboard">←</button>
           )}
           <div className="topbar-title" style={{flex:1}}>{page==="dashboard"?"HUNTSVILLE CIVIC INVESTIGATOR":NAV.find(n=>n.id===page)?.label||"HUNTSVILLE CIVIC INVESTIGATOR"}</div>
         </div>
@@ -1036,7 +1036,7 @@ export default function App(){
           <div style={{background:"#1e3a5f",padding:"5px 0",overflow:"hidden"}}>
             <div style={{display:"flex",gap:0,animation:"ticker 40s linear infinite",whiteSpace:"nowrap"}}>
               {["⚡ TVA rate hike #3 in 18 months — AL delegation has introduced zero oversight bills","✚ HHHS CEO earns $3.1M — nonprofit claims $63M/yr in tax exemptions","⚖ 61% of Madison County Jail is pretrial — not convicted of anything","🏫 CHOOSE Act: 67% of recipients were already in private school","🗺 Alabama maps violated Voting Rights Act — Supreme Court ruled 5-4","📡 HPD deployed 47 license plate readers — no public vote held","💧 Triana water shows PFAS above EWG health guidelines","🏠 North Huntsville road PCI 41 vs South 72 — same tax rate","⚖ Kratom is a Class C felony in Alabama — legal in 43 states"].map((t,i)=>(
-                <span key={i} style={{fontSize:10,color:"rgba(255,255,255,.65)",padding:"0 28px"}}><span style={{color:"#c9a84c",marginRight:6}}>◈</span>{t}</span>
+                <span key={i} style={{fontSize:11.5,color:"rgba(255,255,255,.65)",padding:"0 28px"}}><span style={{color:"#c9a84c",marginRight:6}}>◈</span>{t}</span>
               ))}
             </div>
           </div>
