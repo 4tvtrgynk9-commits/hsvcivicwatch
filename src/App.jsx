@@ -952,6 +952,72 @@ function SchoolsHCSTab(){
         </div>
       </div>
 
+            {/* HCS Middle Schools */}
+      <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#6b7280",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>HCS Middle Schools — Where the Gap Compounds</div>
+        <div style={{fontSize:12,color:"#6b7280",marginBottom:12,lineHeight:1.6}}>The racial and economic gap doesn't begin in high school. By 8th grade, the gap in math proficiency between north and south Huntsville middle schools has already reached a 20-to-1 ratio. These are children in the same city, the same district, the same school board.</div>
+        {[
+          {school:"Hampton Cove Middle",area:"East — feeds Huntsville High",zone:"SOUTH/EAST",mathProf:66,econDis:11,white:78,black:5,hispanic:6,rank:"#11 AL / 5-star",c:"#93b4d4",
+           note:"78% White, 5% Black. Only 10.8% free lunch. Top 11 in Alabama. Feeds directly into Huntsville High — the district's top high school. The feeder pipeline from Hampton Cove to Huntsville High is the clearest example of how geography determines outcome."},
+          {school:"Mountain Gap Middle",area:"Southeast — Grissom zone",zone:"SOUTH",mathProf:43,econDis:34,white:64,black:17,hispanic:10,rank:"#44 AL / 5-star",c:"#93b4d4",
+           note:"64% White, 17% Black. Strong academics. Scheduled to close and consolidate under the 10-year capital plan — community concern about what happens to its students."},
+          {school:"Huntsville Junior High",area:"Central/South — feeds Huntsville High",zone:"SOUTH",mathProf:22,econDis:38,white:null,black:null,hispanic:null,rank:"#209 AL",c:"#93b4d4",
+           note:"Feeds into Huntsville High. 22% math proficiency — lower than you'd expect for a south Huntsville school, reflecting the school's diverse zip codes including some transition neighborhoods."},
+          {school:"Chapman Middle",area:"West Huntsville — feeds Columbia High",zone:"WEST",mathProf:5,econDis:72,white:10,black:55,hispanic:30,rank:"Bottom 20% AL",c:"#9333ea",
+           note:"55% Black, 30% Hispanic, 10% White. 72% free lunch. 5% math proficiency — among the lowest in Alabama. Feeds into Columbia High. The transition from Chapman to Columbia represents the west Huntsville pipeline that mirrors the north Huntsville pattern."},
+          {school:"McNair Jr High (Davis Hills)",area:"North Huntsville — feeds Jemison High",zone:"NORTH",mathProf:2,econDis:87,white:5,black:72,hispanic:17,rank:"Bottom 13% AL / 1-star",c:"#dc2626",
+           note:"72% Black, 17% Hispanic, 5% White. 87% free lunch. Only 2.48% of 7th-graders proficient in math — the lowest in HCS and among the lowest in the state. Highest student-to-teacher ratio in HCS (22.5:1). Feeds directly into Jemison High School."},
+        ].map((s,i)=>{
+          const zoneColor={"SOUTH":"#2563eb","EAST":"#2563eb","SOUTH/EAST":"#2563eb","WEST":"#9333ea","NORTH":"#dc2626"}[s.zone]||"#6b7280";
+          return(
+          <div key={i} style={{marginBottom:10,padding:"12px 14px",borderRadius:5,border:"1px solid #e0d8cc",borderLeft:"4px solid "+s.c}}>
+            <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:6}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f"}}>{s.school}</span>
+                <span style={{fontSize:9,fontWeight:700,color:"#fff",background:zoneColor,borderRadius:8,padding:"1px 7px",letterSpacing:.5}}>{s.zone}</span>
+              </div>
+              <span style={{fontSize:11,fontWeight:700,color:s.c,background:s.c+"15",padding:"2px 8px",borderRadius:8}}>{s.rank}</span>
+            </div>
+            {/* Race bar */}
+            {s.white!=null&&(
+              <div style={{marginBottom:8}}>
+                <div style={{display:"flex",height:14,borderRadius:3,overflow:"hidden",gap:1,marginBottom:3}}>
+                  <div style={{width:s.white+"%",background:"#e5e7eb",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {s.white>12&&<span style={{fontSize:8,fontWeight:700,color:"#374151"}}>{s.white}%W</span>}
+                  </div>
+                  <div style={{width:s.black+"%",background:"#1e3a5f",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {s.black>8&&<span style={{fontSize:8,fontWeight:700,color:"#fff"}}>{s.black}%B</span>}
+                  </div>
+                  <div style={{width:s.hispanic+"%",background:"#c9a84c",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {s.hispanic>8&&<span style={{fontSize:8,fontWeight:700,color:"#1e3a5f"}}>{s.hispanic}%H</span>}
+                  </div>
+                  <div style={{flex:1,background:"#d1d5db"}}/>
+                </div>
+              </div>
+            )}
+            {/* Stats */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:6}}>
+              {[
+                {l:"8th Grade Math",v:s.mathProf+"%",color:s.mathProf>=40?"#16a34a":s.mathProf>=20?"#c9a84c":"#dc2626"},
+                {l:"Free Lunch",v:s.econDis+"%",color:s.econDis<=30?"#16a34a":s.econDis<=55?"#c9a84c":"#dc2626"},
+                {l:"Zone",v:s.area,color:"#374151"},
+              ].map(({l,v,color},j)=>(
+                <div key={j} style={{padding:"6px 8px",background:"#f8f6f2",borderRadius:3,border:"1px solid #e0d8cc"}}>
+                  <div style={{fontSize:8,color:"#6b7280",letterSpacing:.4,marginBottom:1,textTransform:"uppercase"}}>{l}</div>
+                  <div style={{fontFamily:j<2?"monospace":"inherit",fontSize:j<2?14:11,fontWeight:700,color,lineHeight:1.2}}>{v}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{fontSize:11.5,color:"#374151",lineHeight:1.6,fontStyle:"italic"}}>{s.note}</div>
+          </div>
+          );
+        })}
+        {/* Middle school disparity callout */}
+        <div style={{background:"#fef2f2",borderRadius:4,padding:"10px 12px",marginTop:4,fontSize:13,color:"#7f1d1d",lineHeight:1.75}}>
+          <strong>The math gap at middle school: Hampton Cove 66% proficient vs McNair 2% proficient.</strong> That is a 33-to-1 ratio — in the same city, the same district, the same budget allocation. By the time these students reach high school, the gap has been building for 9 years. Hampton Cove feeds Huntsville High. McNair feeds Jemison. The pipeline is not an accident.
+        </div>
+      </div>
+
       <ActionButtons title="WHAT YOU CAN DO" actions={[
         {label:"HCS Board Meetings",href:"https://www.huntsvillecityschools.org/board"},
         {label:"Call HCS Board",tel:"2564286800"},
