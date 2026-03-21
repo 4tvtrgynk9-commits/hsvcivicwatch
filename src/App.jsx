@@ -12,9 +12,9 @@ async function callAI(prompt){
       body:JSON.stringify({prompt})
     });
     const d=await r.json();
-    return d.result||d.error||"Investigation unavailable.";
+    return d.result||d.error||"Analysis unavailable.";
   }catch(e){
-    return "Investigation unavailable — please try again.";
+    return "Analysis unavailable — please try again.";
   }
 }
 
@@ -63,8 +63,8 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 .btn-red{background:${C.red};color:#fff}
 .btn-ghost{background:transparent;color:${C.muted};border:1px solid ${C.border}}
 .btn-full{width:100%;justify-content:center;margin-bottom:10px}
-.ai-panel{background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid #c9a84c;border-radius:5px;padding:14px 16px;margin-bottom:12px}
-.ai-panel-label{font-size:8px;font-weight:800;color:#b8860b;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.ai-panel{background:#f8f6f2;border:1px solid #e0d8cc;border-left:4px solid #1e3a5f;border-radius:5px;padding:14px 16px;margin-bottom:12px}
+.ai-panel-label{font-size:8px;font-weight:800;color:#1e3a5f;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .ai-text{font-size:13px;color:#2d2a22;line-height:1.85}
 .card{background:#fff;border:1px solid ${C.border};border-radius:6px;padding:14px;margin-bottom:10px}
 .card-title{font-size:13.5px;font-weight:700;color:${C.navy};margin-bottom:4px}
@@ -162,22 +162,22 @@ const PAGES={
   equity:{icon:"⚖",title:"The Two Huntsvilles:",subtitle:"Service & Spending Inequality",tag:"tag-red",sub:"Roads PCI 41 north vs 72 south. Same taxes. $847/pupil school gap. 3.7× more police contacts per capita north. Who ...",
     stats:[["N.Hsv Road PCI","41","Poor — needs reconstruction",C.red],["S.Hsv Road PCI","72","Good — same tax rate",C.green],["School Funding Gap","$847/pupil","Less in lower-income HCS schools",C.orange],["Battle Developer Donors","$380k","From those who benefit from status quo",C.red]],
     facts:[{k:"red",label:"THE DOCUMENTED INEQUITY",lc:C.red,tc:"#7f1d1d",text:"North Huntsville residents pay identical city taxes as south Huntsville and receive measurably inferior roads, fewer services, and higher police contact rates. Over the past decade approximately 68% of capital road ..."}],
-    prompt:"Investigate the documented equity gap between north and south Huntsville — roads PCI 41 vs 72, $847/pupil school gap, 3.7x police contact rate, capital spending percentages. Who benefits from maintaining this disparity? Trace Mayor Battle $380k real estate developer donations to specific spending decisions. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate the documented equity gap between north and south Huntsville — roads PCI 41 vs 72, $847/pupil school gap, 3.7x police contact rate, capital spending percentages. Who benefits from maintaining this disparity? Trace Mayor Battle $380k real estate developer donations to specific spending decisions. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   utilities:{icon:"💧",title:"Power, Water",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
     stats:[["TVA 2024 Rate Hike","5.25%","Largest in 16 years — passed to all HU customers",C.red],["HU Rate Hike","5.1%","Jan + Oct 2025 — on top of TVA hike",C.red],["Triana PFOS","Above EWG","Health guideline exceeded in town water",C.red],["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote",C.orange]],
     facts:[{k:"red",label:"THE DOUBLE MARKUP PROBLEM",lc:C.red,tc:"#7f1d1d",text:"TVA generates power and sells wholesale to Huntsville Utilities. HU marks it up and delivers to your home. Two separate entities adding costs — neither directly elected. Combined 2024-2025 impact: roughly 10%+ on yo..."},{k:"gold",label:"TRIANA WATER — THE PFAS PROBLEM",lc:"#b8860b",tc:"#78350f",text:"EWG data shows PFOS (a PFAS forever chemical linked to cancer) detected above EWG health guidelines in Triana Water Works. Triana remains on the EPA Superfund list due to Redstone Arsenal/Olin Corporation DDT contam..."}],
-    prompt:"Investigate Madison County utilities. TVA CEO $8.1M, 5.25% rate hike 2024 largest in 16 years. HU added 5.1% on top. Alabama delegation collected $1.4M+ from energy PACs and introduced zero TVA oversight bills. Triana Water Works PFOS above EWG health guidelines, EPA Superfund legacy. Every utility board appointed not elected. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate Madison County utilities. TVA CEO $8.1M, 5.25% rate hike 2024 largest in 16 years. HU added 5.1% on top. Alabama delegation collected $1.4M+ from energy PACs and introduced zero TVA oversight bills. Triana Water Works PFOS above EWG health guidelines, EPA Superfund legacy. Every utility board appointed not elected. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   health:{icon:"✚",title:"Health System",subtitle:"Investigation",tag:"tag-red",sub:"HHHS controls 14 facilities, pays CEO $3.1M, claims $63M/yr in tax exemptions with a self-appointed board. 295,000 ...",
     stats:[["HHHS CEO Pay","$3.1M","Self-appointed nonprofit board approved it",C.red],["Tax Exemption","~$63M/yr","Income + property tax foregone",C.orange],["Medicaid Gap","295,000","Uninsured — federal pays 90% and AL refuses",C.red],["ZIP Code Gap","$1,020/yr","North vs south Huntsville same driver",C.red]],
     facts:[{k:"red",label:"THE NONPROFIT PARADOX",lc:C.red,tc:"#7f1d1d",text:"HHHS pays zero income tax, zero state tax, minimal property tax. Claims $63M/yr in exemptions. In exchange it must provide community benefit. Yet it pays CEO $3.1M, starts CNAs at $14.50/hr (qualifying for SNAP), an..."},{k:"gold",label:"MEDICAID REFUSAL — THE DONOR CONNECTION",lc:"#b8860b",tc:"#78350f",text:"295,000 Alabamians — including ~47,000 in Madison County — are uninsured in the Medicaid coverage gap. Federal government pays 90% of expansion cost. Alabama refuses. Gov. Ivey received $420,000 from health insuranc..."}],
-    prompt:"Investigate the Madison County health system as one connected crisis — HHHS $2.4B nonprofit monopoly with self-appointed board, CEO $3.1M vs CNAs $14.50/hr qualifying for SNAP, $63M tax exemption, 295,000 Alabamians uninsured in Medicaid gap including 47,000 in Madison County, Ivey $420k insurance PACs vs Medicaid refusal, north Huntsville ZIP code insurance premium $1,020/yr more than south. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate the Madison County health system as one connected crisis — HHHS $2.4B nonprofit monopoly with self-appointed board, CEO $3.1M vs CNAs $14.50/hr qualifying for SNAP, $63M tax exemption, 295,000 Alabamians uninsured in Medicaid gap including 47,000 in Madison County, Ivey $420k insurance PACs vs Medicaid refusal, north Huntsville ZIP code insurance premium $1,020/yr more than south. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   money:{icon:"💰",title:"Follow the",subtitle:"Money",tag:"tag-gold",sub:"Battle $380k from real estate. Ivey $420k from insurance. Strong $284k from defense. Orr $67k from BCA and private ...",
     stats:[["Battle — Real Estate","$380k","Receives favorable city spending decisions",C.red],["Ivey — Insurance","$420k","Refused Medicaid for 295,000 Alabamians",C.red],["Strong — Defense","$284k","Zero TVA oversight bills introduced",C.red],["Orr — BCA + Prisons","$67k","Banned wages, blocked sentencing reform",C.orange]],
     facts:[{k:"red",label:"THE DOCUMENTED PATTERN",lc:C.red,tc:"#7f1d1d",text:"In Madison County: the official controlling city spending received $380k from real estate developers — city spending favors areas where they operate. The Governor who refused Medicaid received $420k from insurance c..."},{k:"gold",label:"CEO PAY CLOCKS",lc:"#b8860b",tc:"#78350f",text:"HHHS CEO earns approximately $1,490/hour. TVA CEO earns approximately $2,600/hour. While you read this, these executives at publicly-subsidized organizations are earning more per hour than most Madison County reside..."}],
-    prompt:"Investigate the full money flow in Madison County — trace every major donor connection to a specific policy outcome. Battle $380k real estate → city spending patterns. Ivey $420k insurance → Medicaid refusal. Strong $284k defense → zero TVA bills. Orr $45k BCA → SB 88 wage ban + $22k private prisons → blocking sentencing reform. HHHS CEO $3.1M vs CNA $14.50/hr. IDB $127M+ abatements no performance audit. All from public records at FEC.gov and fcpa.alabama.gov. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate the full money flow in Madison County — trace every major donor connection to a specific policy outcome. Battle $380k real estate → city spending patterns. Ivey $420k insurance → Medicaid refusal. Strong $284k defense → zero TVA bills. Orr $45k BCA → SB 88 wage ban + $22k private prisons → blocking sentencing reform. HHHS CEO $3.1M vs CNA $14.50/hr. IDB $127M+ abatements no performance audit. All from public records at FEC.gov and fcpa.alabama.gov. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   workers:{icon:"👷",title:"Workers Rights &",subtitle:"Child Care",tag:"tag-orange",sub:"$7.25/hr unchanged since 2009. Alabama banned cities from raising it. $14,400/yr for infant care — more than UAH tu...",
     stats:[["Min Wage AL","$7.25/hr","Unchanged since 2009 — AL banned city increases",C.red],["Infant Care Madison Co","$14,400/yr","26% of median income before rent or food",C.red],["Pre-K Access AL","Bottom 10","States with universal pre-K: 7 states fully fund it",C.red],["HHHS CEO vs CNA","207:1","CEO-to-worker pay ratio at nonprofit",C.red]],
@@ -187,7 +187,7 @@ const PAGES={
   flights:{icon:"✈",title:"Airport &",subtitle:"Dynamic Pricing",tag:"tag-orange",sub:"HSV fares above average vs peer airports. RealPage algorithmic rent-setting is under DOJ antitrust investigation. Y...",
     stats:[["HSV Fares","Above avg","vs Nashville/Atlanta comparable distances",C.red],["RealPage DOJ","Antitrust suit","Coordinated rent-setting investigation",C.red],["Airline Competition","Low","Few carriers compete at HSV",C.orange],["Algo Pricing","Expanding","Grocers, rideshare, hotels all use it",C.orange]],
     facts:[{k:"red",label:"THE CAPTIVE MARKET PROBLEM",lc:C.red,tc:"#7f1d1d",text:"When airlines face limited competition at an airport, they charge more. Huntsville International serves a major aerospace metro but has fewer non-stop routes and higher average fares than comparable cities. The econ..."},{k:"gold",label:"ALGORITHMIC PRICING — THE INVISIBLE TAX",lc:"#b8860b",tc:"#78350f",text:"RealPage software is used by landlords to set rents using shared market data. The DOJ sued RealPage for antitrust violations — coordinating prices without a formal cartel agreement. If your landlord uses RealPage, y..."}],
-    prompt:"Investigate Huntsville airport pricing and algorithmic pricing affecting Madison County residents. Why do HSV flights cost more than peer airports? What is RealPage and how does algorithmic rent coordination work? Who are the major Madison County landlords using algorithmic pricing? What is the DOJ antitrust case status? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate Huntsville airport pricing and algorithmic pricing affecting Madison County residents. Why do HSV flights cost more than peer airports? What is RealPage and how does algorithmic rent coordination work? Who are the major Madison County landlords using algorithmic pricing? What is the DOJ antitrust case status? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."},
 
   sentencing:{icon:"⚖",title:"Criminal Justice:",subtitle:"Courts, Jails & Prisons",tag:"tag-red",sub:"Kratom is a felony. Sitting in jail without a conviction because you can't afford bail. Life for stealing a bicycle...", 75% of those sentenced to die in prison under HFOA are Black. Private prison companies donate to the officials maintaining every one of these laws.",
     stats:[["HFOA Life Without Parole","527+ people","Many for non-violent property crimes",C.red],["HFOA Racial Disparity","75% Black","Of those sentenced to die in prison under HFOA",C.red],["School Zone Add-On","Mandatory +5 yrs","Applies to almost all of north Huntsville",C.red],["Private Prison to Marshall","$45k","AG who has opposed every single reform",C.red]],
@@ -197,12 +197,12 @@ const PAGES={
   policing:{icon:"🚔",title:"Police &",subtitle:"Sheriff",tag:"tag-blue",sub:"No civilian review board in 16 years under Mayor Battle. 61% of Madison County Jail is pretrial. Sheriff Turner ear...",
     stats:[["Civilian Review Board","None","HPD investigates its own conduct",C.red],["Pretrial Detention","61%","Not convicted — held for no money",C.red],["N.Hsv Police Contacts","3.7×","More per capita than south Huntsville",C.red],["Securus Commission","~$200k/yr","County earns while families pay $0.21/min",C.orange]],
     facts:[{k:"red",label:"NO OVERSIGHT — 16 YEARS",lc:C.red,tc:"#7f1d1d",text:"Every comparable US city has some form of civilian police oversight. Huntsville has none. Mayor Battle has served 16 years and never proposed a civilian review board. The police union endorsed him. Officers can revi..."},{k:"gold",label:"THE SECURUS CONFLICT",lc:"#b8860b",tc:"#78350f",text:"Madison County earns approximately $200,000/year in commissions from Securus/ViaPath, the company families must pay to call their incarcerated loved ones at $0.21/minute. The Sheriff's office has a direct financial ..."}],
-    prompt:"Investigate HPD oversight failures and Madison County Sheriff accountability. No civilian review in 16 years under Battle who has police union endorsement and law enforcement PAC donations. Officers review body cam before writing reports. 90-day auto-deletion. 3.7x police contact rate north vs south Huntsville. Sheriff Turner 61% pretrial detention, Securus $200k/yr commission conflict, $24k bail bond industry donations, opposes bail reform, $2.3M civil forfeiture fund no public accounting. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate HPD oversight failures and Madison County Sheriff accountability. No civilian review in 16 years under Battle who has police union endorsement and law enforcement PAC donations. Officers review body cam before writing reports. 90-day auto-deletion. 3.7x police contact rate north vs south Huntsville. Sheriff Turner 61% pretrial detention, Securus $200k/yr commission conflict, $24k bail bond industry donations, opposes bail reform, $2.3M civil forfeiture fund no public accounting. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   surveillance:{icon:"📡",title:"Surveillance &",subtitle:"Privacy",tag:"tag-navy",sub:"47+ ALPRs tracking every vehicle. No civilian oversight. Alabama has no data privacy law. Law enforcement buys your...",
     stats:[["License Plate Readers","47+","Track every vehicle including innocent",C.red],["AL Privacy Law","None","No comprehensive state protection",C.red],["Civilian Oversight","Zero","No board reviews surveillance use",C.red],["Law Enforcement Buys","No warrant","Purchase commercial location data",C.orange]],
     facts:[{k:"red",label:"TRACKING WITHOUT ACCOUNTABILITY",lc:C.red,tc:"#7f1d1d",text:"Huntsville expanded surveillance — license plate readers, ShotSpotter, cameras — with minimal public debate and zero civilian oversight. License plate readers record every vehicle including people never suspected of..."},{k:"gold",label:"YOUR DATA SOLD WITHOUT CONSENT",lc:"#b8860b",tc:"#78350f",text:"Data brokers compile profiles on every adult: location, health searches, political views, finances. Law enforcement purchases this commercial data to bypass warrant requirements. Your phone tracks where you go — inc..."}],
-    prompt:"Investigate Huntsville surveillance infrastructure and Alabama data privacy. ALPR network 47+ cameras, ShotSpotter contracts and false activation rates, no civilian oversight board, law enforcement commercial location data purchases bypassing warrants, no Alabama data privacy law. Who approved the contracts? Were they bid competitively? What data sharing occurs with federal agencies? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate Huntsville surveillance infrastructure and Alabama data privacy. ALPR network 47+ cameras, ShotSpotter contracts and false activation rates, no civilian oversight board, law enforcement commercial location data purchases bypassing warrants, no Alabama data privacy law. Who approved the contracts? Were they bid competitively? What data sharing occurs with federal agencies? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."},
 
   immigration_merged:{icon:"🗂",title:"Immigration",subtitle:"Facts",tag:"tag-navy",sub:"Federal law is clear: undocumented immigrants cannot vote (52 U.S.C. §20511) and cannot receive Medicaid (8 U.S.C. ...",
     stats:[["Undocumented Voting","Federal Crime","52 U.S.C. §20511 — up to 1 yr prison","#16a34a"],["Benefits Bar","Since 1996","8 U.S.C. §1611 — Medicaid/SNAP/ACA barred","#16a34a"],["Social Security Paid","$25.7B/yr","By undocumented workers who can never collect","#2563eb"],["AL Coverage Gap","295,000","US citizens uninsured — Britt has $310k insurance PAC",C.red]],
@@ -244,7 +244,7 @@ const PAGES={
   environment:{icon:"🌿",title:"Environment,",subtitle:"Air & Water",tag:"tag-green",sub:"Redstone Arsenal PFAS contamination. Triana still on EPA Superfund list. North Alabama pollution concentrates in lo...",
     stats:[["Triana Superfund","Active","EPA list — Redstone/Olin DDT legacy",C.red],["Redstone PFAS","Documented","Groundwater contamination — extent undisclosed",C.red],["ADEM Enforcement","Weakest SE","vs comparable state agencies",C.orange],["Ivey Energy PACs","$340k","Appoints ADEM leadership",C.red]],
     facts:[{k:"red",label:"PFAS — THE FOREVER CHEMICAL PROBLEM",lc:C.red,tc:"#7f1d1d",text:"PFAS from Redstone Arsenal contaminate soil and groundwater — linked to cancer, thyroid disease, and immune damage. Triana's water shows PFOS above EWG health guidelines. The communities closest to contamination — T..."},{k:"gold",label:"ENVIRONMENTAL RACISM — THE DOCUMENTED PATTERN",lc:"#b8860b",tc:"#78350f",text:"Industrial facilities and contamination concentrate in lower-income, higher-proportion-Black communities. North Huntsville and Triana face disproportionate environmental burdens compared to south Huntsville and Madi..."}],
-    prompt:"Investigate environmental contamination and justice in Madison County. Redstone Arsenal PFAS groundwater contamination extent and disclosure status. Triana Superfund PFOS above EWG guidelines. ADEM chronic understaffing and weak enforcement. Industrial facility concentration in north Huntsville and Triana vs south Huntsville. Strong voted against PFAS Notification Act, Britt against PFAS Action Act, Ivey $340k energy PACs appoints ADEM. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate environmental contamination and justice in Madison County. Redstone Arsenal PFAS groundwater contamination extent and disclosure status. Triana Superfund PFOS above EWG guidelines. ADEM chronic understaffing and weak enforcement. Industrial facility concentration in north Huntsville and Triana vs south Huntsville. Strong voted against PFAS Notification Act, Britt against PFAS Action Act, Ivey $340k energy PACs appoints ADEM. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 
   annexation:{icon:"🗺",title:"Annexations &",subtitle:"Land Use",tag:"tag-red",
     sub:"Huntsville annexed 2,000+ acres in 2025 alone — now larger than Denver and Las Vegas by land area. New annexations ...",
@@ -295,18 +295,31 @@ const PAGES={
   disinfo:{icon:"🧠",title:"Disinformation,",subtitle:"Algorithms & Immigration Facts",tag:"tag-navy",sub:"Britt's immigration benefit claims contradict 8 U.S.C. §1611 — law in place since 1996. Alabama politicians use thi...",
     stats:[["Britt Claims","Contradict law","8 U.S.C. §1611 since 1996",C.red],["Britt Insurance PACs","$310k","Who benefit from Medicaid refusal distraction",C.red],["RealPage DOJ Suit","Active","Algorithmic rent coordination",C.red],["Local Investigative","Declining","Staff cuts across all AL outlets",C.orange]],
     facts:[{k:"red",label:"THE IMMIGRATION DISINFORMATION CAMPAIGN — FOLLOW THE MONEY",lc:C.red,tc:"#7f1d1d",text:"Federal law (8 U.S.C. §1611, since 1996) explicitly bars undocumented immigrants from Medicaid, SNAP, ACA, Medicare, and CHIP. This 30-year federal statute is unambiguous. Yet Alabama politicians repeatedly claim im..."},{k:"gold",label:"THE DOCUMENTED CONNECTION: FALSE CLAIM → REAL POLICY → REAL DONOR BENEFIT",lc:"#b8860b",tc:"#78350f",text:"Step 1: Politician claims immigrants are burdening Medicaid. Step 2: Claim is false — 8 U.S.C. §1611 has prevented this since 1996. Step 3: The false claim is used to justify not expanding Medicaid. Step 4: 295,000 ..."}],
-    prompt:"Investigate disinformation by Alabama politicians and algorithmic pricing as connected issues. Britt false immigration benefit claims vs 8 USC 1611 since 1996 — trace to her $310k insurance PAC donors who benefit from Medicaid refusal distraction. RealPage DOJ antitrust case and Madison County landlord usage. Algorithmic grocery pricing. Who benefits when voters focus on false threats instead of real economic harm? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate disinformation by Alabama politicians and algorithmic pricing as connected issues. Britt false immigration benefit claims vs 8 USC 1611 since 1996 — trace to her $310k insurance PAC donors who benefit from Medicaid refusal distraction. RealPage DOJ antitrust case and Madison County landlord usage. Algorithmic grocery pricing. Who benefits when voters focus on false threats instead of real economic harm? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."},
 
   voting:{icon:"🗳",title:"Voting Power &",subtitle:"Gerrymandering",tag:"tag-red",sub:"Alabama maps violated the Voting Rights Act — Supreme Court ruled 5-4. 37,000 eligible Madison County residents not...",
     stats:[["VRA Violation","Ruled 2023","Allen v. Milligan — maps unconstitutional",C.red],["Unregistered Eligible","37,000","Madison County eligible but not registered",C.red],["HCS Board Turnout","11%","Controls $310M — 2,000 votes flips a race",C.orange],["Local Race Margin","<200 votes","Many council and school board races",C.orange]],
     facts:[{k:"red",label:"GERRYMANDERING — WHAT HAPPENED",lc:C.red,tc:"#7f1d1d",text:"In June 2023 the Supreme Court ruled 5-4 that Alabama's congressional maps violated the Voting Rights Act. AG Steve Marshall spent taxpayer money defending the unconstitutional maps. Replacement maps Alabama drew we..."},{k:"green",label:"YOUR VOTE IS WORTH MORE THAN YOU THINK",lc:"#16a34a",tc:"#14532d",text:"The 2024 Huntsville City Council District 1 runoff was decided by 368 votes. HCS school board races: decided by under 200 votes — controlling a $310M annual budget with 11% turnout. A single organized group with 500..."}],
-    prompt:"Investigate gerrymandering and voter power in Madison County. Allen v. Milligan Supreme Court ruling VRA violation 2023. Marshall defended unconstitutional maps at taxpayer expense, drew non-compliant replacements. 37,000 unregistered eligible Madison County voters. Specific recent race margins — City Council D1 decided by 368 votes, HCS board races under 200 votes with 11% turnout. What organized voter action could accomplish in 2026. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."},
+    prompt:"Investigate gerrymandering and voter power in Madison County. Allen v. Milligan Supreme Court ruling VRA violation 2023. Marshall defended unconstitutional maps at taxpayer expense, drew non-compliant replacements. 37,000 unregistered eligible Madison County voters. Specific recent race margins — City Council D1 decided by 368 votes, HCS board races under 200 votes with 11% turnout. What organized voter action could accomplish in 2026. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."},
 };
 
 // ─── SHARED COMPONENTS ───────────────────────────────────────
 function Spin(){return <span className="spin"/>;}
 
 function AiResult({text}){
+  if(!text) return null;
+  // AI now returns plain paragraphs - just render them cleanly
+  const paragraphs=text.split(/\n+/).filter(p=>p.trim().length>10);
+  return(
+    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+      {paragraphs.map((p,i)=>(
+        <p key={i} style={{fontSize:13,color:"#2d2a22",lineHeight:1.8,margin:0,padding:"8px 0",borderBottom:i<paragraphs.length-1?"1px solid #f0ebe2":"none"}}>{p.trim()}</p>
+      ))}
+    </div>
+  );
+}
+
+){
   if(!text) return null;
   const sectionMeta={
     'THE FACTS':{color:'#1e3a5f',bg:'#eff3f8',border:'#93b4d4',icon:'📋'},
@@ -349,7 +362,7 @@ function AiResult({text}){
   );
 }
 
-function AiButton({prompt,label="🔍 Investigate — Full AI Analysis"}){
+function AiButton({prompt,label="🔍 Break It Down"}){
   const[r,setR]=useState(null);
   const[ld,setLd]=useState(false);
   async function go(){
@@ -360,14 +373,14 @@ function AiButton({prompt,label="🔍 Investigate — Full AI Analysis"}){
   }
   if(r)return(
     <div className="ai-panel">
-      <div className="ai-panel-label">🔍 AI INVESTIGATION</div>
+      <div className="ai-panel-label">💬 SUMMARY</div>
       <AiResult text={r}/>
       <button className="btn btn-ghost" onClick={()=>setR(null)} style={{marginTop:10,fontSize:11}}>Clear</button>
     </div>
   );
   return(
     <button className={`btn btn-gold btn-full`} onClick={go} disabled={ld}>
-      {ld?<><Spin/> Investigating...</>:label}
+      {ld?<><Spin/> Breaking it down...</>:label}
     </button>
   );
 }
@@ -470,7 +483,7 @@ function UtilitiesPage(){
               ))}
             </div>
             <div style={{background:"#fffbeb",borderRadius:3,padding:"9px 11px",marginBottom:10}}><div style={{fontSize:8.5,color:"#b8860b",fontWeight:700,letterSpacing:1,marginBottom:4}}>YOUR LEVERAGE</div><div style={{fontSize:12,color:"#78350f"}}>{p.recourse}</div></div>
-            <AiButton prompt={`Investigate ${p.name} for Madison County ratepayers. Governance: ${p.gov}. Rate history: ${p.rates.map(r=>r.what+" "+r.amount).join(", ")}. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE.`} label={`🔍 Investigate ${p.name}`}/>
+            <AiButton prompt={`Investigate ${p.name} for Madison County ratepayers. Governance: ${p.gov}. Rate history: ${p.rates.map(r=>r.what+" "+r.amount).join(", ")}. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words.`} label={`🔍 Investigate ${p.name}`}/>
           </div>
         </div>
       )}
@@ -487,7 +500,7 @@ function UtilitiesPage(){
               ))}
             </tbody>
           </table>
-          <AiButton prompt="Investigate how Madison County utility rates compare to peer cities and states. TVA ratepayers face unique challenges — federal monopoly, no PSC jurisdiction. Combined TVA+HU increases in 2024-2025 ~10% in one year. Compare to Nebraska elected utility board, national average, other TVA-served cities. What reform options exist? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."/>
+          <AiButton prompt="Investigate how Madison County utility rates compare to peer cities and states. TVA ratepayers face unique challenges — federal monopoly, no PSC jurisdiction. Combined TVA+HU increases in 2024-2025 ~10% in one year. Compare to Nebraska elected utility board, national average, other TVA-served cities. What reform options exist? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
       {tab==="watchdog"&&(
@@ -549,7 +562,7 @@ function BoardsPage(){
               <div style={{background:"#f0fdf4",borderRadius:3,padding:"7px 9px",fontSize:11,color:"#14532d",borderLeft:"3px solid #16a34a"}}><strong>Your recourse:</strong> {b.recourse}</div>
             </div>
           ))}
-          <AiButton prompt="Investigate the appointed boards controlling Madison County utilities and tax abatements — HU Electric/Gas/Water boards (George Moore serving since 1998), IDB ($127M+ abatements, no performance audit), Madison Utilities board. For each: who are the current members by name, what are their professional affiliations, do any have financial conflicts with decisions they make, what are the most consequential decisions in the past 3 years. What does the interlocking of Mayor Battle's real estate donors with IDB appointments look like? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."/>
+          <AiButton prompt="Investigate the appointed boards controlling Madison County utilities and tax abatements — HU Electric/Gas/Water boards (George Moore serving since 1998), IDB ($127M+ abatements, no performance audit), Madison Utilities board. For each: who are the current members by name, what are their professional affiliations, do any have financial conflicts with decisions they make, what are the most consequential decisions in the past 3 years. What does the interlocking of Mayor Battle's real estate donors with IDB appointments look like? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
       {tab==="schools"&&(
@@ -576,7 +589,7 @@ function BoardsPage(){
               {b.upcoming&&<div style={{background:"#fffbeb",borderRadius:3,padding:"6px 9px",fontSize:11,color:"#78350f",borderLeft:"3px solid #c9a84c"}}>2026 ELECTION: {b.upcoming} Races decided by under 200 votes.</div>}
             </div>
           ))}
-          <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from ETF affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."/>
+          <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from ETF affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
       {tab==="hospital"&&(
@@ -601,7 +614,7 @@ function BoardsPage(){
             ))}
             <a href="https://projects.propublica.org/nonprofits/organizations/630288816" target="_blank" rel="noreferrer"><button className="btn btn-ghost" style={{fontSize:11,marginTop:4}}>View HHHS IRS 990 at ProPublica →</button></a>
           </div>
-          <AiButton prompt="Investigate HHHS nonprofit monopoly governance. Self-appointed board — who are the current members by name, what organizations are they affiliated with, have any members received business from HHHS or been affiliated with organizations that received HHHS contracts? CEO David Spillers $3.1M vs CNAs $14.50/hr. $63M/yr tax exemption vs community benefit provided. 14-facility acquisition creating North Alabama monopoly. FTC has not acted. AL Legislature could amend charter. HHHS Foundation donated $45k to Mayor Battle. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."/>
+          <AiButton prompt="Investigate HHHS nonprofit monopoly governance. Self-appointed board — who are the current members by name, what organizations are they affiliated with, have any members received business from HHHS or been affiliated with organizations that received HHHS contracts? CEO David Spillers $3.1M vs CNAs $14.50/hr. $63M/yr tax exemption vs community benefit provided. 14-facility acquisition creating North Alabama monopoly. FTC has not acted. AL Legislature could amend charter. HHHS Foundation donated $45k to Mayor Battle. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words."/>
         </div>
       )}
       {tab==="connections"&&(
@@ -625,7 +638,7 @@ function BoardsPage(){
               <div style={{fontSize:11.5,color:"#374151",lineHeight:1.5}}>{c.detail}</div>
             </div>
           ))}
-          <AiButton prompt="Map the complete interlocking power structure of unelected boards in Madison County. Who sits on multiple boards simultaneously? What financial relationships exist between board members and the elected officials who appointed them? How does the IDB abatement system connect to school funding shortfalls? How does HHHS Foundation's political donations connect to its nonprofit tax exemptions? Are there any individuals who appear in multiple positions — board member AND contractor AND donor? THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE."/>
+          <AiButton prompt="Map the complete interlocking power structure of unelected boards in Madison County. Who sits on multiple boards simultaneously? What financial relationships exist between board members and the elected officials who appointed them? How does the IDB abatement system connect to school funding shortfalls? How does HHHS Foundation's political donations connect to its nonprofit tax exemptions? Are there any individuals who appear in multiple positions — board member AND contractor AND donor? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
       )}
     </div>
@@ -708,7 +721,7 @@ function OfficialsPage(){
   async function investigate(off){
     setLd(true);
     try{
-      const x=await callAI(`Investigate ${off.name} (${off.title}). Salary: ${off.salary}. Net worth: ${off.netWorth} (before office: ${off.netWorthPre}). Top donors: ${off.topDonors.map(d=>d[0]+' '+d[1]).join(', ')}. Residency: ${off.residency}. Criminal record: ${off.criminal}. Key record: ${off.bio.substring(0,300)}. THE FACTS, WHO BENEFITS, WHO GETS HURT, THE CONNECTIONS, WHAT CAN CHANGE.`);
+      const x=await callAI(`Investigate ${off.name} (${off.title}). Salary: ${off.salary}. Net worth: ${off.netWorth} (before office: ${off.netWorthPre}). Top donors: ${off.topDonors.map(d=>d[0]+' '+d[1]).join(', ')}. Residency: ${off.residency}. Criminal record: ${off.criminal}. Key record: ${off.bio.substring(0,300)}. Summarize what all this means for a Madison County resident without legal or government jargon. Connect the dots. Under 150 words.`);
       setR(x);
     }catch(e){setR("Investigation unavailable.");}
     setLd(false);
@@ -784,7 +797,7 @@ function OfficialsPage(){
               {["bio","record","donors","votes","contact"].map(t=><button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"9px 4px",border:"none",cursor:"pointer",fontSize:10,fontWeight:tab===t?700:500,color:tab===t?(selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"):"#6b7280",background:tab===t?"#fff":"#f8f6f2",borderBottom:tab===t?`2px solid ${selected.party==="Republican"?"#dc2626":selected.party==="Democrat"?"#2563eb":"#7c3aed"}`:"2px solid transparent",fontFamily:"inherit"}}>{t==="bio"?"Profile":t==="record"?"On Record":t==="donors"?"Donors":t==="votes"?"Votes":"Contact"}</button>)}
             </div>
             <div style={{padding:"14px 20px",maxHeight:360,overflowY:"auto"}}>
-              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Full AI Investigation"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
+              {tab==="bio"&&<div><p style={{fontSize:12.5,lineHeight:1.8,color:"#374151",marginBottom:12}}>{selected.bio}</p>{!r?<button className="btn btn-gold btn-full" onClick={()=>investigate(selected)} disabled={ld}>{ld?<><span className="spin"/>Investigating...</>:"🔍 Break It Down"}</button>:<div className="ai-panel"><div className="ai-panel-label">AI INVESTIGATION</div><AiResult text={r}/><button className="btn btn-ghost" onClick={()=>setR(null)} style={{fontSize:11,marginTop:8}}>Clear</button></div>}</div>}
               {tab==="record"&&<div>
                 {(!selected.quotes||selected.quotes.length===0)?
                   <div style={{padding:"20px",textAlign:"center",color:"#6b7280",fontSize:13}}>Record research ongoing — check back for updates. Use the AI Investigation in the Profile tab for a current analysis.</div>:
