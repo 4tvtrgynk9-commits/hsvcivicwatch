@@ -2167,13 +2167,7 @@ The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,0
               {label:"ProPublica — HHHS Form 990",href:"https://projects.propublica.org/nonprofits/organizations/630288816"},
               {label:"FTC Merger Public Comments",href:"https://www.ftc.gov/news-events/mergers-public-comments"},
               {label:"AL Attorney General — File Complaint",href:"https://www.alabamaag.gov/consumers/"},
-              {label:"Email Gov. Ivey — Regulate HHHS",email:"governor.ivey@governor.alabama.gov",subject:"Regulate HHHS Monopoly — Crestwood Acquisition",body:"Dear Governor Ivey,
-
-Huntsville Hospital Health System (HHHS) is acquiring Crestwood Medical Center for $450 million. This would complete a near-total hospital monopoly in Madison County.
-
-I am requesting that your office refer this merger to the FTC for full antitrust review and exercise any available state authority to require meaningful community benefit standards from HHHS in exchange for its $63 million per year in tax exemptions.
-
-[Your Name]"},
+              {label:"Email Gov. Ivey — Regulate HHHS",email:"governor.ivey@governor.alabama.gov",subject:"Regulate HHHS Monopoly — Crestwood Acquisition",body:"Dear Governor Ivey,\n\nHuntsville Hospital Health System (HHHS) is acquiring Crestwood Medical Center for $450 million. This would complete a near-total hospital monopoly in Madison County.\n\nI am requesting that your office refer this merger to the FTC for full antitrust review and exercise any available state authority to require meaningful community benefit standards from HHHS in exchange for its $63 million per year in tax exemptions.\n\n[Your Name]"},
             ]}/>
           </div>
         </div>
@@ -2224,11 +2218,7 @@ function BoardsPage(){
           <ActionButtons title="CONTACT UTILITY BOARDS" actions={[
             {label:"Contact City Clerk (HU boards)",href:"https://www.huntsvilleal.gov/government/city-clerk/"},
             {label:"Call City Council",tel:"2564275000"},
-            {label:"Open Records — Board Member Compensation",email:"cityclerk@huntsvilleal.gov",subject:"Open Records Request — Huntsville Utilities Board Compensation",body:"Dear City Clerk,
-
-Pursuant to Alabama Open Records Act §36-12-40, I request: (1) Names and terms of all current Huntsville Utilities board members (Electric, Gas, Water). (2) Any disclosed compensation or expense reimbursements. (3) Meeting minutes for the past 12 months.
-
-[Your Name]"},
+            {label:"Open Records — Board Member Compensation",email:"cityclerk@huntsvilleal.gov",subject:"Open Records Request — Huntsville Utilities Board Compensation",body:"Dear City Clerk,\n\nPursuant to Alabama Open Records Act §36-12-40, I request: (1) Names and terms of all current Huntsville Utilities board members (Electric, Gas, Water). (2) Any disclosed compensation or expense reimbursements. (3) Meeting minutes for the past 12 months.\n\n[Your Name]"},
             {label:"File Ethics Complaint",href:"https://ethics.alabama.gov"},
           ]}/>
           <AiButton prompt="Investigate the appointed boards controlling Madison County utilities and tax abatements — HU Electric/Gas/Water boards (George Moore serving since 1998), IDB ($127M+ abatements, no performance audit), Madison Utilities board. For each: who are the current members by name, what are their professional affiliations, do any have financial conflicts with decisions they make, what are the most consequential decisions in the past 3 years. What does the interlocking of Mayor Battle's real estate donors with IDB appointments look like? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
@@ -2260,19 +2250,9 @@ Pursuant to Alabama Open Records Act §36-12-40, I request: (1) Names and terms 
           ))}
           <ActionButtons title="CONTACT SCHOOL BOARDS" actions={[
             {label:"HCS Board — (256) 428-6800",tel:"2564286800"},
-            {label:"Email HCS Board",email:"board@hsv-k12.org",subject:"Constituent Request — School Resource Equity",body:"Dear HCS Board,
-
-I am requesting the board commission a per-school resource equity audit — per-pupil spending, AP course availability, and facility budgets broken down by school.
-
-HCS Board elections for Districts 2, 3, and 4 are on the November 2026 ballot.
-
-[Your Name]"},
+            {label:"Email HCS Board",email:"board@hsv-k12.org",subject:"Constituent Request — School Resource Equity",body:"Dear HCS Board,\n\nI am requesting the board commission a per-school resource equity audit — per-pupil spending, AP course availability, and facility budgets broken down by school.\n\nHCS Board elections for Districts 2, 3, and 4 are on the November 2026 ballot.\n\n[Your Name]"},
             {label:"Madison County Schools",tel:"2568522557"},
-            {label:"Open Records — Donor to Board Members",email:"records@hsv-k12.org",subject:"Open Records Request — Board Member Campaign Donors",body:"Dear Records Custodian,
-
-Pursuant to Alabama Open Records Act §36-12-40, I request any campaign finance disclosures made by HCS board members in their last election cycle.
-
-[Your Name]"},
+            {label:"Open Records — Donor to Board Members",email:"records@hsv-k12.org",subject:"Open Records Request — Board Member Campaign Donors",body:"Dear Records Custodian,\n\nPursuant to Alabama Open Records Act §36-12-40, I request any campaign finance disclosures made by HCS board members in their last election cycle.\n\n[Your Name]"},
           ]}/>
           <AiButton prompt="Investigate the three Madison County school boards — HCS $310M, MCS $120M, MCSS $85M. Who are the current board members by name? What are their campaign donor connections? Have any board members received donations from construction or development companies that later won school contracts? How does the CHOOSE Act diversion of $100M from the Education Trust Fund (ETF) affect each system's funding? What is the documented $847/pupil spending gap within HCS? What do the 2026 board races look like and who should voters watch? Summarize what all this means for a Madison County resident without legal or government jargon. Under 150 words."/>
         </div>
@@ -2301,17 +2281,7 @@ Pursuant to Alabama Open Records Act §36-12-40, I request any campaign finance 
           </div>
           <ActionButtons title="CONTACT HHHS & FILE COMPLAINTS" actions={[
             {label:"Call HHHS CEO Office",tel:"2562651000"},
-            {label:"Email HHHS Board",email:"info@huntsvillehospital.org",subject:"HHHS Board Accountability — Community Benefit & Crestwood Acquisition",body:"Dear HHHS Board,
-
-I am writing as a Madison County resident to demand:
-
-1. Full public disclosure of CEO and executive compensation.
-2. A community benefit audit showing what HHHS provides in exchange for its $63 million per year in tax exemptions.
-3. A public comment period before the Crestwood acquisition closes.
-
-The self-appointed board structure provides no public accountability. I am requesting that change.
-
-[Your Name]"},
+            {label:"Email HHHS Board",email:"info@huntsvillehospital.org",subject:"HHHS Board Accountability — Community Benefit & Crestwood Acquisition",body:"Dear HHHS Board,\n\nI am writing as a Madison County resident to demand:\n\n1. Full public disclosure of CEO and executive compensation.\n2. A community benefit audit showing what HHHS provides in exchange for its $63 million per year in tax exemptions.\n3. A public comment period before the Crestwood acquisition closes.\n\nThe self-appointed board structure provides no public accountability. I am requesting that change.\n\n[Your Name]"},
             {label:"FTC — Comment on Crestwood Deal",href:"https://www.ftc.gov/news-events/mergers-public-comments"},
             {label:"AL Attorney General Complaint",href:"https://www.alabamaag.gov/consumers/"},
             {label:"ProPublica — HHHS Form 990",href:"https://projects.propublica.org/nonprofits/organizations/630288816"},
@@ -2707,17 +2677,8 @@ function OfficialsPage({go}){
                 <a href={selected.contact.web} target="_blank" rel="noreferrer"><button className="btn btn-navy btn-full" style={{marginTop:4}}>Contact {selected.name.split(" ")[0]} →</button></a>
                 <ActionButtons actions={[
                   ...(selected.contact.phone?[{label:"Call "+selected.name.split(" ")[0],tel:selected.contact.phone.replace(/[^0-9]/g,"")}]:[]),
-                  {label:"Email "+selected.name.split(" ")[0],email:(selected.contact.email||selected.contact.web&&""),subject:"Constituent Inquiry — "+selected.title,body:"Dear "+(selected.name.split(" ")[0])+",
-
-I am a Madison County constituent writing to express my concern about [ISSUE].
-
-[Your Name]
-[Your Address]"},
-                  ...(selected.party==="Republican"&&selected.title.includes("Gov")?[{label:"Demand Medicaid Expansion",email:"governor.ivey@governor.alabama.gov",subject:"Expand Medicaid — 295,000 Alabamians Uninsured",body:"Dear Governor Ivey,
-
-I demand you expand Medicaid. 295,000 Alabamians are uninsured. The federal government pays 90% of the cost.
-
-[Your Name]"}]:[]),
+                  {label:"Email "+selected.name.split(" ")[0],email:(selected.contact.email||selected.contact.web&&""),subject:"Constituent Inquiry — "+selected.title,body:"Dear "+(selected.name.split(" ")[0])+",\n\nI am a Madison County constituent writing to express my concern about [ISSUE].\n\n[Your Name]\n[Your Address]"},
+                  ...(selected.party==="Republican"&&selected.title.includes("Gov")?[{label:"Demand Medicaid Expansion",email:"governor.ivey@governor.alabama.gov",subject:"Expand Medicaid — 295,000 Alabamians Uninsured",body:"Dear Governor Ivey,\n\nI demand you expand Medicaid. 295,000 Alabamians are uninsured. The federal government pays 90% of the cost.\n\n[Your Name]"}]:[]),
                   {label:"AL Ethics Complaint",href:"https://ethics.alabama.gov"},
                   {label:"File Open Records Request",href:"https://www.huntsvilleal.gov/government/city-clerk/"},
                 ].filter(a=>a.email||a.tel||a.href)}/>
@@ -4493,14 +4454,7 @@ function TaxesPage(){
             </div>
             <ActionButtons actions={[
               {label:"Contact Mayor Battle — Grocery Tax",tel:"2564275000"},
-              {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Grocery Tax Reduction Ordinance",body:"Dear Council Member Watkins,
-
-I am requesting that you introduce an ordinance to reduce or eliminate Huntsville's local grocery tax. Alabama law allows cities to reduce their local grocery tax rate at any time.
-
-Huntsville residents — particularly in lower-income areas — pay nearly 9% combined sales tax on groceries. This is among the highest in the region and falls hardest on families with the least income.
-
-[Your Name]
-[Your Address]"},
+              {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Grocery Tax Reduction Ordinance",body:"Dear Council Member Watkins,\n\nI am requesting that you introduce an ordinance to reduce or eliminate Huntsville's local grocery tax. Alabama law allows cities to reduce their local grocery tax rate at any time.\n\nHuntsville residents — particularly in lower-income areas — pay nearly 9% combined sales tax on groceries. This is among the highest in the region and falls hardest on families with the least income.\n\n[Your Name]\n[Your Address]"},
               {label:"AL Legislature — Contact Your Rep",href:"https://www.legislature.state.al.us"},
             ]}/>
           </div>
