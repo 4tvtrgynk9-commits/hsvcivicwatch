@@ -12,23 +12,18 @@ Rules: Write at 8th-grade reading level. Explain HOW something affects residents
 
 async function callAI(prompt){
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "anthropic-dangerous-direct-browser-access":"true",
+    const r = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:1000,
-        system:SYSTEM_PROMPT,
-        messages:[{role:"user",content:prompt}],
-      })
+      body: JSON.stringify({ prompt }),
     });
-    const d=await r.json();
-    if(d.error) throw new Error(d.error.message);
-    return d.content?.map(b=>b.text||"").join("")||"Analysis unavailable.";
-  }catch(e){
+
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Request failed");
+    return d.analysis || "Analysis unavailable.";
+  } catch (e) {
     return "Analysis unavailable — please try again.";
   }
 }
