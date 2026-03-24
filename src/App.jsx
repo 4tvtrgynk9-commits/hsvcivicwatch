@@ -3138,6 +3138,26 @@ function Dashboard({go}){
 // --- APP ---
 // --- NETWORK GRAPH COMPONENT ---
 // Pure SVG/CSS network graph — no external libs needed
+
+function NodeDetail({hover,nodes,edges}){
+  const n=nodes.find(x=>x.id===hover);
+  const related=edges.filter(e=>e.from===hover||e.to===hover);
+  if(!n) return null;
+  return(
+    <div style={{marginTop:10,background:"rgba(255,255,255,.06)",borderRadius:5,padding:"10px 12px",border:"1px solid rgba(201,168,76,.3)"}}>
+      <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:1,marginBottom:4}}>{n.label.toUpperCase()}</div>
+      {n.detail&&<div style={{fontSize:12,color:"rgba(255,255,255,.8)",lineHeight:1.6,marginBottom:6}}>{n.detail}</div>}
+      {related.map((e,i)=>{
+        const other=nodes.find(x=>x.id===(e.from===hover?e.to:e.from));
+        return other?(
+          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3}}>
+            <span style={{color:e.color||"#c9a84c",marginRight:4}}>→</span>{e.label||"connected to"} <strong style={{color:"rgba(255,255,255,.8)"}}>{other.label}</strong>
+          </div>
+        ):null;
+      })}
+    </div>
+  );
+}
 function NetworkGraph({nodes,edges,title,subtitle}){
   const[hover,setHover]=useState(null);
   const W=340,H=260;
@@ -3194,25 +3214,7 @@ function NetworkGraph({nodes,edges,title,subtitle}){
           );
         })}
       </svg>
-      {hover&&(()=>{
-        const n=nodes.find(x=>x.id===hover);
-        const related=edges.filter(e=>e.from===hover||e.to===hover);
-        if(!n) return null;
-        return(
-          <div style={{marginTop:10,background:"rgba(255,255,255,.06)",borderRadius:5,padding:"10px 12px",border:"1px solid rgba(201,168,76,.3)"}}>
-            <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:1,marginBottom:4}}>{n.label.toUpperCase()}</div>
-            {n.detail&&<div style={{fontSize:12,color:"rgba(255,255,255,.8)",lineHeight:1.6,marginBottom:6}}>{n.detail}</div>}
-            {related.map((e,i)=>{
-              const other=nodes.find(x=>x.id===(e.from===hover?e.to:e.from));
-              return other?(
-                <div key={i} style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3}}>
-                  <span style={{color:e.color||"#c9a84c",marginRight:4}}>→</span>{e.label||"connected to"} <strong style={{color:"rgba(255,255,255,.8)"}}>{other.label}</strong>
-                </div>
-              ):null;
-            })}
-          </div>
-        );
-      })()}
+      {hover&&NodeDetail({hover,nodes,edges})}
       <div style={{fontSize:9.5,color:"rgba(255,255,255,.3)",marginTop:8}}>Tap or click any node to see connections · Source: FEC.gov, fcpa.alabama.gov, public records</div>
     </div>
   );
@@ -3449,7 +3451,7 @@ function MoneyPage(){
         <p>Largest employers in Madison County. CEO pay vs worker pay — ticking live since you opened this page. Every donation traced to a specific policy outcome. All from public records.</p>
       </div>
       <div className="tabs" style={{marginBottom:14}}>
-        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"whatif",label:"📈 What If"},{id:"conditions",label:"🏭 Working Conditions"},{id:"donors",label:"🔗 Donor → Policy"},{id:"networks",label:"🕸 Networks"},{id:"spending",label:"📊 Where Money Goes"}].map(t=>(
+        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"workers",label:"📈 Workers & Wages"},{id:"donors",label:"🔗 Donor → Policy"}].map(t=>(
           <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
         ))}
       </div>
@@ -3529,7 +3531,7 @@ function MoneyPage(){
         </div>
       )}
 
-            {tab==="whatif"&&(
+            {tab==="workers"&&(
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#14532d"}}>
             This shows what worker pay could look like if executive pay was capped at 50:1 ratio and the savings redistributed to workers. These are documented figures from public filings — the math is real.
@@ -3575,7 +3577,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="conditions"&&(
+      {tab==="workers"&&(
         <div>
           <div className="stats-grid" style={{marginBottom:14}}>
             {[["AL Workers w/ Paid Sick Leave","~45%","vs 77% nationally — AL has no mandate","#dc2626"],["AL Workers w/ Paid Family Leave","~15%","No state law — federal FMLA is unpaid only","#dc2626"],["Workplace Injury Rate — AL","5.1/100","Above national average of 2.7/100 workers","#ea580c"],["AL OSHA Inspectors","~25 state","Federal OSHA covers AL — understaffed","#ea580c"]].map(([l,v,s,c],i)=>(
@@ -3642,7 +3644,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="networks"&&(
+      {tab==="donors"&&(
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:13,color:"#14532d"}}>
             Every node and connection in these graphs is sourced from FEC.gov, fcpa.alabama.gov, ProPublica Nonprofit Explorer, and Alabama Legislature voting records. Tap any node to see the documented connection.
@@ -3654,7 +3656,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="spending"&&(
+      {tab==="donors"&&(
         <div>
           {[
             {cat:"Road maintenance — North Huntsville",amt:"PCI 41 avg",note:"'Poor' — means roads need full reconstruction, not just patching. Same tax rate as south Huntsville.",clr:"#dc2626"},
@@ -4652,7 +4654,7 @@ function TaxesPage(){
   }
   const estimatedALTax=alIncomeTax(taxableIncome);
   const effectiveRate=(estimatedALTax/Math.max(incomeVal,1)*100).toFixed(1);
-  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
+  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"🩸 Woman Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
   const millage=0.00382;
   const estimatedTax=Math.round(homeValue*0.1*millage);
 
@@ -4723,35 +4725,53 @@ function TaxesPage(){
             {k:"gold",label:"HOW CITIES CAN OPT OUT — AND WHY MOST HAVEN'T",lc:"#b8860b",tc:"#78350f",text:"When Alabama reduced the state grocery tax from 4% to 3% in 2023 and to 2% in 2025, it passed a law ALLOWING — but not requiring — cities and counties to reduce their local grocery tax. Huntsville and most other municipalities chose not to reduce theirs. A Huntsville City Council vote could reduce or eliminate the local grocery tax at any time. No state approval required. Council Member Watkins has expressed concern about regressive taxes. Contact your council member directly — ask them to introduce a grocery tax reduction ordinance."},
           ]}/>
 
-          {/* Tampon Tax section */}
+        </div>
+      )}
+
+
+      {tab==="womantax"&&(
+        <div>
+          <div className="page-header" style={{marginBottom:14}}>
+            <span className="tag tag-gold" style={{marginBottom:8,display:"inline-block"}}>WOMAN TAX · INVESTIGATION</span>
+            <h2 style={{fontSize:22,fontWeight:900,color:"#1e3a5f",lineHeight:1.2}}>The <em style={{color:"#9333ea",fontStyle:"normal"}}>Woman Tax</em></h2>
+            <p style={{fontSize:14,color:"#6b7280",marginTop:6,lineHeight:1.6}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — the same category as jewelry. The state exempted its 4% portion through 2028. Huntsville's 4.5% city tax still applies. A legislature that is 81% male decided this. 30+ states have eliminated it permanently.</p>
+          </div>
+          <div className="stats-grid" style={{marginBottom:16}}>
+            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","4% state portion — temporary only","#ea580c"],["30+ States","Eliminated It","Including Florida, Texas, Ohio, NY, CA","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women/yr","#dc2626"]].map(([l,v,s,c],i)=>(
+              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
+            ))}
+          </div>
           <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #9333ea"}}>
-            <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The "Tampon Tax" — Taxing Biological Necessity</div>
+            <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>What You Pay — Per Woman, Per Year in Huntsville</div>
             {[
-              ["Monthly product cost (individual)","$10-20/mo","Based on tampons, pads, or menstrual cup amortized over time"],
-              ["Annual product cost","$120-240/yr","Before tax — unavoidable biological expense"],
-              ["Annual tax paid (at 9%)","$11-22/yr","Per woman for unavoidable hygiene products"],
-              ["Family with 3 women (mother + 2 daughters)","$33-66/yr","In taxes alone — on products classified as 'luxury items'"],
+              ["Monthly product cost","$10-20/mo","Tampons, pads, or menstrual cup — not optional"],
+              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — sunsets unless legislature acts"],
+              ["City + county tax you still pay","$6-12/yr","4.5% city + 0.5% county — no exemption passed"],
+              ["Family with 3 women (mother + 2 daughters)","$18-36/yr","Still taxed as luxuries at the city level"],
+              ["Over a 40-year lifetime","~$240-480","In city/county taxes on biological necessities"],
             ].map(([l,v,n],i)=>(
               <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 10px",marginBottom:6,borderRadius:4,background:i%2===0?"#f8f6f2":"#faf5ff",border:"1px solid #e0d8cc",flexWrap:"wrap",gap:4}}>
                 <div>
                   <div style={{fontSize:12.5,fontWeight:600,color:"#374151"}}>{l}</div>
                   <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic"}}>{n}</div>
                 </div>
-                <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:"#9333ea"}}>{v}</span>
+                <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:"#7c3aed"}}>{v}</span>
               </div>
             ))}
-            <div style={{background:"#faf5ff",borderRadius:4,padding:"10px 12px",marginTop:8,fontSize:13,color:"#5b21b6",lineHeight:1.65}}>
-              Alabama classifies menstrual products as non-essential luxury items — same category as jewelry. <strong>30+ states have eliminated the tampon tax.</strong> Including: California, Florida, Illinois, New York, Ohio, Texas, Virginia, and more — red, blue, and purple states all. Contact your City Council member and state legislators to demand elimination of the tax on menstrual products in Alabama.
-            </div>
-            <ActionButtons actions={[
-              {label:"Contact Mayor Battle — Grocery Tax",tel:"2564275000"},
-              {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Grocery Tax Reduction Ordinance",body:"Dear Council Member Watkins,\n\nI am requesting that you introduce an ordinance to reduce or eliminate Huntsville's local grocery tax. Alabama law allows cities to reduce their local grocery tax rate at any time.\n\nHuntsville residents — particularly in lower-income areas — pay nearly 9% combined sales tax on groceries. This is among the highest in the region and falls hardest on families with the least income.\n\n[Your Name]\n[Your Address]"},
-              {label:"AL Legislature — Contact Your Rep",href:"https://www.legislature.state.al.us"},
-            ]}/>
           </div>
+          <FactBlocks facts={[
+            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME CATEGORY AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama classifies tampons and pads as non-essential luxury items. The same tax category as jewelry, perfume, and cosmetics. Periods are not a lifestyle choice. They are not optional. They are not luxuries. The Alabama legislature is 81% male. The people who decided this will never pay it."},
+            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028, and only at the state level. The Huntsville City Council can pass an ordinance exempting the city's 4.5% at any time. No state permission needed. They have not done it. Council Member Watkins — who represents District 1 in North Huntsville — has publicly expressed concern about regressive taxes on low-income residents."},
+            {k:"blue",label:"30+ STATES HAVE DONE IT — RED, BLUE, AND PURPLE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. Without action, Huntsville women return to paying the full rate on tampons and pads after that. The City Council can act right now. So can the state legislature — permanently."},
+          ]}/>
+          <ActionButtons title="WHAT YOU CAN DO" actions={[
+            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Woman Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Women in Huntsville still pay the city rate on products that are biological necessities — not luxuries. The City Council can act right now without state approval.\n\nFlorida, Texas, and Ohio have done it. Huntsville should too.\n\n[Your Name]\n[Your Address]"},
+            {label:"Call Mayor Battle's Office",tel:"2564275000"},
+            {label:"Find Your Council District",href:"https://www.huntsvilleal.gov/government/city-council/"},
+            {label:"Contact AL Legislature — Permanent Fix",href:"https://www.legislature.state.al.us"},
+          ]}/>
         </div>
       )}
-
             {tab==="income"&&(
         <div>
           {/* Alabama income tax brackets */}
