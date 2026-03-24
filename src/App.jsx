@@ -3,7 +3,7 @@ import { CSS } from "./config/styles";
 import { NAV } from "./config/nav";
 import { PAGES } from "./data/pages";
 import { InvestPage } from "./components/shared";
-import EquityPage from "./pages/EquityPage";
+import { EquityPage } from "./pages/EquityPage";
 import { UtilitiesPage } from "./pages/UtilitiesPage";
 import { InsurancePage } from "./pages/InsurancePage";
 import { HealthPage } from "./pages/HealthPage";
@@ -131,5 +131,3 @@ export default function App(){
       </div>
     </>
   );
-
-}
