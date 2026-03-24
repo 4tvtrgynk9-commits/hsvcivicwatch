@@ -465,7 +465,7 @@ function ExpandText({text,preview=180,style={}}){
 
 // --- ACTION BUTTONS COMPONENT ---
 function ActionButtons({actions,title}){
-  const[copied,setCopied]=React.useState({});
+  const[copied,setCopied]=useState({});
   function cp(k,t){navigator.clipboard.writeText(t).then(()=>{setCopied(p=>({...p,[k]:true}));setTimeout(()=>setCopied(p=>({...p,[k]:false})),2500);});}
   return(
     <div style={{marginTop:10}}>
@@ -628,10 +628,10 @@ function EquityPage(){
               <span style={{fontSize:12.5,color:"#374151",fontWeight:600}}>{m.label}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"100px 1fr 100px",gap:8,alignItems:"center"}}>
-              <div style={{fontSize:11,fontWeight:700,color:(Math.abs(m.north-m.south)>40?"#dc2626":Math.abs(m.north-m.south)>20?"#ea580c":Math.abs(m.north-m.south)>8?"#c9a84c":"#16a34a"),textAlign:"right"}}>{m.northLabel}</div>
+              <div style={{fontSize:11,fontWeight:700,color:(()=>{const g=Math.abs(m.north-m.south);return g>40?"#dc2626":g>20?"#ea580c":g>8?"#c9a84c":"#16a34a";})(),textAlign:"right"}}>{m.northLabel}</div>
               <div style={{position:"relative",height:28,background:"#e8eef5",borderRadius:3,overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.south+"%",background:"#93b4d4",borderRadius:3}}/>
-                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:(Math.abs(m.north-m.south)>40?"#dc2626":Math.abs(m.north-m.south)>20?"#ea580c":Math.abs(m.north-m.south)>8?"#c9a84c":"#16a34a"),opacity:.85,borderRadius:3}}/>
+                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:(()=>{const g=Math.abs(m.north-m.south);return g>40?"#dc2626":g>20?"#ea580c":g>8?"#c9a84c":"#16a34a";})(),opacity:.85,borderRadius:3}}/>
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 8px",justifyContent:"space-between"}}>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.9)",fontWeight:800}}>N</span>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.7)",fontWeight:700}}>S</span>
@@ -3092,18 +3092,14 @@ function Dashboard({go}){
 function NodeHoverDetail({hover,nodes,edges}){
   const n=nodes.find(x=>x.id===hover);
   const related=edges.filter(e=>e.from===hover||e.to===hover);
-  if(!n) return null;
+  if(!n)return null;
   return(
     <div style={{marginTop:10,background:"rgba(255,255,255,.06)",borderRadius:5,padding:"10px 12px",border:"1px solid rgba(201,168,76,.3)"}}>
       <div style={{fontSize:10,fontWeight:800,color:"#c9a84c",letterSpacing:1,marginBottom:4}}>{n.label.toUpperCase()}</div>
       {n.detail&&<div style={{fontSize:12,color:"rgba(255,255,255,.8)",lineHeight:1.6,marginBottom:6}}>{n.detail}</div>}
       {related.map((e,i)=>{
         const other=nodes.find(x=>x.id===(e.from===hover?e.to:e.from));
-        return other?(
-          <div key={i} style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3}}>
-            <span style={{color:e.color||"#c9a84c",marginRight:4}}>→</span>{e.label||"connected to"} <strong style={{color:"rgba(255,255,255,.8)"}}>{other.label}</strong>
-          </div>
-        ):null;
+        return other?(<div key={i} style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3}}><span style={{color:e.color||"#c9a84c",marginRight:4}}>--</span>{e.label||"connected"} <strong style={{color:"rgba(255,255,255,.8)"}}>{other.label}</strong></div>):null;
       })}
     </div>
   );
@@ -3401,7 +3397,7 @@ function MoneyPage(){
         <p>Largest employers in Madison County. CEO pay vs worker pay — ticking live since you opened this page. Every donation traced to a specific policy outcome. All from public records.</p>
       </div>
       <div className="tabs" style={{marginBottom:14}}>
-        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"workers",label:"📈 Workers & Wages"},{id:"donors",label:"🔗 Donor → Policy"}].map(t=>(
+        {[{id:"clocks",label:"Pay Clocks"},{id:"whatif",label:"CEO Pay Cap"},{id:"donors",label:"Donor to Policy"}].map(t=>(
           <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
         ))}
       </div>
@@ -3481,10 +3477,10 @@ function MoneyPage(){
         </div>
       )}
 
-            {tab==="workers"&&(
+            {tab==="whatif"&&(
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#14532d"}}>
-            This shows what worker pay could look like if executive pay was capped at 50:1 ratio and the savings redistributed to workers. These are documented figures from public filings — the math is real.
+            How to read this: if CEO pay was capped at 50 times what the lowest-paid worker earns how much is freed up? HHHS CEO earns $3.1M per year. Starting CNA earns $14.50 per hour ($30160 per year). A 50-to-1 cap means CEO max is $1.5M. The remaining $1.6M split among 20000 workers is $80 each per year. Not life-changing alone — but the HHHS ratio is 214-to-1. US average in the 1960s was 20-to-1. This is a policy choice.
           </div>
           <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
             <div style={{fontSize:11,fontWeight:700,color:"#6b7280",letterSpacing:1.2,marginBottom:12,textTransform:"uppercase"}}>If CEO Pay Was Capped at 50:1 Ratio — What Workers Would Gain</div>
@@ -3527,7 +3523,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="workers"&&(
+      {tab==="whatif"&&(
         <div>
           <div className="stats-grid" style={{marginBottom:14}}>
             {[["AL Workers w/ Paid Sick Leave","~45%","vs 77% nationally — AL has no mandate","#dc2626"],["AL Workers w/ Paid Family Leave","~15%","No state law — federal FMLA is unpaid only","#dc2626"],["Workplace Injury Rate — AL","5.1/100","Above national average of 2.7/100 workers","#ea580c"],["AL OSHA Inspectors","~25 state","Federal OSHA covers AL — understaffed","#ea580c"]].map(([l,v,s,c],i)=>(
@@ -3875,87 +3871,33 @@ function WorkersPage(){
 
       {tab==="employers"&&(
         <div>
-          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:13,color:"#1e3a5f",lineHeight:1.7}}>
-            Madison County's biggest employers — who they are, what they actually pay workers, what public tax breaks they receive, and what that means for you.
-          </div>
+          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:13,color:"#1e3a5f",lineHeight:1.7}}>The biggest employers in Madison County — who works there what they actually pay what public tax breaks they get and what it means for you.</div>
           {[
-            {
-              name:"Amazon — Fulfillment Centers (HSV1 + HSV2)",icon:"📦",color:"#f59e0b",
-              who:"4,000+ warehouse workers picking, packing, and shipping orders",
-              pay:"$16.50/hr starting ($34,320/yr full-time)",
-              livingWage:"MIT living wage for Madison County: $20.18/hr for a single adult — Amazon pays $3.68 below that",
-              taxBreak:"Received IDB property tax abatement — pays $0 local property tax on its Huntsville facilities for years",
-              plainEnglish:"Amazon made $638 billion in 2024. Its Huntsville workers start at $16.50/hr — below the local living wage. The city gave Amazon a property tax break, which means Amazon doesn't contribute to school funding the same way a homeowner does. Alabama law bans Huntsville from requiring higher wages. Workers have no sick leave guarantee and no union.",
-              action:"Want to organize at Amazon? Contact the UAW at uaw.org. Under federal law, you have the right to do so."
-            },
-            {
-              name:"Huntsville Hospital Health System (HHHS)",icon:"🏥",color:"#dc2626",
-              who:"20,000+ employees — nurses, CNAs, technicians, housekeeping, food service",
-              pay:"Starting CNA: $14.50/hr ($30,160/yr) — below the federal poverty line for a family of four",
-              livingWage:"A full-time CNA at HHHS starting wage qualifies for SNAP food stamps",
-              taxBreak:"Nonprofit status = $0 income tax on $2.4 billion in annual revenue + an estimated $63M/yr in total tax exemptions",
-              plainEnglish:"HHHS is the largest private employer in Madison County and pays no income taxes because it's classified as a nonprofit. Its lowest-paid workers start at $14.50/hr while its CEO earns $3.1M/yr — that's 214 times more. Documented raises as low as $0.25/hr per year. It is now buying Crestwood Medical Center for $450M, which would make it the only hospital in Huntsville.",
-              action:"Healthcare workers: contact SEIU (seiu.org) for organizing info. File wage complaints: al.dol.gov."
-            },
-            {
-              name:"Redstone Arsenal — Military Base",icon:"🚀",color:"#374151",
-              who:"~45,000 people total: military personnel, federal civilian employees, and contractors",
-              pay:"Federal civilian employees follow the GS pay scale (publicly posted). Entry-level GS-7: ~$21/hr. Contractors: wide range — support staff may earn $15/hr, engineers $40-80/hr",
-              livingWage:"Federal civilian employees have healthcare, retirement, and civil service protections. Contractor workers' benefits depend entirely on their employer.",
-              taxBreak:"Federal land — no local property taxes. But Army spending injects roughly $10 billion/yr into the local economy.",
-              plainEnglish:"Redstone is Huntsville's economic anchor. The roughly 15,000 federal civilian employees here have job protections most private Alabama workers don't have — guaranteed retirement, healthcare, protection against arbitrary firing, and the right to form a union. The other 30,000+ are contractors employed by Lockheed, Boeing, Raytheon, and hundreds of smaller firms. Their pay and benefits vary dramatically. A software engineer earns $80/hr. A custodial contractor may earn $15/hr with no benefits. Being 'at Redstone' doesn't mean the same thing for everyone.",
-              action:"Federal civilian employees: your union options are AFGE (afge.org) or NTEU (nteu.org) depending on your agency."
-            },
-            {
-              name:"Defense Contractors — Boeing, Lockheed, Raytheon",icon:"✈️",color:"#64748b",
-              who:"~14,000+ combined employees in Huntsville — primarily engineers, project managers, analysts",
-              pay:"Average engineer: $55-75/hr ($115,000-$156,000/yr)",
-              livingWage:"Well above any living wage threshold — these are the highest-paying private sector jobs in the region",
-              taxBreak:"Their political action committees donated $284,000+ to Rep. Dale Strong — who introduced zero TVA oversight bills in 2 years representing all TVA territory",
-              plainEnglish:"The defense contractors pay the highest wages in Huntsville — but almost entirely for engineers and analysts with degrees and security clearances. These high salaries don't lift wages across North Huntsville because the jobs require credentials most residents don't have. Meanwhile their PAC donations to Rep. Strong have bought silence on TVA oversight — North Alabama has had 3 rate hikes in 18 months and Strong has done nothing.",
-              action:"Call Rep. Strong and ask why he has introduced zero TVA oversight bills: (256) 551-0190."
-            },
-            {
-              name:"Retail & Fast Food — Walmart, McDonald's, Dollar Stores",icon:"🛒",color:"#ef4444",
-              who:"~10,000+ workers at grocery stores, fast food, dollar stores, gas stations across Huntsville",
-              pay:"$7.25-$15/hr — Alabama's minimum wage is the federal floor of $7.25, unchanged since 2009",
-              livingWage:"$7.25/hr = $15,080/yr full-time. MIT living wage for a single adult: $20.18/hr. A full-time minimum wage worker earns $5,000 below the living wage.",
-              taxBreak:"No IDB abatements required — but benefit from city roads, police, and services funded by taxes they pay below the living wage",
-              plainEnglish:"These are the most common jobs in Huntsville. They pay the least. Alabama law — passed in 2015 and strengthened in 2023 — explicitly bans Huntsville from passing a local minimum wage law. So even as Huntsville grows into a prosperous city, these workers are locked at the federal floor. No guaranteed sick leave. No predictive scheduling. No way to fight for more locally. Sen. Arthur Orr sponsored the bill keeping it this way. He received $45,000 from the Business Council of Alabama, which represents the employers who benefit from it.",
-              action:"Contact Sen. Orr directly — demand repeal of the minimum wage preemption: (334) 242-7895."
-            },
+            {name:"Amazon HSV1 and HSV2",icon:"PKG",color:"#f59e0b",who:"4000 plus warehouse workers",pay:"$16.50 per hour, $34320 per year full-time",gap:"MIT living wage is $20.18 per hour. Amazon pays $3.68 below that.",taxBreak:"IDB property tax abatement — $0 local property tax for years",plain:"Amazon made $638 billion in 2024. Huntsville workers start at $16.50 per hour — below the local living wage. The city gave Amazon a property tax break so it does not fully fund local schools. Alabama law bans Huntsville from requiring higher wages. Workers have no sick leave and no union.",action:"To organize at Amazon contact the UAW at uaw.org. Under federal law you have that right."},
+            {name:"Huntsville Hospital HHHS",icon:"RX",color:"#dc2626",who:"20000 plus employees — nurses CNAs technicians housekeeping food service",pay:"Starting CNA $14.50 per hour — below poverty line for a family of four",gap:"A full-time starting CNA at HHHS qualifies for SNAP food stamps",taxBreak:"Nonprofit = $0 income tax on $2.4B revenue plus $63M per year in exemptions",plain:"HHHS is the largest private employer in Madison County and pays no income taxes. Lowest-paid workers start at $14.50 per hour while CEO earns $3.1 million per year — 214 times more. Documented annual raises as low as $0.25 per hour. It is buying Crestwood Medical Center for $450M which would make it the only hospital in Huntsville.",action:"Healthcare workers contact SEIU at seiu.org for organizing info. File wage complaints at al.dol.gov."},
+            {name:"Redstone Arsenal",icon:"RSA",color:"#374151",who:"About 45000 people: military federal civilian employees and contractors",pay:"Federal civilians follow the GS pay scale. Entry-level GS-7 earns about $21 per hour. Contractors range from $15 to $80 per hour.",gap:"Federal civilians get healthcare retirement and job protections. Contractor benefits depend on who employs them.",taxBreak:"Federal land — no local property taxes. Army spending injects roughly $10 billion per year locally.",plain:"Federal civilian employees here have job protections most private Alabama workers lack — guaranteed retirement healthcare and the right to join a union. But many at Redstone are contractors hired by Boeing Lockheed Raytheon and smaller firms. A software contractor earns $80 per hour. A custodial contractor may earn $15 per hour with no benefits. Being at Redstone does not mean the same thing for everyone.",action:"Federal civilian employees: union options are AFGE at afge.org or NTEU at nteu.org."},
+            {name:"Defense Contractors Boeing Lockheed Raytheon",icon:"DEF",color:"#64748b",who:"About 14000 combined — mostly engineers and analysts",pay:"Average engineer $55 to $75 per hour",gap:"Well above the living wage — highest-paying private jobs in the region",taxBreak:"PACs donated $284000 plus to Rep. Dale Strong who introduced zero TVA oversight bills in 2 years",plain:"Defense contractors pay the highest wages in Huntsville but almost entirely for engineers with degrees and security clearances. These salaries do not lift wages in North Huntsville. Their PAC donations to Rep. Strong bought silence on TVA oversight — 3 rate hikes in 18 months and Strong has done nothing.",action:"Call Rep. Strong and ask why he filed zero TVA oversight bills: (256) 551-0190."},
+            {name:"Retail and Fast Food",icon:"RET",color:"#ef4444",who:"About 10000 plus workers at grocery stores fast food and discount retail",pay:"$7.25 to $15 per hour — minimum wage unchanged since 2009",gap:"$7.25 per hour full-time equals $15080 per year. MIT living wage for a single adult is $20.18 per hour.",taxBreak:"No IDB abatements but benefit from city services funded by taxes their workers pay",plain:"These are the most common jobs in Huntsville and they pay the least. Alabama law explicitly bans Huntsville from passing a local minimum wage ordinance. No guaranteed sick leave. Sen. Arthur Orr sponsored the law that keeps it this way. He received $45000 from the Business Council of Alabama.",action:"Contact Sen. Orr — demand repeal of the minimum wage preemption: (334) 242-7895."},
           ].map((e,i)=>(
             <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+e.color}}>
               <div style={{padding:"14px 16px"}}>
                 <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:10}}>
-                  <span style={{fontSize:24}}>{e.icon}</span>
+                  <div style={{width:40,height:40,borderRadius:6,background:e.color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:800,flexShrink:0}}>{e.icon}</div>
                   <div style={{fontSize:14.5,fontWeight:700,color:"#1e3a5f",lineHeight:1.3}}>{e.name}</div>
                 </div>
-                {[
-                  {lbl:"WHO WORKS THERE",val:e.who,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
-                  {lbl:"WHAT THEY PAY",val:e.pay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
-                  {lbl:"VS. LIVING WAGE",val:e.livingWage,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},
-                  {lbl:"TAX BREAK FROM THE PUBLIC",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
-                ].map((row,j)=>(
+                {[{lbl:"WHO WORKS THERE",val:e.who,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},{lbl:"WHAT THEY PAY",val:e.pay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},{lbl:"VS LIVING WAGE",val:e.gap,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},{lbl:"PUBLIC TAX BREAK",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"}].map((row,j)=>(
                   <div key={j} style={{padding:"7px 10px",background:row.bg,borderRadius:4,border:"1px solid "+row.bc,marginBottom:6}}>
                     <div style={{fontSize:8,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:2,textTransform:"uppercase",opacity:.75}}>{row.lbl}</div>
                     <div style={{fontSize:12.5,color:row.tc,lineHeight:1.55}}>{row.val}</div>
                   </div>
                 ))}
-                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,margin:"10px 0 8px"}}>{e.plainEnglish}</div>
-                <div style={{background:"#f0fdf4",borderRadius:4,padding:"8px 10px",border:"1px solid #86efac"}}>
-                  <span style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1,marginRight:6}}>WHAT YOU CAN DO</span>
-                  <span style={{fontSize:12.5,color:"#14532d"}}>{e.action}</span>
-                </div>
+                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,margin:"10px 0 8px"}}>{e.plain}</div>
+                <div style={{background:"#f0fdf4",borderRadius:4,padding:"8px 10px",border:"1px solid #86efac"}}><span style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1,marginRight:6}}>WHAT YOU CAN DO</span><span style={{fontSize:12.5,color:"#14532d"}}>{e.action}</span></div>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
 // --- CRIMINAL JUSTICE PAGE ---
 function SentencingPage(){
   const[tab,setTab]=useState("overview");
@@ -4627,7 +4569,7 @@ function TaxesPage(){
   }
   const estimatedALTax=alIncomeTax(taxableIncome);
   const effectiveRate=(estimatedALTax/Math.max(incomeVal,1)*100).toFixed(1);
-  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"\U0001f9f4 Women's Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"\U0001f9ee Calculator"}];
+  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"Womens Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"Calculator"}];
   const millage=0.00382;
   const estimatedTax=Math.round(homeValue*0.1*millage);
 
@@ -4659,6 +4601,8 @@ function TaxesPage(){
             {k:"gold",label:"HOW PROPERTY TAX WORKS IN HUNTSVILLE",lc:"#b8860b",tc:"#78350f",text:"Alabama uses an Assessed Value system. Residential property is assessed at 10% of market value, then multiplied by the millage rate. Huntsville's combined millage (city + county + school) is approximately 38.2 mills. On a $200,000 home: assessed value = $20,000, tax = $20,000 × 0.0382 = approximately $764/year. Alabama has among the lowest property tax rates in the nation — but that low rate applies equally to homeowners and to corporate facilities that haven't been exempted by the IDB."},
             {k:"blue",label:"THE IDB ABATEMENT AUDIT THAT DOESN'T EXIST",lc:"#2563eb",tc:"#1e3a5f",text:"The IDB has never been required to publish a comprehensive audit of whether promised jobs were actually delivered in exchange for abatements. Some abatements come with job creation requirements — but enforcement is minimal. File an Open Records request for all active IDB abatement agreements, including: company name, abatement duration, promised job creation, and actual documented job creation. This is a public document you are entitled to."},
           ]}/>
+        </div>
+          <AiButton prompt="Investigate property tax in Madison County. Homes assessed at 10% of market value taxed at the millage rate. Huntsville city rate is $5.80 per $100 assessed. IDB granted over $127 million in active corporate property tax abatements so corporations pay $0 for up to 20 years with no public audit. Timberland taxed at just $0.10 per acre. Homeowners pay full rate from day one. Under 200 words plain language."/>
         </div>
       )}
 
@@ -4698,55 +4642,36 @@ function TaxesPage(){
             {k:"gold",label:"HOW CITIES CAN OPT OUT — AND WHY MOST HAVEN'T",lc:"#b8860b",tc:"#78350f",text:"When Alabama reduced the state grocery tax from 4% to 3% in 2023 and to 2% in 2025, it passed a law ALLOWING — but not requiring — cities and counties to reduce their local grocery tax. Huntsville and most other municipalities chose not to reduce theirs. A Huntsville City Council vote could reduce or eliminate the local grocery tax at any time. No state approval required. Council Member Watkins has expressed concern about regressive taxes. Contact your council member directly — ask them to introduce a grocery tax reduction ordinance."},
           ]}/>
 
-
+          <AiButton prompt="Investigate the grocery tax in Huntsville. Alabama cut state grocery tax to 2% in 2025 but Huntsville kept its 4.5% city tax unchanged. Combined rate is 7% on food. A family spending $983 per month pays $826 per year in grocery taxes. 37 states have zero grocery tax. Tennessee charges 4%. The city grocery tax goes into the same fund that paid $89132 for a convicted murderer criminal defense and $600000 to settle a police brutality case. Under 200 words."/>
         </div>
       )}
 
-
+            
       {tab==="womantax"&&(
         <div>
           <div style={{background:"#1e3a5f",borderRadius:6,padding:"14px 16px",marginBottom:14}}>
-            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>WOMEN'S TAX — INVESTIGATION</div>
-            <div style={{fontSize:14,color:"rgba(255,255,255,.9)",lineHeight:1.8}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — same category as jewelry. The state exempted its 4% portion through August 2028, but only the state portion. Huntsville's 4.5% city tax still applies. 30+ states have eliminated this permanently. A legislature that is 81% male decided it was a luxury.</div>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>WOMENS TAX</div>
+            <div style={{fontSize:14,color:"rgba(255,255,255,.9)",lineHeight:1.8}}>Alabama taxes tampons and pads as luxury items — same category as jewelry. The state cut its 4% portion through August 2028. Huntsville still charges its 4.5% city tax. 30 plus states have eliminated this permanently.</div>
           </div>
           <div className="stats-grid" style={{marginBottom:16}}>
-            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% cut — temporary, not permanent","#ea580c"],["30+ States","Eliminated It","FL, TX, OH, NY, CA — red and blue states","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women each year","#dc2626"]].map(([l,v,s,c],i)=>(
+            {[["City Tax Applies","4.5%","Huntsville has not passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% cut is temporary","#ea580c"],["30 Plus States","Eliminated It","FL TX OH NY CA all did it","#16a34a"],["Annual City Tax","~$518k","From Madison County women each year","#dc2626"]].map(([l,v,s,c],i)=>(
               <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
           </div>
-          <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #9333ea"}}>
-            <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>What You Pay — Per Woman, Per Year in Huntsville</div>
-            {[
-              ["Monthly product cost","$10-20/mo","Tampons, pads, or cup — not optional"],
-              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — only covers state's 4% portion"],
-              ["City + county tax you still pay","$6-12/yr","4.5% city + 0.5% county — no exemption here"],
-              ["Family with mother + 2 daughters","$18-36/yr","Taxed as luxury items at city level"],
-              ["Over a 40-year lifetime","$240-480","In city/county taxes on biological necessities"],
-            ].map(([l,v,n],i)=>(
-              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 10px",marginBottom:6,borderRadius:4,background:i%2===0?"#f8f6f2":"#faf5ff",border:"1px solid #e0d8cc",flexWrap:"wrap",gap:4}}>
-                <div>
-                  <div style={{fontSize:12.5,fontWeight:600,color:"#374151"}}>{l}</div>
-                  <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic"}}>{n}</div>
-                </div>
-                <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:"#7c3aed"}}>{v}</span>
-              </div>
-            ))}
-          </div>
           <FactBlocks facts={[
-            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama puts tampons in the same tax category as jewelry and perfume. Periods are not optional. They are not a lifestyle choice. They are not a luxury. The Alabama legislature is 81% male. The people who decided this will never pay this tax."},
-            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028, and only the state portion. Huntsville's 4.5% city tax still applies every time a woman buys tampons or pads in Huntsville. The City Council can pass an ordinance exempting this at any time. No state approval needed. They have not done it."},
-            {k:"blue",label:"30+ STATES HAVE DONE IT — RED AND BLUE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. The City Council can act right now. Council Member Watkins represents District 1 (North Huntsville) and has expressed concern about regressive taxes on lower-income residents."},
+            {k:"red",label:"CLASSIFIED AS A LUXURY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama puts tampons in the same tax category as jewelry. Periods are not optional. The Alabama legislature is 81% male. The people who decided this will never pay it."},
+            {k:"gold",label:"STATE GAVE PARTIAL RELIEF — CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama 2025 exempted the state 4% portion through August 2028. Huntsville 4.5% city tax still applies every time a woman buys tampons or pads. The City Council can pass an exemption at any time without state approval. They have not done it."},
+            {k:"blue",label:"30 PLUS STATES HAVE DONE IT",lc:"#2563eb",tc:"#1e3a5f",text:"Florida Texas Ohio Illinois New York Virginia and California have permanently eliminated this tax. Alabama expires in 2028. The City Council can act right now."},
           ]}/>
           <ActionButtons title="WHAT YOU CAN DO" actions={[
-            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Women's Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Huntsville women still pay the city rate on products that are biological necessities, not luxuries.\n\nFlorida, Texas, and Ohio have done this. The City Council can act now.\n\n[Your Name]"},
-            {label:"Call Mayor Battle's Office",tel:"2564275000"},
+            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Womens Tax Exemption",body:"Dear Council Member Watkins I request you introduce an ordinance exempting menstrual products from Huntsville 4.5% city sales tax. The City Council can act now without state approval. [Your Name]"},
+            {label:"Call Mayor Battle",tel:"2564275000"},
             {label:"Find Your Council District",href:"https://www.huntsvilleal.gov/government/city-council/"},
-            {label:"Contact AL Legislature",href:"https://www.legislature.state.al.us"},
           ]}/>
-          <AiButton prompt="Alabama taxes menstrual products as luxury items — same category as jewelry. FACTS: Alabama state exempted 4% state portion through August 2028 only. Huntsville's 4.5% city tax still applies. 30+ states including Florida, Texas, Ohio have permanently eliminated this tax. ~86,400 menstruating-age women in Madison County collectively pay ~$518,000/yr in city and county taxes on tampons and pads. Over a 40-year menstruating lifetime a Huntsville woman pays $240-480 in city and county taxes on biological necessities. The City Council can exempt the city portion by ordinance right now without state approval. Alabama legislature is 81% male. Connect this clearly for a Madison County resident. Under 200 words. No jargon."/>
+          <AiButton prompt="Alabama taxes menstrual products as luxury items. State exempted its 4% portion through August 2028 only. Huntsville 4.5% city tax still applies. Over 30 states including Florida Texas Ohio have permanently eliminated this tax. About 86400 women in Madison County pay about $518000 per year in city and county taxes on tampons and pads. City Council can exempt the city portion by ordinance right now without state approval. Alabama legislature is 81% male. Explain clearly for a Madison County resident. Under 200 words."/>
         </div>
       )}
-            {tab==="income"&&(
+{tab==="income"&&(
         <div>
           {/* Alabama income tax brackets */}
           <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
@@ -4809,8 +4734,6 @@ function TaxesPage(){
             <div style={{fontSize:11,fontWeight:700,color:"#1e3a5f",letterSpacing:1,marginBottom:6}}>→ USE THE CALCULATOR TAB TO ESTIMATE YOUR AL INCOME TAX</div>
             <div style={{fontSize:13,color:"#374151",lineHeight:1.6}}>The <strong>🧮 Calculator</strong> tab includes both a property tax calculator (with area selector for all Madison County areas) and an Alabama income tax estimator for single and married filers. Switch to that tab to run your numbers.</div>
           </div>
-
-          <AiButton prompt="Investigate Alabama income tax. FACTS: Alabama income tax kicks in at $500 of income — one of the lowest thresholds in the US. Top bracket is 5% — same rate applies whether you earn $30,000 or $3 million — functionally flat. Alabama is one of only 2 states allowing full federal income tax deduction worth $3/yr to the poor but $12,901/yr to the top 1%. Closing this loophole would generate $833M in revenue — enough to permanently eliminate the state grocery tax and fund $300M more for schools. BCA gave Orr $45,000. Same donor class blocking reform. Under 200 words, plain language."/>
         </div>
       )}
 
@@ -5033,3 +4956,7 @@ export default function App(){
       </div>
       {/* Spacer so content doesn't hide behind bottom banner */}
       <div style={{height:34}}/>
+      </div>
+    </>
+  );
+}
