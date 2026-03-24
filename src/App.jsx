@@ -144,7 +144,7 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 const NAV=[
   {group:"ECONOMIC"},
   {id:"equity",icon:"⚖",label:"The Two Huntsvilles",desc:"North vs south Huntsville - schools, roads, city spending. Same city, different outcomes."},
-  {id:"utilities",icon:"💧",label:"Utilities: Power and Water",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
+  {id:"utilities",icon:"💧",label:"Power, Water & Utilities",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
   {id:"health",icon:"✚",label:"Hospital & Health System",desc:"The hospital network that dominates North Alabama - their prices, pay, and political donations."},
   {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",desc:"Premiums, deductibles, dental gaps, and auto insurance - what you pay and why."},
   {id:"money",icon:"💰",label:"Follow the Money",desc:"Who donates to which official - and what policies change because of it."},
@@ -178,7 +178,7 @@ const PAGES={
     ],
     prompt:"Investigate the documented equity gap between north and south Huntsville. FACTS: Roads PCI 41 north vs 72 south — same city, same tax rate, 16-year gap. $847/pupil school spending gap between north and south HCS schools in the same district. 3.7x more police contacts per capita in north Huntsville. 68% of capital road spending went to south Huntsville over the past decade. Mayor Battle received $380k from real estate developers. Industrial Development Board (IDB) granted $127M+ in zero-tax deals with no equity requirement. The city has never commissioned an independent equity audit. Connect these facts for a north Huntsville resident in plain language. Under 150 words, no jargon."},
 
-  utilities:{icon:"💧",title:"Utilities",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
+  utilities:{icon:"💧",title:"Power, Water",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
     stats:[["TVA 2024 Rate Hike","5.25%","Largest in 16 years — passed to all HU customers",C.red],["HU Rate Hike","5.1%","Jan + Oct 2025 — on top of TVA hike",C.red],["Triana PFOS","Above EWG","Health guideline exceeded in town water",C.red],["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote",C.orange]],
     facts:[{k:"red",label:"THE DOUBLE MARKUP PROBLEM",lc:C.red,tc:"#7f1d1d",text:"The Tennessee Valley Authority (TVA) generates power at Browns Ferry Nuclear Plant 15 miles from Huntsville and sells it wholesale to Huntsville Utilities. HU marks it up, adds infrastructure fees, and delivers it to your home. Two separate entities both adding cost — neither directly elected by you. Combined effect in 2024-2025: TVA raised rates 5.25% (largest in 16 years) + HU added 5.1% on top = approximately 10%+ increase on your electric bill in one year. Alabama's Public Service Commission has zero jurisdiction over either entity."},{k:"gold",label:"TRIANA WATER — THE PFAS PROBLEM",lc:"#b8860b",tc:"#78350f",text:"EWG data shows PFOS — a PFAS forever chemical linked to cancer, thyroid disease, and immune damage — detected above EWG health guidelines in Triana Water Works. Triana remains on the EPA Superfund list due to Redstone Arsenal and Olin Corporation DDT contamination via Huntsville Spring Branch. Triana is a majority-Black community of approximately 2,300 residents with no city council representation and no access to IDB tax abatements."}],
     prompt:"Investigate Madison County utilities. FACTS: TVA CEO Jeff Lyash earned $8.1M in 2023. TVA raised rates 5.25% in 2024 — largest in 16 years. HU added 5.1% on top in Jan and Oct 2025. Combined effect: approximately 10%+ on your electric bill in one year. Alabama delegation (Strong, Britt, Tuberville) collected $1.4M+ from energy PACs and introduced zero TVA oversight bills. Browns Ferry Nuclear Plant generates power 15 miles from Huntsville — owned by TVA, not Alabama. TVA carries $20B+ in debt passed to ratepayers. Triana water shows PFOS above EWG health guidelines. Connect these facts for a Madison County ratepayer in plain language. Under 150 words, no jargon."},
@@ -1595,20 +1595,21 @@ function UtilitiesPage(){
 
           {/* Contact Congress */}
           <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"16px 18px",marginTop:8}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:12,textTransform:"uppercase"}}>Contact Congress — The Only People Who Can Reform TVA</div>
+            <div style={{fontSize:10,fontWeight:700,color:"#1e3a5f",letterSpacing:1.5,marginBottom:4,textTransform:"uppercase"}}>Contact Congress — The Only People Who Can Reform TVA</div>
+            <div style={{fontSize:12,color:"#6b7280",marginBottom:12,lineHeight:1.5}}>These three people represent you in Congress and received a combined $1.4M+ from energy PACs. None have introduced a TVA oversight bill. Call or email them directly.</div>
             {[
-              {name:"Rep. Dale Strong (AL-5)",url:"https://dalestrong.house.gov/contact",note:"Received $284k from defense/energy PACs · zero TVA oversight bills filed"},
-              {name:"Sen. Katie Britt",url:"https://www.britt.senate.gov/contact",note:"Received $890k from energy PACs · no TVA reform legislation"},
-              {name:"Sen. Tommy Tuberville",url:"https://www.tuberville.senate.gov/contact",note:"Received $270k from energy PACs · no TVA oversight action"},
+              {name:"Rep. Dale Strong (AL-5)",pac:"$284k from defense and energy PACs · zero TVA oversight bills",phone:"2565510190",dcphone:"2022254801",email:"https://dalestrong.house.gov/contact",label:"Strong"},
+              {name:"Sen. Katie Britt",pac:"$890k from energy PACs · no TVA reform legislation",phone:"2565510660",dcphone:"2022245744",email:"https://www.britt.senate.gov/contact",label:"Britt"},
+              {name:"Sen. Tommy Tuberville",pac:"$270k from energy PACs · no TVA oversight action",phone:"2565330986",dcphone:"2022244124",email:"https://www.tuberville.senate.gov/contact",label:"Tuberville"},
             ].map((c,i)=>(
-              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#fff",borderRadius:4,marginBottom:8,border:"1px solid #93b4d4",flexWrap:"wrap",gap:8}}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:"#1e3a5f"}}>{c.name}</div>
-                  <div style={{fontSize:10.5,color:"#6b7280"}}>{c.note}</div>
+              <div key={i} style={{padding:"12px 14px",background:"#fff",borderRadius:4,marginBottom:8,border:"1px solid #93b4d4"}}>
+                <div style={{fontSize:13.5,fontWeight:700,color:"#1e3a5f",marginBottom:3}}>{c.name}</div>
+                <div style={{fontSize:11,color:"#dc2626",marginBottom:10}}>{c.pac}</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+                  <a href={"tel:"+c.phone}><button className="btn btn-gold" style={{fontSize:11}}>Call Huntsville Office</button></a>
+                  <a href={"tel:"+c.dcphone}><button className="btn btn-gold" style={{fontSize:11}}>Call DC Office</button></a>
+                  <a href={c.email} target="_blank" rel="noreferrer"><button className="btn btn-navy" style={{fontSize:11}}>Contact Form</button></a>
                 </div>
-                <a href={c.url} target="_blank" rel="noreferrer">
-                  <button className="btn btn-navy" style={{fontSize:11.5}}>✉ Contact →</button>
-                </a>
               </div>
             ))}
           </div>
@@ -1691,108 +1692,73 @@ function UtilitiesPage(){
       {/* -- PROVIDERS -- */}
       {tab==="providers"&&(
         <div>
-          <div style={{background:"#1e3a5f",borderRadius:6,padding:"14px 16px",marginBottom:14}}>
-            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:8,textTransform:"uppercase"}}>YOUR UTILITY PROVIDERS — WHO CONTROLS YOUR BILL</div>
-            <div style={{fontSize:13.5,color:"rgba(255,255,255,.88)",lineHeight:1.8}}>Four entities control the power water and gas coming into your home in Madison County. None of them are elected by you. Here is who they are what they control what they charge and what you can actually do about it.</div>
-          </div>
-
           {[
-            {
-              name:"Huntsville Utilities — Electric Gas and Water",
-              tag:"CITY-OWNED · NOT-FOR-PROFIT",
-              tagColor:"#2563eb",
-              color:"#1e3a5f",
-              icon:"HU",
-              serves:"About 218,000 electric, 104,000 water, and 60,000 natural gas customers in Huntsville and Madison County.",
-              whoControls:"Three separate appointed boards — Electric, Natural Gas, and Waterworks. All 12 members appointed by Huntsville City Council. No public election ever. No Alabama PSC oversight. City Council must approve rate changes — they voted unanimously for the 2025 increases.",
-              whatYouPay:"Electric: $20.23 fixed monthly charge plus $0.117 per kWh for first 1400 kWh plus a TVA fuel surcharge that changes monthly. Water and gas have separate fixed plus usage charges. A typical Huntsville household pays $150 to $450 or more per month combined depending on season.",
-              recentChanges:"January 2025: HU raised electric rates 3.9%. October 2025: HU raised rates another 1.3%. This is on top of TVA wholesale increases. Combined effect since 2022: roughly 15% higher electric bills.",
-              whyHigher:"Materials costs up 30 to 40% since 2020. Infrastructure investment. TVA wholesale cost increases passed through. These are real — but they do not explain why CEO compensation is not publicly disclosed or why the board is never elected.",
-              accountability:"HU is genuinely not-for-profit — surplus goes to infrastructure not shareholders. But not-for-profit does not mean accountable. The board sets CEO salary without public disclosure. CEO Wes Kelley compensation is estimated at $380,000 to $480,000 per year but has not been officially disclosed.",
-              action:"Rate changes require City Council approval. Attend council meetings before any rate vote. File an Open Records request for CEO salary and board member compensation. Ask your council member why Huntsville pays more per kWh than Chattanooga which uses the same TVA wholesale source.",
-              contact:"(256) 535-1200 · hsvutil.org · Board meetings posted at hsvutil.org/about/board-of-directors"
-            },
-            {
-              name:"TVA — Tennessee Valley Authority",
-              tag:"FEDERAL MONOPOLY · NO STATE OVERSIGHT",
-              tagColor:"#dc2626",
-              color:"#7f1d1d",
-              icon:"TVA",
-              serves:"All wholesale electricity in North Alabama — delivered through Huntsville Utilities. 10 million customers across 7 states. Browns Ferry Nuclear Plant in Athens AL is 15 miles from Huntsville.",
-              whoControls:"Federal government corporation created by Congress in 1933. 9-member board appointed by the President and confirmed by the Senate. Zero Alabama state oversight. Zero PSC jurisdiction. Only an Act of Congress can change TVA rates or governance structure.",
-              whatYouPay:"TVA charges HU a wholesale base rate plus a monthly Fuel Cost Adjustment based on actual fuel costs. HU passes this directly to your bill. February 2026 fuel surcharge: 2.4 cents per kWh — adding $28 to $90 or more to your monthly bill. It peaked at 4.6 cents per kWh in August 2022.",
-              recentChanges:"2023: TVA raised wholesale rates 4.5%. 2024: TVA raised rates 5.25% — the largest increase in 16 years. Three increases in 18 months. Your Alabama congressional representatives introduced zero oversight bills.",
-              whyHigher:"TVA carries over $20 billion in long-term debt from building nuclear plants including Browns Ferry. Ratepayers — not taxpayers — pay this debt through rates. TVA is also expanding natural gas capacity, adding more long-term cost.",
-              accountability:"Rep. Dale Strong received $284,000 from defense and energy PACs and filed zero TVA oversight bills. Sen. Britt received $890,000 from energy PACs — no TVA reform. Sen. Tuberville received $270,000 — no TVA oversight. These three people have the only direct power to reform TVA and have chosen not to use it.",
-              action:"Call Rep. Strong at (256) 551-0190 and ask why he has not filed a single TVA oversight bill. Submit public comment to TVA board at tva.com. Contact the TVA Inspector General for rate complaints: (800) 323-0672.",
-              contact:"TVA Customer Relations: (888) 882-6443 · tva.com · Board meets quarterly — public comment accepted"
-            },
-            {
-              name:"Triana Water Works",
-              tag:"CONTAMINATION ALERT · PFAS ABOVE HEALTH GUIDELINES",
-              tagColor:"#dc2626",
-              color:"#dc2626",
-              icon:"TRI",
-              serves:"About 2,323 residents in the Town of Triana — a majority-Black community 10 miles west of Huntsville.",
-              whoControls:"Controlled by the elected mayor and town council. Mayor Mary Caudle and council set policy. The town administrator handles water system oversight day to day.",
-              whatYouPay:"Rates set by the town council. Contact town hall for current rate schedule.",
-              recentChanges:"PFOS — a PFAS forever chemical linked to kidney cancer thyroid disease and immune damage — has been detected in Triana water above EWG health guidelines. The EPA set a maximum contaminant level of 4 parts per trillion. Triana remains on the EPA Superfund list due to Redstone Arsenal PFAS discharge into Indian Creek and Olin Corporation DDT manufacturing.",
-              whyHigher:"This contamination began in the 1970s and has never been fully remediated. Redstone Arsenal has not fully disclosed the extent of its PFAS groundwater contamination. ADEM — the Alabama state environmental agency — is among the weakest enforcement agencies in the Southeast.",
-              accountability:"Rep. Dale Strong voted against the PFAS Notification Act that would require disclosure of contamination near military installations. Gov. Ivey who appoints ADEM leadership received $340,000 from energy and industrial PACs. This is a majority-Black community experiencing ongoing environmental harm with no meaningful state response.",
-              action:"Check your water free at ewg.org/tapwater — search your zip code. File Open Records for all Triana water testing results. Contact EPA Region 4 in Atlanta directly at (404) 562-9900. Contact your congressional representative about the PFAS Notification Act.",
-              contact:"Triana Town Hall: (256) 772-0151 · 640 6th Street Triana AL 35756"
-            },
-            {
-              name:"Madison Utilities",
-              tag:"CITY OF MADISON · WATER AND WASTEWATER",
-              tagColor:"#374151",
-              color:"#374151",
-              icon:"MAD",
-              serves:"19,000 plus water and wastewater connections in the City of Madison and surrounding areas.",
-              whoControls:"Public corporation with board appointed by Madison City Council for staggered 6-year terms. Mayor Bartlett elected in 2024 — she was herself a Madison Board of Education member from 2011 to 2020 — now controls appointments to this board.",
-              whatYouPay:"Rates set by the board. Contact Madison Utilities for current rate schedule.",
-              recentChanges:"Major 2025 to 2026 project: Wall Triana water main expansion. Rate history available via Open Records request from Madison City Hall.",
-              whyHigher:"Infrastructure investment is the stated reason for any rate changes. The Wall Triana project is a documented capital expense.",
-              accountability:"Board meetings are public. Rate changes require board approval. Mayor Bartlett controls who gets appointed to the board in 2026 — her appointment choices will signal how she balances developer interests against ratepayer accountability.",
-              action:"Attend Madison Utilities board meetings. Contact Mayor Bartlett directly about board appointments. File Open Records for rate history and board member compensation.",
-              contact:"(256) 772-6845 · madisonal.gov/government/departments/utilities · 100 Hughes Rd Madison AL 35758"
-            },
+            {name:"Huntsville Utilities",color:"#1e3a5f",icon:"💧",rows:[
+              {l:"SERVES",v:"~218,000 electric · ~104,000 water · ~60,000 natural gas customers in Huntsville and Madison County"},
+              {l:"GOVERNANCE — WHO CONTROLS THIS",v:"Three separate appointed boards: Electric Board, Natural Gas Board, Waterworks Board. All 12 members appointed by Huntsville City Council. No public election ever. No Alabama PSC oversight. City Council must approve rate changes — they voted unanimously for the 2025 increases."},
+              {l:"CURRENT RATE STRUCTURE (Effective March 2026)",v:"Electric: $20.23 fixed + $0.11675/kWh (first 1,400) + $0.12289/kWh (above) + TVA fuel surcharge (~2.4¢/kWh). Water: availability charge by meter size + consumption. Gas: market-based commodity charge + fixed fee. Combined monthly: $150-$450+ depending on season."},
+              {l:"RATE HISTORY — THE PATTERN",v:"2022: TVA fuel surcharges peaked at 4.6¢/kWh (August). 2023: TVA 4.5% base rate hike. 2024 (Aug): TVA 5.25% base hike — largest in 16 years. 2025 (Jan): HU +3.9%. 2025 (Oct): HU +1.3% more. 2026 (Mar): New rate schedule effective. Combined effect: ~15%+ increase in electric costs since 2022."},
+              {l:"WHY THEY SAY THEY'RE RAISING RATES",v:"Materials costs up 30-40% since 2020. Infrastructure investment needed. TVA wholesale increases passed through. These explanations are partly true — but they don't explain why CEO compensation is not disclosed publicly, why the board is never elected, or why Huntsville pays more for delivery than Chattanooga which uses the same TVA wholesale source."},
+              {l:"WHO IS BENEFITING",v:"Huntsville Utilities (HU) is genuinely not-for-profit — surplus revenue goes to infrastructure, not shareholders. But 'not-for-profit' doesn't mean 'accountable.' The appointed board sets the CEO's salary without public disclosure. The City Council approves rates without independent auditing. Wes Kelley's compensation is estimated at $380-480k but has not been publicly disclosed."},
+              {l:"YOUR LEVERAGE",v:"Rate changes require City Council approval. Attend the council meeting before any rate vote. File an Open Records request for CEO salary and board compensation. Demand the city commission an independent rate comparison to EPB Chattanooga and Nebraska public power."},
+              {l:"CONTACT",v:"(256) 535-1200 · hsvutil.org · Board meetings: hsvutil.org/about/board-of-directors"},
+            ]},
+            {name:"TVA — Federal Power Monopoly",color:"#7f1d1d",icon:"⚡",rows:[
+              {l:"SERVES",v:"All North Alabama wholesale electric (delivered through HU). 10 million customers across 7 states. Browns Ferry Nuclear Plant in Athens, AL — 15 miles from Huntsville."},
+              {l:"GOVERNANCE — WHY YOU CAN'T CHANGE IT",v:"Federal government corporation created by Congress 1933. 9-member board appointed by President, confirmed by Senate. Zero Alabama state oversight. Zero PSC jurisdiction. The Tennessee Valley Authority Act gives TVA an exclusive service territory — no competitor can enter. Only an Act of Congress can reform TVA rates or governance."},
+              {l:"THE FUEL COST ADJUSTMENT — THE VARIABLE YOU NEVER CONTROL",v:"TVA charges HU a wholesale base rate plus a monthly Fuel Cost Adjustment (FCA) based on actual fuel costs for that month. HU passes this directly to you. Feb 2026 FCA: 2.397¢/kWh. This adds $28-$90+ to your monthly bill depending on usage. It peaked at 4.612¢/kWh in August 2022 during the energy crisis. You have zero input into this number."},
+              {l:"THE DEBT BURDEN",v:"TVA carries over $20 billion in long-term debt. This debt was accumulated building nuclear plants (including Browns Ferry) and transmission infrastructure. Ratepayers — not taxpayers, not shareholders — pay this debt through rates. TVA's budget submitted to Congress for FY2026 acknowledges continued cost pressure from infrastructure investment, particularly in natural gas capacity expansion."},
+              {l:"WHO IS LETTING THIS HAPPEN",v:"Rep. Dale Strong (AL-5): received $284k from defense/energy PACs, sits on House Armed Services Committee overseeing Redstone, filed zero TVA oversight bills. Sen. Britt: $890k from energy PACs, no TVA reform. Sen. Tuberville: $270k from energy PACs, no TVA oversight. These are the only three people with direct power to reform TVA — and they have chosen not to use it."},
+              {l:"CONTACT TVA BOARD",v:"(888) 882-6443 · tva.com · Board meetings held quarterly — public comment accepted · Knoxville TN headquarters"},
+            ]},
+            {name:"Triana Water Works",color:"#dc2626",icon:"⚠",rows:[
+              {l:"SERVES",v:"~2,323 residents. Majority-Black community. Town of Triana, Alabama."},
+              {l:"GOVERNANCE",v:"Controlled by the elected mayor (Mary Caudle) and town council. No dedicated utility CEO — town administrator handles water system oversight. Contact: (256) 772-0151 · 640 6th Street, Triana AL 35756."},
+              {l:"THE CONTAMINATION PROBLEM",v:"PFOS — a PFAS forever chemical — detected above EWG health guidelines. Triana remains on the EPA Superfund list due to Redstone Arsenal PFAS discharge into Indian Creek and Olin Corporation DDT manufacturing via Huntsville Spring Branch. This contamination began in the 1970s and has never been fully remediated."},
+              {l:"WHO IS RESPONSIBLE",v:"Rep. Dale Strong voted against the PFAS Notification Act that would require disclosure of contamination near military installations. Gov. Ivey (who appoints ADEM leadership) received $340k from energy/industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. Redstone Arsenal has not fully disclosed the extent of its PFAS groundwater contamination."},
+              {l:"WHAT YOU CAN DO",v:"Check your water free: ewg.org/tapwater — search your zip code. File Open Records for all Triana water testing results. Contact EPA Region 4 in Atlanta directly. Contact your congressional representative about the PFAS Notification Act."},
+            ]},
+            {name:"Madison Utilities",color:"#374151",icon:"🚰",rows:[
+              {l:"SERVES",v:"19,000+ water and wastewater connections in City of Madison and surrounding areas."},
+              {l:"GOVERNANCE",v:"Public corporation. Board appointed by Madison City Council for staggered 6-year terms. Mayor Bartlett (elected 2024, former school board member) controls appointments. Board meetings are public."},
+              {l:"CURRENT PROJECTS",v:"Wall Triana water main expansion project ongoing in 2025-2026. Rate history available via Open Records. Contact Madison City Hall for board meeting schedule."},
+              {l:"CONTACT",v:"(256) 772-6845 · madisonal.gov/government/departments/utilities"},
+            ]},
           ].map((p,i)=>(
-            <div key={i} className="card" style={{marginBottom:16,borderLeft:"4px solid "+p.color}}>
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+p.color}}>
               <div style={{padding:"16px 18px"}}>
-                <div style={{display:"flex",gap:12,alignItems:"flex-start",marginBottom:12,flexWrap:"wrap"}}>
-                  <div style={{width:44,height:44,borderRadius:6,background:p.color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:800,flexShrink:0}}>{p.icon}</div>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>{p.name}</div>
-                    <span style={{fontSize:9,fontWeight:800,color:p.tagColor,letterSpacing:1.2,background:p.tagColor+"18",padding:"2px 8px",borderRadius:4,border:"1px solid "+p.tagColor+"30"}}>{p.tag}</span>
-                  </div>
+                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:14,flexWrap:"wrap"}}>
+                  <span style={{fontSize:24}}>{p.icon}</span>
+                  <div style={{fontSize:16,fontWeight:700,color:p.color}}>{p.name}</div>
                 </div>
-                {[
-                  {lbl:"WHO THEY SERVE",val:p.serves,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
-                  {lbl:"WHO CONTROLS IT",val:p.whoControls,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
-                  {lbl:"WHAT YOU PAY",val:p.whatYouPay,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
-                  {lbl:"RECENT CHANGES",val:p.recentChanges,bg:"#fff7ed",bc:"#fed7aa",tc:"#9a3412"},
-                  {lbl:"WHY YOUR BILL IS HIGHER",val:p.whyHigher,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
-                  {lbl:"WHO IS ACCOUNTABLE",val:p.accountability,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
-                  {lbl:"WHAT YOU CAN DO",val:p.action,bg:"#f0fdf4",bc:"#86efac",tc:"#14532d"},
-                  {lbl:"CONTACT",val:p.contact,bg:"#eff3f8",bc:"#93b4d4",tc:"#1e3a5f"},
-                ].map((row,j)=>(
-                  <div key={j} style={{marginBottom:8,padding:"9px 12px",borderRadius:4,background:row.bg,border:"1px solid "+row.bc}}>
-                    <div style={{fontSize:8.5,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:4,textTransform:"uppercase",opacity:.8}}>{row.lbl}</div>
-                    <div style={{fontSize:13,color:row.tc,lineHeight:1.75}}>{row.val}</div>
+                {p.rows.map((row,j)=>{
+                  // Color-code key row types for visual breaks
+                  const rowColors={
+                    "SERVES":"#2563eb","GOVERNANCE — WHO CONTROLS THIS":"#dc2626",
+                    "GOVERNANCE":"#dc2626","WHO IS LETTING THIS HAPPEN":"#dc2626",
+                    "WHO IS RESPONSIBLE":"#dc2626","WHO IS BENEFITING":"#ea580c",
+                    "YOUR LEVERAGE":"#16a34a","WHAT YOU CAN DO":"#16a34a",
+                    "CONTACT":"#1e3a5f","CONTACT TVA BOARD":"#1e3a5f",
+                  };
+                  const rc=rowColors[row.l]||p.color;
+                  const isAction=row.l.includes("LEVER")||row.l.includes("CAN DO")||row.l.includes("CONTACT");
+                  return(
+                  <div key={j} style={{marginBottom:10,padding:"10px 12px",borderRadius:4,background:isAction?"#f0fdf4":j%2===0?"#f8f6f2":"#fff",border:"1px solid "+(isAction?"#86efac":"#e0d8cc"),borderLeft:"3px solid "+rc}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:rc,letterSpacing:1.2,marginBottom:5,textTransform:"uppercase"}}>{row.l}</div>
+                    <div style={{fontSize:13.5,color:"#374151",lineHeight:1.75,fontWeight:row.l.includes("SERVES")?400:400}}>
+                      <ExpandText text={row.v} preview={220}/>
+                    </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
-          <AiButton prompt="Investigate utility costs in Madison County. Facts: Huntsville Utilities raised electric rates 3.9% in January 2025 and another 1.3% in October 2025. TVA raised wholesale rates 5.25% in 2024 — largest in 16 years. Combined effect roughly 15% higher electric bills since 2022. TVA carries $20 billion in debt paid by ratepayers not taxpayers. Rep. Dale Strong received $284000 from energy PACs and filed zero TVA oversight bills. Sen. Britt received $890000 from energy PACs — no TVA reform. Triana Water Works serving a majority-Black community has PFAS above health guidelines. HU CEO compensation not publicly disclosed. Explain what all this means for a Madison County ratepayer in plain language. Under 200 words."/>
         </div>
       )}
     </div>
   );
 }
-
-
 
 
 // --- INSURANCE PAGE ---
@@ -3002,7 +2968,7 @@ function Dashboard({go}){
   const GROUPS=[
     {label:"ECONOMIC",color:C.red,items:[
       {id:"equity",icon:"⚖",label:"The Two Huntsvilles",sub:"PCI 41 vs 72 · $847/pupil gap · 3.7x police contacts · spending audit"},
-      {id:"utilities",icon:"💧",label:"Utilities: Power and Water",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
+      {id:"utilities",icon:"💧",label:"Power, Water & Utilities",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
       {id:"health",icon:"✚",label:"Health System",sub:"HHHS $2.4B monopoly · CEO $3.1M · Medicaid gap · $63M tax exemption"},
       {id:"money",icon:"💰",label:"Follow the Money",sub:"City budget · no-bid contracts · donor→policy · pay clocks"},
       {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
