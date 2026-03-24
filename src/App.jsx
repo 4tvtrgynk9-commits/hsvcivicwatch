@@ -3139,7 +3139,7 @@ function Dashboard({go}){
 // --- NETWORK GRAPH COMPONENT ---
 // Pure SVG/CSS network graph — no external libs needed
 
-function NodeDetail({hover,nodes,edges}){
+function NodeHoverDetail({hover,nodes,edges}){
   const n=nodes.find(x=>x.id===hover);
   const related=edges.filter(e=>e.from===hover||e.to===hover);
   if(!n) return null;
@@ -3214,7 +3214,7 @@ function NetworkGraph({nodes,edges,title,subtitle}){
           );
         })}
       </svg>
-      {hover&&NodeDetail({hover,nodes,edges})}
+      {hover&&<NodeHoverDetail hover={hover} nodes={nodes} edges={edges}/>}
       <div style={{fontSize:9.5,color:"rgba(255,255,255,.3)",marginTop:8}}>Tap or click any node to see connections · Source: FEC.gov, fcpa.alabama.gov, public records</div>
     </div>
   );
@@ -3552,9 +3552,9 @@ function MoneyPage(){
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:6}}>
                     {[
-                      {l:"CEO pay now",v:"$"+Math.round(e.comp/1000)+"k/yr",c:e.clr},
+                      {l:"CEO pay now",v:"$"+(e.comp>=1000000?(Math.round(e.comp/100000)/10)+"M":(Math.round(e.comp/1000))+"k")+"/yr",c:e.clr},
                       {l:"Worker pay now",v:"$"+e.wage+"/hr",c:"#6b7280"},
-                      {l:"Excess above 50:1",v:"$"+Math.round(excessPay/1000)+"k freed",c:"#dc2626"},
+                      {l:"Excess above 50:1",v:"$"+(excessPay>=1000000?(Math.round(excessPay/100000)/10)+"M":(Math.round(excessPay/1000))+"k")+" freed",c:"#dc2626"},
                       {l:"Split among "+workerCount.toLocaleString()+" workers",v:"+$"+Math.round(raisePerWorker/52)+"/wk each",c:"#16a34a"},
                       {l:"New hourly wage",v:"$"+newWage.toFixed(2)+"/hr",c:"#16a34a"},
                       {l:"Still above MIT living wage?",v:newWage>=20.18?"YES ✓":"NO — still below",c:newWage>=20.18?"#16a34a":"#dc2626"},
@@ -3937,31 +3937,90 @@ Contact your state representatives and demand: (1) Expansion of Alabama First Cl
 
       {tab==="employers"&&(
         <div>
+          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:12.5,color:"#1e3a5f",lineHeight:1.7}}>
+            Madison County's biggest employers — what they pay, what tax breaks they get from the public, and what that means for workers who live here.
+          </div>
           {[
-            {name:"Amazon (HSV1, HSV2)",workers:"4,000+",wage:"$16.50/hr",benefit:"IDB property tax abatement — $0 property tax for years",flag:"AL ranks 50th for Amazon warehouse wages. NLRB complaint for supervisory interrogation of union activity at HSV1.",color:"#f59e0b"},
-            {name:"Huntsville Hospital (HHHS)",workers:"20,000+",wage:"$14.50-$30/hr range",benefit:"$63M/yr nonprofit tax exemption",flag:"Starting wages below MIT living wage. Annual raises as low as $0.25. Chronic understaffing documented.",color:"#dc2626"},
-            {name:"Huntsville Utilities",workers:"800+",wage:"~$25/hr avg",benefit:"City-owned — no property tax",flag:"Wes Kelley salary not publicly disclosed. Board sets CEO pay without public input.",color:"#1e3a5f"},
-            {name:"Redstone Arsenal",workers:"~45,000",wage:"Federal GS scale",benefit:"Federal employment — civil service protections",flag:"Civilian employees have federal protections most private-sector AL workers lack. Contractor employees have fewer protections.",color:"#374151"},
-            {name:"Boeing / Lockheed / Raytheon",workers:"6,000+",wage:"$55-75/hr engineer avg",benefit:"$284k+ in defense PAC donations to Rep. Strong",flag:"High-wage defense jobs. But 'trickle-down' to service economy hasn't closed north Huntsville wage gap.",color:"#64748b"},
-            {name:"Retail / Fast Food (Walmart, McDonald's, etc.)",workers:"10,000+ est.",wage:"$7.25-$15/hr",benefit:"No property tax abatement required",flag:"Alabama's minimum wage lock-in means these workers have no local recourse. No sick leave. No predictive scheduling.",color:"#ef4444"},
+            {
+              name:"Amazon — Fulfillment Centers (HSV1 + HSV2)",
+              icon:"📦",
+              color:"#f59e0b",
+              workers:"4,000+ local warehouse workers",
+              startPay:"$16.50/hr ($34,320/yr full-time)",
+              livingWage:"MIT living wage for Madison Co.: $20.18/hr single adult",
+              taxBreak:"Received IDB property tax abatement — pays $0 property tax for years on its Huntsville facilities",
+              whatItMeans:"Amazon made $638 billion in revenue in 2024. Its Huntsville workers earn $16.50/hr — $3.68 below the local living wage. The city gave Amazon a property tax break through the Industrial Development Board (IDB), which means the facility doesn't pay into local school funding the way a homeowner would. Workers have no sick leave guarantee, no union, and Alabama law bans the city from requiring higher wages.",
+              action:"If you work at Amazon HSV1 or HSV2 and want to organize, contact the UAW: uaw.org. You have the legal right to do so."
+            },
+            {
+              name:"Huntsville Hospital Health System (HHHS)",
+              icon:"🏥",
+              color:"#dc2626",
+              workers:"20,000+ employees across 14 facilities",
+              startPay:"Starting CNA: $14.50/hr ($30,160/yr) — below the federal poverty line for a family of 4",
+              livingWage:"A CNA at starting wage qualifies for SNAP food assistance",
+              taxBreak:"Nonprofit status = $0 income tax on $2.4B in annual revenue + $63M/yr in total estimated tax exemptions",
+              whatItMeans:"HHHS is the largest private employer in Madison County and pays $0 in income taxes because it's a nonprofit. In exchange, it's supposed to provide community benefit. But it starts its lowest-paid workers at $14.50/hr while its CEO earns $3.1M/yr — a 214:1 ratio. Annual raises as low as $0.25/hr have been documented in employee reviews. The hospital is buying Crestwood Medical Center for $450M, which would make it the only hospital in Huntsville.",
+              action:"Healthcare workers: contact SEIU (seiu.org) or UFCW (ufcw.org) for organizing information. File wage complaints: al.dol.gov."
+            },
+            {
+              name:"Redstone Arsenal",
+              icon:"🚀",
+              color:"#374151",
+              workers:"~45,000 people on post (military, civilians, contractors)",
+              startPay:"Federal civilian (GS-7 entry level): ~$21/hr. Contractors: varies widely — some earn $15/hr, others $80+/hr",
+              livingWage:"Federal GS pay scale is publicly posted and includes healthcare and retirement",
+              taxBreak:"Federal land — no local property taxes paid. But Army spending pumps ~$10B/yr into the local economy",
+              whatItMeans:"Redstone is the economic anchor of Huntsville. The ~15,000 federal civilian employees here have civil service protections that most private-sector workers in Alabama don't — guaranteed retirement, healthcare, protections against arbitrary firing, and the right to join a federal union. The roughly 30,000 contractor employees on post have widely varying pay and benefits depending on their employer. Lockheed, Boeing, and Raytheon engineers earn $55-75/hr. Custodial and support contractors may earn close to minimum wage with no benefits.",
+              action:"Federal civilian employees: your union is AFGE or NTEU depending on agency. Contractor workers: check if your employer has federal contractor prevailing wage requirements."
+            },
+            {
+              name:"Boeing, Lockheed Martin, Raytheon (Defense Contractors)",
+              icon:"✈️",
+              color:"#64748b",
+              workers:"~14,000+ combined in Huntsville",
+              startPay:"Average engineer: $55-75/hr ($115,000-$156,000/yr)",
+              livingWage:"Well above living wage — these are among the highest-paying jobs in the region",
+              taxBreak:"Their PACs donated $284,000+ to Rep. Dale Strong — who has introduced zero TVA oversight bills despite representing all TVA territory",
+              whatItMeans:"The defense contractors pay the highest wages in the region — but primarily for engineers, software developers, and program managers. Most require a college degree and security clearance. The high wages at these companies haven't lifted wages in North Huntsville's service economy — the 'trickle-down' effect is limited to specific corridors. Their political donations also buy protection: Boeing, Lockheed, and Raytheon gave Rep. Strong $284k and he has not introduced a single TVA oversight bill despite North Alabama's electricity costs being among the highest served by TVA.",
+              action:"Contact Rep. Strong and ask why he has introduced zero TVA oversight bills: (256) 551-0190."
+            },
+            {
+              name:"Walmart, McDonald's, and Retail / Fast Food",
+              icon:"🛒",
+              color:"#ef4444",
+              workers:"~10,000+ estimated across all locations",
+              startPay:"$7.25-$15/hr — Alabama state minimum wage is $7.25 (federal floor, unchanged since 2009)",
+              livingWage:"$7.25/hr = $15,080/yr full-time. MIT living wage for a single adult in Madison County: $20.18/hr",
+              taxBreak:"No IDB abatement required — but benefit from city infrastructure without contributing to affordable housing",
+              whatItMeans:"These are the most common jobs in Huntsville — grocery stores, fast food, gas stations, dollar stores. They pay the least. Alabama law (passed in 2015 and strengthened in 2023) explicitly bans Huntsville from passing a local minimum wage ordinance. So even though Huntsville is a growing, prosperous city, these workers are locked at the federal floor. No guaranteed sick leave. No predictive scheduling. No path to negotiate locally. Sen. Orr sponsored the bill that made this permanent — he received $45,000 from the Business Council of Alabama (BCA).",
+              action:"Contact Sen. Orr and demand repeal of the minimum wage preemption law: (334) 242-7895 · orr@alsenate.gov."
+            },
           ].map((e,i)=>(
-            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid "+e.color}}>
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+e.color,overflow:"hidden"}}>
               <div style={{padding:"14px 16px"}}>
-                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:8}}>
-                  <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{e.name}</div>
-                  <div style={{fontFamily:"monospace",fontSize:12,color:e.color,fontWeight:700}}>{e.wage}</div>
+                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:10}}>
+                  <span style={{fontSize:22}}>{e.icon}</span>
+                  <div style={{fontSize:14.5,fontWeight:700,color:"#1e3a5f",lineHeight:1.3}}>{e.name}</div>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
-                  <div style={{padding:"8px",background:"#f0fdf4",borderRadius:3,border:"1px solid #86efac"}}>
-                    <div style={{fontSize:8.5,color:"#16a34a",fontWeight:700,letterSpacing:1,marginBottom:2}}>WORKERS</div>
-                    <div style={{fontSize:12,color:"#374151"}}>{e.workers}</div>
-                  </div>
-                  <div style={{padding:"8px",background:"#fef2f2",borderRadius:3,border:"1px solid #fca5a5"}}>
-                    <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:2}}>PUBLIC BENEFIT RECEIVED</div>
-                    <div style={{fontSize:12,color:"#374151"}}>{e.benefit}</div>
-                  </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr",gap:6,marginBottom:10}}>
+                  {[
+                    {lbl:"WHO WORKS HERE",val:e.workers,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
+                    {lbl:"WHAT THEY PAY",val:e.startPay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
+                    {lbl:"LIVING WAGE CHECK",val:e.livingWage,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},
+                    {lbl:"PUBLIC TAX BREAK THEY RECEIVE",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
+                  ].map((row,j)=>(
+                    <div key={j} style={{padding:"7px 10px",background:row.bg,borderRadius:4,border:"1px solid "+row.bc}}>
+                      <div style={{fontSize:8,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:2,textTransform:"uppercase",opacity:.7}}>{row.lbl}</div>
+                      <div style={{fontSize:12.5,color:row.tc,lineHeight:1.5}}>{row.val}</div>
+                    </div>
+                  ))}
                 </div>
-                <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic",lineHeight:1.5}}>{e.flag}</div>
+                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,marginBottom:8}}>{e.whatItMeans}</div>
+                <div style={{background:"#f0fdf4",borderRadius:4,padding:"8px 10px",border:"1px solid #86efac"}}>
+                  <span style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1,marginRight:6}}>WHAT YOU CAN DO</span>
+                  <span style={{fontSize:12.5,color:"#14532d"}}>{e.action}</span>
+                </div>
               </div>
             </div>
           ))}
@@ -4734,10 +4793,10 @@ function TaxesPage(){
           <div className="page-header" style={{marginBottom:14}}>
             <span className="tag tag-gold" style={{marginBottom:8,display:"inline-block"}}>WOMAN TAX · INVESTIGATION</span>
             <h2 style={{fontSize:22,fontWeight:900,color:"#1e3a5f",lineHeight:1.2}}>The <em style={{color:"#9333ea",fontStyle:"normal"}}>Woman Tax</em></h2>
-            <p style={{fontSize:14,color:"#6b7280",marginTop:6,lineHeight:1.6}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — the same category as jewelry. The state exempted its 4% portion through 2028. Huntsville's 4.5% city tax still applies. A legislature that is 81% male decided this. 30+ states have eliminated it permanently.</p>
+            <p style={{fontSize:14,color:"#6b7280",marginTop:6,lineHeight:1.6}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — the same tax category as jewelry. The state cut its portion temporarily. Huntsville's 4.5% city tax still applies. A legislature that is 81% male decided this. 30+ states have eliminated it permanently.</p>
           </div>
           <div className="stats-grid" style={{marginBottom:16}}>
-            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","4% state portion — temporary only","#ea580c"],["30+ States","Eliminated It","Including Florida, Texas, Ohio, NY, CA","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women/yr","#dc2626"]].map(([l,v,s,c],i)=>(
+            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% — temporary, not permanent","#ea580c"],["30+ States","Eliminated It","Including FL, TX, OH, NY, CA — red and blue","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women/yr","#dc2626"]].map(([l,v,s,c],i)=>(
               <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
           </div>
@@ -4745,7 +4804,7 @@ function TaxesPage(){
             <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>What You Pay — Per Woman, Per Year in Huntsville</div>
             {[
               ["Monthly product cost","$10-20/mo","Tampons, pads, or menstrual cup — not optional"],
-              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — sunsets unless legislature acts"],
+              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — sunsets unless legislature acts again"],
               ["City + county tax you still pay","$6-12/yr","4.5% city + 0.5% county — no exemption passed"],
               ["Family with 3 women (mother + 2 daughters)","$18-36/yr","Still taxed as luxuries at the city level"],
               ["Over a 40-year lifetime","~$240-480","In city/county taxes on biological necessities"],
@@ -4760,12 +4819,12 @@ function TaxesPage(){
             ))}
           </div>
           <FactBlocks facts={[
-            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME CATEGORY AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama classifies tampons and pads as non-essential luxury items. The same tax category as jewelry, perfume, and cosmetics. Periods are not a lifestyle choice. They are not optional. They are not luxuries. The Alabama legislature is 81% male. The people who decided this will never pay it."},
-            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028, and only at the state level. The Huntsville City Council can pass an ordinance exempting the city's 4.5% at any time. No state permission needed. They have not done it. Council Member Watkins — who represents District 1 in North Huntsville — has publicly expressed concern about regressive taxes on low-income residents."},
-            {k:"blue",label:"30+ STATES HAVE DONE IT — RED, BLUE, AND PURPLE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. Without action, Huntsville women return to paying the full rate on tampons and pads after that. The City Council can act right now. So can the state legislature — permanently."},
+            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME CATEGORY AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama classifies tampons and pads as non-essential luxury items — the same tax category as jewelry, perfume, and cosmetics. Periods are not a lifestyle choice. They are not optional. They are not luxuries. The Alabama legislature is 81% male. The people who decided this will never pay it."},
+            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028 and only at the state level. The Huntsville City Council can pass an ordinance exempting the city's 4.5% at any time. No state permission needed. They have not done it. Council Member Watkins represents District 1 — North Huntsville — and has publicly expressed concern about regressive taxes on low-income residents."},
+            {k:"blue",label:"30+ STATES HAVE DONE IT — RED, BLUE, AND PURPLE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. Without action from the City Council or the legislature, Huntsville women return to paying the full rate on tampons and pads. The City Council can act right now. So can the state legislature — permanently."},
           ]}/>
           <ActionButtons title="WHAT YOU CAN DO" actions={[
-            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Woman Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Women in Huntsville still pay the city rate on products that are biological necessities — not luxuries. The City Council can act right now without state approval.\n\nFlorida, Texas, and Ohio have done it. Huntsville should too.\n\n[Your Name]\n[Your Address]"},
+            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Woman Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Women in Huntsville still pay the city rate on products that are biological necessities — not luxuries. The City Council can act now without state approval.\n\nFlorida, Texas, and Ohio have done it. Huntsville should too.\n\n[Your Name]\n[Your Address]"},
             {label:"Call Mayor Battle's Office",tel:"2564275000"},
             {label:"Find Your Council District",href:"https://www.huntsvilleal.gov/government/city-council/"},
             {label:"Contact AL Legislature — Permanent Fix",href:"https://www.legislature.state.al.us"},
