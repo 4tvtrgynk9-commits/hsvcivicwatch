@@ -1,0 +1,26 @@
+export const NAV=[
+  {group:"ECONOMIC"},
+  {id:"equity",icon:"⚖",label:"The Two Huntsvilles",desc:"North vs south Huntsville - schools, roads, city spending. Same city, different outcomes."},
+  {id:"utilities",icon:"💧",label:"Power, Water & Utilities",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
+  {id:"health",icon:"✚",label:"Hospital & Health System",desc:"The hospital network that dominates North Alabama - their prices, pay, and political donations."},
+  {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",desc:"Premiums, deductibles, dental gaps, and auto insurance - what you pay and why."},
+  {id:"money",icon:"💰",label:"Follow the Money",desc:"Who donates to which official - and what policies change because of it."},
+  {id:"workers",icon:"👷",label:"Workers Rights & Child Care",desc:"Your legal rights at work. What other states have. How to form a union. Child care costs."},
+  {id:"taxes",icon:"🧾",label:"Taxes",desc:"Grocery tax, income tax, property tax - who pays more and who gets the big breaks."},
+  {group:"GOVERNANCE"},
+  {id:"officials",icon:"▣",label:"Officials & Elections",desc:"Who holds power, what they voted for, who paid for their campaigns."},
+  {id:"boards",icon:"🏛",label:"Boards, Directors & Schools",desc:"Appointed boards - never elected - that control your utilities, hospitals, and school funding."},
+  {id:"voting",icon:"🗳",label:"Voting & Your Rights",desc:"Register, verify your registration, and know what races are on the 2026 ballot."},
+  {id:"sentencing",icon:"⚖",label:"Sentencing & Prisons",desc:"Life sentences for non-violent crimes. Private prison donor money. The school-to-prison pipeline."},
+  {id:"policing",icon:"🚔",label:"Policing & Accountability",desc:"Police budget, Sheriff commissions from jail phone contracts, civilian oversight gaps."},
+  {id:"surveillance",icon:"👁",label:"Surveillance",desc:"License plate readers, facial recognition, data brokers - who is watching and profiting."},
+  {group:"DEEP DIVES"},
+  {id:"land",icon:"🗺",label:"Land, Zoning & Development",desc:"Who gets annexed, who gets tax breaks, who approves the deals - and who profits."},
+  {id:"environment",icon:"🌿",label:"Environment",desc:"PFAS forever chemicals in your water, air quality, and who is blocking cleanup."},
+  {id:"disinfo",icon:"📡",label:"Misinformation Watch",desc:"Claims by local officials - fact-checked against public records so you can verify."},
+  {id:"unhoused",icon:"🏠",label:"Housing & Unhoused",desc:"Section 8 waitlist closed since 2020. Encampments swept near new development sites."},
+  {id:"proposals",icon:"📋",label:"What Can Change",desc:"Specific policy changes possible now versus what requires winning the 2026 elections."},
+  {id:"action",icon:"🎯",label:"Take Action",desc:"Voter registration, public records requests, how to run for office, direct official contacts."},
+]
+
+
