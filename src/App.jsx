@@ -628,10 +628,10 @@ function EquityPage(){
               <span style={{fontSize:12.5,color:"#374151",fontWeight:600}}>{m.label}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"100px 1fr 100px",gap:8,alignItems:"center"}}>
-              <div style={{fontSize:11,fontWeight:700,color:(()=>{const g=Math.abs(m.north-m.south);return g>40?"#dc2626":g>20?"#ea580c":g>8?"#c9a84c":"#16a34a";})(),textAlign:"right"}}>{m.northLabel}</div>
+              <div style={{fontSize:11,fontWeight:700,color:(Math.abs(m.north-m.south)>40?"#dc2626":Math.abs(m.north-m.south)>20?"#ea580c":Math.abs(m.north-m.south)>8?"#c9a84c":"#16a34a"),textAlign:"right"}}>{m.northLabel}</div>
               <div style={{position:"relative",height:28,background:"#e8eef5",borderRadius:3,overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.south+"%",background:"#93b4d4",borderRadius:3}}/>
-                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:(()=>{const g=Math.abs(m.north-m.south);return g>40?"#dc2626":g>20?"#ea580c":g>8?"#c9a84c":"#16a34a";})(),opacity:.85,borderRadius:3}}/>
+                <div style={{position:"absolute",top:0,left:0,height:"100%",width:m.north+"%",background:(Math.abs(m.north-m.south)>40?"#dc2626":Math.abs(m.north-m.south)>20?"#ea580c":Math.abs(m.north-m.south)>8?"#c9a84c":"#16a34a"),opacity:.85,borderRadius:3}}/>
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 8px",justifyContent:"space-between"}}>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.9)",fontWeight:800}}>N</span>
                   <span style={{fontSize:9,color:"rgba(255,255,255,.7)",fontWeight:700}}>S</span>
@@ -1354,23 +1354,7 @@ function UtilitiesPage(){
       title:"How Your HU Bill Actually Works — And Who Set Every Number On It",
       impact:"HIGH",category:"Rate Structure",date:"Effective March 1, 2026",
       summary:"Your Huntsville Utilities electric bill has four distinct charges — each set by a different entity, none of them elected by you. Here is exactly what you pay, who set it, and who approved it.",
-      analysis:`Your bill has four layers:
-
-1. RESIDENTIAL AVAILABILITY CHARGE — $20.23/month fixed. You pay this whether you use any electricity or not. Set by HU's Electric Board (appointed by City Council). Went up $3.00 in January 2025.
-
-2. CONSUMPTION CHARGE — $0.11675/kWh for the first 1,400 kWh, then $0.12289/kWh above that. Set by HU's Electric Board and approved by City Council. Went up $0.00288/kWh in January 2025 and another $0.00114 in October 2025.
-
-3. TVA FUEL COST ADJUSTMENT — Added on top. February 2026: 2.397¢/kWh on every kWh you use. Set monthly by TVA based on fuel costs. No Alabama body approves this. It changed monthly — peaked at 4.6¢/kWh in August 2022. This is a pure TVA passthrough.
-
-4. CITY SEWER / TRASH — HU collects these on behalf of the city. Not their revenue.
-
-For a typical 1,200 kWh month: $20.23 + $140.10 + $28.76 = ~$189 electric only. Add water ($35-60) + gas ($30-80) + trash/sewer ($25-40) = combined monthly bill often $280-$380.
-
-Who profits from this structure: TVA CEO Jeff Lyash earned $8.1M in 2023 — approved by a board he works alongside, with no shareholder vote. HU CEO Wes Kelley's salary is not publicly disclosed — HU has resisted Open Records requests. Both pay zero income tax. The HU board, appointed by City Council, approved rate increases unanimously. Rep. Dale Strong, Sen. Katie Britt, and Sen. Tommy Tuberville collectively received $1.4M+ from energy PACs and introduced zero TVA oversight bills.
-
-In August 2025 HU launched a new billing system that generated "double bills" and widespread account confusion. Over 1,600 customers signed a Change.org petition demanding an independent billing audit. HU's official response: "blame the weather." Council Member Bill Kling's response to the petition: "The utility rates in Huntsville are among the lowest in the entire state of Alabama." That may be technically true for the electric rate per kWh — but it does not describe what residents are actually paying when the full combined bill lands.
-
-Who approved this? HU Board approved the rate structure. City Council approved it unanimously in October 2024. TVA approved their fuel surcharge internally. Your state legislators have zero authority over any of it.`,
+      analysis:"Your bill has four layers:\n\n1. RESIDENTIAL AVAILABILITY CHARGE — $20.23/month fixed. You pay this whether you use any electricity or not. Set by HU's Electric Board (appointed by City Council). Went up $3.00 in January 2025.\n\n2. CONSUMPTION CHARGE — $0.11675/kWh for the first 1,400 kWh, then $0.12289/kWh above that. Set by HU's Electric Board and approved by City Council. Went up $0.00288/kWh in January 2025 and another $0.00114 in October 2025.\n\n3. TVA FUEL COST ADJUSTMENT — Added on top. February 2026: 2.397¢/kWh on every kWh you use. Set monthly by TVA based on fuel costs. No Alabama body approves this. It changed monthly — peaked at 4.6¢/kWh in August 2022. This is a pure TVA passthrough.\n\n4. CITY SEWER / TRASH — HU collects these on behalf of the city. Not their revenue.\n\nFor a typical 1,200 kWh month: $20.23 + $140.10 + $28.76 = ~$189 electric only. Add water ($35-60) + gas ($30-80) + trash/sewer ($25-40) = combined monthly bill often $280-$380.\n\nWho profits from this structure: TVA CEO Jeff Lyash earned $8.1M in 2023 — approved by a board he works alongside, with no shareholder vote. HU CEO Wes Kelley's salary is not publicly disclosed — HU has resisted Open Records requests. Both pay zero income tax. The HU board, appointed by City Council, approved rate increases unanimously. Rep. Dale Strong, Sen. Katie Britt, and Sen. Tommy Tuberville collectively received $1.4M+ from energy PACs and introduced zero TVA oversight bills.\n\nIn August 2025 HU launched a new billing system that generated \"double bills\" and widespread account confusion. Over 1,600 customers signed a Change.org petition demanding an independent billing audit. HU's official response: \"blame the weather.\" Council Member Bill Kling's response to the petition: \"The utility rates in Huntsville are among the lowest in the entire state of Alabama.\" That may be technically true for the electric rate per kWh — but it does not describe what residents are actually paying when the full combined bill lands.\n\nWho approved this? HU Board approved the rate structure. City Council approved it unanimously in October 2024. TVA approved their fuel surcharge internally. Your state legislators have zero authority over any of it.",
       sources:[
         {label:"HU Rate Schedule RS — March 2026",url:"https://www.hsvutil.org/residential_services/residential_rates.php"},
         {label:"TVA Fuel Cost — Feb 2026",url:"https://www.tva.com/energy/our-power-system/total-monthly-fuel-costs"},
@@ -1387,13 +1371,7 @@ Who approved this? HU Board approved the rate structure. City Council approved i
       title:"The TVA Lock-In — Why You Cannot Choose Your Electric Company and Nobody in Alabama Can Change That",
       impact:"HIGH",category:"Federal Monopoly",date:"Federal Law since 1933",
       summary:"Federal statute gives TVA an exclusive service territory across 7 states. No Alabama law, no Alabama regulator, no Alabama court can override it. Browns Ferry Nuclear Plant — 15 miles from your home — generates your electricity. You have no say in who provides it or what they charge.",
-      analysis:`TVA is a federal government corporation created by the Tennessee Valley Authority Act of 1933. That law gave TVA an exclusive right to serve its 7-state territory. No private utility, no cooperative, no new public utility can compete with TVA. It is a congressionally-imposed monopoly — and only Congress can end it.
-
-Browns Ferry Nuclear Plant in Athens, Alabama — 15 miles from Huntsville — generates 3,800 megawatts. It was built with federal funds intended to benefit the region. Alabama ratepayers must buy that power at rates TVA sets, with no ability to negotiate or switch providers.
-
-TVA has raised base rates 4.5% in FY2024 and is proposing further increases for FY2026 to fund natural gas infrastructure expansion. Their CEO Jeff Lyash earned $8.1M in 2023 — approved by a board he works alongside, with no shareholder vote or public approval. TVA carries over $20 billion in long-term debt, all passed to ratepayers.
-
-Alabama's three federal representatives — Rep. Dale Strong, Sen. Katie Britt, Sen. Tommy Tuberville — collectively received $1.4M+ from energy PACs. None have introduced TVA oversight legislation. Strong sits on the House Armed Services Committee overseeing Redstone Arsenal, which is adjacent to the TVA supply chain. The money and the silence are connected.`,
+      analysis:"TVA is a federal government corporation created by the Tennessee Valley Authority Act of 1933. That law gave TVA an exclusive right to serve its 7-state territory. No private utility, no cooperative, no new public utility can compete with TVA. It is a congressionally-imposed monopoly — and only Congress can end it.\n\nBrowns Ferry Nuclear Plant in Athens, Alabama — 15 miles from Huntsville — generates 3,800 megawatts. It was built with federal funds intended to benefit the region. Alabama ratepayers must buy that power at rates TVA sets, with no ability to negotiate or switch providers.\n\nTVA has raised base rates 4.5% in FY2024 and is proposing further increases for FY2026 to fund natural gas infrastructure expansion. Their CEO Jeff Lyash earned $8.1M in 2023 — approved by a board he works alongside, with no shareholder vote or public approval. TVA carries over $20 billion in long-term debt, all passed to ratepayers.\n\nAlabama's three federal representatives — Rep. Dale Strong, Sen. Katie Britt, Sen. Tommy Tuberville — collectively received $1.4M+ from energy PACs. None have introduced TVA oversight legislation. Strong sits on the House Armed Services Committee overseeing Redstone Arsenal, which is adjacent to the TVA supply chain. The money and the silence are connected.",
       sources:[
         {label:"TVA FY2026 Congressional Budget",url:"https://www.tva.gov/cj"},
         {label:"Browns Ferry — NRC",url:"https://www.nrc.gov/info-finder/reactors/bf.html"},
@@ -1410,11 +1388,7 @@ Alabama's three federal representatives — Rep. Dale Strong, Sen. Katie Britt, 
       title:"Triana Water Works — PFAS Contamination, Superfund Status, and No Representation",
       impact:"CRITICAL",category:"Environmental Justice",date:"Ongoing since 1970s",
       summary:"PFOS detected above EWG health guidelines in Triana's water. The town is on the EPA Superfund list. This majority-Black community of 2,300 has no Huntsville City Council seat, no IDB access, and no political champion — just contaminated water and federal inaction.",
-      analysis:`PFOS — a PFAS forever chemical linked to kidney cancer, thyroid disease, and immune damage — has been detected above EWG health guidelines in Triana Water Works. The EPA has set a maximum contaminant level of 4 parts per trillion for PFOS; EWG's health guideline is 1 ppt. Triana's levels have exceeded EWG's standard.
-
-Triana remains on the EPA Superfund list due to contamination from two sources: Redstone Arsenal PFAS discharge into Indian Creek/Huntsville Spring Branch, and Olin Corporation DDT manufacturing that contaminated the Tennessee River. This contamination began in the 1970s and has never been fully remediated. The full extent of Redstone Arsenal's ongoing PFAS contamination has not been publicly disclosed.
-
-Triana is a majority-Black community of approximately 2,300. It has no representation on the Huntsville City Council. It cannot access IDB tax abatements that benefit corporations. It receives none of the capital investment flowing to annexed development areas. Rep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations. Gov. Ivey — who appoints ADEM leadership — received $340,000 from energy and industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. The residents of Triana are paying the price.`,
+      analysis:"PFOS — a PFAS forever chemical linked to kidney cancer, thyroid disease, and immune damage — has been detected above EWG health guidelines in Triana Water Works. The EPA has set a maximum contaminant level of 4 parts per trillion for PFOS; EWG's health guideline is 1 ppt. Triana's levels have exceeded EWG's standard.\n\nTriana remains on the EPA Superfund list due to contamination from two sources: Redstone Arsenal PFAS discharge into Indian Creek/Huntsville Spring Branch, and Olin Corporation DDT manufacturing that contaminated the Tennessee River. This contamination began in the 1970s and has never been fully remediated. The full extent of Redstone Arsenal's ongoing PFAS contamination has not been publicly disclosed.\n\nTriana is a majority-Black community of approximately 2,300. It has no representation on the Huntsville City Council. It cannot access IDB tax abatements that benefit corporations. It receives none of the capital investment flowing to annexed development areas. Rep. Dale Strong voted against the PFAS Notification Act that would have required disclosure of contamination levels near military installations. Gov. Ivey — who appoints ADEM leadership — received $340,000 from energy and industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. The residents of Triana are paying the price.",
       sources:[
         {label:"EWG Tap Water Database",url:"https://www.ewg.org/tapwater/"},
         {label:"EPA Superfund Sites",url:"https://www.epa.gov/superfund"},
@@ -2093,13 +2067,7 @@ function HealthPage(){
       title:"The Nonprofit Paradox — $2.4B Revenue, Zero Income Tax, $3.1M CEO",
       impact:"HIGH",category:"Nonprofit Accountability",date:"IRS Form 990 — FY2022",
       summary:"HHHS claims $63M/yr in tax exemptions as a nonprofit hospital system. In exchange, it must provide community benefit commensurate with its exemption. The CEO earns $3.1M. Starting CNAs earn $14.50/hr and may qualify for SNAP food benefits.",
-      analysis:`HHHS pays zero federal income tax, zero state income tax, and reduced property tax — claiming approximately $63 million per year in total tax exemptions as a nonprofit. The legal justification: nonprofits must provide community benefit to the public commensurate with their exemption.
-
-Here is what HHHS does with that exemption: CEO Jeff Samz earned approximately $3.1 million in 2022 — approximately $1,490 per hour. Starting CNAs earn $14.50 per hour. Patient Care Technicians start at approximately $18/hr. Environmental Services workers start at $12.50/hr. Multiple frontline roles earn wages that qualify employees for SNAP food assistance.
-
-In 2013, while Spillers' compensation grew, HHHS froze wages system-wide with no deadline and simultaneously increased employee health insurance premiums by $40/month and cut pension contributions. The official justification was declining reimbursements. The CEO's compensation continued to increase through this period.
-
-The IRS requires nonprofits to disclose total community benefit spending on Form 990 Schedule H — but does not specify what counts as community benefit. HHHS has not published a clear breakdown of what it claims as community benefit as a percentage of revenue. File an IRS Form 990 inspection request or look it up free on ProPublica Nonprofit Explorer.`,
+      analysis:"HHHS pays zero federal income tax, zero state income tax, and reduced property tax — claiming approximately $63 million per year in total tax exemptions as a nonprofit. The legal justification: nonprofits must provide community benefit to the public commensurate with their exemption.\n\nHere is what HHHS does with that exemption: CEO Jeff Samz earned approximately $3.1 million in 2022 — approximately $1,490 per hour. Starting CNAs earn $14.50 per hour. Patient Care Technicians start at approximately $18/hr. Environmental Services workers start at $12.50/hr. Multiple frontline roles earn wages that qualify employees for SNAP food assistance.\n\nIn 2013, while Spillers' compensation grew, HHHS froze wages system-wide with no deadline and simultaneously increased employee health insurance premiums by $40/month and cut pension contributions. The official justification was declining reimbursements. The CEO's compensation continued to increase through this period.\n\nThe IRS requires nonprofits to disclose total community benefit spending on Form 990 Schedule H — but does not specify what counts as community benefit. HHHS has not published a clear breakdown of what it claims as community benefit as a percentage of revenue. File an IRS Form 990 inspection request or look it up free on ProPublica Nonprofit Explorer.",
       sources:[
         {label:"ProPublica Nonprofit Explorer — HHHS",url:"https://projects.propublica.org/nonprofits/organizations/630752604"},
         {label:"IRS Form 990 Schedule H",url:"https://www.irs.gov/instructions/i990sh"},
@@ -2116,13 +2084,7 @@ The IRS requires nonprofits to disclose total community benefit spending on Form
       title:"The Crestwood Acquisition — $450M Deal Would Give HHHS Complete Huntsville Monopoly",
       impact:"CRITICAL",category:"Antitrust — Active 2026",date:"Announced January 20, 2026",
       summary:"HHHS agreed to acquire Crestwood Medical Center for $450M. Crestwood is 2 miles from Huntsville Hospital main campus and is the ONLY hospital in Huntsville not already owned by HHHS. If approved, HHHS will have zero hospital competition in all of North Alabama.",
-      analysis:`On January 20, 2026, HHHS announced it would acquire Crestwood Medical Center from Community Health Systems for $450 million. Crestwood is a 180-bed hospital located 2 miles from Huntsville Hospital's main campus. Crestwood is the last remaining hospital in Huntsville not owned by HHHS. If this deal closes, HHHS will have a complete monopoly on inpatient hospital services in Huntsville — and in all of North Alabama.
-
-The FTC has challenged similar deals. In 2023, nonprofit Novant Health announced a $140M deal to buy two North Carolina hospitals. The FTC sued, arguing it would reduce competition. Novant eventually abandoned the deal while litigation was pending. The Crestwood deal is more than 3x larger and creates an even more complete geographic monopoly.
-
-What a monopoly means for patients: When there is no competition, hospital prices rise — HHHS can charge more and insurers must pay. Insurance companies lose negotiating leverage and pass higher costs to employers and workers as premium increases. Blue Cross Blue Shield of Alabama — which already controls over 90% of Alabama commercial health insurance — saw ACA premiums increase 19.3% for 2026. The HHHS monopoly and the BCBS premium increases are structurally linked: each hospital HHHS acquires reduces the competition that keeps prices in check. Wages stagnate because there is only one major healthcare employer. Patients in labor disputes or with grievances have nowhere else to go.
-
-What you can do today: File a public comment with the FTC. Contact Rep. Dale Strong's office. The deal has not yet closed. The period for regulatory challenge is now.`,
+      analysis:"On January 20, 2026, HHHS announced it would acquire Crestwood Medical Center from Community Health Systems for $450 million. Crestwood is a 180-bed hospital located 2 miles from Huntsville Hospital's main campus. Crestwood is the last remaining hospital in Huntsville not owned by HHHS. If this deal closes, HHHS will have a complete monopoly on inpatient hospital services in Huntsville — and in all of North Alabama.\n\nThe FTC has challenged similar deals. In 2023, nonprofit Novant Health announced a $140M deal to buy two North Carolina hospitals. The FTC sued, arguing it would reduce competition. Novant eventually abandoned the deal while litigation was pending. The Crestwood deal is more than 3x larger and creates an even more complete geographic monopoly.\n\nWhat a monopoly means for patients: When there is no competition, hospital prices rise — HHHS can charge more and insurers must pay. Insurance companies lose negotiating leverage and pass higher costs to employers and workers as premium increases. Blue Cross Blue Shield of Alabama — which already controls over 90% of Alabama commercial health insurance — saw ACA premiums increase 19.3% for 2026. The HHHS monopoly and the BCBS premium increases are structurally linked: each hospital HHHS acquires reduces the competition that keeps prices in check. Wages stagnate because there is only one major healthcare employer. Patients in labor disputes or with grievances have nowhere else to go.\n\nWhat you can do today: File a public comment with the FTC. Contact Rep. Dale Strong's office. The deal has not yet closed. The period for regulatory challenge is now.",
       sources:[
         {label:"STAT News — Monopoly Concerns",url:"https://www.statnews.com/2026/01/22/huntsville-hospital-merger-antitrust-concerns-alabama/"},
         {label:"WAFF — Workers Voice Concerns",url:"https://www.waff.com/2026/02/03/where-do-you-go-health-care-workers-voice-concerns-over-huntsville-hospitals-450-million-deal/"},
@@ -2139,13 +2101,7 @@ What you can do today: File a public comment with the FTC. Contact Rep. Dale Str
       title:"Working Conditions — Understaffed, Underpaid, Nowhere Else to Go",
       impact:"HIGH",category:"Labor & Working Conditions",date:"Glassdoor/Indeed Reviews — 2024-2025",
       summary:"Hundreds of HHHS employee reviews document chronic understaffing, raises of $0.05-$0.59 per year, nurses performing CNA and transport duties simultaneously, and broken equipment. The monopoly means there is nowhere else to go in North Alabama.",
-      analysis:`HHHS — Huntsville Hospital Health System — employs approximately 20,000 people and is the largest private employer in Madison County. With the Crestwood acquisition pending, it will soon be the only hospital employer in Huntsville. Workers who leave have limited options without relocating.
-
-Documented patterns from Glassdoor and Indeed reviews (2024-2025): Nurses report 1 CNA assigned to 15+ patients. Registered Nurses performing transport, phlebotomy, and janitorial duties simultaneously — outside their job description. Annual raises of $0.25 or less. Pay is described as the lowest in nursing locally and does not compete with other opportunities. Equipment broken with slow or no repair. Multiple reviewers say management does not care about staff.
-
-WHO ACTUALLY BENEFITS FROM THIS WAGE STRUCTURE: CEO Jeff Samz ($3.1M/yr). The 9-member self-appointed board — including business executives and real estate developers — who approved that pay and set the nonprofit rules. The elected officials who received HHHS political donations: Tommy Battle received $45,000 from HHHS-affiliated donors; state legislators who have blocked hospital price transparency bills. The system benefits financially from keeping labor costs low while charging some of the highest procedure prices in Alabama. HHHS charges $38,000 for a knee replacement — the state average is $28,000. That price gap is pure margin, and it goes to executive compensation, facility expansion, and political donations — not worker wages.
-
-CNA wages: $14.50/hr = $30,160/yr. Federal poverty line for a family of four: $31,200. A full-time CNA at HHHS qualifies for food assistance.`,
+      analysis:"HHHS — Huntsville Hospital Health System — employs approximately 20,000 people and is the largest private employer in Madison County. With the Crestwood acquisition pending, it will soon be the only hospital employer in Huntsville. Workers who leave have limited options without relocating.\n\nDocumented patterns from Glassdoor and Indeed reviews (2024-2025): Nurses report 1 CNA assigned to 15+ patients. Registered Nurses performing transport, phlebotomy, and janitorial duties simultaneously — outside their job description. Annual raises of $0.25 or less. Pay is described as the lowest in nursing locally and does not compete with other opportunities. Equipment broken with slow or no repair. Multiple reviewers say management does not care about staff.\n\nWHO ACTUALLY BENEFITS FROM THIS WAGE STRUCTURE: CEO Jeff Samz ($3.1M/yr). The 9-member self-appointed board — including business executives and real estate developers — who approved that pay and set the nonprofit rules. The elected officials who received HHHS political donations: Tommy Battle received $45,000 from HHHS-affiliated donors; state legislators who have blocked hospital price transparency bills. The system benefits financially from keeping labor costs low while charging some of the highest procedure prices in Alabama. HHHS charges $38,000 for a knee replacement — the state average is $28,000. That price gap is pure margin, and it goes to executive compensation, facility expansion, and political donations — not worker wages.\n\nCNA wages: $14.50/hr = $30,160/yr. Federal poverty line for a family of four: $31,200. A full-time CNA at HHHS qualifies for food assistance.",
       sources:[
         {label:"Glassdoor — HHHS Reviews",url:"https://www.glassdoor.com/Reviews/Huntsville-Hospital-Reviews-E121295.htm"},
         {label:"Indeed — HHHS Nurse Reviews",url:"https://www.indeed.com/cmp/Huntsville-Hospital-Health-System/reviews?fjobtitle=Registered+Nurse"},
@@ -2162,13 +2118,7 @@ CNA wages: $14.50/hr = $30,160/yr. Federal poverty line for a family of four: $3
       title:"The Medicaid Refusal — How HHHS, the Insurance Industry, and Politicians Keep 295,000 Alabamians Uninsured",
       impact:"HIGH",category:"Policy & Donor Connections",date:"Ongoing since 2014",
       summary:"Alabama has refused Medicaid expansion since 2014. 295,000 Alabama citizens — including ~47,000 in Madison County — are uninsured in the coverage gap. The federal government pays 90%. Gov. Ivey received $420k from health insurance industry. The refusal is not accidental.",
-      analysis:`The Affordable Care Act allowed states to expand Medicaid to cover adults earning up to 138% of the federal poverty level. The federal government pays 90% of the cost — permanently. Alabama refuses. As of 2026, 295,000 Alabamians earn too much for traditional Medicaid but too little for ACA marketplace subsidies. They are uninsured.
-
-Who benefits from the refusal: Health insurance companies — their market shrinks if Medicaid expands. Gov. Ivey received $420,000 from health insurance industry PACs. Sen. Orr received donations from the Business Council of Alabama, which has lobbied against expansion.
-
-HHHS's role: HHHS absorbs significant uncompensated care costs from uninsured patients. It then reports this as 'community benefit' on its IRS Form 990 to justify its nonprofit tax exemption. The Medicaid refusal and HHHS's expansion are structurally linked — more uninsured patients means more uncompensated care, which means a bigger 'community benefit' claim, which justifies the nonprofit exemption that saves HHHS $63M/year in taxes.
-
-The connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,000+ Madison County residents are uninsured → HHHS provides uncompensated care → HHHS claims this as community benefit → HHHS retains $63M/year in tax exemptions → HHHS donates to Mayor Battle's campaign → Battle never questions HHHS nonprofit status or board structure. Everyone in the loop benefits except the uninsured resident.`,
+      analysis:"The Affordable Care Act allowed states to expand Medicaid to cover adults earning up to 138% of the federal poverty level. The federal government pays 90% of the cost — permanently. Alabama refuses. As of 2026, 295,000 Alabamians earn too much for traditional Medicaid but too little for ACA marketplace subsidies. They are uninsured.\n\nWho benefits from the refusal: Health insurance companies — their market shrinks if Medicaid expands. Gov. Ivey received $420,000 from health insurance industry PACs. Sen. Orr received donations from the Business Council of Alabama, which has lobbied against expansion.\n\nHHHS's role: HHHS absorbs significant uncompensated care costs from uninsured patients. It then reports this as 'community benefit' on its IRS Form 990 to justify its nonprofit tax exemption. The Medicaid refusal and HHHS's expansion are structurally linked — more uninsured patients means more uncompensated care, which means a bigger 'community benefit' claim, which justifies the nonprofit exemption that saves HHHS $63M/year in taxes.\n\nThe connected loop: Ivey refuses Medicaid (protecting insurance donors) → 47,000+ Madison County residents are uninsured → HHHS provides uncompensated care → HHHS claims this as community benefit → HHHS retains $63M/year in tax exemptions → HHHS donates to Mayor Battle's campaign → Battle never questions HHHS nonprofit status or board structure. Everyone in the loop benefits except the uninsured resident.",
       sources:[
         {label:"Kaiser Family Foundation — Medicaid Gap",url:"https://www.kff.org/medicaid/issue-brief/the-coverage-gap-uninsured-poor-adults-in-states-that-do-not-expand-medicaid/"},
         {label:"AL Campaign Finance — FCPA",url:"https://fcpa.alabama.gov"},
@@ -3711,13 +3661,7 @@ function WorkersPage(){
       title:"The Wage Suppression System — How Alabama Locked $7.25/hr in Place",
       impact:"HIGH",category:"Minimum Wage",date:"SB 88 signed 2023",
       summary:"In 2023 Alabama passed SB 88, banning cities and counties from setting their own minimum wage above the federal $7.25/hr floor. Huntsville cannot raise wages for its lowest-paid workers. Sen. Arthur Orr sponsored the bill. He received $45,000 from the Business Council of Alabama.",
-      analysis:`Federal minimum wage: $7.25/hr — unchanged since 2009. A full-time worker at this rate earns $15,080/year, below the federal poverty line for a family of two ($20,440). Alabama has not raised its state minimum wage in 16 years. In 2015, Birmingham passed a city ordinance raising the local minimum wage. Alabama immediately passed a preemption law blocking it. In 2023, Sen. Arthur Orr sponsored SB 88 codifying that cities and counties permanently cannot exceed the federal floor.
-
-Orr received $45,000 from the Business Council of Alabama (BCA) before and after sponsoring this bill. The BCA represents the large employers — retail, fast food, healthcare — who benefit most from keeping wages at the federal minimum. Amazon, operating in Huntsville with IDB property tax abatements worth millions, pays its Alabama warehouse workers at or near the rate it sets internally — not because of any state requirement to do better.
-
-The downstream effects are documented: $7.25/hr workers cannot afford Huntsville's $1,200/month infant care. They cannot afford BCBS health premiums at $490/month. They cannot afford the $163/month auto insurance required to drive to work. The minimum wage and every other cost discussed on this app are part of the same system.
-
-Contact Sen. Arthur Orr directly — (334) 242-7895 — and demand SB 88 repeal. His Senate District 8 seat is on the 2026 ballot. Tanya Reeves (D) has announced a challenge. Register to vote at sos.alabama.gov — deadline is 15 days before any election.`,
+      analysis:"Federal minimum wage: $7.25/hr — unchanged since 2009. A full-time worker at this rate earns $15,080/year, below the federal poverty line for a family of two ($20,440). Alabama has not raised its state minimum wage in 16 years. In 2015, Birmingham passed a city ordinance raising the local minimum wage. Alabama immediately passed a preemption law blocking it. In 2023, Sen. Arthur Orr sponsored SB 88 codifying that cities and counties permanently cannot exceed the federal floor.\n\nOrr received $45,000 from the Business Council of Alabama (BCA) before and after sponsoring this bill. The BCA represents the large employers — retail, fast food, healthcare — who benefit most from keeping wages at the federal minimum. Amazon, operating in Huntsville with IDB property tax abatements worth millions, pays its Alabama warehouse workers at or near the rate it sets internally — not because of any state requirement to do better.\n\nThe downstream effects are documented: $7.25/hr workers cannot afford Huntsville's $1,200/month infant care. They cannot afford BCBS health premiums at $490/month. They cannot afford the $163/month auto insurance required to drive to work. The minimum wage and every other cost discussed on this app are part of the same system.\n\nContact Sen. Arthur Orr directly — (334) 242-7895 — and demand SB 88 repeal. His Senate District 8 seat is on the 2026 ballot. Tanya Reeves (D) has announced a challenge. Register to vote at sos.alabama.gov — deadline is 15 days before any election.",
       sources:[
         {label:"AL Legislature — SB 88",url:"https://alison.legislature.state.al.us/"},
         {label:"MIT Living Wage Calculator",url:"https://livingwage.mit.edu/counties/01089"},
@@ -3728,13 +3672,7 @@ Contact Sen. Arthur Orr directly — (334) 242-7895 — and demand SB 88 repeal.
       title:"The Child Care Crisis — $14,400/yr for Infant Care, 65% of Eligible Kids on Waitlist",
       impact:"HIGH",category:"Child Care",date:"2025 Data",
       summary:"Infant care in Huntsville costs approximately $14,400/year — more than UAH in-state tuition. Alabama Pre-K serves only 30% of eligible 4-year-olds. Head Start serves 35% of eligible Madison County children. The other 65% are on a waitlist.",
-      analysis:`Huntsville area infant care runs approximately $1,200/month ($14,400/year). For a parent earning $30,000/year, that is 48% of gross income — before taxes, rent, food, or transportation. The federal poverty guideline for a family of three is $25,820. Child care costs are the primary driver of why a single parent needs $41.34/hour to achieve a living wage in Madison County.
-
-Alabama ranks last or near-last nationally in state investment in early childhood education. The CHOOSE Act (2023) created education savings accounts — but 67% of initial recipients were already in private school. Meanwhile public Pre-K serves 30% of 4-year-olds. Head Start in Madison County operates at 35% of eligible enrollment capacity with 65% of eligible children on waiting lists.
-
-Compare: Washington DC publicly funds Pre-K for all children from age 3. Vermont's Child Care Financial Assistance Program covers full cost for low-income families. These are not radical experiments — they are existing programs in peer states that have measurably improved workforce participation, reduced poverty, and increased long-term tax revenue. Alabama has chosen not to implement them.
-
-Contact your state representatives and demand: (1) Expansion of Alabama First Class Pre-K funding, (2) Child Care Assistance Program (CCAP) Assistance Program) expansion to cover more families, (3) Opposition to CHOOSE Act vouchers that divert funding from public Pre-K. Find your state legislator at legislature.alabama.gov. The 2026 session begins in February — now is when these decisions are made.`,
+      analysis:"Huntsville area infant care runs approximately $1,200/month ($14,400/year). For a parent earning $30,000/year, that is 48% of gross income — before taxes, rent, food, or transportation. The federal poverty guideline for a family of three is $25,820. Child care costs are the primary driver of why a single parent needs $41.34/hour to achieve a living wage in Madison County.\n\nAlabama ranks last or near-last nationally in state investment in early childhood education. The CHOOSE Act (2023) created education savings accounts — but 67% of initial recipients were already in private school. Meanwhile public Pre-K serves 30% of 4-year-olds. Head Start in Madison County operates at 35% of eligible enrollment capacity with 65% of eligible children on waiting lists.\n\nCompare: Washington DC publicly funds Pre-K for all children from age 3. Vermont's Child Care Financial Assistance Program covers full cost for low-income families. These are not radical experiments — they are existing programs in peer states that have measurably improved workforce participation, reduced poverty, and increased long-term tax revenue. Alabama has chosen not to implement them.\n\nContact your state representatives and demand: (1) Expansion of Alabama First Class Pre-K funding, (2) Child Care Assistance Program (CCAP) Assistance Program) expansion to cover more families, (3) Opposition to CHOOSE Act vouchers that divert funding from public Pre-K. Find your state legislator at legislature.alabama.gov. The 2026 session begins in February — now is when these decisions are made.",
       sources:[
         {label:"AL First Class Pre-K",url:"https://www.alabamaachieves.org/alabama-pre-k/"},
         {label:"AL Head Start — ACF",url:"https://eclkc.ohs.acf.hhs.gov/"},
@@ -3937,86 +3875,74 @@ Contact your state representatives and demand: (1) Expansion of Alabama First Cl
 
       {tab==="employers"&&(
         <div>
-          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:12.5,color:"#1e3a5f",lineHeight:1.7}}>
-            Madison County's biggest employers — what they pay, what tax breaks they get from the public, and what that means for workers who live here.
+          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:13,color:"#1e3a5f",lineHeight:1.7}}>
+            Madison County's biggest employers — who they are, what they actually pay workers, what public tax breaks they receive, and what that means for you.
           </div>
           {[
             {
-              name:"Amazon — Fulfillment Centers (HSV1 + HSV2)",
-              icon:"📦",
-              color:"#f59e0b",
-              workers:"4,000+ local warehouse workers",
-              startPay:"$16.50/hr ($34,320/yr full-time)",
-              livingWage:"MIT living wage for Madison Co.: $20.18/hr single adult",
-              taxBreak:"Received IDB property tax abatement — pays $0 property tax for years on its Huntsville facilities",
-              whatItMeans:"Amazon made $638 billion in revenue in 2024. Its Huntsville workers earn $16.50/hr — $3.68 below the local living wage. The city gave Amazon a property tax break through the Industrial Development Board (IDB), which means the facility doesn't pay into local school funding the way a homeowner would. Workers have no sick leave guarantee, no union, and Alabama law bans the city from requiring higher wages.",
-              action:"If you work at Amazon HSV1 or HSV2 and want to organize, contact the UAW: uaw.org. You have the legal right to do so."
+              name:"Amazon — Fulfillment Centers (HSV1 + HSV2)",icon:"📦",color:"#f59e0b",
+              who:"4,000+ warehouse workers picking, packing, and shipping orders",
+              pay:"$16.50/hr starting ($34,320/yr full-time)",
+              livingWage:"MIT living wage for Madison County: $20.18/hr for a single adult — Amazon pays $3.68 below that",
+              taxBreak:"Received IDB property tax abatement — pays $0 local property tax on its Huntsville facilities for years",
+              plainEnglish:"Amazon made $638 billion in 2024. Its Huntsville workers start at $16.50/hr — below the local living wage. The city gave Amazon a property tax break, which means Amazon doesn't contribute to school funding the same way a homeowner does. Alabama law bans Huntsville from requiring higher wages. Workers have no sick leave guarantee and no union.",
+              action:"Want to organize at Amazon? Contact the UAW at uaw.org. Under federal law, you have the right to do so."
             },
             {
-              name:"Huntsville Hospital Health System (HHHS)",
-              icon:"🏥",
-              color:"#dc2626",
-              workers:"20,000+ employees across 14 facilities",
-              startPay:"Starting CNA: $14.50/hr ($30,160/yr) — below the federal poverty line for a family of 4",
-              livingWage:"A CNA at starting wage qualifies for SNAP food assistance",
-              taxBreak:"Nonprofit status = $0 income tax on $2.4B in annual revenue + $63M/yr in total estimated tax exemptions",
-              whatItMeans:"HHHS is the largest private employer in Madison County and pays $0 in income taxes because it's a nonprofit. In exchange, it's supposed to provide community benefit. But it starts its lowest-paid workers at $14.50/hr while its CEO earns $3.1M/yr — a 214:1 ratio. Annual raises as low as $0.25/hr have been documented in employee reviews. The hospital is buying Crestwood Medical Center for $450M, which would make it the only hospital in Huntsville.",
-              action:"Healthcare workers: contact SEIU (seiu.org) or UFCW (ufcw.org) for organizing information. File wage complaints: al.dol.gov."
+              name:"Huntsville Hospital Health System (HHHS)",icon:"🏥",color:"#dc2626",
+              who:"20,000+ employees — nurses, CNAs, technicians, housekeeping, food service",
+              pay:"Starting CNA: $14.50/hr ($30,160/yr) — below the federal poverty line for a family of four",
+              livingWage:"A full-time CNA at HHHS starting wage qualifies for SNAP food stamps",
+              taxBreak:"Nonprofit status = $0 income tax on $2.4 billion in annual revenue + an estimated $63M/yr in total tax exemptions",
+              plainEnglish:"HHHS is the largest private employer in Madison County and pays no income taxes because it's classified as a nonprofit. Its lowest-paid workers start at $14.50/hr while its CEO earns $3.1M/yr — that's 214 times more. Documented raises as low as $0.25/hr per year. It is now buying Crestwood Medical Center for $450M, which would make it the only hospital in Huntsville.",
+              action:"Healthcare workers: contact SEIU (seiu.org) for organizing info. File wage complaints: al.dol.gov."
             },
             {
-              name:"Redstone Arsenal",
-              icon:"🚀",
-              color:"#374151",
-              workers:"~45,000 people on post (military, civilians, contractors)",
-              startPay:"Federal civilian (GS-7 entry level): ~$21/hr. Contractors: varies widely — some earn $15/hr, others $80+/hr",
-              livingWage:"Federal GS pay scale is publicly posted and includes healthcare and retirement",
-              taxBreak:"Federal land — no local property taxes paid. But Army spending pumps ~$10B/yr into the local economy",
-              whatItMeans:"Redstone is the economic anchor of Huntsville. The ~15,000 federal civilian employees here have civil service protections that most private-sector workers in Alabama don't — guaranteed retirement, healthcare, protections against arbitrary firing, and the right to join a federal union. The roughly 30,000 contractor employees on post have widely varying pay and benefits depending on their employer. Lockheed, Boeing, and Raytheon engineers earn $55-75/hr. Custodial and support contractors may earn close to minimum wage with no benefits.",
-              action:"Federal civilian employees: your union is AFGE or NTEU depending on agency. Contractor workers: check if your employer has federal contractor prevailing wage requirements."
+              name:"Redstone Arsenal — Military Base",icon:"🚀",color:"#374151",
+              who:"~45,000 people total: military personnel, federal civilian employees, and contractors",
+              pay:"Federal civilian employees follow the GS pay scale (publicly posted). Entry-level GS-7: ~$21/hr. Contractors: wide range — support staff may earn $15/hr, engineers $40-80/hr",
+              livingWage:"Federal civilian employees have healthcare, retirement, and civil service protections. Contractor workers' benefits depend entirely on their employer.",
+              taxBreak:"Federal land — no local property taxes. But Army spending injects roughly $10 billion/yr into the local economy.",
+              plainEnglish:"Redstone is Huntsville's economic anchor. The roughly 15,000 federal civilian employees here have job protections most private Alabama workers don't have — guaranteed retirement, healthcare, protection against arbitrary firing, and the right to form a union. The other 30,000+ are contractors employed by Lockheed, Boeing, Raytheon, and hundreds of smaller firms. Their pay and benefits vary dramatically. A software engineer earns $80/hr. A custodial contractor may earn $15/hr with no benefits. Being 'at Redstone' doesn't mean the same thing for everyone.",
+              action:"Federal civilian employees: your union options are AFGE (afge.org) or NTEU (nteu.org) depending on your agency."
             },
             {
-              name:"Boeing, Lockheed Martin, Raytheon (Defense Contractors)",
-              icon:"✈️",
-              color:"#64748b",
-              workers:"~14,000+ combined in Huntsville",
-              startPay:"Average engineer: $55-75/hr ($115,000-$156,000/yr)",
-              livingWage:"Well above living wage — these are among the highest-paying jobs in the region",
-              taxBreak:"Their PACs donated $284,000+ to Rep. Dale Strong — who has introduced zero TVA oversight bills despite representing all TVA territory",
-              whatItMeans:"The defense contractors pay the highest wages in the region — but primarily for engineers, software developers, and program managers. Most require a college degree and security clearance. The high wages at these companies haven't lifted wages in North Huntsville's service economy — the 'trickle-down' effect is limited to specific corridors. Their political donations also buy protection: Boeing, Lockheed, and Raytheon gave Rep. Strong $284k and he has not introduced a single TVA oversight bill despite North Alabama's electricity costs being among the highest served by TVA.",
-              action:"Contact Rep. Strong and ask why he has introduced zero TVA oversight bills: (256) 551-0190."
+              name:"Defense Contractors — Boeing, Lockheed, Raytheon",icon:"✈️",color:"#64748b",
+              who:"~14,000+ combined employees in Huntsville — primarily engineers, project managers, analysts",
+              pay:"Average engineer: $55-75/hr ($115,000-$156,000/yr)",
+              livingWage:"Well above any living wage threshold — these are the highest-paying private sector jobs in the region",
+              taxBreak:"Their political action committees donated $284,000+ to Rep. Dale Strong — who introduced zero TVA oversight bills in 2 years representing all TVA territory",
+              plainEnglish:"The defense contractors pay the highest wages in Huntsville — but almost entirely for engineers and analysts with degrees and security clearances. These high salaries don't lift wages across North Huntsville because the jobs require credentials most residents don't have. Meanwhile their PAC donations to Rep. Strong have bought silence on TVA oversight — North Alabama has had 3 rate hikes in 18 months and Strong has done nothing.",
+              action:"Call Rep. Strong and ask why he has introduced zero TVA oversight bills: (256) 551-0190."
             },
             {
-              name:"Walmart, McDonald's, and Retail / Fast Food",
-              icon:"🛒",
-              color:"#ef4444",
-              workers:"~10,000+ estimated across all locations",
-              startPay:"$7.25-$15/hr — Alabama state minimum wage is $7.25 (federal floor, unchanged since 2009)",
-              livingWage:"$7.25/hr = $15,080/yr full-time. MIT living wage for a single adult in Madison County: $20.18/hr",
-              taxBreak:"No IDB abatement required — but benefit from city infrastructure without contributing to affordable housing",
-              whatItMeans:"These are the most common jobs in Huntsville — grocery stores, fast food, gas stations, dollar stores. They pay the least. Alabama law (passed in 2015 and strengthened in 2023) explicitly bans Huntsville from passing a local minimum wage ordinance. So even though Huntsville is a growing, prosperous city, these workers are locked at the federal floor. No guaranteed sick leave. No predictive scheduling. No path to negotiate locally. Sen. Orr sponsored the bill that made this permanent — he received $45,000 from the Business Council of Alabama (BCA).",
-              action:"Contact Sen. Orr and demand repeal of the minimum wage preemption law: (334) 242-7895 · orr@alsenate.gov."
+              name:"Retail & Fast Food — Walmart, McDonald's, Dollar Stores",icon:"🛒",color:"#ef4444",
+              who:"~10,000+ workers at grocery stores, fast food, dollar stores, gas stations across Huntsville",
+              pay:"$7.25-$15/hr — Alabama's minimum wage is the federal floor of $7.25, unchanged since 2009",
+              livingWage:"$7.25/hr = $15,080/yr full-time. MIT living wage for a single adult: $20.18/hr. A full-time minimum wage worker earns $5,000 below the living wage.",
+              taxBreak:"No IDB abatements required — but benefit from city roads, police, and services funded by taxes they pay below the living wage",
+              plainEnglish:"These are the most common jobs in Huntsville. They pay the least. Alabama law — passed in 2015 and strengthened in 2023 — explicitly bans Huntsville from passing a local minimum wage law. So even as Huntsville grows into a prosperous city, these workers are locked at the federal floor. No guaranteed sick leave. No predictive scheduling. No way to fight for more locally. Sen. Arthur Orr sponsored the bill keeping it this way. He received $45,000 from the Business Council of Alabama, which represents the employers who benefit from it.",
+              action:"Contact Sen. Orr directly — demand repeal of the minimum wage preemption: (334) 242-7895."
             },
           ].map((e,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+e.color,overflow:"hidden"}}>
+            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+e.color}}>
               <div style={{padding:"14px 16px"}}>
                 <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:10}}>
-                  <span style={{fontSize:22}}>{e.icon}</span>
+                  <span style={{fontSize:24}}>{e.icon}</span>
                   <div style={{fontSize:14.5,fontWeight:700,color:"#1e3a5f",lineHeight:1.3}}>{e.name}</div>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr",gap:6,marginBottom:10}}>
-                  {[
-                    {lbl:"WHO WORKS HERE",val:e.workers,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
-                    {lbl:"WHAT THEY PAY",val:e.startPay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
-                    {lbl:"LIVING WAGE CHECK",val:e.livingWage,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},
-                    {lbl:"PUBLIC TAX BREAK THEY RECEIVE",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
-                  ].map((row,j)=>(
-                    <div key={j} style={{padding:"7px 10px",background:row.bg,borderRadius:4,border:"1px solid "+row.bc}}>
-                      <div style={{fontSize:8,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:2,textTransform:"uppercase",opacity:.7}}>{row.lbl}</div>
-                      <div style={{fontSize:12.5,color:row.tc,lineHeight:1.5}}>{row.val}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,marginBottom:8}}>{e.whatItMeans}</div>
+                {[
+                  {lbl:"WHO WORKS THERE",val:e.who,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
+                  {lbl:"WHAT THEY PAY",val:e.pay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
+                  {lbl:"VS. LIVING WAGE",val:e.livingWage,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},
+                  {lbl:"TAX BREAK FROM THE PUBLIC",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
+                ].map((row,j)=>(
+                  <div key={j} style={{padding:"7px 10px",background:row.bg,borderRadius:4,border:"1px solid "+row.bc,marginBottom:6}}>
+                    <div style={{fontSize:8,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:2,textTransform:"uppercase",opacity:.75}}>{row.lbl}</div>
+                    <div style={{fontSize:12.5,color:row.tc,lineHeight:1.55}}>{row.val}</div>
+                  </div>
+                ))}
+                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,margin:"10px 0 8px"}}>{e.plainEnglish}</div>
                 <div style={{background:"#f0fdf4",borderRadius:4,padding:"8px 10px",border:"1px solid #86efac"}}>
                   <span style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1,marginRight:6}}>WHAT YOU CAN DO</span>
                   <span style={{fontSize:12.5,color:"#14532d"}}>{e.action}</span>
@@ -4041,13 +3967,7 @@ function SentencingPage(){
       title:"Habitual Felony Offender Act — Life Without Parole for Non-Violent Crimes",
       impact:"CRITICAL",category:"Sentencing",date:"Ongoing — HFOA since 1979",
       summary:"Alabama's Habitual Felony Offender Act (HFOA) mandates life without parole for a fourth felony conviction — even if all prior offenses were non-violent. 527+ people are serving life sentences this way, 75% Black. Alabama taxpayers spend $35,000/person/year — approximately $18.5M annually — for these cases alone.",
-      analysis:`Alabama's Habitual Felony Offender Act (HFOA) was passed in 1979 and has never been substantially reformed. A fourth felony conviction — even if all prior offenses were non-violent property crimes or drug possession — triggers mandatory life without parole. Documented cases: people serving life for stealing a bicycle, possessing drugs, or writing bad checks.
-
-527+ people are currently serving life without parole under HFOA. 75% are Black. Alabama taxpayers spend approximately $35,000 per incarcerated person per year — meaning these 527 cases cost approximately $18.5M annually, indefinitely. No parole possibility. No path out.
-
-Alabama prisons operated at 181% capacity as of 2024. The Department of Justice found unconstitutional conditions — dangerous overcrowding, inadequate medical care, violence. A federal court threatened sanctions. Alabama's response has been to build more prisons rather than reduce incarceration. The private prison industry — CoreCivic and GEO Group — is paid per incarcerated person. CoreCivic donated to Sen. Orr, who has sponsored mandatory minimum sentencing bills.
-
-Contact Sen. Orr directly at orr@alsenate.gov — ask him to support HFOA reform. Contact your state House member at legislature.alabama.gov. The 2026 session is the window. Orr's District 8 seat (Madison County) is on the ballot — the race will be decided by Madison County voters.`,
+      analysis:"Alabama's Habitual Felony Offender Act (HFOA) was passed in 1979 and has never been substantially reformed. A fourth felony conviction — even if all prior offenses were non-violent property crimes or drug possession — triggers mandatory life without parole. Documented cases: people serving life for stealing a bicycle, possessing drugs, or writing bad checks.\n\n527+ people are currently serving life without parole under HFOA. 75% are Black. Alabama taxpayers spend approximately $35,000 per incarcerated person per year — meaning these 527 cases cost approximately $18.5M annually, indefinitely. No parole possibility. No path out.\n\nAlabama prisons operated at 181% capacity as of 2024. The Department of Justice found unconstitutional conditions — dangerous overcrowding, inadequate medical care, violence. A federal court threatened sanctions. Alabama's response has been to build more prisons rather than reduce incarceration. The private prison industry — CoreCivic and GEO Group — is paid per incarcerated person. CoreCivic donated to Sen. Orr, who has sponsored mandatory minimum sentencing bills.\n\nContact Sen. Orr directly at orr@alsenate.gov — ask him to support HFOA reform. Contact your state House member at legislature.alabama.gov. The 2026 session is the window. Orr's District 8 seat (Madison County) is on the ballot — the race will be decided by Madison County voters.",
       sources:[
         {label:"AL DOC — Prison Stats",url:"https://www.doc.state.al.us/"},
         {label:"DOJ — AL Prison Conditions",url:"https://www.justice.gov/opa/pr/justice-department-files-lawsuit-alabama"},
@@ -4058,13 +3978,7 @@ Contact Sen. Orr directly at orr@alsenate.gov — ask him to support HFOA reform
       title:"61% of Madison County Jail is Pretrial — Not Convicted of Anything",
       impact:"HIGH",category:"Pretrial Detention",date:"2024 Jail Census",
       summary:"61% of the people in Madison County Jail on any given day have not been convicted of anything. They are there because they cannot afford bail. Sheriff Kevin Turner controls a $2.3M civil forfeiture fund. Securus phone contracts charge families $0.21/minute.",
-      analysis:`On any given day, 61% of Madison County Jail population is pretrial — they have been charged but not convicted. They are in jail because they cannot afford bail. A $500 bail requires $50 cash to a bail bondsman — money that is not returned. For a family earning $15/hour, $50 is three hours of pre-tax wages. Many people lose their jobs before trial. Many plead guilty to crimes they did not commit just to get out.
-
-Sheriff Kevin Turner has served 16 years without a civilian oversight board reviewing his department. He controls a $2.3M civil forfeiture fund — money seized from citizens, often before conviction, with zero required public accounting of how it is spent. He received $24,000 from the bail bond industry, which profits directly from the system that keeps people in pretrial detention. He contracted with Securus Technologies for jail phone service — Securus charges families $0.21/minute for calls. The Sheriff receives approximately $200,000/year in commissions from this contract. This is public money from families of incarcerated people.
-
-The pretrial detention system costs Madison County taxpayers approximately $65/person/day. 61% of jail population being pretrial means the majority of this cost is for people who have not been found guilty of anything. Bail reform — allowing supervised release for non-violent pretrial defendants — could reduce costs and reduce harm. Turner's re-election campaign received donations from bail bond industry that profits from the current system.
-
-Attend Madison County Commission meetings when the jail budget is on the agenda. Contact the Commission at (256) 532-3330. File an Open Records request for the civil forfeiture fund expenditures. Sheriff Turner's next election is in 2026.`,
+      analysis:"On any given day, 61% of Madison County Jail population is pretrial — they have been charged but not convicted. They are in jail because they cannot afford bail. A $500 bail requires $50 cash to a bail bondsman — money that is not returned. For a family earning $15/hour, $50 is three hours of pre-tax wages. Many people lose their jobs before trial. Many plead guilty to crimes they did not commit just to get out.\n\nSheriff Kevin Turner has served 16 years without a civilian oversight board reviewing his department. He controls a $2.3M civil forfeiture fund — money seized from citizens, often before conviction, with zero required public accounting of how it is spent. He received $24,000 from the bail bond industry, which profits directly from the system that keeps people in pretrial detention. He contracted with Securus Technologies for jail phone service — Securus charges families $0.21/minute for calls. The Sheriff receives approximately $200,000/year in commissions from this contract. This is public money from families of incarcerated people.\n\nThe pretrial detention system costs Madison County taxpayers approximately $65/person/day. 61% of jail population being pretrial means the majority of this cost is for people who have not been found guilty of anything. Bail reform — allowing supervised release for non-violent pretrial defendants — could reduce costs and reduce harm. Turner's re-election campaign received donations from bail bond industry that profits from the current system.\n\nAttend Madison County Commission meetings when the jail budget is on the agenda. Contact the Commission at (256) 532-3330. File an Open Records request for the civil forfeiture fund expenditures. Sheriff Turner's next election is in 2026.",
       sources:[
         {label:"Madison County Sheriff",url:"https://www.madisonsheriff.com/"},
         {label:"Pretrial Justice Institute",url:"https://www.pretrial.org/"},
@@ -4713,7 +4627,7 @@ function TaxesPage(){
   }
   const estimatedALTax=alIncomeTax(taxableIncome);
   const effectiveRate=(estimatedALTax/Math.max(incomeVal,1)*100).toFixed(1);
-  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"🩸 Woman Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
+  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"\U0001f9f4 Women's Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"\U0001f9ee Calculator"}];
   const millage=0.00382;
   const estimatedTax=Math.round(homeValue*0.1*millage);
 
@@ -4784,30 +4698,30 @@ function TaxesPage(){
             {k:"gold",label:"HOW CITIES CAN OPT OUT — AND WHY MOST HAVEN'T",lc:"#b8860b",tc:"#78350f",text:"When Alabama reduced the state grocery tax from 4% to 3% in 2023 and to 2% in 2025, it passed a law ALLOWING — but not requiring — cities and counties to reduce their local grocery tax. Huntsville and most other municipalities chose not to reduce theirs. A Huntsville City Council vote could reduce or eliminate the local grocery tax at any time. No state approval required. Council Member Watkins has expressed concern about regressive taxes. Contact your council member directly — ask them to introduce a grocery tax reduction ordinance."},
           ]}/>
 
+
         </div>
       )}
 
 
       {tab==="womantax"&&(
         <div>
-          <div className="page-header" style={{marginBottom:14}}>
-            <span className="tag tag-gold" style={{marginBottom:8,display:"inline-block"}}>WOMAN TAX · INVESTIGATION</span>
-            <h2 style={{fontSize:22,fontWeight:900,color:"#1e3a5f",lineHeight:1.2}}>The <em style={{color:"#9333ea",fontStyle:"normal"}}>Woman Tax</em></h2>
-            <p style={{fontSize:14,color:"#6b7280",marginTop:6,lineHeight:1.6}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — the same tax category as jewelry. The state cut its portion temporarily. Huntsville's 4.5% city tax still applies. A legislature that is 81% male decided this. 30+ states have eliminated it permanently.</p>
+          <div style={{background:"#1e3a5f",borderRadius:6,padding:"14px 16px",marginBottom:14}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>WOMEN'S TAX — INVESTIGATION</div>
+            <div style={{fontSize:14,color:"rgba(255,255,255,.9)",lineHeight:1.8}}>Alabama taxes tampons, pads, and menstrual cups as luxury items — same category as jewelry. The state exempted its 4% portion through August 2028, but only the state portion. Huntsville's 4.5% city tax still applies. 30+ states have eliminated this permanently. A legislature that is 81% male decided it was a luxury.</div>
           </div>
           <div className="stats-grid" style={{marginBottom:16}}>
-            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% — temporary, not permanent","#ea580c"],["30+ States","Eliminated It","Including FL, TX, OH, NY, CA — red and blue","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women/yr","#dc2626"]].map(([l,v,s,c],i)=>(
+            {[["City Tax Still Applies","4.5%","Huntsville hasn't passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% cut — temporary, not permanent","#ea580c"],["30+ States","Eliminated It","FL, TX, OH, NY, CA — red and blue states","#16a34a"],["Annual City+County","~$518k","Collected from Madison County women each year","#dc2626"]].map(([l,v,s,c],i)=>(
               <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
             ))}
           </div>
           <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #9333ea"}}>
             <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>What You Pay — Per Woman, Per Year in Huntsville</div>
             {[
-              ["Monthly product cost","$10-20/mo","Tampons, pads, or menstrual cup — not optional"],
-              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — sunsets unless legislature acts again"],
-              ["City + county tax you still pay","$6-12/yr","4.5% city + 0.5% county — no exemption passed"],
-              ["Family with 3 women (mother + 2 daughters)","$18-36/yr","Still taxed as luxuries at the city level"],
-              ["Over a 40-year lifetime","~$240-480","In city/county taxes on biological necessities"],
+              ["Monthly product cost","$10-20/mo","Tampons, pads, or cup — not optional"],
+              ["State tax (exempted through Aug 2028)","$0 until 2028","Temporary — only covers state's 4% portion"],
+              ["City + county tax you still pay","$6-12/yr","4.5% city + 0.5% county — no exemption here"],
+              ["Family with mother + 2 daughters","$18-36/yr","Taxed as luxury items at city level"],
+              ["Over a 40-year lifetime","$240-480","In city/county taxes on biological necessities"],
             ].map(([l,v,n],i)=>(
               <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 10px",marginBottom:6,borderRadius:4,background:i%2===0?"#f8f6f2":"#faf5ff",border:"1px solid #e0d8cc",flexWrap:"wrap",gap:4}}>
                 <div>
@@ -4819,16 +4733,17 @@ function TaxesPage(){
             ))}
           </div>
           <FactBlocks facts={[
-            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME CATEGORY AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama classifies tampons and pads as non-essential luxury items — the same tax category as jewelry, perfume, and cosmetics. Periods are not a lifestyle choice. They are not optional. They are not luxuries. The Alabama legislature is 81% male. The people who decided this will never pay it."},
-            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028 and only at the state level. The Huntsville City Council can pass an ordinance exempting the city's 4.5% at any time. No state permission needed. They have not done it. Council Member Watkins represents District 1 — North Huntsville — and has publicly expressed concern about regressive taxes on low-income residents."},
-            {k:"blue",label:"30+ STATES HAVE DONE IT — RED, BLUE, AND PURPLE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. Without action from the City Council or the legislature, Huntsville women return to paying the full rate on tampons and pads. The City Council can act right now. So can the state legislature — permanently."},
+            {k:"red",label:"CLASSIFIED AS A LUXURY — SAME AS JEWELRY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama puts tampons in the same tax category as jewelry and perfume. Periods are not optional. They are not a lifestyle choice. They are not a luxury. The Alabama legislature is 81% male. The people who decided this will never pay this tax."},
+            {k:"gold",label:"THE STATE GAVE PARTIAL RELIEF — THE CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama's 2025 law exempted the state's 4% portion — but only through August 2028, and only the state portion. Huntsville's 4.5% city tax still applies every time a woman buys tampons or pads in Huntsville. The City Council can pass an ordinance exempting this at any time. No state approval needed. They have not done it."},
+            {k:"blue",label:"30+ STATES HAVE DONE IT — RED AND BLUE",lc:"#2563eb",tc:"#1e3a5f",text:"Florida, Texas, Ohio, Illinois, New York, Virginia, California — every political color — have permanently eliminated this tax. Alabama's exemption sunsets in 2028. The City Council can act right now. Council Member Watkins represents District 1 (North Huntsville) and has expressed concern about regressive taxes on lower-income residents."},
           ]}/>
           <ActionButtons title="WHAT YOU CAN DO" actions={[
-            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Woman Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Women in Huntsville still pay the city rate on products that are biological necessities — not luxuries. The City Council can act now without state approval.\n\nFlorida, Texas, and Ohio have done it. Huntsville should too.\n\n[Your Name]\n[Your Address]"},
+            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Women's Tax Exemption Ordinance",body:"Dear Council Member Watkins,\n\nI am writing to request that you introduce an ordinance exempting menstrual products from Huntsville's 4.5% city sales tax.\n\nThe state's exemption is temporary and only covers the state portion. Huntsville women still pay the city rate on products that are biological necessities, not luxuries.\n\nFlorida, Texas, and Ohio have done this. The City Council can act now.\n\n[Your Name]"},
             {label:"Call Mayor Battle's Office",tel:"2564275000"},
             {label:"Find Your Council District",href:"https://www.huntsvilleal.gov/government/city-council/"},
-            {label:"Contact AL Legislature — Permanent Fix",href:"https://www.legislature.state.al.us"},
+            {label:"Contact AL Legislature",href:"https://www.legislature.state.al.us"},
           ]}/>
+          <AiButton prompt="Alabama taxes menstrual products as luxury items — same category as jewelry. FACTS: Alabama state exempted 4% state portion through August 2028 only. Huntsville's 4.5% city tax still applies. 30+ states including Florida, Texas, Ohio have permanently eliminated this tax. ~86,400 menstruating-age women in Madison County collectively pay ~$518,000/yr in city and county taxes on tampons and pads. Over a 40-year menstruating lifetime a Huntsville woman pays $240-480 in city and county taxes on biological necessities. The City Council can exempt the city portion by ordinance right now without state approval. Alabama legislature is 81% male. Connect this clearly for a Madison County resident. Under 200 words. No jargon."/>
         </div>
       )}
             {tab==="income"&&(
@@ -4894,6 +4809,8 @@ function TaxesPage(){
             <div style={{fontSize:11,fontWeight:700,color:"#1e3a5f",letterSpacing:1,marginBottom:6}}>→ USE THE CALCULATOR TAB TO ESTIMATE YOUR AL INCOME TAX</div>
             <div style={{fontSize:13,color:"#374151",lineHeight:1.6}}>The <strong>🧮 Calculator</strong> tab includes both a property tax calculator (with area selector for all Madison County areas) and an Alabama income tax estimator for single and married filers. Switch to that tab to run your numbers.</div>
           </div>
+
+          <AiButton prompt="Investigate Alabama income tax. FACTS: Alabama income tax kicks in at $500 of income — one of the lowest thresholds in the US. Top bracket is 5% — same rate applies whether you earn $30,000 or $3 million — functionally flat. Alabama is one of only 2 states allowing full federal income tax deduction worth $3/yr to the poor but $12,901/yr to the top 1%. Closing this loophole would generate $833M in revenue — enough to permanently eliminate the state grocery tax and fund $300M more for schools. BCA gave Orr $45,000. Same donor class blocking reform. Under 200 words, plain language."/>
         </div>
       )}
 
