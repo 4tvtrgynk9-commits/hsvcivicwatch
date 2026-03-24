@@ -144,7 +144,7 @@ html,body{height:100%;background:${C.bg};font-family:'Segoe UI',system-ui,sans-s
 const NAV=[
   {group:"ECONOMIC"},
   {id:"equity",icon:"⚖",label:"The Two Huntsvilles",desc:"North vs south Huntsville - schools, roads, city spending. Same city, different outcomes."},
-  {id:"utilities",icon:"💧",label:"Power, Water & Utilities",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
+  {id:"utilities",icon:"💧",label:"Utilities: Power and Water",desc:"Who controls your electric bill. Why it keeps going up. Who profits and who answers to no one."},
   {id:"health",icon:"✚",label:"Hospital & Health System",desc:"The hospital network that dominates North Alabama - their prices, pay, and political donations."},
   {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",desc:"Premiums, deductibles, dental gaps, and auto insurance - what you pay and why."},
   {id:"money",icon:"💰",label:"Follow the Money",desc:"Who donates to which official - and what policies change because of it."},
@@ -178,7 +178,7 @@ const PAGES={
     ],
     prompt:"Investigate the documented equity gap between north and south Huntsville. FACTS: Roads PCI 41 north vs 72 south — same city, same tax rate, 16-year gap. $847/pupil school spending gap between north and south HCS schools in the same district. 3.7x more police contacts per capita in north Huntsville. 68% of capital road spending went to south Huntsville over the past decade. Mayor Battle received $380k from real estate developers. Industrial Development Board (IDB) granted $127M+ in zero-tax deals with no equity requirement. The city has never commissioned an independent equity audit. Connect these facts for a north Huntsville resident in plain language. Under 150 words, no jargon."},
 
-  utilities:{icon:"💧",title:"Power, Water",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
+  utilities:{icon:"💧",title:"Utilities",subtitle:"& Utilities",tag:"tag-blue",sub:"HU + TVA hit ratepayers with ~10%+ electric increase in one year. Triana water shows PFAS above health guidelines. ...",
     stats:[["TVA 2024 Rate Hike","5.25%","Largest in 16 years — passed to all HU customers",C.red],["HU Rate Hike","5.1%","Jan + Oct 2025 — on top of TVA hike",C.red],["Triana PFOS","Above EWG","Health guideline exceeded in town water",C.red],["TVA CEO Pay","$8.1M","Jeff Lyash 2023 — no shareholder vote",C.orange]],
     facts:[{k:"red",label:"THE DOUBLE MARKUP PROBLEM",lc:C.red,tc:"#7f1d1d",text:"The Tennessee Valley Authority (TVA) generates power at Browns Ferry Nuclear Plant 15 miles from Huntsville and sells it wholesale to Huntsville Utilities. HU marks it up, adds infrastructure fees, and delivers it to your home. Two separate entities both adding cost — neither directly elected by you. Combined effect in 2024-2025: TVA raised rates 5.25% (largest in 16 years) + HU added 5.1% on top = approximately 10%+ increase on your electric bill in one year. Alabama's Public Service Commission has zero jurisdiction over either entity."},{k:"gold",label:"TRIANA WATER — THE PFAS PROBLEM",lc:"#b8860b",tc:"#78350f",text:"EWG data shows PFOS — a PFAS forever chemical linked to cancer, thyroid disease, and immune damage — detected above EWG health guidelines in Triana Water Works. Triana remains on the EPA Superfund list due to Redstone Arsenal and Olin Corporation DDT contamination via Huntsville Spring Branch. Triana is a majority-Black community of approximately 2,300 residents with no city council representation and no access to IDB tax abatements."}],
     prompt:"Investigate Madison County utilities. FACTS: TVA CEO Jeff Lyash earned $8.1M in 2023. TVA raised rates 5.25% in 2024 — largest in 16 years. HU added 5.1% on top in Jan and Oct 2025. Combined effect: approximately 10%+ on your electric bill in one year. Alabama delegation (Strong, Britt, Tuberville) collected $1.4M+ from energy PACs and introduced zero TVA oversight bills. Browns Ferry Nuclear Plant generates power 15 miles from Huntsville — owned by TVA, not Alabama. TVA carries $20B+ in debt passed to ratepayers. Triana water shows PFOS above EWG health guidelines. Connect these facts for a Madison County ratepayer in plain language. Under 150 words, no jargon."},
@@ -1691,73 +1691,108 @@ function UtilitiesPage(){
       {/* -- PROVIDERS -- */}
       {tab==="providers"&&(
         <div>
+          <div style={{background:"#1e3a5f",borderRadius:6,padding:"14px 16px",marginBottom:14}}>
+            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:8,textTransform:"uppercase"}}>YOUR UTILITY PROVIDERS — WHO CONTROLS YOUR BILL</div>
+            <div style={{fontSize:13.5,color:"rgba(255,255,255,.88)",lineHeight:1.8}}>Four entities control the power water and gas coming into your home in Madison County. None of them are elected by you. Here is who they are what they control what they charge and what you can actually do about it.</div>
+          </div>
+
           {[
-            {name:"Huntsville Utilities",color:"#1e3a5f",icon:"💧",rows:[
-              {l:"SERVES",v:"~218,000 electric · ~104,000 water · ~60,000 natural gas customers in Huntsville and Madison County"},
-              {l:"GOVERNANCE — WHO CONTROLS THIS",v:"Three separate appointed boards: Electric Board, Natural Gas Board, Waterworks Board. All 12 members appointed by Huntsville City Council. No public election ever. No Alabama PSC oversight. City Council must approve rate changes — they voted unanimously for the 2025 increases."},
-              {l:"CURRENT RATE STRUCTURE (Effective March 2026)",v:"Electric: $20.23 fixed + $0.11675/kWh (first 1,400) + $0.12289/kWh (above) + TVA fuel surcharge (~2.4¢/kWh). Water: availability charge by meter size + consumption. Gas: market-based commodity charge + fixed fee. Combined monthly: $150-$450+ depending on season."},
-              {l:"RATE HISTORY — THE PATTERN",v:"2022: TVA fuel surcharges peaked at 4.6¢/kWh (August). 2023: TVA 4.5% base rate hike. 2024 (Aug): TVA 5.25% base hike — largest in 16 years. 2025 (Jan): HU +3.9%. 2025 (Oct): HU +1.3% more. 2026 (Mar): New rate schedule effective. Combined effect: ~15%+ increase in electric costs since 2022."},
-              {l:"WHY THEY SAY THEY'RE RAISING RATES",v:"Materials costs up 30-40% since 2020. Infrastructure investment needed. TVA wholesale increases passed through. These explanations are partly true — but they don't explain why CEO compensation is not disclosed publicly, why the board is never elected, or why Huntsville pays more for delivery than Chattanooga which uses the same TVA wholesale source."},
-              {l:"WHO IS BENEFITING",v:"Huntsville Utilities (HU) is genuinely not-for-profit — surplus revenue goes to infrastructure, not shareholders. But 'not-for-profit' doesn't mean 'accountable.' The appointed board sets the CEO's salary without public disclosure. The City Council approves rates without independent auditing. Wes Kelley's compensation is estimated at $380-480k but has not been publicly disclosed."},
-              {l:"YOUR LEVERAGE",v:"Rate changes require City Council approval. Attend the council meeting before any rate vote. File an Open Records request for CEO salary and board compensation. Demand the city commission an independent rate comparison to EPB Chattanooga and Nebraska public power."},
-              {l:"CONTACT",v:"(256) 535-1200 · hsvutil.org · Board meetings: hsvutil.org/about/board-of-directors"},
-            ]},
-            {name:"TVA — Federal Power Monopoly",color:"#7f1d1d",icon:"⚡",rows:[
-              {l:"SERVES",v:"All North Alabama wholesale electric (delivered through HU). 10 million customers across 7 states. Browns Ferry Nuclear Plant in Athens, AL — 15 miles from Huntsville."},
-              {l:"GOVERNANCE — WHY YOU CAN'T CHANGE IT",v:"Federal government corporation created by Congress 1933. 9-member board appointed by President, confirmed by Senate. Zero Alabama state oversight. Zero PSC jurisdiction. The Tennessee Valley Authority Act gives TVA an exclusive service territory — no competitor can enter. Only an Act of Congress can reform TVA rates or governance."},
-              {l:"THE FUEL COST ADJUSTMENT — THE VARIABLE YOU NEVER CONTROL",v:"TVA charges HU a wholesale base rate plus a monthly Fuel Cost Adjustment (FCA) based on actual fuel costs for that month. HU passes this directly to you. Feb 2026 FCA: 2.397¢/kWh. This adds $28-$90+ to your monthly bill depending on usage. It peaked at 4.612¢/kWh in August 2022 during the energy crisis. You have zero input into this number."},
-              {l:"THE DEBT BURDEN",v:"TVA carries over $20 billion in long-term debt. This debt was accumulated building nuclear plants (including Browns Ferry) and transmission infrastructure. Ratepayers — not taxpayers, not shareholders — pay this debt through rates. TVA's budget submitted to Congress for FY2026 acknowledges continued cost pressure from infrastructure investment, particularly in natural gas capacity expansion."},
-              {l:"WHO IS LETTING THIS HAPPEN",v:"Rep. Dale Strong (AL-5): received $284k from defense/energy PACs, sits on House Armed Services Committee overseeing Redstone, filed zero TVA oversight bills. Sen. Britt: $890k from energy PACs, no TVA reform. Sen. Tuberville: $270k from energy PACs, no TVA oversight. These are the only three people with direct power to reform TVA — and they have chosen not to use it."},
-              {l:"CONTACT TVA BOARD",v:"(888) 882-6443 · tva.com · Board meetings held quarterly — public comment accepted · Knoxville TN headquarters"},
-            ]},
-            {name:"Triana Water Works",color:"#dc2626",icon:"⚠",rows:[
-              {l:"SERVES",v:"~2,323 residents. Majority-Black community. Town of Triana, Alabama."},
-              {l:"GOVERNANCE",v:"Controlled by the elected mayor (Mary Caudle) and town council. No dedicated utility CEO — town administrator handles water system oversight. Contact: (256) 772-0151 · 640 6th Street, Triana AL 35756."},
-              {l:"THE CONTAMINATION PROBLEM",v:"PFOS — a PFAS forever chemical — detected above EWG health guidelines. Triana remains on the EPA Superfund list due to Redstone Arsenal PFAS discharge into Indian Creek and Olin Corporation DDT manufacturing via Huntsville Spring Branch. This contamination began in the 1970s and has never been fully remediated."},
-              {l:"WHO IS RESPONSIBLE",v:"Rep. Dale Strong voted against the PFAS Notification Act that would require disclosure of contamination near military installations. Gov. Ivey (who appoints ADEM leadership) received $340k from energy/industrial PACs. ADEM is among the weakest enforcement agencies in the Southeast. Redstone Arsenal has not fully disclosed the extent of its PFAS groundwater contamination."},
-              {l:"WHAT YOU CAN DO",v:"Check your water free: ewg.org/tapwater — search your zip code. File Open Records for all Triana water testing results. Contact EPA Region 4 in Atlanta directly. Contact your congressional representative about the PFAS Notification Act."},
-            ]},
-            {name:"Madison Utilities",color:"#374151",icon:"🚰",rows:[
-              {l:"SERVES",v:"19,000+ water and wastewater connections in City of Madison and surrounding areas."},
-              {l:"GOVERNANCE",v:"Public corporation. Board appointed by Madison City Council for staggered 6-year terms. Mayor Bartlett (elected 2024, former school board member) controls appointments. Board meetings are public."},
-              {l:"CURRENT PROJECTS",v:"Wall Triana water main expansion project ongoing in 2025-2026. Rate history available via Open Records. Contact Madison City Hall for board meeting schedule."},
-              {l:"CONTACT",v:"(256) 772-6845 · madisonal.gov/government/departments/utilities"},
-            ]},
+            {
+              name:"Huntsville Utilities — Electric Gas and Water",
+              tag:"CITY-OWNED · NOT-FOR-PROFIT",
+              tagColor:"#2563eb",
+              color:"#1e3a5f",
+              icon:"HU",
+              serves:"About 218,000 electric, 104,000 water, and 60,000 natural gas customers in Huntsville and Madison County.",
+              whoControls:"Three separate appointed boards — Electric, Natural Gas, and Waterworks. All 12 members appointed by Huntsville City Council. No public election ever. No Alabama PSC oversight. City Council must approve rate changes — they voted unanimously for the 2025 increases.",
+              whatYouPay:"Electric: $20.23 fixed monthly charge plus $0.117 per kWh for first 1400 kWh plus a TVA fuel surcharge that changes monthly. Water and gas have separate fixed plus usage charges. A typical Huntsville household pays $150 to $450 or more per month combined depending on season.",
+              recentChanges:"January 2025: HU raised electric rates 3.9%. October 2025: HU raised rates another 1.3%. This is on top of TVA wholesale increases. Combined effect since 2022: roughly 15% higher electric bills.",
+              whyHigher:"Materials costs up 30 to 40% since 2020. Infrastructure investment. TVA wholesale cost increases passed through. These are real — but they do not explain why CEO compensation is not publicly disclosed or why the board is never elected.",
+              accountability:"HU is genuinely not-for-profit — surplus goes to infrastructure not shareholders. But not-for-profit does not mean accountable. The board sets CEO salary without public disclosure. CEO Wes Kelley compensation is estimated at $380,000 to $480,000 per year but has not been officially disclosed.",
+              action:"Rate changes require City Council approval. Attend council meetings before any rate vote. File an Open Records request for CEO salary and board member compensation. Ask your council member why Huntsville pays more per kWh than Chattanooga which uses the same TVA wholesale source.",
+              contact:"(256) 535-1200 · hsvutil.org · Board meetings posted at hsvutil.org/about/board-of-directors"
+            },
+            {
+              name:"TVA — Tennessee Valley Authority",
+              tag:"FEDERAL MONOPOLY · NO STATE OVERSIGHT",
+              tagColor:"#dc2626",
+              color:"#7f1d1d",
+              icon:"TVA",
+              serves:"All wholesale electricity in North Alabama — delivered through Huntsville Utilities. 10 million customers across 7 states. Browns Ferry Nuclear Plant in Athens AL is 15 miles from Huntsville.",
+              whoControls:"Federal government corporation created by Congress in 1933. 9-member board appointed by the President and confirmed by the Senate. Zero Alabama state oversight. Zero PSC jurisdiction. Only an Act of Congress can change TVA rates or governance structure.",
+              whatYouPay:"TVA charges HU a wholesale base rate plus a monthly Fuel Cost Adjustment based on actual fuel costs. HU passes this directly to your bill. February 2026 fuel surcharge: 2.4 cents per kWh — adding $28 to $90 or more to your monthly bill. It peaked at 4.6 cents per kWh in August 2022.",
+              recentChanges:"2023: TVA raised wholesale rates 4.5%. 2024: TVA raised rates 5.25% — the largest increase in 16 years. Three increases in 18 months. Your Alabama congressional representatives introduced zero oversight bills.",
+              whyHigher:"TVA carries over $20 billion in long-term debt from building nuclear plants including Browns Ferry. Ratepayers — not taxpayers — pay this debt through rates. TVA is also expanding natural gas capacity, adding more long-term cost.",
+              accountability:"Rep. Dale Strong received $284,000 from defense and energy PACs and filed zero TVA oversight bills. Sen. Britt received $890,000 from energy PACs — no TVA reform. Sen. Tuberville received $270,000 — no TVA oversight. These three people have the only direct power to reform TVA and have chosen not to use it.",
+              action:"Call Rep. Strong at (256) 551-0190 and ask why he has not filed a single TVA oversight bill. Submit public comment to TVA board at tva.com. Contact the TVA Inspector General for rate complaints: (800) 323-0672.",
+              contact:"TVA Customer Relations: (888) 882-6443 · tva.com · Board meets quarterly — public comment accepted"
+            },
+            {
+              name:"Triana Water Works",
+              tag:"CONTAMINATION ALERT · PFAS ABOVE HEALTH GUIDELINES",
+              tagColor:"#dc2626",
+              color:"#dc2626",
+              icon:"TRI",
+              serves:"About 2,323 residents in the Town of Triana — a majority-Black community 10 miles west of Huntsville.",
+              whoControls:"Controlled by the elected mayor and town council. Mayor Mary Caudle and council set policy. The town administrator handles water system oversight day to day.",
+              whatYouPay:"Rates set by the town council. Contact town hall for current rate schedule.",
+              recentChanges:"PFOS — a PFAS forever chemical linked to kidney cancer thyroid disease and immune damage — has been detected in Triana water above EWG health guidelines. The EPA set a maximum contaminant level of 4 parts per trillion. Triana remains on the EPA Superfund list due to Redstone Arsenal PFAS discharge into Indian Creek and Olin Corporation DDT manufacturing.",
+              whyHigher:"This contamination began in the 1970s and has never been fully remediated. Redstone Arsenal has not fully disclosed the extent of its PFAS groundwater contamination. ADEM — the Alabama state environmental agency — is among the weakest enforcement agencies in the Southeast.",
+              accountability:"Rep. Dale Strong voted against the PFAS Notification Act that would require disclosure of contamination near military installations. Gov. Ivey who appoints ADEM leadership received $340,000 from energy and industrial PACs. This is a majority-Black community experiencing ongoing environmental harm with no meaningful state response.",
+              action:"Check your water free at ewg.org/tapwater — search your zip code. File Open Records for all Triana water testing results. Contact EPA Region 4 in Atlanta directly at (404) 562-9900. Contact your congressional representative about the PFAS Notification Act.",
+              contact:"Triana Town Hall: (256) 772-0151 · 640 6th Street Triana AL 35756"
+            },
+            {
+              name:"Madison Utilities",
+              tag:"CITY OF MADISON · WATER AND WASTEWATER",
+              tagColor:"#374151",
+              color:"#374151",
+              icon:"MAD",
+              serves:"19,000 plus water and wastewater connections in the City of Madison and surrounding areas.",
+              whoControls:"Public corporation with board appointed by Madison City Council for staggered 6-year terms. Mayor Bartlett elected in 2024 — she was herself a Madison Board of Education member from 2011 to 2020 — now controls appointments to this board.",
+              whatYouPay:"Rates set by the board. Contact Madison Utilities for current rate schedule.",
+              recentChanges:"Major 2025 to 2026 project: Wall Triana water main expansion. Rate history available via Open Records request from Madison City Hall.",
+              whyHigher:"Infrastructure investment is the stated reason for any rate changes. The Wall Triana project is a documented capital expense.",
+              accountability:"Board meetings are public. Rate changes require board approval. Mayor Bartlett controls who gets appointed to the board in 2026 — her appointment choices will signal how she balances developer interests against ratepayer accountability.",
+              action:"Attend Madison Utilities board meetings. Contact Mayor Bartlett directly about board appointments. File Open Records for rate history and board member compensation.",
+              contact:"(256) 772-6845 · madisonal.gov/government/departments/utilities · 100 Hughes Rd Madison AL 35758"
+            },
           ].map((p,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+p.color}}>
+            <div key={i} className="card" style={{marginBottom:16,borderLeft:"4px solid "+p.color}}>
               <div style={{padding:"16px 18px"}}>
-                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:14,flexWrap:"wrap"}}>
-                  <span style={{fontSize:24}}>{p.icon}</span>
-                  <div style={{fontSize:16,fontWeight:700,color:p.color}}>{p.name}</div>
-                </div>
-                {p.rows.map((row,j)=>{
-                  // Color-code key row types for visual breaks
-                  const rowColors={
-                    "SERVES":"#2563eb","GOVERNANCE — WHO CONTROLS THIS":"#dc2626",
-                    "GOVERNANCE":"#dc2626","WHO IS LETTING THIS HAPPEN":"#dc2626",
-                    "WHO IS RESPONSIBLE":"#dc2626","WHO IS BENEFITING":"#ea580c",
-                    "YOUR LEVERAGE":"#16a34a","WHAT YOU CAN DO":"#16a34a",
-                    "CONTACT":"#1e3a5f","CONTACT TVA BOARD":"#1e3a5f",
-                  };
-                  const rc=rowColors[row.l]||p.color;
-                  const isAction=row.l.includes("LEVER")||row.l.includes("CAN DO")||row.l.includes("CONTACT");
-                  return(
-                  <div key={j} style={{marginBottom:10,padding:"10px 12px",borderRadius:4,background:isAction?"#f0fdf4":j%2===0?"#f8f6f2":"#fff",border:"1px solid "+(isAction?"#86efac":"#e0d8cc"),borderLeft:"3px solid "+rc}}>
-                    <div style={{fontSize:9.5,fontWeight:800,color:rc,letterSpacing:1.2,marginBottom:5,textTransform:"uppercase"}}>{row.l}</div>
-                    <div style={{fontSize:13.5,color:"#374151",lineHeight:1.75,fontWeight:row.l.includes("SERVES")?400:400}}>
-                      <ExpandText text={row.v} preview={220}/>
-                    </div>
+                <div style={{display:"flex",gap:12,alignItems:"flex-start",marginBottom:12,flexWrap:"wrap"}}>
+                  <div style={{width:44,height:44,borderRadius:6,background:p.color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:800,flexShrink:0}}>{p.icon}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:15,fontWeight:700,color:"#1e3a5f",marginBottom:4}}>{p.name}</div>
+                    <span style={{fontSize:9,fontWeight:800,color:p.tagColor,letterSpacing:1.2,background:p.tagColor+"18",padding:"2px 8px",borderRadius:4,border:"1px solid "+p.tagColor+"30"}}>{p.tag}</span>
                   </div>
-                  );
-                })}
+                </div>
+                {[
+                  {lbl:"WHO THEY SERVE",val:p.serves,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"},
+                  {lbl:"WHO CONTROLS IT",val:p.whoControls,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
+                  {lbl:"WHAT YOU PAY",val:p.whatYouPay,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
+                  {lbl:"RECENT CHANGES",val:p.recentChanges,bg:"#fff7ed",bc:"#fed7aa",tc:"#9a3412"},
+                  {lbl:"WHY YOUR BILL IS HIGHER",val:p.whyHigher,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},
+                  {lbl:"WHO IS ACCOUNTABLE",val:p.accountability,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},
+                  {lbl:"WHAT YOU CAN DO",val:p.action,bg:"#f0fdf4",bc:"#86efac",tc:"#14532d"},
+                  {lbl:"CONTACT",val:p.contact,bg:"#eff3f8",bc:"#93b4d4",tc:"#1e3a5f"},
+                ].map((row,j)=>(
+                  <div key={j} style={{marginBottom:8,padding:"9px 12px",borderRadius:4,background:row.bg,border:"1px solid "+row.bc}}>
+                    <div style={{fontSize:8.5,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:4,textTransform:"uppercase",opacity:.8}}>{row.lbl}</div>
+                    <div style={{fontSize:13,color:row.tc,lineHeight:1.75}}>{row.val}</div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
+          <AiButton prompt="Investigate utility costs in Madison County. Facts: Huntsville Utilities raised electric rates 3.9% in January 2025 and another 1.3% in October 2025. TVA raised wholesale rates 5.25% in 2024 — largest in 16 years. Combined effect roughly 15% higher electric bills since 2022. TVA carries $20 billion in debt paid by ratepayers not taxpayers. Rep. Dale Strong received $284000 from energy PACs and filed zero TVA oversight bills. Sen. Britt received $890000 from energy PACs — no TVA reform. Triana Water Works serving a majority-Black community has PFAS above health guidelines. HU CEO compensation not publicly disclosed. Explain what all this means for a Madison County ratepayer in plain language. Under 200 words."/>
         </div>
       )}
     </div>
   );
 }
+
+
 
 
 // --- INSURANCE PAGE ---
@@ -2967,7 +3002,7 @@ function Dashboard({go}){
   const GROUPS=[
     {label:"ECONOMIC",color:C.red,items:[
       {id:"equity",icon:"⚖",label:"The Two Huntsvilles",sub:"PCI 41 vs 72 · $847/pupil gap · 3.7x police contacts · spending audit"},
-      {id:"utilities",icon:"💧",label:"Power, Water & Utilities",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
+      {id:"utilities",icon:"💧",label:"Utilities: Power and Water",sub:"TVA monopoly · HU rates · Triana PFAS · Browns Ferry"},
       {id:"health",icon:"✚",label:"Health System",sub:"HHHS $2.4B monopoly · CEO $3.1M · Medicaid gap · $63M tax exemption"},
       {id:"money",icon:"💰",label:"Follow the Money",sub:"City budget · no-bid contracts · donor→policy · pay clocks"},
       {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
@@ -3397,7 +3432,7 @@ function MoneyPage(){
         <p>Largest employers in Madison County. CEO pay vs worker pay — ticking live since you opened this page. Every donation traced to a specific policy outcome. All from public records.</p>
       </div>
       <div className="tabs" style={{marginBottom:14}}>
-        {[{id:"clocks",label:"Pay Clocks"},{id:"whatif",label:"CEO Pay Cap"},{id:"donors",label:"Donor to Policy"}].map(t=>(
+        {[{id:"clocks",label:"💰 Pay Clocks"},{id:"whatif",label:"📈 What If"},{id:"conditions",label:"🏭 Working Conditions"},{id:"donors",label:"🔗 Donor → Policy"},{id:"networks",label:"🕸 Networks"},{id:"spending",label:"📊 Where Money Goes"}].map(t=>(
           <button key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
         ))}
       </div>
@@ -3480,7 +3515,7 @@ function MoneyPage(){
             {tab==="whatif"&&(
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:12,color:"#14532d"}}>
-            How to read this: if CEO pay was capped at 50 times what the lowest-paid worker earns how much is freed up? HHHS CEO earns $3.1M per year. Starting CNA earns $14.50 per hour ($30160 per year). A 50-to-1 cap means CEO max is $1.5M. The remaining $1.6M split among 20000 workers is $80 each per year. Not life-changing alone — but the HHHS ratio is 214-to-1. US average in the 1960s was 20-to-1. This is a policy choice.
+            This shows what worker pay could look like if executive pay was capped at 50:1 ratio and the savings redistributed to workers. These are documented figures from public filings — the math is real.
           </div>
           <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
             <div style={{fontSize:11,fontWeight:700,color:"#6b7280",letterSpacing:1.2,marginBottom:12,textTransform:"uppercase"}}>If CEO Pay Was Capped at 50:1 Ratio — What Workers Would Gain</div>
@@ -3498,9 +3533,9 @@ function MoneyPage(){
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:6}}>
                     {[
-                      {l:"CEO pay now",v:"$"+(e.comp>=1000000?(Math.round(e.comp/100000)/10)+"M":(Math.round(e.comp/1000))+"k")+"/yr",c:e.clr},
+                      {l:"CEO pay now",v:"$"+Math.round(e.comp/1000)+"k/yr",c:e.clr},
                       {l:"Worker pay now",v:"$"+e.wage+"/hr",c:"#6b7280"},
-                      {l:"Excess above 50:1",v:"$"+(excessPay>=1000000?(Math.round(excessPay/100000)/10)+"M":(Math.round(excessPay/1000))+"k")+" freed",c:"#dc2626"},
+                      {l:"Excess above 50:1",v:"$"+Math.round(excessPay/1000)+"k freed",c:"#dc2626"},
                       {l:"Split among "+workerCount.toLocaleString()+" workers",v:"+$"+Math.round(raisePerWorker/52)+"/wk each",c:"#16a34a"},
                       {l:"New hourly wage",v:"$"+newWage.toFixed(2)+"/hr",c:"#16a34a"},
                       {l:"Still above MIT living wage?",v:newWage>=20.18?"YES ✓":"NO — still below",c:newWage>=20.18?"#16a34a":"#dc2626"},
@@ -3523,7 +3558,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="whatif"&&(
+      {tab==="conditions"&&(
         <div>
           <div className="stats-grid" style={{marginBottom:14}}>
             {[["AL Workers w/ Paid Sick Leave","~45%","vs 77% nationally — AL has no mandate","#dc2626"],["AL Workers w/ Paid Family Leave","~15%","No state law — federal FMLA is unpaid only","#dc2626"],["Workplace Injury Rate — AL","5.1/100","Above national average of 2.7/100 workers","#ea580c"],["AL OSHA Inspectors","~25 state","Federal OSHA covers AL — understaffed","#ea580c"]].map(([l,v,s,c],i)=>(
@@ -3590,7 +3625,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="donors"&&(
+      {tab==="networks"&&(
         <div>
           <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #16a34a",borderRadius:5,padding:"10px 13px",marginBottom:14,fontSize:13,color:"#14532d"}}>
             Every node and connection in these graphs is sourced from FEC.gov, fcpa.alabama.gov, ProPublica Nonprofit Explorer, and Alabama Legislature voting records. Tap any node to see the documented connection.
@@ -3602,7 +3637,7 @@ function MoneyPage(){
         </div>
       )}
 
-      {tab==="donors"&&(
+      {tab==="spending"&&(
         <div>
           {[
             {cat:"Road maintenance — North Huntsville",amt:"PCI 41 avg",note:"'Poor' — means roads need full reconstruction, not just patching. Same tax rate as south Huntsville.",clr:"#dc2626"},
@@ -3871,33 +3906,40 @@ function WorkersPage(){
 
       {tab==="employers"&&(
         <div>
-          <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"11px 14px",marginBottom:14,fontSize:13,color:"#1e3a5f",lineHeight:1.7}}>The biggest employers in Madison County — who works there what they pay what tax breaks they get and what it means for you.</div>
           {[
-            {name:"Amazon HSV1 and HSV2",icon:"PKG",color:"#f59e0b",who:"4000 plus warehouse workers",pay:"$16.50 per hour, $34320 per year full-time",gap:"MIT living wage is $20.18 per hour. Amazon pays $3.68 below that.",taxBreak:"IDB property tax abatement — $0 local property tax for years",plain:"Amazon made $638 billion in 2024. Huntsville workers start at $16.50 per hour — below the local living wage. The city gave Amazon a property tax break so it does not fully fund local schools. Alabama law bans Huntsville from requiring higher wages. Workers have no sick leave and no union.",action:"To organize at Amazon contact the UAW at uaw.org. Under federal law you have that right."},
-            {name:"Huntsville Hospital HHHS",icon:"RX",color:"#dc2626",who:"20000 plus employees — nurses CNAs technicians housekeeping food service",pay:"Starting CNA $14.50 per hour — below poverty line for a family of four",gap:"A full-time starting CNA at HHHS qualifies for SNAP food stamps",taxBreak:"Nonprofit = $0 income tax on $2.4B revenue plus $63M per year in exemptions",plain:"HHHS is the largest private employer in Madison County and pays no income taxes. Lowest-paid workers start at $14.50 per hour while CEO earns $3.1 million per year — 214 times more. Documented annual raises as low as $0.25 per hour. It is buying Crestwood Medical Center for $450M which would make it the only hospital in Huntsville.",action:"Healthcare workers contact SEIU at seiu.org for organizing info. File wage complaints at al.dol.gov."},
-            {name:"Redstone Arsenal",icon:"RSA",color:"#374151",who:"About 45000 people: military federal civilian employees and contractors",pay:"Federal civilians follow the GS pay scale. Entry-level GS-7 earns about $21 per hour. Contractors range from $15 to $80 per hour.",gap:"Federal civilians get healthcare retirement and job protections. Contractor benefits depend on who employs them.",taxBreak:"Federal land — no local property taxes. Army spending injects roughly $10 billion per year locally.",plain:"Federal civilian employees here have job protections most private Alabama workers lack. But many at Redstone are contractors hired by Boeing Lockheed Raytheon and smaller firms. A software contractor earns $80 per hour. A custodial contractor may earn $15 per hour with no benefits. Being at Redstone does not mean the same thing for everyone.",action:"Federal civilian employees: union options are AFGE at afge.org or NTEU at nteu.org."},
-            {name:"Defense Contractors Boeing Lockheed Raytheon",icon:"DEF",color:"#64748b",who:"About 14000 combined — mostly engineers and analysts",pay:"Average engineer $55 to $75 per hour",gap:"Well above the living wage — highest-paying private jobs in the region",taxBreak:"PACs donated $284000 plus to Rep. Dale Strong who introduced zero TVA oversight bills in 2 years",plain:"Defense contractors pay the highest wages in Huntsville but almost entirely for engineers with degrees and security clearances. Their PAC donations to Rep. Strong bought silence on TVA oversight — 3 rate hikes in 18 months.",action:"Call Rep. Strong and ask why he filed zero TVA oversight bills: (256) 551-0190."},
-            {name:"Retail and Fast Food",icon:"RET",color:"#ef4444",who:"About 10000 plus workers at grocery stores fast food and discount retail",pay:"$7.25 to $15 per hour — minimum wage unchanged since 2009",gap:"$7.25 per hour full-time equals $15080 per year. MIT living wage for a single adult is $20.18 per hour.",taxBreak:"No IDB abatements but benefit from city services funded by taxes their workers pay",plain:"These are the most common jobs in Huntsville and they pay the least. Alabama law explicitly bans Huntsville from passing a local minimum wage ordinance. No guaranteed sick leave. Sen. Arthur Orr sponsored the law that keeps it this way. He received $45000 from the Business Council of Alabama.",action:"Contact Sen. Orr — demand repeal of the minimum wage preemption: (334) 242-7895."},
+            {name:"Amazon (HSV1, HSV2)",workers:"4,000+",wage:"$16.50/hr",benefit:"IDB property tax abatement — $0 property tax for years",flag:"AL ranks 50th for Amazon warehouse wages. NLRB complaint for supervisory interrogation of union activity at HSV1.",color:"#f59e0b"},
+            {name:"Huntsville Hospital (HHHS)",workers:"20,000+",wage:"$14.50-$30/hr range",benefit:"$63M/yr nonprofit tax exemption",flag:"Starting wages below MIT living wage. Annual raises as low as $0.25. Chronic understaffing documented.",color:"#dc2626"},
+            {name:"Huntsville Utilities",workers:"800+",wage:"~$25/hr avg",benefit:"City-owned — no property tax",flag:"Wes Kelley salary not publicly disclosed. Board sets CEO pay without public input.",color:"#1e3a5f"},
+            {name:"Redstone Arsenal",workers:"~45,000",wage:"Federal GS scale",benefit:"Federal employment — civil service protections",flag:"Civilian employees have federal protections most private-sector AL workers lack. Contractor employees have fewer protections.",color:"#374151"},
+            {name:"Boeing / Lockheed / Raytheon",workers:"6,000+",wage:"$55-75/hr engineer avg",benefit:"$284k+ in defense PAC donations to Rep. Strong",flag:"High-wage defense jobs. But 'trickle-down' to service economy hasn't closed north Huntsville wage gap.",color:"#64748b"},
+            {name:"Retail / Fast Food (Walmart, McDonald's, etc.)",workers:"10,000+ est.",wage:"$7.25-$15/hr",benefit:"No property tax abatement required",flag:"Alabama's minimum wage lock-in means these workers have no local recourse. No sick leave. No predictive scheduling.",color:"#ef4444"},
           ].map((e,i)=>(
-            <div key={i} className="card" style={{marginBottom:14,borderLeft:"4px solid "+e.color}}>
+            <div key={i} className="card" style={{marginBottom:12,borderLeft:"4px solid "+e.color}}>
               <div style={{padding:"14px 16px"}}>
-                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:10}}>
-                  <div style={{width:40,height:40,borderRadius:6,background:e.color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:800,flexShrink:0}}>{e.icon}</div>
-                  <div style={{fontSize:14.5,fontWeight:700,color:"#1e3a5f",lineHeight:1.3}}>{e.name}</div>
+                <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:8}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#1e3a5f"}}>{e.name}</div>
+                  <div style={{fontFamily:"monospace",fontSize:12,color:e.color,fontWeight:700}}>{e.wage}</div>
                 </div>
-                {[{lbl:"WHO WORKS THERE",val:e.who,bg:"#f8f6f2",bc:"#e0d8cc",tc:"#374151"},{lbl:"WHAT THEY PAY",val:e.pay,bg:"#fef2f2",bc:"#fca5a5",tc:"#7f1d1d"},{lbl:"VS LIVING WAGE",val:e.gap,bg:"#fffbeb",bc:"#fcd34d",tc:"#78350f"},{lbl:"PUBLIC TAX BREAK",val:e.taxBreak,bg:"#eff6ff",bc:"#93c5fd",tc:"#1e3a5f"}].map((row,j)=>(
-                  <div key={j} style={{padding:"7px 10px",background:row.bg,borderRadius:4,border:"1px solid "+row.bc,marginBottom:6}}>
-                    <div style={{fontSize:8,fontWeight:800,color:row.tc,letterSpacing:1.5,marginBottom:2,textTransform:"uppercase",opacity:.75}}>{row.lbl}</div>
-                    <div style={{fontSize:12.5,color:row.tc,lineHeight:1.55}}>{row.val}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+                  <div style={{padding:"8px",background:"#f0fdf4",borderRadius:3,border:"1px solid #86efac"}}>
+                    <div style={{fontSize:8.5,color:"#16a34a",fontWeight:700,letterSpacing:1,marginBottom:2}}>WORKERS</div>
+                    <div style={{fontSize:12,color:"#374151"}}>{e.workers}</div>
                   </div>
-                ))}
-                <div style={{fontSize:13,color:"#374151",lineHeight:1.75,margin:"10px 0 8px"}}>{e.plain}</div>
-                <div style={{background:"#f0fdf4",borderRadius:4,padding:"8px 10px",border:"1px solid #86efac"}}><span style={{fontSize:9,fontWeight:800,color:"#16a34a",letterSpacing:1,marginRight:6}}>WHAT YOU CAN DO</span><span style={{fontSize:12.5,color:"#14532d"}}>{e.action}</span></div>
+                  <div style={{padding:"8px",background:"#fef2f2",borderRadius:3,border:"1px solid #fca5a5"}}>
+                    <div style={{fontSize:8.5,color:"#dc2626",fontWeight:700,letterSpacing:1,marginBottom:2}}>PUBLIC BENEFIT RECEIVED</div>
+                    <div style={{fontSize:12,color:"#374151"}}>{e.benefit}</div>
+                  </div>
+                </div>
+                <div style={{fontSize:12,color:"#6b7280",fontStyle:"italic",lineHeight:1.5}}>{e.flag}</div>
               </div>
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
 // --- CRIMINAL JUSTICE PAGE ---
 function SentencingPage(){
   const[tab,setTab]=useState("overview");
@@ -4569,7 +4611,7 @@ function TaxesPage(){
   }
   const estimatedALTax=alIncomeTax(taxableIncome);
   const effectiveRate=(estimatedALTax/Math.max(incomeVal,1)*100).toFixed(1);
-  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"womantax",label:"Womens Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"Calculator"}];
+  const tabs=[{id:"overview",label:"Overview"},{id:"property",label:"Property Tax"},{id:"grocery",label:"Grocery Tax"},{id:"income",label:"Income Tax"},{id:"calculator",label:"🧮 Calculator"}];
   const millage=0.00382;
   const estimatedTax=Math.round(homeValue*0.1*millage);
 
@@ -4601,8 +4643,6 @@ function TaxesPage(){
             {k:"gold",label:"HOW PROPERTY TAX WORKS IN HUNTSVILLE",lc:"#b8860b",tc:"#78350f",text:"Alabama uses an Assessed Value system. Residential property is assessed at 10% of market value, then multiplied by the millage rate. Huntsville's combined millage (city + county + school) is approximately 38.2 mills. On a $200,000 home: assessed value = $20,000, tax = $20,000 × 0.0382 = approximately $764/year. Alabama has among the lowest property tax rates in the nation — but that low rate applies equally to homeowners and to corporate facilities that haven't been exempted by the IDB."},
             {k:"blue",label:"THE IDB ABATEMENT AUDIT THAT DOESN'T EXIST",lc:"#2563eb",tc:"#1e3a5f",text:"The IDB has never been required to publish a comprehensive audit of whether promised jobs were actually delivered in exchange for abatements. Some abatements come with job creation requirements — but enforcement is minimal. File an Open Records request for all active IDB abatement agreements, including: company name, abatement duration, promised job creation, and actual documented job creation. This is a public document you are entitled to."},
           ]}/>
-        </div>
-          <AiButton prompt="Investigate property tax in Madison County. Homes assessed at 10% of market value taxed at the millage rate. Huntsville city rate is $5.80 per $100 assessed. IDB granted over $127 million in active corporate property tax abatements so corporations pay $0 for up to 20 years with no public audit. Timberland taxed at just $0.10 per acre. Homeowners pay full rate from day one. Under 200 words plain language."/>
         </div>
       )}
 
@@ -4642,36 +4682,36 @@ function TaxesPage(){
             {k:"gold",label:"HOW CITIES CAN OPT OUT — AND WHY MOST HAVEN'T",lc:"#b8860b",tc:"#78350f",text:"When Alabama reduced the state grocery tax from 4% to 3% in 2023 and to 2% in 2025, it passed a law ALLOWING — but not requiring — cities and counties to reduce their local grocery tax. Huntsville and most other municipalities chose not to reduce theirs. A Huntsville City Council vote could reduce or eliminate the local grocery tax at any time. No state approval required. Council Member Watkins has expressed concern about regressive taxes. Contact your council member directly — ask them to introduce a grocery tax reduction ordinance."},
           ]}/>
 
-          <AiButton prompt="Investigate the grocery tax in Huntsville. Alabama cut state grocery tax to 2% in 2025 but Huntsville kept its 4.5% city tax unchanged. Combined rate is 7% on food. A family spending $983 per month pays $826 per year in grocery taxes. 37 states have zero grocery tax. Tennessee charges 4%. The city grocery tax goes into the same fund that paid $89132 for a convicted murderer criminal defense and $600000 to settle a police brutality case. Under 200 words."/>
+          {/* Tampon Tax section */}
+          <div className="card" style={{padding:"16px 18px",marginBottom:12,borderLeft:"4px solid #9333ea"}}>
+            <div style={{fontSize:10,fontWeight:800,color:"#9333ea",letterSpacing:1.5,marginBottom:10,textTransform:"uppercase"}}>The "Tampon Tax" — Taxing Biological Necessity</div>
+            {[
+              ["Monthly product cost (individual)","$10-20/mo","Based on tampons, pads, or menstrual cup amortized over time"],
+              ["Annual product cost","$120-240/yr","Before tax — unavoidable biological expense"],
+              ["Annual tax paid (at 9%)","$11-22/yr","Per woman for unavoidable hygiene products"],
+              ["Family with 3 women (mother + 2 daughters)","$33-66/yr","In taxes alone — on products classified as 'luxury items'"],
+            ].map(([l,v,n],i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 10px",marginBottom:6,borderRadius:4,background:i%2===0?"#f8f6f2":"#faf5ff",border:"1px solid #e0d8cc",flexWrap:"wrap",gap:4}}>
+                <div>
+                  <div style={{fontSize:12.5,fontWeight:600,color:"#374151"}}>{l}</div>
+                  <div style={{fontSize:11,color:"#6b7280",fontStyle:"italic"}}>{n}</div>
+                </div>
+                <span style={{fontFamily:"monospace",fontSize:14,fontWeight:700,color:"#9333ea"}}>{v}</span>
+              </div>
+            ))}
+            <div style={{background:"#faf5ff",borderRadius:4,padding:"10px 12px",marginTop:8,fontSize:13,color:"#5b21b6",lineHeight:1.65}}>
+              Alabama classifies menstrual products as non-essential luxury items — same category as jewelry. <strong>30+ states have eliminated the tampon tax.</strong> Including: California, Florida, Illinois, New York, Ohio, Texas, Virginia, and more — red, blue, and purple states all. Contact your City Council member and state legislators to demand elimination of the tax on menstrual products in Alabama.
+            </div>
+            <ActionButtons actions={[
+              {label:"Contact Mayor Battle — Grocery Tax",tel:"2564275000"},
+              {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Grocery Tax Reduction Ordinance",body:"Dear Council Member Watkins,\n\nI am requesting that you introduce an ordinance to reduce or eliminate Huntsville's local grocery tax. Alabama law allows cities to reduce their local grocery tax rate at any time.\n\nHuntsville residents — particularly in lower-income areas — pay nearly 9% combined sales tax on groceries. This is among the highest in the region and falls hardest on families with the least income.\n\n[Your Name]\n[Your Address]"},
+              {label:"AL Legislature — Contact Your Rep",href:"https://www.legislature.state.al.us"},
+            ]}/>
+          </div>
         </div>
       )}
 
-            
-      {tab==="womantax"&&(
-        <div>
-          <div style={{background:"#1e3a5f",borderRadius:6,padding:"14px 16px",marginBottom:14}}>
-            <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>WOMENS TAX</div>
-            <div style={{fontSize:14,color:"rgba(255,255,255,.9)",lineHeight:1.8}}>Alabama taxes tampons and pads as luxury items — same category as jewelry. The state cut its 4% portion through August 2028. Huntsville still charges its 4.5% city tax. 30 plus states have eliminated this permanently.</div>
-          </div>
-          <div className="stats-grid" style={{marginBottom:16}}>
-            {[["City Tax Applies","4.5%","Huntsville has not passed an exemption","#7c3aed"],["State Exemption","Sunsets 2028","State 4% cut is temporary","#ea580c"],["30 Plus States","Eliminated It","FL TX OH NY CA all did it","#16a34a"],["Annual City Tax","~$518k","From Madison County women each year","#dc2626"]].map(([l,v,s,c],i)=>(
-              <div key={i} className="stat-card"><div className="stat-val" style={{color:c}}>{v}</div><div className="stat-lbl">{l}</div><div className="stat-sub">{s}</div></div>
-            ))}
-          </div>
-          <FactBlocks facts={[
-            {k:"red",label:"CLASSIFIED AS A LUXURY",lc:"#9333ea",tc:"#4c1d95",text:"Alabama puts tampons in the same tax category as jewelry. Periods are not optional. The Alabama legislature is 81% male."},
-            {k:"gold",label:"STATE GAVE PARTIAL RELIEF — CITY HAS NOT",lc:"#b8860b",tc:"#78350f",text:"Alabama 2025 exempted the state 4% portion through August 2028. Huntsville 4.5% city tax still applies every time a woman buys tampons or pads. The City Council can pass an exemption at any time without state approval."},
-            {k:"blue",label:"30 PLUS STATES HAVE DONE IT",lc:"#2563eb",tc:"#1e3a5f",text:"Florida Texas Ohio Illinois New York Virginia and California have permanently eliminated this tax. Alabama expires in 2028. The City Council can act right now."},
-          ]}/>
-          <ActionButtons title="WHAT YOU CAN DO" actions={[
-            {label:"Email Council Member Watkins",email:"michelle.watkins@huntsvilleal.gov",subject:"Introduce Womens Tax Exemption",body:"Dear Council Member Watkins I request you introduce an ordinance exempting menstrual products from Huntsville 4.5% city sales tax. [Your Name]"},
-            {label:"Call Mayor Battle",tel:"2564275000"},
-            {label:"Find Your Council District",href:"https://www.huntsvilleal.gov/government/city-council/"},
-          ]}/>
-          <AiButton prompt="Alabama taxes menstrual products as luxury items. State exempted its 4% portion through August 2028 only. Huntsville 4.5% city tax still applies. Over 30 states have permanently eliminated this tax. About 86400 women in Madison County pay about $518000 per year in city and county taxes on tampons and pads. City Council can exempt the city portion by ordinance right now. Alabama legislature is 81% male. Explain clearly for a Madison County resident. Under 200 words."/>
-        </div>
-      )}
-{tab==="income"&&(
+            {tab==="income"&&(
         <div>
           {/* Alabama income tax brackets */}
           <div className="card" style={{padding:"16px 18px",marginBottom:12}}>
@@ -4956,7 +4996,3 @@ export default function App(){
       </div>
       {/* Spacer so content doesn't hide behind bottom banner */}
       <div style={{height:34}}/>
-      </div>
-    </>
-  );
-}
