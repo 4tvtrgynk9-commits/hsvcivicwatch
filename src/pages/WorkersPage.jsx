@@ -69,7 +69,7 @@ function WorkersPage(){
         </div>
         <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",background:"#fafaf8"}}>
           <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
-            {analysisOpen[k]?"▲ Hide":"🔍 Decode This"}
+            {analysisOpen[k]?"Hide ▲":"Decode This 🔍"}
           </button>
         </div>
         {analysisOpen[k]&&(

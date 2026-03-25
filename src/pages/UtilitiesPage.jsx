@@ -165,7 +165,7 @@ function UtilitiesPage(){
         </div>
         <div style={{borderTop:"1px solid #e0d8cc",padding:"10px 18px",display:"flex",gap:8,flexWrap:"wrap",background:"#fafaf8"}}>
           <button className="btn btn-gold" style={{fontSize:11.5}} onClick={()=>setAnalysisOpen(p=>({...p,[k]:!p[k]}))}>
-            {analysisOpen[k]?"▲ Hide Analysis":"🔍 Decode This"}
+            {analysisOpen[k]?"Hide Analysis ▲":"Decode This 🔍"}
           </button>
           <button className="btn btn-ghost" style={{fontSize:11.5}} onClick={()=>setFoiaOpen(p=>({...p,[k]:!p[k]}))}>
             {foiaOpen[k]?"Hide Template":"📋 FOIA / Records"}
