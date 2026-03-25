@@ -1,3 +1,6 @@
+import React from "react";
+import { DetailPage } from "../components/shared";
+
 export const equityPageData = {
   id: "equity",
   icon: "⚖",
@@ -96,3 +99,9 @@ export function getEquityAIPayload() {
     actionData: equityPageData.aiPayload.actionData,
   };
 }
+
+export function EquityPage(props) {
+  return <DetailPage {...props} data={equityPageData} />;
+}
+
+export default EquityPage;
