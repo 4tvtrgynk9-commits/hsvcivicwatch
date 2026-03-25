@@ -1,1 +1,7 @@
-export { default, UnhousedPage } from "./UnhousedPage.jsx";
+import React from "react";
+
+export function UnhousedPage() {
+  return null;
+}
+
+export default UnhousedPage;
