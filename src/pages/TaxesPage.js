@@ -1,7 +1,8 @@
 import React from "react";
+import { InvestPage } from "../components/shared";
 
 export function TaxesPage() {
-  return null;
+  return <InvestPage id="taxes" />;
 }
 
 export default TaxesPage;

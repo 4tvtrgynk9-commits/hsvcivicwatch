@@ -9,7 +9,6 @@ function AiResult({text}){
   if(!text) return null;
   const paragraphs=text.split(/\n+/).filter(p=>p.trim().length>10);
   const n=paragraphs.length;
-  // Middle labels cycle; last paragraph is always WHAT YOU CAN DO
   const midLabels=["WHAT'S HAPPENING","THE CONNECTIONS","WHO BENEFITS","CONTEXT"];
   const midColors=["#fca5a5","#93c5fd","#fcd34d","#c4b5fd"];
   const midTextColors=["#fef2f2","#eff6ff","#fffbeb","#faf5ff"];
@@ -34,7 +33,7 @@ function AiResult({text}){
   );
 }
 
-function AiButton({prompt,label="🔍 Break It Down"}){
+function AiButton({prompt,label="Decode This 🔍"}){
   const[r,setR]=useState(null);
   const[ld,setLd]=useState(false);
   async function go(){
@@ -47,7 +46,7 @@ function AiButton({prompt,label="🔍 Break It Down"}){
   return(
     <div>
       <button className="btn btn-gold btn-full" onClick={go} disabled={ld}>
-        {ld?<><Spin/> Connecting the dots...</>:r?"▲ Hide Analysis":label}
+        {ld?<><Spin/> Connecting the dots...</>:r?"Hide Analysis ▲":label}
       </button>
       {r&&(
         <div style={{background:"linear-gradient(135deg,#1e3a5f,#162d4a)",borderRadius:"0 0 5px 5px",padding:"18px 20px",marginTop:-1}}>
@@ -61,6 +60,7 @@ function AiButton({prompt,label="🔍 Break It Down"}){
     </div>
   );
 }
+
 function StatGrid({stats}){
   return(
     <div className="stats-grid">
@@ -87,7 +87,7 @@ function FactBlock({f,i}){
       </div>
       {long&&(
         <div style={{fontSize:11,fontWeight:700,color:f.lc,marginTop:7,letterSpacing:.3,display:"inline-block",padding:"4px 0"}}>
-          {open?"▲ Show less":"▼ Read full explanation"}
+          {open?"Show less ▲":"Read full explanation ▼"}
         </div>
       )}
     </div>
@@ -98,7 +98,6 @@ function FactBlocks({facts}){
   return facts.map((f,i)=><FactBlock key={i} f={f} i={i}/>);
 }
 
-// --- EXPANDABLE TEXT COMPONENT ---
 function ExpandText({text,preview=180,style={}}){
   const[open,setOpen]=useState(false);
   if(!text)return null;
@@ -109,13 +108,12 @@ function ExpandText({text,preview=180,style={}}){
     <span>
       <span style={style}>{open?text:text.slice(0,preview)}</span>
       <button onClick={toggle} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#c9a84c",marginLeft:6,padding:"2px 4px",fontFamily:"inherit",borderRadius:3,display:"inline-block"}}>
-        {open?"▲ Show less":"▼ Read more"}
+        {open?"Show less ▲":"Read more ▼"}
       </button>
     </span>
   );
 }
 
-// --- ACTION BUTTONS COMPONENT ---
 function ActionButtons({actions,title}){
   const[copied,setCopied]=useState({});
   function cp(k,t){navigator.clipboard.writeText(t).then(()=>{setCopied(p=>({...p,[k]:true}));setTimeout(()=>setCopied(p=>({...p,[k]:false})),2500);});}
@@ -137,7 +135,6 @@ function ActionButtons({actions,title}){
   );
 }
 
-// --- INVESTIGATION PAGE (generic) ---
 function InvestPage({id}){
   const p=PAGES[id];
   if(!p)return <div className="page"><h2>Page not found</h2></div>;
@@ -154,8 +151,5 @@ function InvestPage({id}){
     </div>
   );
 }
-
-// --- EQUITY PAGE — THE TWO HUNTSVILLES ---
-
 
 export { Spin, AiResult, AiButton, StatGrid, FactBlock, FactBlocks, ExpandText, ActionButtons, InvestPage };
