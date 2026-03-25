@@ -1,5 +1,4 @@
 import React from "react";
-import { DetailPage } from "../components/shared";
 
 export const equityPageData = {
   id: "equity",
@@ -100,8 +99,8 @@ export function getEquityAIPayload() {
   };
 }
 
-export function EquityPage(props) {
-  return <DetailPage {...props} data={equityPageData} />;
+export function EquityPage() {
+  return null;
 }
 
 export default EquityPage;
