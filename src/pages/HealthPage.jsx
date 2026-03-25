@@ -1,10 +1,8 @@
-import React,{useState,useEffect,useRef,useCallback} from "react";
-import { C } from "../config/theme";
-import { NAV } from "../config/nav";
-import { PAGES } from "../data/pages";
-import { Spin, AiResult, AiButton, StatGrid, FactBlock, FactBlocks, ExpandText, ActionButtons, InvestPage } from "../components/shared";
+import{useState,useEffect,useRef,useCallback}from"react";
+import{AiButton,ActionButtons,FactBlocks,ExpandText,InvestPage}from"../components/shared";
 
-function HealthPage(){
+// --- HEALTH SYSTEM PAGE ---
+export function HealthPage(){
   const[tab,setTab]=useState("overview");
   const[analysisOpen,setAnalysisOpen]=useState({});
   const[foiaOpen,setFoiaOpen]=useState({});
@@ -473,8 +471,4 @@ function HealthPage(){
   );
 }
 
-
-
-// --- BOARDS PAGE ---
-
-export { HealthPage };
+export default HealthPage;

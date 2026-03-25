@@ -1,10 +1,10 @@
-import React,{useState,useEffect,useRef,useCallback} from "react";
-import { C } from "../config/theme";
-import { NAV } from "../config/nav";
-import { PAGES } from "../data/pages";
-import { Spin, AiResult, AiButton, StatGrid, FactBlock, FactBlocks, ExpandText, ActionButtons, InvestPage } from "../components/shared";
+import{useState,useEffect,useRef,useCallback}from"react";
+import{AiButton,ActionButtons,FactBlocks,ExpandText,InvestPage}from"../components/shared";
 
-function NodeHoverDetail({hover,nodes,edges}){
+// --- NETWORK GRAPH COMPONENT ---
+// Pure SVG/CSS network graph — no external libs needed
+
+export function NodeHoverDetail({hover,nodes,edges}){
   const n=nodes.find(x=>x.id===hover);
   const related=edges.filter(e=>e.from===hover||e.to===hover);
   if(!n)return null;
@@ -194,7 +194,6 @@ const HOSPITAL_GRAPH={
     {from:"bcbs_m",to:"wages",label:"insurance cost eats wages",color:"#fca5a5",arrow:true,dashed:true},
   ],
 };
-
 
 function MoneyPage(){
   const[tab,setTab]=useState("clocks");
@@ -543,7 +542,7 @@ function MoneyPage(){
   );
 }
 
+export default MoneyPage;
 
-// --- WORKERS & CHILD CARE PAGE ---
 
-export { NodeHoverDetail, NetworkGraph, MoneyPage };
+export default NodeHoverDetail;
