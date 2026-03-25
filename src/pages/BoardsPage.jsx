@@ -1,5 +1,5 @@
 import{useState,useEffect,useRef,useCallback}from"react";
-import{AiButton,ActionButtons,FactBlocks,ExpandText,InvestPage}from"../components/shared";
+import{AiButton,ActionButtons,FactBlocks,ExpandText,InvestPage}from"./shared";
 
 // --- BOARDS PAGE ---
 export function BoardsPage(){

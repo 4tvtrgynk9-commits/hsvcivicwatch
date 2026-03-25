@@ -1,10 +1,10 @@
 import{useState,useEffect,useRef,useCallback}from"react";
-import{AiButton,ActionButtons,FactBlocks,ExpandText,InvestPage}from"../components/shared";
+import { AiButton, ActionButtons, FactBlocks, ExpandText, InvestPage } from "../components/shared";
 
 // --- NETWORK GRAPH COMPONENT ---
 // Pure SVG/CSS network graph — no external libs needed
 
-export function NodeHoverDetail({hover,nodes,edges}){
+function NodeHoverDetail({hover,nodes,edges}){
   const n=nodes.find(x=>x.id===hover);
   const related=edges.filter(e=>e.from===hover||e.to===hover);
   if(!n)return null;
@@ -195,7 +195,7 @@ const HOSPITAL_GRAPH={
   ],
 };
 
-function MoneyPage(){
+export function MoneyPage(){
   const[tab,setTab]=useState("clocks");
   const[elapsed2,setElapsed2]=useState(0);
   const[sel,setSel]=useState(0);
@@ -543,6 +543,3 @@ function MoneyPage(){
 }
 
 export default MoneyPage;
-
-
-export default NodeHoverDetail;
