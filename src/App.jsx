@@ -156,24 +156,23 @@ export default function App() {
 
   return (
     <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "flex-start",
-        background: COLORS.bg,
-      }}
-    >
-      {!isMobile && (
-  <div style={{ width: 312, flexShrink: 0 }}>
-    <Sidebar
-      activeId={activeId}
-      onNavigate={(id) => navigate(id)}
-      isMobile={false}
-      onHome={() => navigate(ROUTE_DASHBOARD)}
-    />
-  </div>
-)}
+  style={{
+    minHeight: "100vh",
+    background: COLORS.bg,
+    display: isMobile ? "block" : "grid",
+    gridTemplateColumns: isMobile ? undefined : "312px minmax(0, 1fr)",
+    alignItems: "start",
+  }}
+>
 
+      {!isMobile && (
+  <Sidebar
+    activeId={activeId}
+    onNavigate={(id) => navigate(id)}
+    isMobile={false}
+    onHome={() => navigate(ROUTE_DASHBOARD)}
+  />
+)}
 
       {isMobile && (
         <>
