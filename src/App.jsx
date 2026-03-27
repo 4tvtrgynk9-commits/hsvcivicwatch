@@ -181,9 +181,9 @@ export default function App() {
               left: 0,
               right: 0,
               zIndex: 70,
-              background: "rgba(251,247,240,0.96)",
+              background: COLORS.sidebarBg,
               backdropFilter: "blur(10px)",
-              borderBottom: `1px solid ${COLORS.border}`,
+              borderBottom: "1px solid rgba(247,243,234,0.12)",
               padding: "10px 12px",
             }}
           >
@@ -200,8 +200,8 @@ export default function App() {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: 12,
-                    border: "1px solid rgba(25,49,80,0.18)",
-                    background: COLORS.sidebarBg,
+                    border: "1px solid rgba(247,243,234,0.18)",
+                    background: "rgba(247,243,234,0.08)",
                     color: COLORS.sidebarText,
                     fontSize: 21,
                     fontWeight: 900,
@@ -211,7 +211,7 @@ export default function App() {
                   }}
                   aria-label="Open menu"
                 >
-                  ☰
+                  &#9776;
                 </button>
               )}
 
@@ -225,9 +225,9 @@ export default function App() {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: 12,
-                    border: `1px solid ${COLORS.border}`,
-                    background: COLORS.panelAlt,
-                    color: COLORS.navy,
+                    border: "1px solid rgba(247,243,234,0.18)",
+                    background: "rgba(247,243,234,0.08)",
+                    color: COLORS.sidebarText,
                     fontSize: 20,
                     fontWeight: 900,
                     lineHeight: 1,
@@ -236,7 +236,7 @@ export default function App() {
                   }}
                   aria-label="Back to homepage"
                 >
-                  ←
+                  &larr;
                 </button>
               ) : (
                 <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
@@ -249,7 +249,7 @@ export default function App() {
                   fontSize: activeId === ROUTE_DASHBOARD ? 16 : 14,
                   fontWeight: 900,
                   lineHeight: 1.15,
-                  color: COLORS.text,
+                  color: COLORS.sidebarText,
                   paddingRight: 4,
                 }}
               >
@@ -272,7 +272,7 @@ export default function App() {
       <main
         style={{
           flex: 1,
-          padding: isMobile ? "72px 12px 16px" : "12px 22px 18px",
+          padding: isMobile ? "72px 12px 16px" : "12px 22px 18px 18px",
           color: COLORS.text,
           minWidth: 0,
         }}
