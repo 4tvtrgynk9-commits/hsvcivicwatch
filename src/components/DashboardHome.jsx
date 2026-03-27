@@ -8,14 +8,14 @@ const keyNumbers = [
   { label: "TVA debt", value: "$20B+" },
   { label: "Huntsville Hospital revenue", value: "$2.4B" },
   { label: "Pretrial detention", value: "61%" },
-  { label: "COVID funds for prison construction", value: "$400M" },
+  { label: "COVID funds used for prison construction", value: "$400M" },
 ];
 
 const activeInvestigations = [
-  { id: "utilities", title: "Utilities: Power, Water, & Gas", summary: "Power is generated here, risk is carried here, and bills are paid here — but control sits farther up the chain." },
-  { id: "health", title: "Healthcare & Hospital System", summary: "Monopoly power, premium hikes, executive pay, understaffing, and shrinking competition all connect here." },
-  { id: "equity", title: "The Two Huntsvilles", summary: "One city, two realities — split by race, geography, and who leaders choose to prioritize." },
-  { id: "money", title: "Follow the Money", summary: "Campaign money, contracts, commissions, grants, and quiet favors rarely stand alone." },
+  { id: "utilities", title: "Utilities: Power, Water, & Gas", summary: "Power is generated here, risk is carried here, and bills are paid here — but control sits farther up the chain, where residents have far less say." },
+  { id: "health", title: "Healthcare & Hospital System", summary: "This module tracks how monopoly power, premium hikes, executive compensation, understaffing, and shrinking competition all connect inside Huntsville’s healthcare system." },
+  { id: "equity", title: "The Two Huntsvilles", summary: "Huntsville sells one growth story, but the money, resources, and outcomes show a city split by race, geography, and who leaders choose to prioritize." },
+  { id: "money", title: "Follow the Money", summary: "Campaign money, contracts, commissions, grants, and quiet favors rarely stand alone. This follows where the money moves, what it buys, and who keeps cashing in while the public is left with the cost." },
 ];
 
 function useElapsedSeconds() {
@@ -34,15 +34,34 @@ function earnings(amountPerYear, elapsed) {
   return (amountPerYear / (365 * 24 * 3600)) * elapsed;
 }
 
-function ClockCard({ label, sublabel, amountPerYear, elapsed, tone = COLORS.navy }) {
+function PayPair({ title, ceoLabel, ceoAmount, workerLabel, workerAmount, elapsed, accent = COLORS.gold }) {
+  const ratio = workerAmount > 0 ? `${Math.round(ceoAmount / workerAmount)}:1` : "—";
   return (
-    <div style={{ background: "#fff", border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 16 }}>
-      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, textTransform: "uppercase", color: tone, marginBottom: 6 }}>{label}</div>
-      <div style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 28, fontWeight: 900, color: tone }}>
-        ${earnings(amountPerYear, elapsed).toFixed(2)}
+    <div style={{
+      background: `linear-gradient(180deg, ${COLORS.panelAlt}, ${COLORS.panel})`,
+      border: `1px solid ${COLORS.border}`,
+      borderRadius: 18,
+      padding: 18,
+      boxShadow: "0 20px 50px rgba(0,0,0,0.25)",
+    }}>
+      <div style={{ fontSize: 11, color: accent, fontWeight: 900, letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>{title}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "end" }}>
+        <div>
+          <div style={{ color: COLORS.textSoft, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.1 }}>{ceoLabel}</div>
+          <div style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontWeight: 900, fontSize: 28, color: COLORS.text, marginTop: 4 }}>${earnings(ceoAmount, elapsed).toFixed(2)}</div>
+          <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>~${ceoAmount.toLocaleString()}/yr</div>
+        </div>
+        <div style={{ textAlign: "center", paddingBottom: 6 }}>
+          <div style={{ fontSize: 11, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.1, textTransform: "uppercase" }}>CEO-to-worker ratio</div>
+          <div style={{ fontSize: 22, color: COLORS.gold, fontWeight: 1000, marginTop: 4 }}>{ratio}</div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ color: COLORS.textSoft, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.1 }}>{workerLabel}</div>
+          <div style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontWeight: 900, fontSize: 28, color: COLORS.text, marginTop: 4 }}>${earnings(workerAmount, elapsed).toFixed(2)}</div>
+          <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>~${workerAmount.toLocaleString()}/yr</div>
+        </div>
       </div>
-      <div style={{ color: COLORS.muted, fontSize: 13, marginTop: 6 }}>{sublabel}</div>
-      <div style={{ color: COLORS.muted, fontSize: 12, marginTop: 4 }}>Since you opened this page</div>
+      <div style={{ color: COLORS.muted, fontSize: 12, marginTop: 10 }}>Since you opened this page</div>
     </div>
   );
 }
@@ -54,17 +73,18 @@ function InvestigationCard({ title, summary, onClick }) {
       style={{
         width: "100%",
         textAlign: "left",
-        background: "#fff",
+        background: `linear-gradient(180deg, ${COLORS.panelAlt}, ${COLORS.panel})`,
         border: `1px solid ${COLORS.border}`,
-        borderRadius: 12,
-        padding: 18,
+        borderRadius: 16,
+        padding: 20,
         cursor: "pointer",
         display: "block",
+        boxShadow: "0 16px 34px rgba(0,0,0,0.20)",
       }}
     >
-      <div style={{ fontSize: 11, color: COLORS.red, fontWeight: 800, letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 6 }}>Active investigation</div>
-      <div style={{ fontSize: 20, fontWeight: 900, color: COLORS.text, marginBottom: 8 }}>{title}</div>
-      <div style={{ color: COLORS.muted, lineHeight: 1.6 }}>{summary}</div>
+      <div style={{ fontSize: 11, color: COLORS.red, fontWeight: 900, letterSpacing: 1.15, textTransform: "uppercase", marginBottom: 6 }}>Active investigation</div>
+      <div style={{ fontSize: 22, fontWeight: 1000, color: COLORS.text, marginBottom: 8 }}>{title}</div>
+      <div style={{ color: COLORS.textSoft, lineHeight: 1.6 }}>{summary}</div>
     </button>
   );
 }
@@ -76,15 +96,19 @@ function ModuleCard({ item, onClick }) {
       style={{
         width: "100%",
         textAlign: "left",
-        background: "#fff",
+        background: `linear-gradient(180deg, ${COLORS.panelAlt}, ${COLORS.panel})`,
         border: `1px solid ${COLORS.border}`,
-        borderRadius: 12,
+        borderRadius: 14,
         padding: 16,
         cursor: "pointer",
         minHeight: 96,
+        color: COLORS.text,
       }}
     >
-      <div style={{ fontWeight: 800, fontSize: 16, color: COLORS.text, lineHeight: 1.3 }}>{item.label}</div>
+      <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.3, display: "flex", gap: 10, alignItems: "flex-start" }}>
+        <span>{item.emoji}</span>
+        <span>{item.label}</span>
+      </div>
     </button>
   );
 }
@@ -95,36 +119,40 @@ export default function DashboardHome({ onOpenModule }) {
 
   return (
     <div>
-      <section style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: COLORS.red, fontWeight: 800, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 8 }}>Huntsville Civic Watch</div>
-        <h1 style={{ fontSize: 38, lineHeight: 1.05, margin: "0 0 12px", color: COLORS.text }}>Real data. Real facts. Real connections — Investigations decoded so Huntsville can uncover what’s really happening.</h1>
-      </section>
-
-      <section style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 800, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Live pay clocks</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-          <ClockCard label="TVA CEO" sublabel="~$8.1M/yr" amountPerYear={8100000} elapsed={elapsed} tone={"#7f1d1d"} />
-          <ClockCard label="Huntsville Utilities CEO" sublabel="Est. $430k/yr" amountPerYear={430000} elapsed={elapsed} tone={COLORS.navy} />
-          <ClockCard label="Huntsville Utilities average worker" sublabel="~$52k/yr" amountPerYear={52000} elapsed={elapsed} tone={COLORS.green} />
-          <ClockCard label="Huntsville Hospital CEO" sublabel="~$3.1M/yr" amountPerYear={3100000} elapsed={elapsed} tone={COLORS.red} />
-          <ClockCard label="Huntsville Hospital average worker" sublabel="Est. $62.4k/yr" amountPerYear={62400} elapsed={elapsed} tone={COLORS.gold} />
+      <section style={{ marginBottom: 28, background: `linear-gradient(180deg, ${COLORS.panelAlt}, ${COLORS.panel})`, border: `1px solid ${COLORS.border}`, borderRadius: 20, padding: 24, boxShadow: "0 24px 50px rgba(0,0,0,0.25)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div style={{ maxWidth: 780 }}>
+            <div style={{ fontSize: 14, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.4, textTransform: "uppercase", marginBottom: 10 }}>Real data. Real facts. Real connections.</div>
+            <h1 style={{ fontSize: 56, lineHeight: 0.94, margin: "0 0 12px", color: COLORS.text, fontWeight: 1000 }}>Huntsville Civic Investigator</h1>
+            <div style={{ color: COLORS.textSoft, fontSize: 18, lineHeight: 1.6, maxWidth: 760 }}>Investigations decoded so Huntsville can uncover what’s really happening.</div>
+          </div>
+          <div style={{ fontSize: 11, border: `1px solid ${COLORS.borderStrong}`, color: COLORS.gold, padding: "6px 10px", borderRadius: 999, fontWeight: 900 }}>v1.0</div>
         </div>
       </section>
 
       <section style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 800, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Key numbers</div>
+        <div style={{ fontSize: 11, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Live pay clocks</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 14 }}>
+          <PayPair title="Utilities pay gap" ceoLabel="HU CEO earnings" ceoAmount={430000} workerLabel="HU teller earnings" workerAmount={33000} elapsed={elapsed} />
+          <PayPair title="Hospital pay gap" ceoLabel="HHHS CEO earnings" ceoAmount={3100000} workerLabel="CNA earnings" workerAmount={34000} elapsed={elapsed} accent={COLORS.red} />
+          <PayPair title="Regional power pay gap" ceoLabel="TVA CEO earnings" ceoAmount={8100000} workerLabel="HU teller earnings" workerAmount={33000} elapsed={elapsed} accent={COLORS.orange} />
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 11, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Key numbers</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
           {keyNumbers.map((item) => (
-            <div key={item.label} style={{ background: "#fff", border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 28, fontWeight: 900, color: COLORS.navy }}>{item.value}</div>
-              <div style={{ marginTop: 6, color: COLORS.muted, lineHeight: 1.5 }}>{item.label}</div>
+            <div key={item.label} style={{ background: `linear-gradient(180deg, ${COLORS.panelAlt}, ${COLORS.panel})`, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 16 }}>
+              <div style={{ fontSize: 28, fontWeight: 1000, color: COLORS.text }}>{item.value}</div>
+              <div style={{ marginTop: 6, color: COLORS.textSoft, lineHeight: 1.45 }}>{item.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       <section style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 800, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Active investigations</div>
+        <div style={{ fontSize: 11, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>Active investigations</div>
         <div style={{ display: "grid", gap: 12 }}>
           {activeInvestigations.map((card) => (
             <InvestigationCard key={card.id} title={card.title} summary={card.summary} onClick={() => onOpenModule(card.id)} />
@@ -133,10 +161,10 @@ export default function DashboardHome({ onOpenModule }) {
       </section>
 
       <section style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 800, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>All modules</div>
+        <div style={{ fontSize: 11, color: COLORS.gold, fontWeight: 900, letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 12 }}>All modules</div>
         {allGroups.map((group) => (
           <div key={group.group} style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 900, color: COLORS.navyDark, marginBottom: 10 }}>{group.group}</div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: COLORS.text, marginBottom: 10 }}>{group.group}</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
               {group.items.map((item) => (
                 <ModuleCard key={item.id} item={item} onClick={() => onOpenModule(item.id)} />
@@ -147,7 +175,7 @@ export default function DashboardHome({ onOpenModule }) {
       </section>
 
       <section style={{ marginTop: 30, marginBottom: 12 }}>
-        <div style={{ background: COLORS.navyDark, color: "#fff", borderRadius: 999, padding: "10px 16px", fontSize: 12, lineHeight: 1.5 }}>
+        <div style={{ background: `linear-gradient(90deg, ${COLORS.panelSoft}, ${COLORS.panelAlt})`, color: COLORS.textSoft, borderRadius: 999, padding: "10px 16px", fontSize: 12, lineHeight: 1.5, border: `1px solid ${COLORS.border}` }}>
           Some figures are estimates because the exact numbers are not publicly disclosed. If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.
         </div>
       </section>

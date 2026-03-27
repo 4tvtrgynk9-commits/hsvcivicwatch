@@ -58,6 +58,7 @@ export default function App() {
   }, []);
 
   const [activeId, setActiveId] = useState(initialRoute);
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
   const previousRoute = useRef(initialRoute);
@@ -87,8 +88,13 @@ export default function App() {
       pendingRestore.current = nextRoute;
       setActiveId(nextRoute);
     };
+    const onResize = () => setIsMobile(window.innerWidth < 960);
     window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("resize", onResize);
+    };
   }, [initialRoute]);
 
   useEffect(() => {
@@ -122,26 +128,26 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: COLORS.bg }}>
-      <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} />
-      <main style={{ flex: 1, padding: 24 }}>
+      <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={isMobile} onHome={() => navigate(ROUTE_DASHBOARD)} />
+      <main style={{ flex: 1, padding: isMobile ? 14 : 24, color: COLORS.text }}>
         <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
-          {activeId !== ROUTE_DASHBOARD && (
+          {isMobile && activeId !== ROUTE_DASHBOARD && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
               <button
                 onClick={() => navigate(ROUTE_DASHBOARD)}
                 style={{
-                  border: `1px solid ${COLORS.border}`,
-                  background: "#fff",
-                  borderRadius: 10,
+                  border: `1px solid ${COLORS.borderStrong}`,
+                  background: COLORS.goldSoft,
+                  borderRadius: 999,
                   padding: "10px 14px",
                   cursor: "pointer",
-                  fontWeight: 800,
-                  color: COLORS.navyDark,
+                  fontWeight: 900,
+                  color: COLORS.text,
                 }}
               >
-                ← Back to dashboard
+                ← Dashboard
               </button>
-              <div style={{ color: COLORS.muted, fontSize: 14 }}>{moduleTitle[activeId]}</div>
+              <div style={{ color: COLORS.textSoft, fontSize: 13 }}>{moduleTitle[activeId]}</div>
             </div>
           )}
           <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />

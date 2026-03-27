@@ -1,21 +1,26 @@
 export const COLORS = {
-  navy: "#1e3a5f",
-  navyDark: "#162d4a",
-  red: "#dc2626",
-  orange: "#ea580c",
-  green: "#16a34a",
-  gold: "#b8860b",
-  slate: "#475569",
-  text: "#111827",
-  muted: "#6b7280",
-  bg: "#f8fafc",
+  bg: "#08111f",
+  panel: "#0d1728",
+  panelAlt: "#111d31",
+  panelSoft: "#142239",
+  navy: "#9bb7ff",
+  navyDark: "#07101c",
+  text: "#edf2f7",
+  textSoft: "#c6d0e1",
+  muted: "#8fa1bc",
+  border: "rgba(255,255,255,0.10)",
+  borderStrong: "rgba(212,175,55,0.45)",
+  gold: "#d4af37",
+  goldSoft: "rgba(212,175,55,0.12)",
+  green: "#32c48d",
+  red: "#ff6b6b",
+  orange: "#ff9f43",
   white: "#ffffff",
-  border: "#e5e7eb",
 };
 
 export const SPACING = {
-  pageMax: "1120px",
-  radius: "8px",
+  pageMax: "1240px",
+  radius: "12px",
 };
 
 export const TYPE = {
