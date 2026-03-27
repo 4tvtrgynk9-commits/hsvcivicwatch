@@ -130,7 +130,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", background: COLORS.bg }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
       {!isMobile && <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={false} onHome={() => navigate(ROUTE_DASHBOARD)} />}
       {isMobile && (
         <>
@@ -158,7 +158,7 @@ export default function App() {
           <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile onHome={() => navigate(ROUTE_DASHBOARD)} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
         </>
       )}
-      <main style={{ flex: 1, padding: isMobile ? "56px 14px 18px" : "18px 22px", color: COLORS.text, minWidth: 0 }}>
+      <main style={{ flex: 1, padding: isMobile ? "56px 14px 18px" : "12px 22px 18px", color: COLORS.text, minWidth: 0 }}>
         <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
           {isMobile && activeId !== ROUTE_DASHBOARD && (
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>

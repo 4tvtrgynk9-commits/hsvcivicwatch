@@ -3,7 +3,30 @@ import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
 
 function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured = false, compact = false }) {
-  const isLit = active || hovered;
+  const isActive = active;
+  const isHover = hovered && !active;
+  let background = "transparent";
+  let border = "1px solid transparent";
+  let color = COLORS.sidebarText;
+  let boxShadow = "none";
+
+  if (featured && !isActive) {
+    background = "rgba(198,170,87,0.06)";
+    border = "1px solid rgba(198,170,87,0.18)";
+    color = COLORS.gold;
+  }
+  if (isHover) {
+    background = "rgba(198,170,87,0.10)";
+    border = `1px solid ${COLORS.borderStrong}`;
+    boxShadow = "0 0 0 1px rgba(198,170,87,0.10)";
+  }
+  if (isActive) {
+    background = "rgba(198,170,87,0.18)";
+    border = `1px solid ${COLORS.borderStrong}`;
+    color = COLORS.gold;
+    boxShadow = "inset 0 0 0 1px rgba(198,170,87,0.10), 0 0 0 1px rgba(198,170,87,0.10)";
+  }
+
   return (
     <button
       onClick={onClick}
@@ -11,24 +34,16 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
       onMouseLeave={onLeave}
       style={{
         width: "100%",
-        background: featured
-          ? isLit
-            ? "linear-gradient(135deg, rgba(198,170,87,0.20), rgba(255,255,255,0.06))"
-            : "linear-gradient(135deg, rgba(198,170,87,0.08), rgba(255,255,255,0.03))"
-          : isLit
-            ? "rgba(255,255,255,0.05)"
-            : "transparent",
-        color: COLORS.sidebarText,
-        border: featured
-          ? `1px solid ${isLit ? COLORS.borderStrong : "rgba(198,170,87,0.28)"}`
-          : `1px solid ${isLit ? COLORS.borderStrong : "transparent"}`,
-        boxShadow: isLit ? "0 0 0 1px rgba(198,170,87,0.14), inset 0 0 0 1px rgba(198,170,87,0.08)" : "none",
+        background,
+        color,
+        border,
+        boxShadow,
         borderRadius: 12,
         textAlign: "left",
-        padding: compact ? "7px 9px" : "8px 10px",
+        padding: compact ? "7px 10px" : "8px 11px",
         cursor: "pointer",
         fontSize: compact ? 12 : 13,
-        fontWeight: active ? 900 : 700,
+        fontWeight: isActive ? 900 : 700,
         display: "flex",
         alignItems: "center",
         gap: 8,
@@ -36,7 +51,7 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
       }}
     >
       <span style={{ fontSize: compact ? 14 : 15, width: 16, textAlign: "center", flexShrink: 0 }}>{item.emoji}</span>
-      <span style={{ lineHeight: 1.2 }}>{item.label}</span>
+      <span style={{ lineHeight: 1.16 }}>{item.label}</span>
     </button>
   );
 }
@@ -49,18 +64,20 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
   const sidebarContent = (
     <aside
       style={{
-        width: isMobile ? "min(88vw, 330px)" : 292,
+        width: isMobile ? "min(86vw, 330px)" : 288,
         background: COLORS.sidebarBg,
         color: COLORS.sidebarText,
-        padding: isMobile ? 16 : "14px 14px 10px",
+        padding: isMobile ? 16 : "16px 14px 12px",
         flexShrink: 0,
         borderRight: `1px solid rgba(255,255,255,0.08)`,
-        height: "100vh",
+        height: isMobile ? "calc(100vh - 20px)" : "calc(100vh - 24px)",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         boxShadow: isMobile ? "0 18px 60px rgba(0,0,0,0.35)" : "none",
-        borderRadius: isMobile ? 18 : 0,
+        borderRadius: isMobile ? 18 : 16,
+        position: isMobile ? "relative" : "sticky",
+        top: isMobile ? "auto" : 12,
       }}
     >
       <button
@@ -74,12 +91,12 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
           textAlign: "left",
           cursor: "pointer",
           padding: 0,
-          marginBottom: isMobile ? 14 : 10,
+          marginBottom: isMobile ? 16 : 14,
         }}
       >
-        <div style={{ fontSize: isMobile ? 30 : 34, fontWeight: 1000, lineHeight: 0.9, marginBottom: 2, letterSpacing: -0.6 }}>HUNTSVILLE</div>
-        <div style={{ fontSize: isMobile ? 30 : 34, fontWeight: 1000, lineHeight: 0.9, marginBottom: isMobile ? 8 : 6, letterSpacing: -0.6 }}>CIVIC INVESTIGATOR</div>
-        <div style={{ fontSize: isMobile ? 11 : 10, fontWeight: 900, letterSpacing: 1.4, color: COLORS.gold, textTransform: "uppercase", marginBottom: 4 }}>
+        <div style={{ fontSize: isMobile ? 31 : 33, fontWeight: 1000, lineHeight: 0.92, marginBottom: 0, letterSpacing: -0.7 }}>HUNTSVILLE 🚀</div>
+        <div style={{ fontSize: isMobile ? 29 : 31, fontWeight: 1000, lineHeight: 0.92, marginBottom: 8, letterSpacing: -0.7, color: COLORS.gold }}>CIVIC INVESTIGATOR</div>
+        <div style={{ fontSize: isMobile ? 11.5 : 11, fontWeight: 800, letterSpacing: 1.0, color: "rgba(247,243,234,0.74)", textTransform: "uppercase", marginBottom: 4 }}>
           The truth about your city
         </div>
         <div style={{ fontSize: isMobile ? 12 : 11, color: COLORS.sidebarTextSoft, letterSpacing: 0.3 }}>Madison County · Est. 2026</div>
@@ -105,13 +122,13 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
         </button>
       ) : null}
 
-      <div style={{ flex: 1, overflow: "hidden", display: "grid", alignContent: "start", gap: compact ? 8 : 12 }}>
+      <div style={{ flex: 1, overflow: "hidden", display: "grid", alignContent: "start", gap: compact ? 10 : 12 }}>
         {grouped.map((group) => (
           <div key={group.group}>
-            <div style={{ fontSize: compact ? 9 : 10, fontWeight: 900, color: COLORS.sidebarTextSoft, marginBottom: compact ? 5 : 7, textTransform: "uppercase", letterSpacing: 1.35 }}>
+            <div style={{ fontSize: compact ? 10 : 10.5, fontWeight: 900, color: COLORS.gold, marginTop: compact ? 10 : 12, marginBottom: compact ? 10 : 12, textTransform: "uppercase", letterSpacing: 1.5 }}>
               {group.group}
             </div>
-            <div style={{ display: "grid", gap: compact ? 4 : 8 }}>
+            <div style={{ display: "grid", gap: compact ? 5 : 8 }}>
               {group.items.map((item) => (
                 <NavButton
                   key={item.id}
@@ -133,7 +150,10 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
         ))}
       </div>
 
-      <div style={{ marginTop: compact ? 8 : 12 }}>
+      <div style={{ marginTop: compact ? 12 : 14 }}>
+        <div style={{ fontSize: compact ? 10 : 10.5, fontWeight: 900, color: COLORS.gold, marginTop: compact ? 10 : 12, marginBottom: compact ? 10 : 12, textTransform: "uppercase", letterSpacing: 1.5 }}>
+          {BOTTOM_NAV.group}
+        </div>
         <NavButton
           item={BOTTOM_NAV}
           active={activeId === BOTTOM_NAV.id}
@@ -146,7 +166,7 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
           }}
           compact={compact}
         />
-        <div style={{ fontSize: 9, color: "rgba(247,243,234,0.40)", textAlign: "right", marginTop: 6 }}>v1.2</div>
+        <div style={{ fontSize: 8, color: "rgba(247,243,234,0.28)", textAlign: "right", marginTop: 6 }}>v1.3</div>
       </div>
     </aside>
   );
@@ -155,20 +175,13 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
   if (!mobileOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 50,
-        pointerEvents: "none",
-      }}
-    >
+    <div style={{ position: "fixed", inset: 0, zIndex: 50, pointerEvents: "none" }}>
       <div
         onClick={onCloseMobile}
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(10,16,28,0.32)",
+          background: "rgba(10,16,28,0.24)",
           backdropFilter: "blur(1px)",
           pointerEvents: "auto",
         }}

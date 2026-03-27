@@ -34,4 +34,4 @@ export const NAV = [
   },
 ];
 
-export const BOTTOM_NAV = { id: "action", label: "Take Action", emoji: "📬" };
+export const BOTTOM_NAV = { id: "action", label: "Take Action", emoji: "📬", group: "What You Can Do" };
