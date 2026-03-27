@@ -73,84 +73,137 @@ export default function Sidebar({
   const grouped = useMemo(() => NAV, []);
   const compact = !isMobile;
 
+  const brandBlock = (
+    <>
+      <div
+        style={{
+          fontSize: isMobile ? 27 : 33,
+          fontWeight: 1000,
+          lineHeight: 0.92,
+          marginBottom: 0,
+          letterSpacing: -0.7,
+        }}
+      >
+        HUNTSVILLE 🚀
+      </div>
+      <div
+        style={{
+          fontSize: isMobile ? 25 : 31,
+          fontWeight: 1000,
+          lineHeight: 0.92,
+          marginBottom: 8,
+          letterSpacing: -0.7,
+          color: COLORS.gold,
+        }}
+      >
+        CIVIC INVESTIGATOR
+      </div>
+      <div
+        style={{
+          fontSize: isMobile ? 10.5 : 11,
+          fontWeight: 800,
+          letterSpacing: 1,
+          color: "rgba(247,243,234,0.74)",
+          textTransform: "uppercase",
+          marginBottom: 4,
+        }}
+      >
+        The truth about your city
+      </div>
+      <div
+        style={{
+          fontSize: isMobile ? 11 : 11,
+          color: COLORS.sidebarTextSoft,
+          letterSpacing: 0.3,
+        }}
+      >
+        Madison County · Est. 2026
+      </div>
+    </>
+  );
+
   const sidebarContent = (
     <aside
       style={{
-        width: isMobile ? "min(82vw, 330px)" : 300,
+        width: "100%",
         background: COLORS.sidebarBg,
         color: COLORS.sidebarText,
-        padding: isMobile ? 16 : "16px 14px 12px",
+        padding: isMobile ? "12px 14px 12px" : "16px 14px 12px",
         flexShrink: 0,
         borderRight: "1px solid rgba(255,255,255,0.08)",
-        height: isMobile ? "calc(100vh - 20px)" : "calc(100vh - 24px)",
+        height: "100%",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         boxShadow: isMobile ? "0 18px 60px rgba(0,0,0,0.35)" : "none",
-        borderRadius: isMobile ? 18 : 16,
+        borderRadius: isMobile ? "0 18px 18px 0" : 16,
         position: isMobile ? "relative" : "sticky",
         top: isMobile ? "auto" : 12,
       }}
     >
-      <button
-        onClick={onHome}
-        style={{
-          display: "block",
-          width: "100%",
-          background: "transparent",
-          border: "none",
-          color: COLORS.sidebarText,
-          textAlign: "left",
-          cursor: "pointer",
-          padding: 0,
-          marginBottom: isMobile ? 16 : 14,
-        }}
-      >
-        <div
+      {isMobile ? (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <button
+              onClick={onCloseMobile}
+              style={{
+                width: 42,
+                height: 42,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 12,
+                border: `1px solid ${COLORS.borderStrong}`,
+                background: COLORS.goldSoft,
+                color: COLORS.gold,
+                fontSize: 21,
+                fontWeight: 900,
+                lineHeight: 1,
+                cursor: "pointer",
+                flexShrink: 0,
+                marginTop: 2,
+              }}
+              aria-label="Close menu"
+            >
+              ☰
+            </button>
+
+            <button
+              onClick={onHome}
+              style={{
+                display: "block",
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                color: COLORS.sidebarText,
+                textAlign: "left",
+                cursor: "pointer",
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              {brandBlock}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={onHome}
           style={{
-            fontSize: isMobile ? 27 : 33,
-            fontWeight: 1000,
-            lineHeight: 0.92,
-            marginBottom: 0,
-            letterSpacing: -0.7,
+            display: "block",
+            width: "100%",
+            background: "transparent",
+            border: "none",
+            color: COLORS.sidebarText,
+            textAlign: "left",
+            cursor: "pointer",
+            padding: 0,
+            marginBottom: 14,
           }}
         >
-          HUNTSVILLE 🚀
-        </div>
-        <div
-          style={{
-            fontSize: isMobile ? 25 : 31,
-            fontWeight: 1000,
-            lineHeight: 0.92,
-            marginBottom: 8,
-            letterSpacing: -0.7,
-            color: COLORS.gold,
-          }}
-        >
-          CIVIC INVESTIGATOR
-        </div>
-        <div
-          style={{
-            fontSize: isMobile ? 10.5 : 11,
-            fontWeight: 800,
-            letterSpacing: 1,
-            color: "rgba(247,243,234,0.74)",
-            textTransform: "uppercase",
-            marginBottom: 4,
-          }}
-        >
-          The truth about your city
-        </div>
-        <div
-          style={{
-            fontSize: isMobile ? 11 : 11,
-            color: COLORS.sidebarTextSoft,
-            letterSpacing: 0.3,
-          }}
-        >
-          Madison County · Est. 2026
-        </div>
-      </button>
+          {brandBlock}
+        </button>
+      )}
 
       <div
         style={{
@@ -168,11 +221,11 @@ export default function Sidebar({
           <div key={group.group}>
             <div
               style={{
-                fontSize: compact ? 11.5 : 11.5,
+                fontSize: 11.5,
                 fontWeight: 900,
                 color: COLORS.gold,
                 marginTop: compact ? 12 : 14,
-                marginBottom: compact ? 10 : 11,
+                marginBottom: 10,
                 textTransform: "uppercase",
                 letterSpacing: 1.7,
                 lineHeight: 1.2,
@@ -181,7 +234,7 @@ export default function Sidebar({
               {group.group}
             </div>
 
-            <div style={{ display: "grid", gap: compact ? 6 : 6 }}>
+            <div style={{ display: "grid", gap: 6 }}>
               {group.items.map((item) => (
                 <NavButton
                   key={item.id}
@@ -204,7 +257,7 @@ export default function Sidebar({
         <div>
           <div
             style={{
-              fontSize: compact ? 11.5 : 11.5,
+              fontSize: 11.5,
               fontWeight: 900,
               color: COLORS.gold,
               marginTop: 12,
@@ -245,11 +298,24 @@ export default function Sidebar({
     </aside>
   );
 
-  if (!isMobile) return sidebarContent;
+  if (!isMobile) {
+    return <div style={{ width: 300 }}>{sidebarContent}</div>;
+  }
+
   if (!mobileOpen) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 65, pointerEvents: "none" }}>
+    <div
+      style={{
+        position: "fixed",
+        top: 72,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 65,
+        pointerEvents: "none",
+      }}
+    >
       <div
         onClick={onCloseMobile}
         style={{
@@ -260,7 +326,14 @@ export default function Sidebar({
           pointerEvents: "auto",
         }}
       />
-      <div style={{ position: "relative", pointerEvents: "auto", padding: "64px 10px 10px" }}>
+      <div
+        style={{
+          position: "relative",
+          pointerEvents: "auto",
+          width: "min(86vw, 350px)",
+          height: "100%",
+        }}
+      >
         {sidebarContent}
       </div>
     </div>

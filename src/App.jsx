@@ -23,6 +23,7 @@ import ProposalsPage from "./modules/proposals/ProposalsPage";
 import ActionPage from "./modules/action/ActionPage";
 
 const ROUTE_DASHBOARD = "dashboard";
+const MOBILE_BREAKPOINT = 1180;
 
 function ActivePage({ activeId, onBack }) {
   switch (activeId) {
@@ -58,7 +59,9 @@ export default function App() {
   }, []);
 
   const [activeId, setActiveId] = useState(initialRoute);
-  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < MOBILE_BREAKPOINT : false
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
@@ -73,9 +76,11 @@ export default function App() {
     const currentRoute = previousRoute.current;
     scrollPositions.current[currentRoute] = window.scrollY;
     previousRoute.current = nextRoute;
+
     if (pushHistory) {
       window.history.pushState({ route: nextRoute }, "", `#${nextRoute}`);
     }
+
     pendingRestore.current = nextRoute;
     setActiveId(nextRoute);
     setMobileOpen(false);
@@ -83,6 +88,7 @@ export default function App() {
 
   useEffect(() => {
     window.history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
+
     const onPopState = (event) => {
       const nextRoute = event.state?.route || window.location.hash.replace("#", "") || ROUTE_DASHBOARD;
       scrollPositions.current[previousRoute.current] = window.scrollY;
@@ -91,9 +97,12 @@ export default function App() {
       setActiveId(nextRoute);
       setMobileOpen(false);
     };
-    const onResize = () => setIsMobile(window.innerWidth < 960);
+
+    const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+
     window.addEventListener("popstate", onPopState);
     window.addEventListener("resize", onResize);
+
     return () => {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
@@ -106,6 +115,19 @@ export default function App() {
       pendingRestore.current = null;
     }
   }, [activeId, restoreScroll]);
+
+  useEffect(() => {
+    if (!isMobile) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, mobileOpen]);
 
   const moduleTitle = {
     equity: "The Two Huntsvilles",
@@ -129,10 +151,18 @@ export default function App() {
     action: "Take Action",
   };
 
-  const mobileTitle = activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
+  const mobileTitle =
+    activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "flex-start",
+        background: COLORS.bg,
+      }}
+    >
       {!isMobile && (
         <Sidebar
           activeId={activeId}
@@ -151,35 +181,39 @@ export default function App() {
               left: 0,
               right: 0,
               zIndex: 70,
-              background: "rgba(246,241,232,0.96)",
+              background: "rgba(251,247,240,0.96)",
               backdropFilter: "blur(10px)",
               borderBottom: `1px solid ${COLORS.border}`,
               padding: "10px 12px",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 42 }}>
-              <button
-                onClick={() => setMobileOpen((v) => !v)}
-                style={{
-                  width: 42,
-                  height: 42,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 12,
-                  border: `1px solid ${mobileOpen ? COLORS.borderStrong : COLORS.border}`,
-                  background: mobileOpen ? COLORS.goldSoft : COLORS.blueSoft,
-                  color: mobileOpen ? COLORS.gold : COLORS.blue,
-                  fontSize: 21,
-                  fontWeight: 900,
-                  lineHeight: 1,
-                  cursor: "pointer",
-                  flexShrink: 0,
-                }}
-                aria-label="Open menu"
-              >
-                ☰
-              </button>
+              {mobileOpen ? (
+                <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
+              ) : (
+                <button
+                  onClick={() => setMobileOpen(true)}
+                  style={{
+                    width: 42,
+                    height: 42,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 12,
+                    border: "1px solid rgba(25,49,80,0.18)",
+                    background: COLORS.sidebarBg,
+                    color: COLORS.sidebarText,
+                    fontSize: 21,
+                    fontWeight: 900,
+                    lineHeight: 1,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                  aria-label="Open menu"
+                >
+                  ☰
+                </button>
+              )}
 
               {activeId !== ROUTE_DASHBOARD && !mobileOpen ? (
                 <button
