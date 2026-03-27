@@ -129,57 +129,121 @@ export default function App() {
     action: "Take Action",
   };
 
+  const mobileTitle = activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
-      {!isMobile && <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={false} onHome={() => navigate(ROUTE_DASHBOARD)} />}
+      {!isMobile && (
+        <Sidebar
+          activeId={activeId}
+          onNavigate={(id) => navigate(id)}
+          isMobile={false}
+          onHome={() => navigate(ROUTE_DASHBOARD)}
+        />
+      )}
+
       {isMobile && (
         <>
-          <button
-            onClick={() => setMobileOpen(v => !v)}
+          <div
             style={{
               position: "fixed",
-              top: 12,
-              left: 12,
-              zIndex: 60,
-              background: COLORS.sidebarBg,
-              color: COLORS.sidebarText,
-              border: `1px solid rgba(255,255,255,0.10)`,
-              borderRadius: 12,
-              padding: "9px 11px",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
-              fontSize: 20,
-              lineHeight: 1,
-              cursor: "pointer",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 70,
+              background: "rgba(246,241,232,0.96)",
+              backdropFilter: "blur(10px)",
+              borderBottom: `1px solid ${COLORS.border}`,
+              padding: "10px 12px",
             }}
-            aria-label="Open menu"
           >
-            ☰
-          </button>
-          <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile onHome={() => navigate(ROUTE_DASHBOARD)} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
-        </>
-      )}
-      <main style={{ flex: 1, padding: isMobile ? "56px 14px 18px" : "12px 22px 18px", color: COLORS.text, minWidth: 0 }}>
-        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
-          {isMobile && activeId !== ROUTE_DASHBOARD && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 42 }}>
               <button
-                onClick={() => navigate(ROUTE_DASHBOARD)}
+                onClick={() => setMobileOpen((v) => !v)}
                 style={{
-                  border: `1px solid ${COLORS.borderStrong}`,
-                  background: "rgba(198,170,87,0.13)",
-                  borderRadius: 999,
-                  padding: "8px 12px",
-                  cursor: "pointer",
+                  width: 42,
+                  height: 42,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 12,
+                  border: `1px solid ${mobileOpen ? COLORS.borderStrong : COLORS.border}`,
+                  background: mobileOpen ? COLORS.goldSoft : COLORS.panelAlt,
+                  color: mobileOpen ? COLORS.gold : COLORS.navy,
+                  fontSize: 21,
                   fontWeight: 900,
+                  lineHeight: 1,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+                aria-label="Open menu"
+              >
+                ☰
+              </button>
+
+              {activeId !== ROUTE_DASHBOARD ? (
+                <button
+                  onClick={() => navigate(ROUTE_DASHBOARD)}
+                  style={{
+                    width: 42,
+                    height: 42,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 12,
+                    border: `1px solid ${COLORS.border}`,
+                    background: COLORS.panelAlt,
+                    color: COLORS.navy,
+                    fontSize: 20,
+                    fontWeight: 900,
+                    lineHeight: 1,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                  aria-label="Back to homepage"
+                >
+                  ←
+                </button>
+              ) : (
+                <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
+              )}
+
+              <div
+                style={{
+                  minWidth: 0,
+                  flex: 1,
+                  fontSize: activeId === ROUTE_DASHBOARD ? 16 : 14,
+                  fontWeight: 900,
+                  lineHeight: 1.15,
                   color: COLORS.text,
-                  fontSize: 13,
+                  paddingRight: 4,
                 }}
               >
-                ←
-              </button>
-              <div style={{ color: COLORS.textSoft, fontSize: 12 }}>{moduleTitle[activeId]}</div>
+                {mobileTitle}
+              </div>
             </div>
-          )}
+          </div>
+
+          <Sidebar
+            activeId={activeId}
+            onNavigate={(id) => navigate(id)}
+            isMobile
+            onHome={() => navigate(ROUTE_DASHBOARD)}
+            mobileOpen={mobileOpen}
+            onCloseMobile={() => setMobileOpen(false)}
+          />
+        </>
+      )}
+
+      <main
+        style={{
+          flex: 1,
+          padding: isMobile ? "72px 12px 16px" : "12px 22px 18px",
+          color: COLORS.text,
+          minWidth: 0,
+        }}
+      >
+        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
           <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
         </div>
       </main>
