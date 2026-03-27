@@ -164,13 +164,16 @@ export default function App() {
       }}
     >
       {!isMobile && (
-        <Sidebar
-          activeId={activeId}
-          onNavigate={(id) => navigate(id)}
-          isMobile={false}
-          onHome={() => navigate(ROUTE_DASHBOARD)}
-        />
-      )}
+  <div style={{ width: 312, flexShrink: 0 }}>
+    <Sidebar
+      activeId={activeId}
+      onNavigate={(id) => navigate(id)}
+      isMobile={false}
+      onHome={() => navigate(ROUTE_DASHBOARD)}
+    />
+  </div>
+)}
+
 
       {isMobile && (
         <>
