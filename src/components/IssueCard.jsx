@@ -11,11 +11,12 @@ export default function IssueCard({ issue }) {
 
   return (
     <div style={{
-      background: "white",
+      background: COLORS.panel,
       border: `1px solid ${COLORS.border}`,
-      borderRadius: 8,
+      borderRadius: 12,
       padding: 18,
-      marginBottom: 14
+      marginBottom: 14,
+      boxShadow: "0 1px 0 rgba(25,49,80,0.03)"
     }}>
       {issue.label ? (
         <div style={{ fontSize: 12, fontWeight: 800, color: issue.labelColor || COLORS.navy, letterSpacing: 1, marginBottom: 8, textTransform: "uppercase" }}>
@@ -23,11 +24,11 @@ export default function IssueCard({ issue }) {
         </div>
       ) : null}
 
-      <div style={{ fontSize: 22, fontWeight: 900, color: COLORS.text, marginBottom: 8 }}>
+      <div style={{ fontSize: 22, fontWeight: 900, color: COLORS.text, marginBottom: 8, lineHeight: 1.2 }}>
         {issue.title}
       </div>
 
-      <div style={{ fontSize: 16, color: COLORS.text, lineHeight: 1.8 }}>
+      <div style={{ fontSize: 17, color: COLORS.textSoft, lineHeight: 1.75 }}>
         {body}
       </div>
 
@@ -39,7 +40,7 @@ export default function IssueCard({ issue }) {
             border: "none",
             padding: 0,
             cursor: "pointer",
-            color: "#c9a84c",
+            color: COLORS.gold,
             fontSize: 14,
             fontWeight: 800,
             marginTop: 10
@@ -49,21 +50,21 @@ export default function IssueCard({ issue }) {
         </button>
       ) : null}
 
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 12 }}>
         <button
           onClick={() => setDecoded(!decoded)}
           style={{
-            background: "#c9a84c",
+            background: COLORS.gold,
             color: COLORS.navyDark,
             border: "none",
             borderRadius: 8,
-            padding: "11px 15px",
+            padding: "8px 12px",
             cursor: "pointer",
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: 900
           }}
         >
-          Decode This 🔍
+          Decode This 🔎
         </button>
       </div>
 

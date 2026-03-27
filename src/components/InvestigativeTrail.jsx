@@ -7,10 +7,10 @@ export default function InvestigativeTrail({ entries = [] }) {
 
   return (
     <section style={{
-      marginTop: 28,
-      background: "white",
+      marginTop: 22,
+      background: COLORS.panel,
       border: `1px solid ${COLORS.border}`,
-      borderRadius: 8,
+      borderRadius: 10,
       padding: 14
     }}>
       <button
@@ -20,9 +20,9 @@ export default function InvestigativeTrail({ entries = [] }) {
           border: "none",
           padding: 0,
           cursor: "pointer",
-          fontSize: 15,
+          fontSize: 13,
           fontWeight: 800,
-          color: COLORS.navy
+          color: "#8da2d6"
         }}
       >
         Investigative Trail {open ? "▲" : "▼"}

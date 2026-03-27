@@ -4,7 +4,7 @@ import { COLORS } from "../config/theme";
 export default function PageHeader({ title, intro }) {
   return (
     <header style={{ marginBottom: 18 }}>
-      <h1 style={{ margin: 0, color: COLORS.text, fontSize: 36, lineHeight: 1.12 }}>
+      <h1 style={{ margin: 0, color: COLORS.text, fontSize: 40, lineHeight: 1.12, fontWeight: 1000 }}>
         {title}
       </h1>
       {intro ? (
@@ -14,7 +14,7 @@ export default function PageHeader({ title, intro }) {
           color: COLORS.muted,
           fontSize: 17,
           lineHeight: 1.7,
-          maxWidth: 900
+          maxWidth: 980
         }}>
           {intro}
         </p>

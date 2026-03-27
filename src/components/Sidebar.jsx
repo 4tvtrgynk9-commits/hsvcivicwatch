@@ -12,17 +12,17 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
       style={{
         background: featured
           ? isLit
-            ? "linear-gradient(135deg, rgba(212,175,55,0.20), rgba(80,140,255,0.16))"
-            : "linear-gradient(135deg, rgba(212,175,55,0.10), rgba(80,140,255,0.08))"
+            ? "linear-gradient(135deg, rgba(198,170,87,0.22), rgba(255,255,255,0.06))"
+            : "linear-gradient(135deg, rgba(198,170,87,0.10), rgba(255,255,255,0.03))"
           : isLit
-            ? COLORS.goldSoft
+            ? "rgba(255,255,255,0.04)"
             : "transparent",
-        color: COLORS.text,
+        color: COLORS.sidebarText,
         border: featured
-          ? `1px solid ${isLit ? COLORS.borderStrong : "rgba(212,175,55,0.25)"}`
+          ? `1px solid ${isLit ? COLORS.borderStrong : "rgba(198,170,87,0.30)"}`
           : `1px solid ${isLit ? COLORS.borderStrong : "transparent"}`,
-        boxShadow: isLit ? "0 0 0 1px rgba(212,175,55,0.12), 0 10px 24px rgba(0,0,0,0.18)" : "none",
-        borderRadius: 12,
+        boxShadow: isLit ? "0 0 0 1px rgba(198,170,87,0.18), inset 0 0 0 1px rgba(198,170,87,0.10)" : "none",
+        borderRadius: 14,
         textAlign: "left",
         padding: "11px 12px",
         cursor: "pointer",
@@ -46,13 +46,13 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome }) {
 
   return (
     <aside style={{
-      width: isMobile ? 92 : 330,
-      background: COLORS.navyDark,
-      color: COLORS.text,
+      width: isMobile ? 96 : 330,
+      background: COLORS.sidebarBg,
+      color: COLORS.sidebarText,
       padding: isMobile ? 14 : 20,
       overflowY: "auto",
       flexShrink: 0,
-      borderRight: `1px solid ${COLORS.border}`,
+      borderRight: `1px solid rgba(255,255,255,0.08)`,
       position: "sticky",
       top: 0,
       height: "100vh"
@@ -64,7 +64,7 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome }) {
           width: "100%",
           background: "transparent",
           border: "none",
-          color: COLORS.text,
+          color: COLORS.sidebarText,
           textAlign: "left",
           cursor: "pointer",
           padding: 0,
@@ -75,17 +75,17 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome }) {
           <div style={{ fontSize: 24, fontWeight: 900, lineHeight: 1 }}>HCI</div>
         ) : (
           <>
-            <div style={{ fontSize: 40, fontWeight: 1000, lineHeight: 0.94, marginBottom: 6 }}>HUNTSVILLE</div>
-            <div style={{ fontSize: 40, fontWeight: 1000, lineHeight: 0.94, marginBottom: 12 }}>CIVIC INVESTIGATOR</div>
-            <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 1.3, color: COLORS.gold, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ fontSize: 50, fontWeight: 1000, lineHeight: 0.92, marginBottom: 4, letterSpacing: -0.6 }}>HUNTSVILLE</div>
+            <div style={{ fontSize: 50, fontWeight: 1000, lineHeight: 0.92, marginBottom: 12, letterSpacing: -0.6 }}>CIVIC INVESTIGATOR</div>
+            <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.6, color: COLORS.gold, textTransform: "uppercase", marginBottom: 6 }}>
               The truth about your city
             </div>
-            <div style={{ fontSize: 12, color: COLORS.textSoft, display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ fontSize: 12, color: COLORS.sidebarTextSoft, display: "flex", alignItems: "center", gap: 8 }}>
               <span>Madison County</span>
               <span style={{ opacity: 0.45 }}>•</span>
               <span>Est. 2026</span>
-              <span style={{ marginLeft: "auto", fontSize: 11, border: `1px solid ${COLORS.border}`, padding: "2px 8px", borderRadius: 999, color: COLORS.gold }}>v1.0</span>
             </div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.38)", marginTop: 8 }}>v1.1</div>
           </>
         )}
       </button>
@@ -122,7 +122,7 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome }) {
         </div>
       ))}
 
-      <div style={{ marginTop: 28, paddingTop: 16, borderTop: `1px solid ${COLORS.border}` }}>
+      <div style={{ marginTop: 28, paddingTop: 16, borderTop: `1px solid rgba(255,255,255,0.10)` }}>
         <NavButton
           item={BOTTOM_NAV}
           active={activeId === BOTTOM_NAV.id}

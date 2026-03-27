@@ -137,7 +137,7 @@ export default function App() {
                 onClick={() => navigate(ROUTE_DASHBOARD)}
                 style={{
                   border: `1px solid ${COLORS.borderStrong}`,
-                  background: COLORS.goldSoft,
+                  background: "rgba(198,170,87,0.16)",
                   borderRadius: 999,
                   padding: "10px 14px",
                   cursor: "pointer",
@@ -145,7 +145,7 @@ export default function App() {
                   color: COLORS.text,
                 }}
               >
-                ← Dashboard
+                ← Back
               </button>
               <div style={{ color: COLORS.textSoft, fontSize: 13 }}>{moduleTitle[activeId]}</div>
             </div>
