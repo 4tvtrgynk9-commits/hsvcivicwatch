@@ -161,6 +161,7 @@ function KeyCard({ item, onClick }) {
       >
         {item.label}
       </div>
+
       <div style={{ fontSize: 26, fontWeight: 1000, color: item.color }}>{item.value}</div>
 
       {grocery ? (
@@ -213,25 +214,26 @@ function ModuleCard({ item, onClick }) {
   );
 }
 
-function ClockCell({ label, valueAnnual, valueHourly, elapsed, color, subtitle, onClick }) {
+function ClockCell({ label, valueAnnual, valueHourly, elapsed, color, subtitle, onClick, mobile = false }) {
   return (
     <button
       onClick={onClick}
+      className={mobile ? "hci-clock-cell-mobile" : ""}
       style={{
         background: COLORS.card,
         border: `1px solid ${COLORS.cardBorder}`,
         borderRadius: 14,
-        padding: 12,
+        padding: mobile ? 10 : 12,
         cursor: "pointer",
         textAlign: "center",
       }}
     >
       <div
         style={{
-          fontSize: 12,
+          fontSize: mobile ? 11 : 12,
           color,
           fontWeight: 900,
-          letterSpacing: 1.4,
+          letterSpacing: mobile ? 1.2 : 1.4,
           textTransform: "uppercase",
           marginBottom: 6,
         }}
@@ -242,7 +244,7 @@ function ClockCell({ label, valueAnnual, valueHourly, elapsed, color, subtitle, 
       <div
         style={{
           fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-          fontSize: 21,
+          fontSize: mobile ? 18 : 21,
           fontWeight: 1000,
           color: COLORS.text,
           marginBottom: 6,
@@ -251,7 +253,13 @@ function ClockCell({ label, valueAnnual, valueHourly, elapsed, color, subtitle, 
         ${earnings(valueAnnual, elapsed).toFixed(2)}
       </div>
 
-      <div style={{ color: COLORS.textSoft, fontSize: 12.5, lineHeight: 1.32 }}>
+      <div
+        style={{
+          color: COLORS.textSoft,
+          fontSize: mobile ? 11.5 : 12.5,
+          lineHeight: 1.3,
+        }}
+      >
         {valueHourly} · {subtitle}
       </div>
     </button>
@@ -261,6 +269,7 @@ function ClockCell({ label, valueAnnual, valueHourly, elapsed, color, subtitle, 
 function AcronymKey() {
   return (
     <div
+      className="hci-acronym-box"
       style={{
         marginTop: 10,
         padding: "10px 12px",
@@ -306,19 +315,20 @@ function PayPanel({ elapsed, onOpenModule }) {
         background: COLORS.panel,
         border: `1px solid ${COLORS.border}`,
         borderRadius: 18,
-        padding: 16,
-        marginBottom: 20,
+        padding: 14,
+        marginBottom: 18,
       }}
     >
       {sectionTitle("Live pay clocks — since you opened this page")}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+      <div className="hci-pay-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
         <div
+          className="hci-pay-panel"
           style={{
             background: COLORS.blueSoft,
             border: "1px solid rgba(47,93,138,0.18)",
             borderRadius: 16,
-            padding: 13,
+            padding: 12,
           }}
         >
           <div
@@ -334,7 +344,7 @@ function PayPanel({ elapsed, onOpenModule }) {
             Utilities pay gap
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 9 }}>
+          <div className="hci-clock-grid-utilities" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 9 }}>
             <ClockCell
               label="TVA CEO earnings"
               valueAnnual={tvaCeo}
@@ -343,6 +353,7 @@ function PayPanel({ elapsed, onOpenModule }) {
               color={COLORS.orange}
               subtitle="$8.1M/yr"
               onClick={() => onOpenModule("utilities")}
+              mobile={false}
             />
             <ClockCell
               label="HU CEO earnings"
@@ -352,8 +363,9 @@ function PayPanel({ elapsed, onOpenModule }) {
               color={COLORS.gold}
               subtitle="Est. $430k/yr"
               onClick={() => onOpenModule("utilities")}
+              mobile={false}
             />
-            <div style={{ gridColumn: "1 / span 2", maxWidth: 260 }}>
+            <div className="hci-clock-wide" style={{ gridColumn: "1 / span 2", maxWidth: 260 }}>
               <ClockCell
                 label="HU teller earnings"
                 valueAnnual={huTeller}
@@ -362,6 +374,7 @@ function PayPanel({ elapsed, onOpenModule }) {
                 color={COLORS.green}
                 subtitle="Est. $33k/yr"
                 onClick={() => onOpenModule("utilities")}
+                mobile={false}
               />
             </div>
           </div>
@@ -369,11 +382,11 @@ function PayPanel({ elapsed, onOpenModule }) {
           <button
             onClick={() => onOpenModule("utilities")}
             style={{
-              marginTop: 10,
+              marginTop: 8,
               display: "grid",
-              gap: 5,
+              gap: 4,
               color: COLORS.text,
-              fontSize: 12.5,
+              fontSize: 12,
               background: "transparent",
               border: "none",
               padding: 0,
@@ -388,11 +401,12 @@ function PayPanel({ elapsed, onOpenModule }) {
         </div>
 
         <div
+          className="hci-pay-panel"
           style={{
             background: COLORS.lavenderSoft,
             border: "1px solid rgba(122,79,163,0.18)",
             borderRadius: 16,
-            padding: 13,
+            padding: 12,
           }}
         >
           <div
@@ -408,7 +422,7 @@ function PayPanel({ elapsed, onOpenModule }) {
             Healthcare pay gap
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 9 }}>
+          <div className="hci-clock-grid-health" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 9 }}>
             <ClockCell
               label="HHHS CEO earnings"
               valueAnnual={hhCeo}
@@ -417,6 +431,7 @@ function PayPanel({ elapsed, onOpenModule }) {
               color={COLORS.red}
               subtitle="$3.1M/yr"
               onClick={() => onOpenModule("health")}
+              mobile={false}
             />
             <ClockCell
               label="CNA earnings"
@@ -426,17 +441,18 @@ function PayPanel({ elapsed, onOpenModule }) {
               color={COLORS.blue}
               subtitle="Est. $34k/yr"
               onClick={() => onOpenModule("health")}
+              mobile={false}
             />
           </div>
 
           <button
             onClick={() => onOpenModule("health")}
             style={{
-              marginTop: 10,
+              marginTop: 8,
               display: "grid",
-              gap: 5,
+              gap: 4,
               color: COLORS.text,
-              fontSize: 12.5,
+              fontSize: 12,
               background: "transparent",
               border: "none",
               padding: 0,
@@ -474,31 +490,81 @@ export default function DashboardHome({ onOpenModule }) {
           .hci-home-wrap {
             max-width: 100% !important;
           }
+
+          .hci-home-title {
+            font-size: 42px !important;
+          }
+
+          .hci-home-subtitle {
+            font-size: 18px !important;
+          }
+
+          .hci-home-keys {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+
           .hci-home-module-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
-        }
 
-        @media (max-width: 960px) {
-          .hci-home-title { font-size: 42px !important; }
-          .hci-home-subtitle { font-size: 18px !important; }
-          .hci-home-keys { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-          .hci-home-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-          .hci-pay-grid { grid-template-columns: 1fr !important; }
-          .hci-clock-triple { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-          .hci-clock-wide { grid-column: 1 / span 2 !important; max-width: none !important; }
+          .hci-pay-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
 
         @media (max-width: 620px) {
-          .hci-home-title { font-size: 34px !important; line-height: 0.98 !important; }
-          .hci-home-subtitle { font-size: 16px !important; line-height: 1.45 !important; }
-          .hci-home-keys { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-          .hci-home-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+          .hci-home-title {
+            font-size: 34px !important;
+            line-height: 0.98 !important;
+          }
+
+          .hci-home-subtitle {
+            font-size: 16px !important;
+            line-height: 1.42 !important;
+          }
+
+          .hci-pay-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+
+          .hci-pay-panel {
+            padding: 10px !important;
+          }
+
+          .hci-clock-grid-utilities {
+            grid-template-columns: 1fr !important;
+          }
+
+          .hci-clock-grid-health {
+            grid-template-columns: 1fr !important;
+          }
+
+          .hci-clock-wide {
+            grid-column: auto !important;
+            max-width: none !important;
+          }
+
+          .hci-home-keys {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+          }
+
+          .hci-home-module-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 9px !important;
+          }
+
+          .hci-acronym-box {
+            max-width: 260px !important;
+            font-size: 11.5px !important;
+            line-height: 1.38 !important;
+          }
         }
       `}</style>
 
       <div className="hci-home-wrap">
-        <section style={{ marginBottom: 16 }}>
+        <section style={{ marginBottom: 14 }}>
           <div style={{ maxWidth: 980 }}>
             <div
               className="hci-home-title"
@@ -531,7 +597,7 @@ export default function DashboardHome({ onOpenModule }) {
 
         <PayPanel elapsed={elapsed} onOpenModule={onOpenModule} />
 
-        <section style={{ marginBottom: 22 }}>
+        <section style={{ marginBottom: 18 }}>
           {sectionTitle("Active investigations")}
           <div style={{ display: "grid", gap: 10 }}>
             {activeInvestigations.map((item) => (
@@ -540,7 +606,7 @@ export default function DashboardHome({ onOpenModule }) {
           </div>
         </section>
 
-        <section style={{ marginBottom: 22 }}>
+        <section style={{ marginBottom: 18 }}>
           {sectionTitle("Key numbers — Huntsville 2026")}
           <div
             className="hci-home-keys"
@@ -556,7 +622,7 @@ export default function DashboardHome({ onOpenModule }) {
           </div>
         </section>
 
-        <section style={{ marginBottom: 20 }}>
+        <section style={{ marginBottom: 16 }}>
           {sectionTitle("Investigations")}
           {allGroups.map((group, index) => (
             <div
@@ -596,7 +662,7 @@ export default function DashboardHome({ onOpenModule }) {
           ))}
         </section>
 
-        <section style={{ marginTop: 14, marginBottom: 4, overflow: "hidden" }}>
+        <section style={{ marginTop: 12, marginBottom: 4, overflow: "hidden" }}>
           <div
             style={{
               background: COLORS.tickerBg,
