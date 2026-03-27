@@ -3,11 +3,26 @@ import WhatYouCanDo from "./WhatYouCanDo";
 import { COLORS } from "../config/theme";
 
 const SECTION_STYLES = {
-  "What’s Happening": { color: COLORS.gold, background: COLORS.goldSoft, border: "rgba(198,163,77,0.22)" },
-  "The Connections": { color: COLORS.blue, background: COLORS.blueSoft, border: "rgba(47,93,138,0.18)" },
-  "Who Benefits": { color: COLORS.lavender, background: COLORS.lavenderSoft, border: "rgba(122,79,163,0.18)" },
-  "The Impact": { color: COLORS.red, background: COLORS.redSoft, border: "rgba(180,71,62,0.18)" },
-  "What You Can Do": { color: COLORS.green, background: COLORS.greenSoft, border: "rgba(62,139,91,0.18)" },
+  "What’s Happening": {
+    color: COLORS.gold,
+    background: COLORS.goldSoft,
+    border: "rgba(198,163,77,0.22)",
+  },
+  "The Connections": {
+    color: COLORS.blue,
+    background: COLORS.blueSoft,
+    border: "rgba(47,93,138,0.18)",
+  },
+  "Who Benefits": {
+    color: COLORS.lavender,
+    background: COLORS.lavenderSoft,
+    border: "rgba(122,79,163,0.18)",
+  },
+  "The Impact": {
+    color: COLORS.red,
+    background: COLORS.redSoft,
+    border: "rgba(180,71,62,0.18)",
+  },
 };
 
 export default function CivicDecoderPanel({ analysis, onHide }) {
@@ -26,15 +41,24 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
         background: COLORS.panelAlt,
         border: `1px solid ${COLORS.border}`,
         borderRadius: 14,
-        padding: 14,
+        padding: 13,
         marginTop: 12,
       }}
     >
-      <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 1.4, color: COLORS.gold, marginBottom: 10, textTransform: "uppercase" }}>
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 900,
+          letterSpacing: 1.4,
+          color: COLORS.gold,
+          marginBottom: 10,
+          textTransform: "uppercase",
+        }}
+      >
         Civic Investigator Analysis
       </div>
 
-      <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ display: "grid", gap: 9 }}>
         {sections.map(([title, text]) => {
           const style = SECTION_STYLES[title];
           return (
@@ -44,11 +68,28 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                 background: style.background,
                 border: `1px solid ${style.border}`,
                 borderRadius: 12,
-                padding: "12px 13px",
+                padding: "11px 12px",
               }}
             >
-              <div style={{ fontSize: 14, fontWeight: 900, marginBottom: 5, color: style.color }}>{title}</div>
-              <div style={{ fontSize: 15.5, lineHeight: 1.62, color: style.color }}>{text}</div>
+              <div
+                style={{
+                  fontSize: 13.5,
+                  fontWeight: 900,
+                  marginBottom: 5,
+                  color: style.color,
+                }}
+              >
+                {title}
+              </div>
+              <div
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.58,
+                  color: style.color,
+                }}
+              >
+                {text}
+              </div>
             </div>
           );
         })}
