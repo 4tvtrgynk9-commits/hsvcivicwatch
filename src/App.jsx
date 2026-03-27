@@ -60,6 +60,7 @@ export default function App() {
   const [activeId, setActiveId] = useState(initialRoute);
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showMobileHamburger, setShowMobileHamburger] = useState(true);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
   const previousRoute = useRef(initialRoute);
@@ -92,13 +93,24 @@ export default function App() {
       setMobileOpen(false);
     };
     const onResize = () => setIsMobile(window.innerWidth < 960);
+    const onScroll = () => {
+      if (window.innerWidth >= 960) return;
+      if (previousRoute.current === ROUTE_DASHBOARD) {
+        setShowMobileHamburger(window.scrollY < 56 || mobileOpen);
+      } else {
+        setShowMobileHamburger(true);
+      }
+    };
     window.addEventListener("popstate", onPopState);
     window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScroll);
     };
-  }, [initialRoute]);
+  }, [initialRoute, mobileOpen]);
 
   useEffect(() => {
     if (pendingRestore.current !== null) {
@@ -107,77 +119,73 @@ export default function App() {
     }
   }, [activeId, restoreScroll]);
 
-  const moduleTitle = {
-    equity: "The Two Huntsvilles",
-    utilities: "Utilities: Power, Water, & Gas",
-    health: "Healthcare & Hospital System",
-    insurance_burdens: "Insurance Burdens",
-    workers_childcare: "Workers Rights & Child Care",
-    taxation: "Taxation",
-    housing_crisis: "Housing Crisis",
-    officials_elections: "Officials & Elections",
-    boards_oversight: "Boards, Directors, & School Boards",
-    voting_rights: "The Ballot & Your Access",
-    criminal_justice: "Criminal Justice: Sentencing & Prisons",
-    policing: "Law Enforcement & Accountability",
-    data_collection: "Surveillance & Data Collection",
-    money: "Follow the Money",
-    landuse: "Land: Annexation, Zoning, & Development",
-    environment: "Environment",
-    information_warfare: "Information Warfare",
-    proposals: "A Better Huntsville: The Blueprint",
-    action: "Take Action",
-  };
+  useEffect(() => {
+    if (isMobile && mobileOpen) {
+      const previous = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = previous;
+      };
+    }
+  }, [isMobile, mobileOpen]);
+
+  const showTopControls = isMobile && (activeId !== ROUTE_DASHBOARD || showMobileHamburger);
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
       {!isMobile && <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={false} onHome={() => navigate(ROUTE_DASHBOARD)} />}
       {isMobile && (
-        <>
-          <button
-            onClick={() => setMobileOpen(true)}
-            style={{
-              position: "fixed",
-              top: 12,
-              left: 12,
-              zIndex: 60,
-              background: COLORS.sidebarBg,
-              color: COLORS.sidebarText,
-              border: `1px solid rgba(255,255,255,0.10)`,
-              borderRadius: 12,
-              padding: "9px 11px",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
-              fontSize: 20,
-              lineHeight: 1,
-              cursor: "pointer",
-            }}
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
-          <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile onHome={() => navigate(ROUTE_DASHBOARD)} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
-        </>
+        <Sidebar
+          activeId={activeId}
+          onNavigate={(id) => navigate(id)}
+          isMobile
+          onHome={() => navigate(ROUTE_DASHBOARD)}
+          mobileOpen={mobileOpen}
+          onCloseMobile={() => setMobileOpen(false)}
+        />
       )}
-      <main style={{ flex: 1, padding: isMobile ? "56px 14px 18px" : "12px 22px 18px", color: COLORS.text, minWidth: 0 }}>
+      <main style={{ flex: 1, padding: isMobile ? "14px 14px 18px" : "12px 22px 18px", color: COLORS.text, minWidth: 0 }}>
         <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
-          {isMobile && activeId !== ROUTE_DASHBOARD && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <button
-                onClick={() => navigate(ROUTE_DASHBOARD)}
-                style={{
-                  border: `1px solid ${COLORS.borderStrong}`,
-                  background: "rgba(198,170,87,0.13)",
-                  borderRadius: 999,
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                  fontWeight: 900,
-                  color: COLORS.text,
-                  fontSize: 13,
-                }}
-              >
-                ← Back
-              </button>
-              <div style={{ color: COLORS.textSoft, fontSize: 12 }}>{moduleTitle[activeId]}</div>
+          {showTopControls && (
+            <div style={{ position: "sticky", top: 10, zIndex: 45, marginBottom: 10, display: "flex", alignItems: "center", gap: 8, pointerEvents: "none" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, pointerEvents: "auto" }}>
+                <button
+                  onClick={() => setMobileOpen((s) => !s)}
+                  style={{
+                    background: COLORS.sidebarBg,
+                    color: COLORS.sidebarText,
+                    border: `1px solid rgba(255,255,255,0.10)`,
+                    borderRadius: 12,
+                    padding: "8px 10px",
+                    boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
+                    fontSize: 19,
+                    lineHeight: 1,
+                    cursor: "pointer",
+                  }}
+                  aria-label="Toggle menu"
+                >
+                  ☰
+                </button>
+                {activeId !== ROUTE_DASHBOARD && (
+                  <button
+                    onClick={() => navigate(ROUTE_DASHBOARD)}
+                    style={{
+                      border: `1px solid ${COLORS.borderStrong}`,
+                      background: "rgba(198,170,87,0.13)",
+                      borderRadius: 999,
+                      padding: "8px 11px",
+                      cursor: "pointer",
+                      fontWeight: 900,
+                      color: COLORS.text,
+                      fontSize: 15,
+                      lineHeight: 1,
+                    }}
+                    aria-label="Return to homepage"
+                  >
+                    ←
+                  </button>
+                )}
+              </div>
             </div>
           )}
           <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
