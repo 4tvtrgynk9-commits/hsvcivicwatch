@@ -26,10 +26,10 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
   if (!analysis) return null;
 
   const sections = [
-    ["What’s Happening", analysis.whatsHappening],
-    ["The Connections", analysis.connections],
-    ["Who Benefits", analysis.benefits],
-    ["The Impact", analysis.impact],
+    ["What’s Happening", analysis.whatsHappening, COLORS.gold],
+    ["The Connections", analysis.connections, "#b9c8ff"],
+    ["Who Benefits", analysis.benefits, "#ffd4cc"],
+    ["The Impact", analysis.impact, "#ffdfdf"],
   ].filter(([, v]) => v);
 
   return (
@@ -45,10 +45,10 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       </div>
 
       <div style={{ display: "grid", gap: 14 }}>
-        {sections.map(([title, text], i) => (
-          <div key={i}>
-            <div style={{ fontSize: 14, fontWeight: 900, marginBottom: 6 }}>{title}</div>
-            <div style={{ fontSize: 16, lineHeight: 1.8, color: "rgba(255,255,255,.94)" }}>{text}</div>
+        {sections.map(([title, text, color], i) => (
+          <div key={i} style={{borderTop: i===0?"none":"1px solid rgba(255,255,255,0.08)", paddingTop: i===0?0:10}}>
+            <div style={{ fontSize: 14, fontWeight: 900, marginBottom: 6, color }}>{title}</div>
+            <div style={{ fontSize: 16, lineHeight: 1.8, color }}>{text}</div>
           </div>
         ))}
 

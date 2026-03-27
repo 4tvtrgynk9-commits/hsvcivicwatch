@@ -11,7 +11,7 @@ export default function IssueCard({ issue }) {
 
   return (
     <div style={{
-      background: COLORS.panel,
+      background: COLORS.panelSoft,
       border: `1px solid ${COLORS.border}`,
       borderRadius: 12,
       padding: 18,
@@ -28,7 +28,7 @@ export default function IssueCard({ issue }) {
         {issue.title}
       </div>
 
-      <div style={{ fontSize: 17, color: COLORS.textSoft, lineHeight: 1.75 }}>
+      <div style={{ fontSize: 17, color: COLORS.text, lineHeight: 1.75 }}>
         {body}
       </div>
 

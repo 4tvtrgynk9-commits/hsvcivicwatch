@@ -5,30 +5,26 @@ import { COLORS } from "../config/theme";
 function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured = false, compact = false }) {
   const isActive = active;
   const isHover = hovered && !active;
-  const featuredTint = item.id === "proposals";
-
   let background = "transparent";
   let border = "1px solid transparent";
   let color = COLORS.sidebarText;
   let boxShadow = "none";
 
   if (featured && !isActive) {
-    background = featuredTint ? "rgba(60,168,93,0.09)" : "rgba(198,170,87,0.06)";
-    border = featuredTint ? "1px solid rgba(60,168,93,0.30)" : "1px solid rgba(198,170,87,0.18)";
-    color = featuredTint ? "#8fd3a4" : COLORS.gold;
+    background = "rgba(198,170,87,0.06)";
+    border = "1px solid rgba(198,170,87,0.18)";
+    color = COLORS.gold;
   }
   if (isHover) {
-    background = featuredTint ? "rgba(60,168,93,0.12)" : "rgba(198,170,87,0.10)";
-    border = featuredTint ? "1px solid rgba(60,168,93,0.42)" : `1px solid ${COLORS.borderStrong}`;
-    boxShadow = featuredTint ? "0 0 0 1px rgba(60,168,93,0.12)" : "0 0 0 1px rgba(198,170,87,0.10)";
+    background = "rgba(198,170,87,0.10)";
+    border = `1px solid ${COLORS.borderStrong}`;
+    boxShadow = "0 0 0 1px rgba(198,170,87,0.10)";
   }
   if (isActive) {
-    background = featuredTint ? "rgba(60,168,93,0.18)" : "rgba(198,170,87,0.18)";
-    border = featuredTint ? "1px solid rgba(60,168,93,0.55)" : `1px solid ${COLORS.borderStrong}`;
-    color = featuredTint ? "#dff7e7" : COLORS.gold;
-    boxShadow = featuredTint
-      ? "inset 0 0 0 1px rgba(60,168,93,0.10), 0 0 0 1px rgba(60,168,93,0.12)"
-      : "inset 0 0 0 1px rgba(198,170,87,0.10), 0 0 0 1px rgba(198,170,87,0.10)";
+    background = "rgba(198,170,87,0.18)";
+    border = `1px solid ${COLORS.borderStrong}`;
+    color = COLORS.gold;
+    boxShadow = "inset 0 0 0 1px rgba(198,170,87,0.10), 0 0 0 1px rgba(198,170,87,0.10)";
   }
 
   return (
@@ -44,9 +40,9 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
         boxShadow,
         borderRadius: 12,
         textAlign: "left",
-        padding: compact ? "6px 10px" : "7px 11px",
+        padding: compact ? "7px 10px" : "8px 11px",
         cursor: "pointer",
-        fontSize: compact ? 11.5 : 12.5,
+        fontSize: compact ? 12 : 13,
         fontWeight: isActive ? 900 : 700,
         display: "flex",
         alignItems: "center",
@@ -54,8 +50,8 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
         transition: "all 160ms ease",
       }}
     >
-      <span style={{ fontSize: compact ? 13 : 15, width: 16, textAlign: "center", flexShrink: 0 }}>{item.emoji}</span>
-      <span style={{ lineHeight: 1.12 }}>{item.label}</span>
+      <span style={{ fontSize: compact ? 14 : 15, width: 16, textAlign: "center", flexShrink: 0 }}>{item.emoji}</span>
+      <span style={{ lineHeight: 1.16 }}>{item.label}</span>
     </button>
   );
 }
@@ -63,15 +59,15 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, featured 
 export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobileOpen = false, onCloseMobile }) {
   const [hoveredId, setHoveredId] = useState(null);
   const grouped = useMemo(() => NAV, []);
-  const compact = true;
+  const compact = !isMobile;
 
   const sidebarContent = (
     <aside
       style={{
-        width: isMobile ? "min(84vw, 325px)" : 288,
+        width: isMobile ? "min(82vw, 330px)" : 288,
         background: COLORS.sidebarBg,
         color: COLORS.sidebarText,
-        padding: isMobile ? 14 : "18px 14px 14px",
+        padding: isMobile ? 16 : "16px 14px 12px",
         flexShrink: 0,
         borderRight: `1px solid rgba(255,255,255,0.08)`,
         height: isMobile ? "calc(100vh - 20px)" : "calc(100vh - 24px)",
@@ -95,24 +91,24 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
           textAlign: "left",
           cursor: "pointer",
           padding: 0,
-          marginBottom: isMobile ? 18 : 18,
+          marginBottom: isMobile ? 16 : 14,
         }}
       >
-        <div style={{ fontSize: isMobile ? 27 : 30, fontWeight: 1000, lineHeight: 0.95, marginBottom: 0, letterSpacing: -0.7 }}>HUNTSVILLE 🚀</div>
-        <div style={{ fontSize: isMobile ? 25 : 28, fontWeight: 1000, lineHeight: 0.95, marginBottom: 8, letterSpacing: -0.7, color: COLORS.gold }}>CIVIC INVESTIGATOR</div>
-        <div style={{ fontSize: isMobile ? 11 : 11, fontWeight: 800, letterSpacing: 1.0, color: "rgba(247,243,234,0.76)", textTransform: "uppercase", marginBottom: 4 }}>
+        <div style={{ fontSize: isMobile ? 27 : 33, fontWeight: 1000, lineHeight: 0.92, marginBottom: 0, letterSpacing: -0.7 }}>HUNTSVILLE 🚀</div>
+        <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 1000, lineHeight: 0.92, marginBottom: 8, letterSpacing: -0.7, color: COLORS.gold }}>CIVIC INVESTIGATOR</div>
+        <div style={{ fontSize: isMobile ? 10.5 : 11, fontWeight: 800, letterSpacing: 1.0, color: "rgba(247,243,234,0.74)", textTransform: "uppercase", marginBottom: 4 }}>
           The truth about your city
         </div>
-        <div style={{ fontSize: isMobile ? 11.5 : 11, color: COLORS.sidebarTextSoft, letterSpacing: 0.3 }}>Madison County · Est. 2026</div>
+        <div style={{ fontSize: isMobile ? 11 : 11, color: COLORS.sidebarTextSoft, letterSpacing: 0.3 }}>Madison County · Est. 2026</div>
       </button>
 
-      <div style={{ flex: 1, overflow: "hidden", display: "grid", alignContent: "start", gap: 8 }}>
+      <div style={{ flex: 1, overflowY: isMobile ? "auto" : "hidden", overflowX: "hidden", display: "grid", alignContent: "start", gap: compact ? 8 : 8, paddingRight: isMobile ? 4 : 0 }}>
         {grouped.map((group) => (
           <div key={group.group}>
-            <div style={{ fontSize: 10, fontWeight: 900, color: COLORS.gold, marginTop: 12, marginBottom: 11, textTransform: "uppercase", letterSpacing: 1.5 }}>
+            <div style={{ fontSize: compact ? 10 : 10.5, fontWeight: 900, color: COLORS.gold, marginTop: compact ? 8 : 8, marginBottom: compact ? 8 : 8, textTransform: "uppercase", letterSpacing: 1.5 }}>
               {group.group}
             </div>
-            <div style={{ display: "grid", gap: 5 }}>
+            <div style={{ display: "grid", gap: compact ? 4 : 6 }}>
               {group.items.map((item) => (
                 <NavButton
                   key={item.id}
@@ -134,8 +130,8 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
         ))}
       </div>
 
-      <div style={{ marginTop: 8 }}>
-        <div style={{ fontSize: 10, fontWeight: 900, color: COLORS.gold, marginTop: 12, marginBottom: 11, textTransform: "uppercase", letterSpacing: 1.5 }}>
+      <div style={{ marginTop: compact ? 8 : 8 }}>
+        <div style={{ fontSize: compact ? 10 : 10.5, fontWeight: 900, color: COLORS.gold, marginTop: compact ? 8 : 8, marginBottom: compact ? 8 : 8, textTransform: "uppercase", letterSpacing: 1.5 }}>
           {BOTTOM_NAV.group}
         </div>
         <NavButton
@@ -150,7 +146,7 @@ export default function Sidebar({ activeId, onNavigate, isMobile, onHome, mobile
           }}
           compact={compact}
         />
-        <div style={{ fontSize: 7.5, color: "rgba(247,243,234,0.24)", textAlign: "right", marginTop: 6 }}>v1.4</div>
+        <div style={{ fontSize: 8, color: "rgba(247,243,234,0.28)", textAlign: "right", marginTop: 6 }}>v1.3</div>
       </div>
     </aside>
   );
