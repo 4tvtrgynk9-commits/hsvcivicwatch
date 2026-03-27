@@ -23,7 +23,6 @@ import ProposalsPage from "./modules/proposals/ProposalsPage";
 import ActionPage from "./modules/action/ActionPage";
 
 const ROUTE_DASHBOARD = "dashboard";
-const MOBILE_BREAKPOINT = 1180;
 
 function ActivePage({ activeId, onBack }) {
   switch (activeId) {
@@ -59,9 +58,7 @@ export default function App() {
   }, []);
 
   const [activeId, setActiveId] = useState(initialRoute);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth < MOBILE_BREAKPOINT : false
-  );
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
@@ -76,11 +73,9 @@ export default function App() {
     const currentRoute = previousRoute.current;
     scrollPositions.current[currentRoute] = window.scrollY;
     previousRoute.current = nextRoute;
-
     if (pushHistory) {
       window.history.pushState({ route: nextRoute }, "", `#${nextRoute}`);
     }
-
     pendingRestore.current = nextRoute;
     setActiveId(nextRoute);
     setMobileOpen(false);
@@ -88,7 +83,6 @@ export default function App() {
 
   useEffect(() => {
     window.history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
-
     const onPopState = (event) => {
       const nextRoute = event.state?.route || window.location.hash.replace("#", "") || ROUTE_DASHBOARD;
       scrollPositions.current[previousRoute.current] = window.scrollY;
@@ -97,12 +91,9 @@ export default function App() {
       setActiveId(nextRoute);
       setMobileOpen(false);
     };
-
-    const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-
+    const onResize = () => setIsMobile(window.innerWidth < 960);
     window.addEventListener("popstate", onPopState);
     window.addEventListener("resize", onResize);
-
     return () => {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
@@ -115,19 +106,6 @@ export default function App() {
       pendingRestore.current = null;
     }
   }, [activeId, restoreScroll]);
-
-  useEffect(() => {
-    if (!isMobile) {
-      document.body.style.overflow = "";
-      return;
-    }
-
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMobile, mobileOpen]);
 
   const moduleTitle = {
     equity: "The Two Huntsvilles",
@@ -151,28 +129,18 @@ export default function App() {
     action: "Take Action",
   };
 
-  const mobileTitle =
-    activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
+  const mobileTitle = activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
 
   return (
-    <div
-  style={{
-    minHeight: "100vh",
-    background: COLORS.bg,
-    display: isMobile ? "block" : "grid",
-    gridTemplateColumns: isMobile ? undefined : "312px minmax(0, 1fr)",
-    alignItems: "start",
-  }}
->
-
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
       {!isMobile && (
-  <Sidebar
-    activeId={activeId}
-    onNavigate={(id) => navigate(id)}
-    isMobile={false}
-    onHome={() => navigate(ROUTE_DASHBOARD)}
-  />
-)}
+        <Sidebar
+          activeId={activeId}
+          onNavigate={(id) => navigate(id)}
+          isMobile={false}
+          onHome={() => navigate(ROUTE_DASHBOARD)}
+        />
+      )}
 
       {isMobile && (
         <>
@@ -190,34 +158,30 @@ export default function App() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 42 }}>
-              {mobileOpen ? (
-                <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
-              ) : (
-                <button
-                  onClick={() => setMobileOpen(true)}
-                  style={{
-                    width: 42,
-                    height: 42,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 12,
-                    border: "1px solid rgba(247,243,234,0.18)",
-                    background: "rgba(247,243,234,0.08)",
-                    color: COLORS.sidebarText,
-                    fontSize: 21,
-                    fontWeight: 900,
-                    lineHeight: 1,
-                    cursor: "pointer",
-                    flexShrink: 0,
-                  }}
-                  aria-label="Open menu"
-                >
-                  &#9776;
-                </button>
-              )}
+              <button
+                onClick={() => setMobileOpen((v) => !v)}
+                style={{
+                  width: 42,
+                  height: 42,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 12,
+                  border: "1px solid rgba(247,243,234,0.18)",
+                  background: mobileOpen ? COLORS.goldSoft : "rgba(247,243,234,0.08)",
+                  color: COLORS.sidebarText,
+                  fontSize: 21,
+                  fontWeight: 900,
+                  lineHeight: 1,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+                aria-label="Open menu"
+              >
+                &#9776;
+              </button>
 
-              {activeId !== ROUTE_DASHBOARD && !mobileOpen ? (
+              {activeId !== ROUTE_DASHBOARD ? (
                 <button
                   onClick={() => navigate(ROUTE_DASHBOARD)}
                   style={{
