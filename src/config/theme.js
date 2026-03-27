@@ -1,11 +1,11 @@
 export const COLORS = {
-  bg: "#f6f1e8",
+  bg: "#fbf7f0",
 
   /* core surfaces */
-  panel: "#f2ebdf",
-  panelAlt: "#f7f1e7",
-  panelSoft: "#efe6d9",
-  panelWarm: "#e9dfcf",
+  panel: "#f1e8db",
+  panelAlt: "#ede3d3",
+  panelSoft: "#f4ecdf",
+  panelWarm: "#e8ddcb",
 
   /* text + navigation */
   navy: "#193150",
@@ -26,16 +26,16 @@ export const COLORS = {
   goldSoft: "#f3ead1",
 
   blue: "#2F5D8A",
-  blueSoft: "#e2edf6",
+  blueSoft: "#dfeaf5",
 
   lavender: "#7A4FA3",
-  lavenderSoft: "#ece3f5",
+  lavenderSoft: "#ebe1f4",
 
   red: "#B4473E",
-  redSoft: "#f5e1de",
+  redSoft: "#f4dfdb",
 
   green: "#3E8B5B",
-  greenSoft: "#e0eee6",
+  greenSoft: "#dfeee5",
 
   orange: "#cf7b2f",
   purple: "#7A4FA3",
@@ -45,13 +45,13 @@ export const COLORS = {
   tickerBg: "#102542",
 
   /* added for better separation / contrast */
-  card: "#f8f3ea",
-  cardAlt: "#ede3d3",
-  cardBorder: "#d6c7ae",
+  card: "#f5ede1",
+  cardAlt: "#eadfce",
+  cardBorder: "#d2c3ab",
 
   /* blueprint emphasis */
   blueprintBg: "rgba(62,139,91,0.10)",
-  blueprintBorder: "rgba(62,139,91,0.32)",
+  blueprintBorder: "rgba(62,139,91,0.34)",
 };
 
 export const SPACING = {
