@@ -11,8 +11,30 @@ export default function Sidebar({ activeId, onNavigate }) {
       padding: 20,
       overflowY: "auto",
       flexShrink: 0,
-      borderRight: "1px solid rgba(255,255,255,.08)"
+      borderRight: "1px solid rgba(255,255,255,.08)",
+      position: "sticky",
+      top: 0,
+      height: "100vh"
     }}>
+      <button
+        onClick={() => onNavigate("dashboard")}
+        style={{
+          width: "100%",
+          background: activeId === "dashboard" ? "rgba(255,255,255,.12)" : "transparent",
+          color: "white",
+          border: activeId === "dashboard" ? "1px solid rgba(255,255,255,.18)" : "1px solid rgba(255,255,255,.08)",
+          borderRadius: 10,
+          textAlign: "left",
+          padding: "12px 14px",
+          cursor: "pointer",
+          fontSize: 14,
+          fontWeight: 900,
+          marginBottom: 18,
+        }}
+      >
+        ← Dashboard
+      </button>
+
       <div style={{fontSize: 13, fontWeight: 800, letterSpacing: 1.5, color: "#c9a84c", marginBottom: 12}}>
         HUNTSVILLE CIVIC
       </div>
@@ -65,7 +87,7 @@ export default function Sidebar({ activeId, onNavigate }) {
           onClick={() => onNavigate(BOTTOM_NAV.id)}
           style={{
             width: "100%",
-            background: "#c9a84c",
+            background: activeId === BOTTOM_NAV.id ? "#d7ba66" : "#c9a84c",
             color: COLORS.navyDark,
             border: "none",
             borderRadius: 8,

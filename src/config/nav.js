@@ -18,7 +18,7 @@ export const NAV = [
       { id: "boards_oversight", label: "Boards, Directors, & School Boards" },
       { id: "voting_rights", label: "The Ballot & Your Access" },
       { id: "criminal_justice", label: "Criminal Justice: Sentencing & Prisons" },
-      { id: "policing", label: "Policing & Accountability" },
+      { id: "policing", label: "Law Enforcement & Accountability" },
       { id: "data_collection", label: "Surveillance & Data Collection" },
       { id: "money", label: "Follow the Money" },
     ],
@@ -29,7 +29,7 @@ export const NAV = [
       { id: "landuse", label: "Land: Annexation, Zoning, & Development" },
       { id: "environment", label: "Environment" },
       { id: "information_warfare", label: "Information Warfare" },
-      { id: "proposals", label: "A Better Huntsville: The Blueprint for Change" },
+      { id: "proposals", label: "A Better Huntsville: The Blueprint" },
     ],
   },
 ];
