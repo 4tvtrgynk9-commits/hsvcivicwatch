@@ -59,6 +59,7 @@ export default function App() {
 
   const [activeId, setActiveId] = useState(initialRoute);
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
   const previousRoute = useRef(initialRoute);
@@ -77,6 +78,7 @@ export default function App() {
     }
     pendingRestore.current = nextRoute;
     setActiveId(nextRoute);
+    setMobileOpen(false);
   }, []);
 
   useEffect(() => {
@@ -87,6 +89,7 @@ export default function App() {
       previousRoute.current = nextRoute;
       pendingRestore.current = nextRoute;
       setActiveId(nextRoute);
+      setMobileOpen(false);
     };
     const onResize = () => setIsMobile(window.innerWidth < 960);
     window.addEventListener("popstate", onPopState);
@@ -128,26 +131,53 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: COLORS.bg }}>
-      <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={isMobile} onHome={() => navigate(ROUTE_DASHBOARD)} />
-      <main style={{ flex: 1, padding: isMobile ? 14 : 24, color: COLORS.text }}>
+      {!isMobile && <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile={false} onHome={() => navigate(ROUTE_DASHBOARD)} />}
+      {isMobile && (
+        <>
+          <button
+            onClick={() => setMobileOpen(true)}
+            style={{
+              position: "fixed",
+              top: 12,
+              left: 12,
+              zIndex: 60,
+              background: COLORS.sidebarBg,
+              color: COLORS.sidebarText,
+              border: `1px solid rgba(255,255,255,0.10)`,
+              borderRadius: 12,
+              padding: "9px 11px",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
+              fontSize: 20,
+              lineHeight: 1,
+              cursor: "pointer",
+            }}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+          <Sidebar activeId={activeId} onNavigate={(id) => navigate(id)} isMobile onHome={() => navigate(ROUTE_DASHBOARD)} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
+        </>
+      )}
+      <main style={{ flex: 1, padding: isMobile ? "56px 14px 18px" : "18px 22px", color: COLORS.text, minWidth: 0 }}>
         <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
           {isMobile && activeId !== ROUTE_DASHBOARD && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
               <button
                 onClick={() => navigate(ROUTE_DASHBOARD)}
                 style={{
                   border: `1px solid ${COLORS.borderStrong}`,
-                  background: "rgba(198,170,87,0.16)",
+                  background: "rgba(198,170,87,0.13)",
                   borderRadius: 999,
-                  padding: "10px 14px",
+                  padding: "8px 12px",
                   cursor: "pointer",
                   fontWeight: 900,
                   color: COLORS.text,
+                  fontSize: 13,
                 }}
               >
                 ← Back
               </button>
-              <div style={{ color: COLORS.textSoft, fontSize: 13 }}>{moduleTitle[activeId]}</div>
+              <div style={{ color: COLORS.textSoft, fontSize: 12 }}>{moduleTitle[activeId]}</div>
             </div>
           )}
           <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
