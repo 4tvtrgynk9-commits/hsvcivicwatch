@@ -24,6 +24,7 @@ import ActionPage from "./modules/action/ActionPage";
 
 const ROUTE_DASHBOARD = "dashboard";
 const MOBILE_BREAKPOINT = 1180;
+const DESKTOP_SIDEBAR_WIDTH = 312;
 
 function ActivePage({ activeId, onBack }) {
   switch (activeId) {
@@ -129,68 +130,90 @@ export default function App() {
     };
   }, [isMobile, mobileOpen]);
 
-  const moduleTitle = {
-    equity: "The Two Huntsvilles",
-    utilities: "Utilities: Power, Water, & Gas",
-    health: "Healthcare & Hospital System",
-    insurance_burdens: "Insurance Burdens",
-    workers_childcare: "Workers Rights & Child Care",
-    taxation: "Taxation",
-    housing_crisis: "Housing Crisis",
-    officials_elections: "Officials & Elections",
-    boards_oversight: "Boards, Directors, & School Boards",
-    voting_rights: "The Ballot & Your Access",
-    criminal_justice: "Criminal Justice: Sentencing & Prisons",
-    policing: "Law Enforcement & Accountability",
-    data_collection: "Surveillance & Data Collection",
-    money: "Follow the Money",
-    landuse: "Land: Annexation, Zoning, & Development",
-    environment: "Environment",
-    information_warfare: "Information Warfare",
-    proposals: "A Better Huntsville: The Blueprint",
-    action: "Take Action",
-  };
-
-  const mobileTitle =
-    activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
+  const moduleTitle =
+    activeId === ROUTE_DASHBOARD
+      ? "Huntsville Civic Investigator"
+      : {
+          equity: "The Two Huntsvilles",
+          utilities: "Utilities: Power, Water, & Gas",
+          health: "Healthcare & Hospital System",
+          insurance_burdens: "Insurance Burdens",
+          workers_childcare: "Workers Rights & Child Care",
+          taxation: "Taxation",
+          housing_crisis: "Housing Crisis",
+          officials_elections: "Officials & Elections",
+          boards_oversight: "Boards, Directors, & School Boards",
+          voting_rights: "The Ballot & Your Access",
+          criminal_justice: "Criminal Justice: Sentencing & Prisons",
+          policing: "Law Enforcement & Accountability",
+          data_collection: "Surveillance & Data Collection",
+          money: "Follow the Money",
+          landuse: "Land: Annexation, Zoning, & Development",
+          environment: "Environment",
+          information_warfare: "Information Warfare",
+          proposals: "A Better Huntsville: The Blueprint",
+          action: "Take Action",
+        }[activeId];
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        display: "flex",
-        alignItems: "flex-start",
         background: COLORS.bg,
+        color: COLORS.text,
       }}
     >
-      {!isMobile && (
-        <Sidebar
-          activeId={activeId}
-          onNavigate={(id) => navigate(id)}
-          isMobile={false}
-          onHome={() => navigate(ROUTE_DASHBOARD)}
-        />
-      )}
-
-      {isMobile && (
-        <>
+      {!isMobile ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `${DESKTOP_SIDEBAR_WIDTH}px minmax(0, 1fr)`,
+            alignItems: "start",
+            columnGap: 0,
+          }}
+        >
           <div
             style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              zIndex: 70,
-              background: "rgba(251,247,240,0.96)",
-              backdropFilter: "blur(10px)",
-              borderBottom: `1px solid ${COLORS.border}`,
-              padding: "10px 12px",
+              width: DESKTOP_SIDEBAR_WIDTH,
+              paddingRight: 8,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 42 }}>
-              {mobileOpen ? (
-                <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
-              ) : (
+            <Sidebar
+              activeId={activeId}
+              onNavigate={(id) => navigate(id)}
+              isMobile={false}
+              onHome={() => navigate(ROUTE_DASHBOARD)}
+            />
+          </div>
+
+          <main
+            style={{
+              minWidth: 0,
+              padding: "10px 22px 18px 0",
+            }}
+          >
+            <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
+              <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
+            </div>
+          </main>
+        </div>
+      ) : (
+        <>
+          {!mobileOpen && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 70,
+                background: "rgba(251,247,240,0.96)",
+                backdropFilter: "blur(10px)",
+                borderBottom: `1px solid ${COLORS.border}`,
+                padding: "10px 12px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 42 }}>
                 <button
                   onClick={() => setMobileOpen(true)}
                   style={{
@@ -213,50 +236,50 @@ export default function App() {
                 >
                   ☰
                 </button>
-              )}
 
-              {activeId !== ROUTE_DASHBOARD && !mobileOpen ? (
-                <button
-                  onClick={() => navigate(ROUTE_DASHBOARD)}
+                {activeId !== ROUTE_DASHBOARD ? (
+                  <button
+                    onClick={() => navigate(ROUTE_DASHBOARD)}
+                    style={{
+                      width: 42,
+                      height: 42,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 12,
+                      border: `1px solid ${COLORS.border}`,
+                      background: COLORS.panelAlt,
+                      color: COLORS.navy,
+                      fontSize: 20,
+                      fontWeight: 900,
+                      lineHeight: 1,
+                      cursor: "pointer",
+                      flexShrink: 0,
+                    }}
+                    aria-label="Back to homepage"
+                  >
+                    ←
+                  </button>
+                ) : (
+                  <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
+                )}
+
+                <div
                   style={{
-                    width: 42,
-                    height: 42,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 12,
-                    border: `1px solid ${COLORS.border}`,
-                    background: COLORS.panelAlt,
-                    color: COLORS.navy,
-                    fontSize: 20,
+                    minWidth: 0,
+                    flex: 1,
+                    fontSize: activeId === ROUTE_DASHBOARD ? 16 : 14,
                     fontWeight: 900,
-                    lineHeight: 1,
-                    cursor: "pointer",
-                    flexShrink: 0,
+                    lineHeight: 1.15,
+                    color: COLORS.text,
+                    paddingRight: 4,
                   }}
-                  aria-label="Back to homepage"
                 >
-                  ←
-                </button>
-              ) : (
-                <div style={{ width: 42, height: 42, flexShrink: 0 }} aria-hidden="true" />
-              )}
-
-              <div
-                style={{
-                  minWidth: 0,
-                  flex: 1,
-                  fontSize: activeId === ROUTE_DASHBOARD ? 16 : 14,
-                  fontWeight: 900,
-                  lineHeight: 1.15,
-                  color: COLORS.text,
-                  paddingRight: 4,
-                }}
-              >
-                {mobileTitle}
+                  {moduleTitle}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <Sidebar
             activeId={activeId}
@@ -266,21 +289,19 @@ export default function App() {
             mobileOpen={mobileOpen}
             onCloseMobile={() => setMobileOpen(false)}
           />
+
+          <main
+            style={{
+              minWidth: 0,
+              padding: mobileOpen ? "0 12px 16px" : "72px 12px 16px",
+            }}
+          >
+            <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
+              <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
+            </div>
+          </main>
         </>
       )}
-
-      <main
-        style={{
-          flex: 1,
-          padding: isMobile ? "72px 12px 16px" : "12px 22px 18px",
-          color: COLORS.text,
-          minWidth: 0,
-        }}
-      >
-        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
-          <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
-        </div>
-      </main>
     </div>
   );
 }

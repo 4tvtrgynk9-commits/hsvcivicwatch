@@ -2,13 +2,28 @@ import React, { useMemo, useState } from "react";
 import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
 
-function NavButton({ item, active, hovered, onHover, onLeave, onClick, compact = false }) {
+function NavButton({
+  item,
+  active,
+  hovered,
+  onHover,
+  onLeave,
+  onClick,
+  compact = false,
+  featured = false,
+}) {
   const isHover = hovered && !active;
 
   let background = "transparent";
   let border = "1px solid transparent";
   let color = COLORS.sidebarText;
   let boxShadow = "none";
+
+  if (featured && !active) {
+    background = COLORS.blueprintBg;
+    border = `1px solid ${COLORS.blueprintBorder}`;
+    color = COLORS.sidebarText;
+  }
 
   if (isHover) {
     background = "rgba(198,163,77,0.10)";
@@ -17,10 +32,12 @@ function NavButton({ item, active, hovered, onHover, onLeave, onClick, compact =
   }
 
   if (active) {
-    background = "rgba(198,163,77,0.18)";
-    border = `1px solid ${COLORS.borderStrong}`;
-    color = COLORS.gold;
-    boxShadow = "inset 0 0 0 1px rgba(198,163,77,0.10), 0 0 0 1px rgba(198,163,77,0.10)";
+    background = featured ? "rgba(62,139,91,0.18)" : "rgba(198,163,77,0.18)";
+    border = featured ? `1px solid ${COLORS.blueprintBorder}` : `1px solid ${COLORS.borderStrong}`;
+    color = featured ? COLORS.sidebarText : COLORS.gold;
+    boxShadow = featured
+      ? "inset 0 0 0 1px rgba(62,139,91,0.10), 0 0 0 1px rgba(62,139,91,0.08)"
+      : "inset 0 0 0 1px rgba(198,163,77,0.10), 0 0 0 1px rgba(198,163,77,0.10)";
   }
 
   return (
@@ -73,7 +90,7 @@ export default function Sidebar({
   const grouped = useMemo(() => NAV, []);
   const compact = !isMobile;
 
-  const brandBlock = (
+  const brandText = (
     <>
       <div
         style={{
@@ -122,27 +139,25 @@ export default function Sidebar({
     </>
   );
 
+  const asideStyle = {
+    width: "100%",
+    background: COLORS.sidebarBg,
+    color: COLORS.sidebarText,
+    padding: isMobile ? "10px 14px 12px" : "16px 14px 12px",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+    height: isMobile ? "100%" : "calc(100vh - 20px)",
+    borderRadius: isMobile ? 0 : 18,
+    boxShadow: isMobile ? "0 18px 60px rgba(0,0,0,0.35)" : "none",
+    position: isMobile ? "relative" : "sticky",
+    top: isMobile ? 0 : 10,
+  };
+
   const sidebarContent = (
-    <aside
-      style={{
-        width: "100%",
-        background: COLORS.sidebarBg,
-        color: COLORS.sidebarText,
-        padding: isMobile ? "12px 14px 12px" : "16px 14px 12px",
-        flexShrink: 0,
-        borderRight: "1px solid rgba(255,255,255,0.08)",
-        height: "100%",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: isMobile ? "0 18px 60px rgba(0,0,0,0.35)" : "none",
-        borderRadius: isMobile ? "0 18px 18px 0" : 16,
-        position: isMobile ? "relative" : "sticky",
-        top: isMobile ? "auto" : 12,
-      }}
-    >
+    <aside style={asideStyle}>
       {isMobile ? (
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <button
               onClick={onCloseMobile}
@@ -182,7 +197,7 @@ export default function Sidebar({
                 margin: 0,
               }}
             >
-              {brandBlock}
+              {brandText}
             </button>
           </div>
         </div>
@@ -201,7 +216,7 @@ export default function Sidebar({
             marginBottom: 14,
           }}
         >
-          {brandBlock}
+          {brandText}
         </button>
       )}
 
@@ -214,7 +229,7 @@ export default function Sidebar({
           alignContent: "start",
           gap: 10,
           paddingRight: 4,
-          paddingBottom: 6,
+          paddingBottom: 8,
         }}
       >
         {grouped.map((group) => (
@@ -235,21 +250,25 @@ export default function Sidebar({
             </div>
 
             <div style={{ display: "grid", gap: 6 }}>
-              {group.items.map((item) => (
-                <NavButton
-                  key={item.id}
-                  item={item}
-                  active={activeId === item.id}
-                  hovered={hoveredId === item.id}
-                  onHover={() => setHoveredId(item.id)}
-                  onLeave={() => setHoveredId(null)}
-                  onClick={() => {
-                    onNavigate(item.id);
-                    if (isMobile && onCloseMobile) onCloseMobile();
-                  }}
-                  compact={compact}
-                />
-              ))}
+              {group.items.map((item) => {
+                const isBlueprint = item.id === "proposals";
+                return (
+                  <NavButton
+                    key={item.id}
+                    item={item}
+                    active={activeId === item.id}
+                    hovered={hoveredId === item.id}
+                    onHover={() => setHoveredId(item.id)}
+                    onLeave={() => setHoveredId(null)}
+                    onClick={() => {
+                      onNavigate(item.id);
+                      if (isMobile && onCloseMobile) onCloseMobile();
+                    }}
+                    compact={compact}
+                    featured={isBlueprint}
+                  />
+                );
+              })}
             </div>
           </div>
         ))}
@@ -299,7 +318,18 @@ export default function Sidebar({
   );
 
   if (!isMobile) {
-    return <div style={{ width: 300 }}>{sidebarContent}</div>;
+    return (
+      <div
+        style={{
+          width: 312,
+          height: "100%",
+          minHeight: "100vh",
+          paddingBottom: 8,
+        }}
+      >
+        {sidebarContent}
+      </div>
+    );
   }
 
   if (!mobileOpen) return null;
@@ -308,11 +338,8 @@ export default function Sidebar({
     <div
       style={{
         position: "fixed",
-        top: 72,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 65,
+        inset: 0,
+        zIndex: 80,
         pointerEvents: "none",
       }}
     >
