@@ -21,6 +21,7 @@ import EnvironmentPage from "./modules/environment/EnvironmentPage";
 import InformationWarfarePage from "./modules/information_warfare/InformationWarfarePage";
 import ProposalsPage from "./modules/proposals/ProposalsPage";
 import ActionPage from "./modules/action/ActionPage";
+import AdminPanel from "./pages/AdminPanel";
 
 const ROUTE_DASHBOARD = "dashboard";
 
@@ -47,6 +48,7 @@ function ActivePage({ activeId, onBack }) {
     case "information_warfare": return <InformationWarfarePage />;
     case "proposals": return <ProposalsPage />;
     case "action": return <ActionPage />;
+    case "admin": return <AdminPanel />;
     default: return <DashboardHome onOpenModule={onBack} />;
   }
 }
@@ -127,6 +129,7 @@ export default function App() {
     information_warfare: "Information Warfare",
     proposals: "A Better Huntsville: The Blueprint",
     action: "Take Action",
+    admin: "Admin Panel",
   };
 
   const mobileTitle = activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
