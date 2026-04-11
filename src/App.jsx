@@ -136,7 +136,8 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
-      {!isMobile && (
+
+      {!isMobile && activeId !== "admin" && (
         <Sidebar
           activeId={activeId}
           onNavigate={(id) => navigate(id)}
@@ -145,7 +146,7 @@ export default function App() {
         />
       )}
 
-      {isMobile && (
+      {isMobile && activeId !== "admin" && (
         <>
           <div
             style={{
