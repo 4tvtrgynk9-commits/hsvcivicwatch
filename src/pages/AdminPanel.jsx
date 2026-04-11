@@ -8,13 +8,9 @@ import {
 
 const ADMIN_PASSWORD = "hsv2026";
 
-const RESEARCH_TEMPLATE = `AFTER-RESEARCH FORMATTING TEMPLATE — HSV CIVIC WATCH
-======================================================
-When your research is complete, paste this entire message into the chat:
-
-"Now take everything we just researched and format it using the template below.
+const RESEARCH_TEMPLATE = `Now take everything we just researched and format it using the template below.
 Use only verified information. Write UNKNOWN for anything not found.
-Produce as many ISSUE CARD and STAT BLOCK entries as the research supports."
+Produce as many ISSUE CARD and STAT BLOCK entries as the research supports.
 
 ISSUE CARDS
 -----------
@@ -75,12 +71,12 @@ ELECTIONS:
 - Applies: [YES / NO]
 
 MEDIA OUTREACH:
-- Outlet 1: [name], Tip Email: [email or UNKNOWN]
-- Outlet 2: [name], Tip Email: [email or UNKNOWN]
-- Outlet 3: [name], Tip Email: [email or UNKNOWN]
-- Outlet 4: [name], Tip Email: [email or UNKNOWN]
-- Outlet 5: [name], Tip Email: [email or UNKNOWN]
-- Applies: [YES / NO]
+- Outlet 1: WAFF 48, Tip Email: news@waff.com
+- Outlet 2: WAAY 31, Tip Email: newsroom@waaytv.com
+- Outlet 3: WHNT 19, Tip Email: Online at whnt.com/contact
+- Outlet 4: AL.com, Tip Email: news@al.com
+- Outlet 5: WZDX 54, Tip Email: Online at rocketcitynow.com/contact-us
+- Applies: YES
 
 EMAIL TEMPLATE:
 - To: [official email]
@@ -142,16 +138,6 @@ ZONES:
 UNIT: [what values represent]
 CONTEXT: [one line]
 --- STAT BLOCK END ---`;
-
-const PARSE_SYSTEM_PROMPT = `You are a structured data parser for HSV Civic Watch.
-Parse all ISSUE CARD and STAT BLOCK sections and return a single JSON object:
-{
-  "issueCards": [...],
-  "statBlocks": [...]
-}
-Issue card shape: { module, label, title, summary, details, sources, decoder: { whatsHappening, connections, benefits, impact }, actions: { contacts, meetings, recordsRequest, complaint, investigationRequest, misconductReport, elections, mediaOutreach, emailTemplate } }
-Stat block shape: { module, tab, type, color, value, label, context, title, unit, note, leftLabel, leftValue, rightLabel, rightValue, slices, points, bars, annualAmount, zones }
-Return ONLY valid JSON. No markdown. No explanation. null for missing fields.`;
 
 const COLOR_MAP = { red:"#c0392b", gold:"#b8860b", purple:"#6c3483", green:"#1e8449", blue:"#1a5276" };
 const COLOR_BG  = { red:"#2a0a0a", gold:"#2a1f00", purple:"#1a0a2a", green:"#0a1f0a", blue:"#0a1520" };
@@ -508,20 +494,13 @@ export default function AdminPanel() {
     setPendingIssues([]); setPendingStats([]);
     setSelIssues([]); setSelStats([]);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: PARSE_SYSTEM_PROMPT,
-          messages: [{ role: "user", content: rawPaste }]
-        })
+        body: JSON.stringify({ rawPaste })
       });
-      const data = await res.json();
-      const text = data.content.map(i => i.text || "").join("");
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
+      const parsed = await res.json();
+      if (!res.ok) throw new Error(parsed.error || "Parse failed");
       const issues = parsed.issueCards || [];
       const stats  = parsed.statBlocks  || [];
       setPendingIssues(issues);
@@ -530,7 +509,7 @@ export default function AdminPanel() {
       setSelStats(stats.map((_, i) => i));
       setActiveTab("review");
     } catch (e) {
-      setParseError("Could not parse content. Make sure it follows the formatted template.");
+      setParseError("Could not parse content. Error: " + e.message);
     } finally { setParsing(false); }
   };
 
@@ -837,7 +816,7 @@ export default function AdminPanel() {
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
               <div>
                 <h2 style={{ color:"#fff", fontSize:20, fontWeight:700, margin:"0 0 6px" }}>Research Template</h2>
-                <p style={{ color:"#889", fontSize:14, margin:0 }}>Complete your research with AI first. When done, copy this template and paste it at the end of your AI chat. It will format everything for the admin form.</p>
+                <p style={{ color:"#889", fontSize:14, margin:0 }}>Complete your research with AI first. When done, copy this template and paste it into your AI chat. It will format everything for the admin form.</p>
               </div>
               <button onClick={copyTemplate} style={{ background:templateCopied?"#1a5c2a":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:20, transition:"background 0.3s" }}>
                 {templateCopied ? "Copied!" : "Copy Template"}
