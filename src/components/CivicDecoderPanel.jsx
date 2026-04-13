@@ -1,93 +1,70 @@
 import React from "react";
 import WhatYouCanDo from "./WhatYouCanDo";
-import { COLORS } from "../config/theme";
 
+// Sidebar blue background with readable section colors
+// Colors are lightened slightly from theme for legibility on dark bg
 const SECTION_STYLES = {
-  "What’s Happening": {
-    color: COLORS.gold,
-    background: COLORS.goldSoft,
-    border: "rgba(198,163,77,0.22)",
-  },
-  "The Connections": {
-    color: COLORS.blue,
-    background: COLORS.blueSoft,
-    border: "rgba(47,93,138,0.18)",
-  },
-  "Who Benefits": {
-    color: COLORS.lavender,
-    background: COLORS.lavenderSoft,
-    border: "rgba(122,79,163,0.18)",
-  },
-  "The Impact": {
-    color: COLORS.red,
-    background: COLORS.redSoft,
-    border: "rgba(180,71,62,0.18)",
-  },
+  "What's Happening": { color: "#E8C35A" },   // gold lightened for dark bg
+  "The Connections":  { color: "#6BA3D6" },   // blue lightened for dark bg
+  "Who Benefits":     { color: "#B98FD8" },   // lavender lightened for dark bg
+  "The Impact":       { color: "#E07068" },   // red lightened for dark bg
 };
+
+const SIDEBAR_BG = "#193150";
 
 export default function CivicDecoderPanel({ analysis, onHide }) {
   if (!analysis) return null;
 
   const sections = [
-    ["What’s Happening", analysis.whatsHappening],
-    ["The Connections", analysis.connections],
-    ["Who Benefits", analysis.benefits],
-    ["The Impact", analysis.impact],
+    ["What's Happening", analysis.whatsHappening],
+    ["The Connections",  analysis.connections],
+    ["Who Benefits",     analysis.benefits],
+    ["The Impact",       analysis.impact],
   ].filter(([, value]) => value);
 
   return (
-    <div
-      style={{
-        background: COLORS.panelAlt,
-        border: `1px solid ${COLORS.border}`,
-        borderRadius: 14,
-        padding: 13,
-        marginTop: 12,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 11,
-          fontWeight: 900,
-          letterSpacing: 1.4,
-          color: COLORS.gold,
-          marginBottom: 10,
-          textTransform: "uppercase",
-        }}
-      >
+    <div style={{
+      background: SIDEBAR_BG,
+      border: "1px solid rgba(255,255,255,0.10)",
+      borderRadius: 14,
+      padding: "14px 16px",
+      marginTop: 12,
+    }}>
+      {/* Header */}
+      <div style={{
+        fontSize: 10,
+        fontWeight: 900,
+        letterSpacing: 2,
+        color: "#E8C35A",
+        marginBottom: 14,
+        textTransform: "uppercase",
+      }}>
         Civic Investigator Analysis
       </div>
 
-      <div style={{ display: "grid", gap: 9 }}>
+      <div style={{ display: "grid", gap: 12 }}>
         {sections.map(([title, text]) => {
           const style = SECTION_STYLES[title];
           return (
-            <div
-              key={title}
-              style={{
-                background: style.background,
-                border: `1px solid ${style.border}`,
-                borderRadius: 12,
-                padding: "11px 12px",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 13.5,
-                  fontWeight: 900,
-                  marginBottom: 5,
-                  color: style.color,
-                }}
-              >
+            <div key={title} style={{
+              borderLeft: `3px solid ${style.color}`,
+              paddingLeft: 12,
+            }}>
+              <div style={{
+                fontSize: 11,
+                fontWeight: 900,
+                letterSpacing: 1.2,
+                textTransform: "uppercase",
+                color: style.color,
+                marginBottom: 5,
+              }}>
                 {title}
               </div>
-              <div
-                style={{
-                  fontSize: 15,
-                  lineHeight: 1.58,
-                  color: style.color,
-                }}
-              >
+              <div style={{
+                fontSize: 15,
+                lineHeight: 1.6,
+                color: style.color,
+              }}>
                 {text}
               </div>
             </div>
@@ -97,20 +74,17 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
         <WhatYouCanDo data={analysis.actions} />
       </div>
 
-      <div style={{ marginTop: 10 }}>
-        <button
-          onClick={onHide}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            color: COLORS.gold,
-            fontSize: 14,
-            fontWeight: 800,
-          }}
-        >
-          Hide Investigation ▲
+      <div style={{ marginTop: 12 }}>
+        <button onClick={onHide} style={{
+          background: "transparent",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+          color: "#E8C35A",
+          fontSize: 13,
+          fontWeight: 800,
+        }}>
+          Hide Investigation &#9650;
         </button>
       </div>
     </div>

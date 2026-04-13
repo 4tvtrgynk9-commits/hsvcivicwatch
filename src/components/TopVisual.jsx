@@ -1,24 +1,73 @@
 import React from "react";
 import { COLORS } from "../config/theme";
 
+// Smart number formatter -- converts raw numbers to human-readable
+// If already a string like "$3.1M" or "295,000" it passes through untouched
+function formatValue(raw) {
+  if (typeof raw !== "number") {
+    // Already a string -- clean up raw large numbers if someone typed them in
+    const str = String(raw).trim();
+    // If it looks like a plain large integer (no $, %, letters), format it
+    if (/^\d{4,}$/.test(str)) {
+      return formatNumber(parseInt(str, 10));
+    }
+    return str;
+  }
+  return formatNumber(raw);
+}
+
+function formatNumber(n) {
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  if (abs >= 1e9)  return sign + "$" + (abs / 1e9).toFixed(1).replace(/\.0$/, "") + "B";
+  if (abs >= 1e6)  return sign + "$" + (abs / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+  if (abs >= 1000) return sign + (abs / 1000).toFixed(0) + "k";
+  return sign + abs.toLocaleString();
+}
+
 function StatCard({ label, value, sublabel, color }) {
+  const displayColor = color || COLORS.red;
+  const displayValue = formatValue(value);
+
   return (
     <div style={{
       background: "white",
       border: `1px solid ${COLORS.border}`,
+      borderLeft: `4px solid ${displayColor}`,
       borderRadius: 8,
-      padding: 16,
-      minHeight: 122
+      padding: "16px 18px",
+      minHeight: 110,
     }}>
-      <div style={{ fontSize: 26, fontWeight: 900, color: color || COLORS.navy, marginBottom: 8 }}>
-        {value}
+      <div style={{
+        fontSize: 28,
+        fontWeight: 900,
+        color: displayColor,
+        marginBottom: 6,
+        lineHeight: 1.1,
+        fontFamily: "Georgia, serif",
+        letterSpacing: -0.5,
+      }}>
+        {displayValue}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 800, color: COLORS.text, marginBottom: 4 }}>
+      <div style={{
+        fontSize: 11,
+        fontWeight: 900,
+        color: COLORS.text,
+        marginBottom: 5,
+        textTransform: "uppercase",
+        letterSpacing: 0.8,
+      }}>
         {label}
       </div>
-      <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.45 }}>
-        {sublabel}
-      </div>
+      {sublabel && (
+        <div style={{
+          fontSize: 13,
+          color: COLORS.muted,
+          lineHeight: 1.5,
+        }}>
+          {sublabel}
+        </div>
+      )}
     </div>
   );
 }
@@ -31,7 +80,7 @@ export default function TopVisual({ visual, stats = [] }) {
         border: `1px solid ${COLORS.border}`,
         borderRadius: 8,
         padding: 18,
-        marginBottom: 20
+        marginBottom: 20,
       }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: COLORS.navy, marginBottom: 8 }}>
           {visual.title || "Top Visual"}
@@ -46,14 +95,12 @@ export default function TopVisual({ visual, stats = [] }) {
   if (!stats || !stats.length) return null;
 
   return (
-    <section
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-        gap: 12,
-        marginBottom: 20
-      }}
-    >
+    <section style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      gap: 12,
+      marginBottom: 20,
+    }}>
       {stats.map((s, i) => (
         <StatCard
           key={i}
