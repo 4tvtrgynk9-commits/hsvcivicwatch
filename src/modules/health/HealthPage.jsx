@@ -5,18 +5,34 @@ import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././health.data";
+import useSupabaseModule from "../../lib/useSupabaseModule";
 
 export default function HealthPage() {
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
+  const { liveIssues, liveStats, loading } = useSupabaseModule("health");
+
+  const issues = liveIssues.length > 0
+    ? liveIssues
+    : (activeTab?.issues || []);
+
+  const stats = liveStats.length > 0
+    ? liveStats
+    : (activeTab?.stats || data.stats || []);
+
   return (
     <div>
       <PageHeader title={data.title} intro={data.intro} />
-      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={activeTab?.stats || data.stats} />
+      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={stats} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
+      {loading && (
+        <div style={{ padding:"32px 0", textAlign:"center", color:"#b8860b", fontSize:14, fontStyle:"italic" }}>
+          Loading live data...
+        </div>
+      )}
       <div>
-        {(activeTab?.issues || []).map((issue, index) => (
+        {issues.map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
       </div>
