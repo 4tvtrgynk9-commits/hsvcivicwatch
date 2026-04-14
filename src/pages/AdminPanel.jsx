@@ -1148,6 +1148,8 @@ export default function AdminPanel() {
   const [selStats, setSelStats] = useState([]);
   const [draftIssues, setDraftIssues] = useState([]);
   const [draftStats, setDraftStats] = useState([]);
+  const [pasteQueue, setPasteQueue] = useState([]);
+  const [queueNotice, setQueueNotice] = useState(0);
   const [pubIssues, setPubIssues] = useState([]);
   const [pubStats, setPubStats] = useState([]);
   const [confirmIssue, setConfirmIssue] = useState(null);
@@ -1195,6 +1197,22 @@ export default function AdminPanel() {
 
   const handleParse = async () => {
     if (!rawPaste.trim()) return;
+    const BATCH_SIZE = 3;
+    // Split raw paste into individual card blocks
+    const cardBlocks = rawPaste.split("--- ISSUE CARD START ---").slice(1).map(b => "--- ISSUE CARD START ---" + b.split("--- ISSUE CARD END ---")[0] + "--- ISSUE CARD END ---");
+    const statBlocks = rawPaste.split("--- STAT BLOCK START ---").slice(1).map(b => "--- STAT BLOCK START ---" + b.split("--- STAT BLOCK END ---")[0] + "--- STAT BLOCK END ---");
+    const firstBatchCards = cardBlocks.slice(0, BATCH_SIZE);
+    const overflowCards = cardBlocks.slice(BATCH_SIZE);
+    // Queue overflow in groups of 3
+    if (overflowCards.length > 0) {
+      const batches = [];
+      for (let i = 0; i < overflowCards.length; i += BATCH_SIZE) {
+        batches.push(overflowCards.slice(i, i + BATCH_SIZE));
+      }
+      setPasteQueue(p => [...p, ...batches]);
+      setQueueNotice(overflowCards.length);
+    }
+    const sep = "\n\n"; const firstBatchPaste = firstBatchCards.join(sep) + (statBlocks.length ? sep + statBlocks.join(sep) : "");
     setParsing(true); setParseError("");
     setPendingIssues([]); setPendingStats([]);
     setSelIssues([]); setSelStats([]);
@@ -1202,7 +1220,7 @@ export default function AdminPanel() {
       const res = await fetch("/api/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawPaste })
+        body: JSON.stringify({ rawPaste: firstBatchPaste })
       });
       const parsed = await res.json();
       if (!res.ok) throw new Error(parsed.error || "Parse failed");
@@ -1215,6 +1233,33 @@ export default function AdminPanel() {
       setActiveTab("review");
     } catch (e) {
       setParseError("Could not parse content. Error: " + e.message);
+    } finally { setParsing(false); }
+  };
+
+  const processBatch = async (batchIndex) => {
+    const batch = pasteQueue[batchIndex];
+    if (!batch) return;
+    const sep2 = "\n\n"; const batchPaste = batch.join(sep2);
+
+    setParsing(true); setParseError("");
+    try {
+      const res = await fetch("/api/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawPaste: batchPaste })
+      });
+      const parsed = await res.json();
+      if (!res.ok) throw new Error(parsed.error || "Parse failed");
+      const issues = parsed.issueCards || [];
+      const stats  = parsed.statBlocks  || [];
+      setPendingIssues(issues);
+      setPendingStats(stats);
+      setSelIssues(issues.map((_, i) => i));
+      setSelStats(stats.map((_, i) => i));
+      setPasteQueue(p => p.filter((_, i) => i !== batchIndex));
+      setActiveTab("review");
+    } catch (e) {
+      setParseError("Could not parse batch. Error: " + e.message);
     } finally { setParsing(false); }
   };
 
@@ -1368,7 +1413,7 @@ export default function AdminPanel() {
 
   const totalPending = pendingIssues.length + pendingStats.length;
   const totalSel = selIssues.length + selStats.length;
-  const totalDrafts = draftIssues.length + draftStats.length;
+  const totalDrafts = draftIssues.length + draftStats.length + pasteQueue.reduce((a, b) => a + b.length, 0);
 
   const tabStyle = (id) => ({
     background: "none", border: "none",
@@ -1381,6 +1426,23 @@ export default function AdminPanel() {
   const issueCardsForStatModule = confirmStat
     ? pubIssues.filter(ic => ic.module === confirmStat.module)
     : [];
+
+  // Queue notice modal
+  const QueueNoticeModal = queueNotice > 0 ? (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+      <div style={{ background:"#353b48", border:"1px solid #b8860b", borderRadius:10, width:"100%", maxWidth:460, padding:"28px 32px", boxShadow:"0 20px 60px rgba(0,0,0,0.4)" }}>
+        <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>Holding Cell</div>
+        <div style={{ color:"#fff", fontSize:18, fontWeight:700, marginBottom:10 }}>{queueNotice} card{queueNotice !== 1 ? "s" : ""} moved to the queue</div>
+        <div style={{ color:"#aaa", fontSize:14, lineHeight:1.6, marginBottom:20 }}>
+          You pasted more than 3 cards. The first 3 are in Review now. The rest have been shelved in the Drafts tab under <strong style={{ color:"#b8860b" }}>Paste Research Queue</strong>, grouped in batches of 3. Process them whenever you are ready.
+        </div>
+        <button onClick={() => setQueueNotice(0)}
+          style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+          Got It
+        </button>
+      </div>
+    </div>
+  ) : null;
 
   if (!authed) {
     return (
@@ -1402,6 +1464,7 @@ export default function AdminPanel() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#1a1a1a" }}>
+      {QueueNoticeModal}
       {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} />}
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
@@ -1508,50 +1571,109 @@ export default function AdminPanel() {
         {activeTab === "drafts" && (
           <div>
             <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Drafts</h2>
-            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 26px" }}>Rejected items saved here. Nothing is lost.</p>
-            {totalDrafts === 0 ? (
-              <div style={{ textAlign:"center", padding:"80px 0", color:"#aaa" }}>
-                <div style={{ fontSize:44, marginBottom:18 }}>&#128196;</div>
-                <div style={{ fontSize:18 }}>No drafts yet.</div>
+            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 26px" }}>Holding cell for queued batches and rejected content.</p>
+
+            {/* Paste Research Queue */}
+            <div style={{ marginBottom:40 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
+                <span style={{ color:"#b8860b", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Paste Research Queue</span>
+                <span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"2px 10px", borderRadius:3 }}>{pasteQueue.reduce((a,b) => a+b.length, 0)} cards waiting</span>
               </div>
-            ) : (
-              <>
-                {draftIssues.map((card,i) => (
-                  <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
-                    <div style={{ background:"#fef2f2", borderBottom:"1px solid #fca5a5", padding:"10px 22px" }}>
-                      <span style={{ color:"#b91c1c", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft &mdash; Issue Card</span>
-                    </div>
-                    <div style={{ padding:"18px 22px" }}>
-                      <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:8 }}>{card.title}</div>
-                      <div style={{ color:"#555", fontSize:14, lineHeight:1.6, marginBottom:14 }}>{card.summary}</div>
-                      <div style={{ display:"flex", gap:12 }}>
-                        <button onClick={() => { setPendingIssues(p => [...p, card]); setDraftIssues(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
-                          style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
-                        <button onClick={() => setDraftIssues(p => p.filter((_,di) => di !== i))}
-                          style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
+              {pasteQueue.length === 0 ? (
+                <div style={{ color:"#556", fontSize:14, padding:"20px 0" }}>No queued batches. Paste more than 3 cards at once to queue overflow here.</div>
+              ) : (
+                pasteQueue.map((batch, bi) => (
+                  <div key={bi} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid #4a5268" }}>
+                      <div>
+                        <span style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>Batch {bi + 2}</span>
+                        <span style={{ color:"#aaa", fontSize:13, marginLeft:10 }}>{batch.length} card{batch.length !== 1 ? "s" : ""}</span>
+                      </div>
+                      <div style={{ display:"flex", gap:10 }}>
+                        <button onClick={() => processBatch(bi)} disabled={parsing}
+                          style={{ background:parsing?"#4a5268":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"8px 18px", fontSize:13, fontWeight:700, cursor:parsing?"not-allowed":"pointer", textTransform:"uppercase" }}>
+                          {parsing ? "Processing..." : "Process Batch"}
+                        </button>
+                        <button onClick={() => setPasteQueue(p => p.filter((_,i) => i !== bi))}
+                          style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                          Discard
+                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-                {draftStats.map((block,i) => (
-                  <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
-                    <div style={{ background:"#eff6ff", borderBottom:"1px solid #93c5fd", padding:"10px 22px" }}>
-                      <span style={{ color:"#1a4a7a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft &mdash; {block.type}</span>
-                    </div>
-                    <div style={{ padding:"18px 22px" }}>
-                      <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
-                      <div style={{ color:"#888", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
-                      <div style={{ display:"flex", gap:12 }}>
-                        <button onClick={() => { setPendingStats(p => [...p, block]); setDraftStats(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
-                          style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
-                        <button onClick={() => setDraftStats(p => p.filter((_,di) => di !== i))}
-                          style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
-                      </div>
+                    <div style={{ padding:"12px 20px" }}>
+                      {batch.map((raw, ci) => {
+                        const titleMatch = raw.match(/TITLE:\s*(.+)/);
+                        const labelMatch = raw.match(/LABEL:\s*(.+)/);
+                        return (
+                          <div key={ci} style={{ display:"flex", gap:10, alignItems:"center", padding:"6px 0", borderBottom: ci < batch.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                            {labelMatch && <span style={{ background:"#b8860b", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3, textTransform:"uppercase", flexShrink:0 }}>{labelMatch[1].trim()}</span>}
+                            <span style={{ color:"#ccc", fontSize:13 }}>{titleMatch ? titleMatch[1].trim() : "Card " + (ci+1)}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                ))}
-              </>
-            )}
+                ))
+              )}
+            </div>
+
+            {/* Rejected */}
+            <div>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
+                <span style={{ color:"#e57373", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Rejected</span>
+                <span style={{ background:"#e5737322", color:"#e57373", border:"1px solid #e5737344", fontSize:12, fontWeight:700, padding:"2px 10px", borderRadius:3 }}>{draftIssues.length + draftStats.length} items</span>
+              </div>
+              {draftIssues.length === 0 && draftStats.length === 0 ? (
+                <div style={{ color:"#556", fontSize:14, padding:"20px 0" }}>No rejected items.</div>
+              ) : (
+                <>
+                  {draftIssues.length > 0 && (
+                    <div style={{ marginBottom:24 }}>
+                      <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Issue Cards ({draftIssues.length})</div>
+                      {draftIssues.map((card,i) => (
+                        <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                          <div style={{ background:"#fef2f2", borderBottom:"1px solid #fca5a5", padding:"10px 22px" }}>
+                            <span style={{ color:"#b91c1c", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Rejected &mdash; Issue Card</span>
+                          </div>
+                          <div style={{ padding:"18px 22px" }}>
+                            <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:8 }}>{card.title}</div>
+                            <div style={{ color:"#555", fontSize:14, lineHeight:1.6, marginBottom:14 }}>{card.summary}</div>
+                            <div style={{ display:"flex", gap:12 }}>
+                              <button onClick={() => { setPendingIssues(p => [...p, card]); setDraftIssues(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
+                                style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
+                              <button onClick={() => setDraftIssues(p => p.filter((_,di) => di !== i))}
+                                style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {draftStats.length > 0 && (
+                    <div>
+                      <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Stat Blocks ({draftStats.length})</div>
+                      {draftStats.map((block,i) => (
+                        <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                          <div style={{ background:"#eff6ff", borderBottom:"1px solid #93c5fd", padding:"10px 22px" }}>
+                            <span style={{ color:"#1a4a7a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Rejected &mdash; {block.type}</span>
+                          </div>
+                          <div style={{ padding:"18px 22px" }}>
+                            <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
+                            <div style={{ color:"#888", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
+                            <div style={{ display:"flex", gap:12 }}>
+                              <button onClick={() => { setPendingStats(p => [...p, block]); setDraftStats(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
+                                style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
+                              <button onClick={() => setDraftStats(p => p.filter((_,di) => di !== i))}
+                                style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
 
