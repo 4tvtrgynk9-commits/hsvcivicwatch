@@ -20,7 +20,7 @@ function getActionBg(kind) {
 function ActionButton({ label, href, kind }) {
   if (!href) return null;
   return (
-    <a
+    
       href={href}
       target="_blank"
       rel="noreferrer"
@@ -59,7 +59,7 @@ function DecoderSection({ color, title, children }) {
       }}>
         {title}
       </div>
-      <div style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.88)" }}>
+      <div style={{ fontSize: 15, lineHeight: 1.7, color: color }}>
         {children}
       </div>
     </div>
@@ -142,60 +142,130 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             letterSpacing: 2,
             textTransform: "uppercase",
             color: GREEN,
-            marginBottom: 8,
+            marginBottom: 12,
             opacity: 0.9,
           }}>
             What You Can Do
           </div>
 
-          <div style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.88)" }}>
-            {intro ? <p style={{ margin: "0 0 12px" }}>{intro}</p> : null}
+          {intro ? (
+            <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.7, color: GREEN }}>
+              {intro}
+            </p>
+          ) : null}
 
-            {usableContacts.map(function(c, i) {
-              return (
-                <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ fontWeight: 800, color: GREEN }}>
-                    {c.name}{c.role ? " - " + c.role : ""}
+          {usableContacts.map(function(c, i) {
+            return (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: "#fff", marginBottom: 4 }}>
+                  {c.name}{c.role ? " — " + c.role : ""}
+                </div>
+                {c.phone ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    Phone: {c.phone}
                   </div>
-                  {c.phone ? <div>Phone: {c.phone}</div> : null}
-                  {c.email ? <div>Email: {c.email}</div> : null}
-                  {c.officialLink ? (
-                    <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ color: GREEN, fontWeight: 700 }}>Official page</a>
-                  ) : null}
-                </div>
-              );
-            })}
+                ) : null}
+                {c.email ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    Email: {c.email}
+                  </div>
+                ) : null}
+                {c.address ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    Address: {c.address}
+                  </div>
+                ) : null}
+                {c.officialLink ? (
+                  
+                    href={c.officialLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: 14, color: GREEN, fontWeight: 700 }}
+                  >
+                    Official page
+                  </a>
+                ) : null}
+              </div>
+            );
+          })}
 
-            {usableMeetings.map(function(m, i) {
-              return (
-                <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ fontWeight: 800, color: GREEN }}>{m.title}</div>
-                  {m.frequency ? <div>When: {m.frequency}</div> : null}
-                  {m.location ? <div>Where: {m.location}</div> : null}
-                  {m.why ? <div style={{ marginTop: 4 }}>{m.why}</div> : null}
+          {usableMeetings.map(function(m, i) {
+            return (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: "#fff", marginBottom: 4 }}>
+                  {m.title}
                 </div>
-              );
-            })}
+                {m.frequency ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    When: {m.frequency}
+                  </div>
+                ) : null}
+                {m.location ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    Where: {m.location}
+                  </div>
+                ) : null}
+                {m.link ? (
+                  
+                    href={m.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: 14, color: GREEN, fontWeight: 700 }}
+                  >
+                    View meeting schedule
+                  </a>
+                ) : null}
+                {m.why ? (
+                  <div style={{ fontSize: 13, color: GREEN, marginTop: 4, opacity: 0.85 }}>
+                    {m.why}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
 
-            {usablePaths.map(function(p, i) {
-              return (
-                <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ fontWeight: 800, color: GREEN }}>{p.destination}</div>
-                  {p.type ? <div>Type: {p.type}</div> : null}
-                  {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
-                  {p.link ? (
-                    <a href={p.link} target="_blank" rel="noreferrer" style={{ color: GREEN, fontWeight: 700 }}>Open filing path</a>
-                  ) : null}
+          {usablePaths.map(function(p, i) {
+            return (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: "#fff", marginBottom: 4 }}>
+                  {p.destination}
                 </div>
-              );
-            })}
-          </div>
+                {p.type ? (
+                  <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
+                    Type: {p.type}
+                  </div>
+                ) : null}
+                {p.why ? (
+                  <div style={{ fontSize: 13, color: GREEN, marginBottom: 4, opacity: 0.85 }}>
+                    {p.why}
+                  </div>
+                ) : null}
+                {p.link ? (
+                  
+                    href={p.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: 14, color: GREEN, fontWeight: 700 }}
+                  >
+                    Open filing path
+                  </a>
+                ) : null}
+              </div>
+            );
+          })}
 
           {usableButtons.length ? (
-            <div style={{ display: "flex", flexWrap: "wrap", marginTop: 4 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", marginTop: 8 }}>
               {usableButtons.map(function(action, i) {
                 var href = action.template ? buildMailto(action.template) : action.href;
-                return <ActionButton key={i} label={action.label} href={href} kind={action.kind} />;
+                return (
+                  <ActionButton
+                    key={i}
+                    label={action.label}
+                    href={href}
+                    kind={action.kind}
+                  />
+                );
               })}
             </div>
           ) : null}
@@ -203,15 +273,18 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       ) : null}
 
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-        <button onClick={onHide} style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          color: GOLD_DIM,
-          fontSize: 13,
-          fontWeight: 700,
-        }}>
+        <button
+          onClick={onHide}
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: GOLD_DIM,
+            fontSize: 13,
+            fontWeight: 700,
+          }}
+        >
           Hide Investigation &#9650;
         </button>
       </div>
