@@ -2,7 +2,7 @@ const data = {
   id: 'policing',
   title: 'Law Enforcement & Accountability',
   intro:
-    `Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city`s financial priorities are engineered to protect the badge, not the resident.',
+    `Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city's financial priorities are engineered to protect the badge, not the resident.`,
   tabs: [
     {
       id: 'budget',
@@ -136,20 +136,20 @@ const data = {
         {
           id: 'securus_kickback',
           label: 'The Jail Tax',
-          title: 'Sheriff Turner's Securus Profit Machine',
+          title: `Sheriff Turner's Securus Profit Machine`,
           summary:
-            'Madison County Sheriff Kevin Turner maintains a monopoly contract with Securus Technologies, extracting money from families through jail phone commissions.',
+            `Madison County Sheriff Kevin Turner maintains a monopoly contract with Securus Technologies, extracting money from families through jail phone commissions.`,
           details:
-            'The Madison County Jail functions as a revenue center. Families, often already struggling financially, must pay inflated rates to speak with incarcerated loved ones. Under commission-based jail phone contracts, a large portion of that revenue flows back to the county through so-called site commissions. That means every phone call is not just communication. It is a money stream built on isolation, poverty, and captivity. These funds can then be routed into discretionary spending channels with far less public scrutiny than the normal budget process.',
+            `The Madison County Jail functions as a revenue center. Families, often already struggling financially, must pay inflated rates to speak with incarcerated loved ones. Under commission-based jail phone contracts, a large portion of that revenue flows back to the county through so-called site commissions. That means every phone call is not just communication. It is a money stream built on isolation, poverty, and captivity. These funds can then be routed into discretionary spending channels with far less public scrutiny than the normal budget process.`,
           decoder: {
             whatsHappening:
-              'The Sheriff's office benefits from a commission structure that turns family contact into a source of institutional revenue.',
+              `The Sheriff's office benefits from a commission structure that turns family contact into a source of institutional revenue.`,
             connections:
               'Officials present themselves as public servants, but the contract model depends on extracting money from families with the fewest options. The people with the least power are forced to subsidize a system that claims to protect the public while profiting from confinement.',
             benefits:
-              'The main beneficiaries are the Sheriff's office and **Securus Technologies**, which profit from a captive market with little meaningful competition or public control.',
+              `The main beneficiaries are the Sheriff's office and **Securus Technologies**, which profit from a captive market with little meaningful competition or public control.`,
             impact:
-              'This is a poverty extraction system. Money that could go to rent, groceries, childcare, or school supplies instead gets pulled into jail telecom fees and commission structures.',
+              `This is a poverty extraction system. Money that could go to rent, groceries, childcare, or school supplies instead gets pulled into jail telecom fees and commission structures.`,
             actions: {
               intro: 'Demand an end to commission-based jail phone contracts in Madison County.',
               contacts: [
@@ -240,9 +240,9 @@ const data = {
         {
           id: 'bs_bodycam_iron',
           label: 'Iron Curtain',
-          title: 'HB289: The Bodycam Law',
+          title: `HB289: The Bodycam Law`,
           summary:
-            'How Alabama's custodial law enforcement recording protections can be used to hide police misconduct footage from the public.'
+            `How Alabama's custodial law enforcement recording protections can be used to hide police misconduct footage from the public.`
         }
       ],
       trail: [

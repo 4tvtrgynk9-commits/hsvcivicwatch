@@ -18,9 +18,9 @@ const data = {
           label: 'The Lobbyist Special',
           title: `HB351: The Retail PAC "Privacy" Purchase`,
           summary:
-            'Alabama's 2026 data privacy bill was written with massive loopholes that protect the exact "loyalty" tracking tools used by Walmart and Kroger to profile residents.',
+            `Alabama's 2026 data privacy bill was written with massive loopholes that protect the exact "loyalty" tracking tools used by Walmart and Kroger to profile residents.`,
           details:
-            'In April 2026, HB351 reached "Ready to Enroll" status, marketed as a win for consumer privacy. In reality, the bill contains a specific carveout for "loyalty, rewards, and club-card" programs. This loophole allows retailers to continue harvesting and selling shopper data as long as it is tied to a "discount" program. This ensures that the deep financial and health profiling documented by Consumer Reports remains 100% legal in Alabama, unlike in California where residents have a "One-Stop" right to delete their profiles.',
+            `In April 2026, HB351 reached "Ready to Enroll" status, marketed as a win for consumer privacy. In reality, the bill contains a specific carveout for "loyalty, rewards, and club-card" programs. This loophole allows retailers to continue harvesting and selling shopper data as long as it is tied to a "discount" program. This ensures that the deep financial and health profiling documented by Consumer Reports remains 100% legal in Alabama, unlike in California where residents have a "One-Stop" right to delete their profiles.`,
           decoder: {
             whatsHappening:
               'State law has been surgically edited to protect the data-mining business model of major grocery and retail chains.',
@@ -51,7 +51,7 @@ const data = {
                   destination: 'California Delete Act Model',
                   type: 'Policy',
                   why:
-                    'Compare Alabama`s "Loyalty Loophole" to states that actually protect residents.`
+                    `Compare Alabama's "Loyalty Loophole" to states that actually protect residents.`
                 }
               ],
               actions: [
@@ -73,9 +73,9 @@ const data = {
           label: 'Dynamic Pricing',
           title: `The Walmart "Digital Shadow" & Algorithmic Gouging`,
           summary:
-            'Walmart's rollout of digital shelf labels in Huntsville provides the technical infrastructure to hike prices instantly based on your personal data profile.',
+            `Walmart's rollout of digital shelf labels in Huntsville provides the technical infrastructure to hike prices instantly based on your personal data profile.`,
           details:
-            'Walmart has completed its transition to digital shelf labels nationwide, including across the Huntsville metro. While the company claims these are for "efficiency," the labels enable "Surveillance Pricing"---the ability to adjust the price on the shelf based on centralized algorithms. Because Walmart tracks every card purchase and links it to your identity, they can theoretically test the limit of what you specifically are willing to pay. In Alabama, there are zero laws preventing a retailer from using your "Digital Shadow" to set an individualized price the moment you enter the aisle.',
+            `Walmart has completed its transition to digital shelf labels nationwide, including across the Huntsville metro. While the company claims these are for "efficiency," the labels enable "Surveillance Pricing"---the ability to adjust the price on the shelf based on centralized algorithms. Because Walmart tracks every card purchase and links it to your identity, they can theoretically test the limit of what you specifically are willing to pay. In Alabama, there are zero laws preventing a retailer from using your "Digital Shadow" to set an individualized price the moment you enter the aisle.`,
           decoder: {
             whatsHappening:
               'Retailers are replacing fixed pricing with algorithmic control, using consumer data to maximize profit on every transaction.',
@@ -153,7 +153,7 @@ const data = {
           summary:
             'Huntsville leadership has expanded the Flock surveillance network to nearly 100 units while refusing to allow any independent civilian audit of who is being searched.',
           details:
-            'HPD logs the movement of every vehicle that passes a Flock camera. While HPD claims searches require a "case number," these logs are audited only by HPD itself. In 2024, Angela Lipps was jailed for 108 days due to a similar unregulated "glitch" in facial recognition tech. Without a civilian-led board with subpoena power, there is zero verification that a "rogue cop" isn't using the system to stalk an ex-partner or monitor a political rival.',
+            `HPD logs the movement of every vehicle that passes a Flock camera. While HPD claims searches require a "case number," these logs are audited only by HPD itself. In 2024, Angela Lipps was jailed for 108 days due to a similar unregulated "glitch" in facial recognition tech. Without a civilian-led board with subpoena power, there is zero verification that a "rogue cop" isn't using the system to stalk an ex-partner or monitor a political rival.`,
           decoder: {
             whatsHappening:
               'Law enforcement has built a 24/7 digital tail for every resident with zero public-facing accountability.',
