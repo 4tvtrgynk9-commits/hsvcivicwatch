@@ -204,16 +204,31 @@ Scoring criteria:
 - 1-4: No meaningful data to visualize
 
 Visual config rules:
-- Pick the SIMPLEST format that best communicates the data
-- Available types: "bar", "trend", "comparison", "tiles", "pie"
-- "bar": best for comparing multiple named entities (e.g. salaries, budgets by department)
-- "trend": best for showing change over time (e.g. premium increases year by year)  
-- "comparison": best for two-value comparisons (e.g. north vs south, CEO vs worker pay)
-- "tiles": best for 2-4 standalone key numbers that hit harder visually
-- "pie": best for showing how a whole is divided (e.g. budget breakdown)
-- Data must come ONLY from the card content — never invent numbers
-- Title should be short and punchy (under 8 words)
-- All values must be extractable from the card text
+CORE PRINCIPLE: The visual must tell the full story WITHOUT the summary text. A reader should glance at the graphic and immediately understand what is wrong, how bad it is, and who it affects. If the visual does not do that alone, choose a different type or score lower.
+
+Available types: "bar", "trend", "comparison", "tiles", "pie"
+
+TYPE SELECTION RULES (follow in order):
+1. Year-over-year or time-series data (3+ time points): DEFAULT to "bar" (vertical columns per year/period). Bars show dramatic jumps far better than trend lines. Only use "trend" if the slope shape itself is the story (e.g. an accelerating curve).
+2. Exactly 2 values being compared (CEO vs worker, north vs south, before vs after): Use "comparison" (horizontal bars side by side). This is the DEFAULT for two-value contrasts. The gap should be visually shocking.
+3. 3+ named entities being compared (multiple salaries, multiple cities, multiple budget lines): Use "bar".
+4. 1-2 standalone shocking numbers with no pattern to show: Use "tiles". Only use tiles when the raw number is more powerful than any chart.
+5. Budget or spending breakdown (how a whole is divided): Use "pie".
+6. When in doubt: DEFAULT to "bar" or "comparison". Never default to "trend" or "tiles".
+
+COLOR RULES:
+- red: alarming data, bad outcomes, things that harm residents
+- gold: money, budgets, costs, dollar amounts
+- blue: baseline comparison, the "normal" or lower value in a comparison
+- green: positive contrast, best-practice comparison, what things should look like
+- In comparisons: the worse/higher/more alarming value = red, the baseline or contrast = blue
+
+CHART QUALITY RULES:
+- Every bar must have its value label shown directly on or above the bar
+- Title must be punchy and specific — name the dollar amount or percentage if possible (e.g. "BCBS Premiums: $310 to $490 in 4 Years" not "Premium Increases")
+- Data must come ONLY from the card content — never invent or estimate numbers
+- All values must be explicitly stated in the card text
+- If you cannot extract at least 2 real data points from the card text, set visual_config to null
 
 Return ONLY a JSON array with one object per card, in order:
 [

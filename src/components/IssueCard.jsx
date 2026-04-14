@@ -92,18 +92,26 @@ function IssueCardVisual({ config }) {
   }
 
   if (type === "bar") {
-    const chartData = data.map(d => ({ name: d.label, value: d.value }));
+    const unit = data[0]?.unit || "";
+    const chartData = data.map(d => ({ name: d.label, value: d.value, color: CHART_COLORS[d.color] || null }));
+    const formatVal = (v) => unit === "$"
+      ? (v >= 1000000 ? "$" + (v/1000000).toFixed(1) + "M" : v >= 1000 ? "$" + (v/1000).toFixed(0) + "k" : "$" + v)
+      : v + (unit || "");
+    function BarLabel(props) {
+      const { x, y, width, value } = props;
+      return <text x={x + width/2} y={y - 5} fill="#ddd5c4" textAnchor="middle" fontSize={11} fontWeight={700}>{formatVal(value)}</text>;
+    }
     return (
       <div style={containerStyle}>
         {title ? <div style={titleStyle}>{title}</div> : null}
-        <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 40 }}>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={chartData} margin={{ top: 20, right: 8, left: -20, bottom: 40 }}>
             <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
             <YAxis tick={{ fill: "#9aaabb", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
-            <Bar dataKey="value" radius={[4,4,0,0]}>
-              {chartData.map(function(_, i) {
-                return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
+            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} formatter={(v) => formatVal(v)} />
+            <Bar dataKey="value" radius={[4,4,0,0]} label={<BarLabel />}>
+              {chartData.map(function(d, i) {
+                return <Cell key={i} fill={d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
               })}
             </Bar>
           </BarChart>
