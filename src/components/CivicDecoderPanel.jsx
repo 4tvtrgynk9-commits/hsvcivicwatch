@@ -176,7 +176,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   </div>
                 ) : null}
                 {c.officialLink ? (
-                  
+                  <a
                     href={c.officialLink}
                     target="_blank"
                     rel="noreferrer"
@@ -206,7 +206,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   </div>
                 ) : null}
                 {m.link ? (
-                  
+                  <a
                     href={m.link}
                     target="_blank"
                     rel="noreferrer"
@@ -241,7 +241,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   </div>
                 ) : null}
                 {p.link ? (
-                  
+                  <a
                     href={p.link}
                     target="_blank"
                     rel="noreferrer"
