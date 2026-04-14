@@ -1231,6 +1231,7 @@ export default function AdminPanel() {
       setSelIssues(issues.map((_, i) => i));
       setSelStats(stats.map((_, i) => i));
       setActiveTab("review");
+      setRawPaste("");
     } catch (e) {
       setParseError("Could not parse content. Error: " + e.message);
     } finally { setParsing(false); }
