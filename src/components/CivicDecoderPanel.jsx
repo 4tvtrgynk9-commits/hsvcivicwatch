@@ -20,7 +20,7 @@ function getActionBg(kind) {
 function ActionButton({ label, href, kind }) {
   if (!href) return null;
   return (
-    
+    <a
       href={href}
       target="_blank"
       rel="noreferrer"
@@ -158,7 +158,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             return (
               <div key={i} style={{ marginBottom: 14 }}>
                 <div style={{ fontWeight: 800, fontSize: 14, color: "#fff", marginBottom: 4 }}>
-                  {c.name}{c.role ? " — " + c.role : ""}
+                  {c.name}{c.role ? " - " + c.role : ""}
                 </div>
                 {c.phone ? (
                   <div style={{ fontSize: 14, color: GREEN, marginBottom: 2 }}>
