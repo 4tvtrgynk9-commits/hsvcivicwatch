@@ -78,13 +78,25 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
     actions: actionButtons = [],
   } = actions || {};
 
-  const usableContacts = contacts.filter(function(c) { return c.phone || c.email || c.officialLink; });
-  const usableMeetings = meetings.filter(function(m) { return m.title && m.frequency && m.frequency.toLowerCase() !== "unknown"; });
-  const usablePaths = paths.filter(function(p) { return p.link || p.destination; });
-  const usableButtons = actionButtons.filter(function(a) { return (a.template && a.template.email) || a.href; });
+  const usableContacts = contacts.filter(function(c) {
+    return c.phone || c.email || c.officialLink;
+  });
+  const usableMeetings = meetings.filter(function(m) {
+    return m.title && m.frequency && m.frequency.toLowerCase() !== "unknown";
+  });
+  const usablePaths = paths.filter(function(p) {
+    return p.link || p.destination;
+  });
+  const usableButtons = actionButtons.filter(function(a) {
+    return (a.template && a.template.email) || a.href;
+  });
 
-  const hasAnything = intro || usableContacts.length || usableMeetings.length ||
-    usablePaths.length || usableButtons.length;
+  const hasAnything =
+    intro ||
+    usableContacts.length ||
+    usableMeetings.length ||
+    usablePaths.length ||
+    usableButtons.length;
 
   return (
     <div style={{
@@ -147,8 +159,12 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   {c.phone ? <div>Phone: {c.phone}</div> : null}
                   {c.email ? <div>Email: {c.email}</div> : null}
                   {c.officialLink ? (
-                    <a href={c.officialLink} target="_blank" rel="noreferrer"
-                      style={{ color: GREEN, fontWeight: 700 }}>
+                    
+                      href={c.officialLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: GREEN, fontWeight: 700 }}
+                    >
                       Official page
                     </a>
                   ) : null}
@@ -174,8 +190,12 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   {p.type ? <div>Type: {p.type}</div> : null}
                   {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
                   {p.link ? (
-                    <a href={p.link} target="_blank" rel="noreferrer"
-                      style={{ color: GREEN, fontWeight: 700 }}>
+                    
+                      href={p.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: GREEN, fontWeight: 700 }}
+                    >
                       Open filing path
                     </a>
                   ) : null}
@@ -188,7 +208,14 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: 4 }}>
               {usableButtons.map(function(action, i) {
                 var href = action.template ? buildMailto(action.template) : action.href;
-                return <ActionButton key={i} label={action.label} href={href} kind={action.kind} />;
+                return (
+                  <ActionButton
+                    key={i}
+                    label={action.label}
+                    href={href}
+                    kind={action.kind}
+                  />
+                );
               })}
             </div>
           ) : null}
@@ -196,15 +223,18 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       ) : null}
 
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-        <button onClick={onHide} style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          color: GOLD_DIM,
-          fontSize: 13,
-          fontWeight: 700,
-        }}>
+        <button
+          onClick={onHide}
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: GOLD_DIM,
+            fontSize: 13,
+            fontWeight: 700,
+          }}
+        >
           Hide Investigation &#9650;
         </button>
       </div>
