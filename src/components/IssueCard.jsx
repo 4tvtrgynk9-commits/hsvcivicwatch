@@ -108,7 +108,6 @@ function IssueCardVisual({ config }) {
           <BarChart data={chartData} margin={{ top: 20, right: 8, left: -20, bottom: 40 }}>
             <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
             <YAxis tick={{ fill: "#9aaabb", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} formatter={(v) => formatVal(v)} />
             <Bar dataKey="value" radius={[4,4,0,0]} label={<BarLabel />}>
               {chartData.map(function(d, i) {
                 return <Cell key={i} fill={d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
