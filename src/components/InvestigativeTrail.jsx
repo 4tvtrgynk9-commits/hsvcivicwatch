@@ -1,63 +1,48 @@
 import React, { useState } from "react";
 import { COLORS } from "../config/theme";
 
-export default function InvestigativeTrail({ entries = [] }) {
+export default function InvestigativeTrail({ issues = [], entries = [] }) {
   const [open, setOpen] = useState(false);
-  if (!entries.length) return null;
+
+  const sourceEntries = [];
+  const seen = new Set();
+  issues.forEach(issue => {
+    const sources = issue.sources || [];
+    sources.forEach(src => {
+      const key = src.url || src.label;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        sourceEntries.push({ label: src.label, href: src.url });
+      }
+    });
+  });
+
+  const allEntries = sourceEntries.length ? sourceEntries : entries;
+  if (!allEntries.length) return null;
 
   return (
-    <section
-      style={{
-        marginTop: 16,
-        background: COLORS.panelAlt,
-        border: `1px solid ${COLORS.border}`,
-        borderRadius: 12,
-        padding: 12,
-      }}
-    >
+    <section style={{ marginTop: 16, background: COLORS.panelAlt, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 12 }}>
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          background: open ? COLORS.goldSoft : "transparent",
-          border: `1px solid ${open ? COLORS.borderStrong : COLORS.border}`,
-          borderRadius: 999,
-          padding: "6px 10px",
-          cursor: "pointer",
-          fontSize: 11.5,
-          fontWeight: 900,
-          color: open ? COLORS.gold : COLORS.textSoft,
-        }}
+        style={{ background: open ? COLORS.goldSoft : "transparent", border: `1px solid ${open ? COLORS.borderStrong : COLORS.border}`, borderRadius: 999, padding: "6px 10px", cursor: "pointer", fontSize: 11.5, fontWeight: 900, color: open ? COLORS.gold : COLORS.textSoft }}
       >
-        Investigative Trail {open ? "▲" : "▼"}
+        Sources {open ? "▲" : "▼"}
       </button>
-
-      {open ? (
-        <div style={{ marginTop: 10, display: "grid", gap: 8 }}>
-          {entries.map((entry, i) => (
-            <div
-              key={i}
-              style={{
-                fontSize: 13.5,
-                lineHeight: 1.58,
-                color: COLORS.text,
-                background: COLORS.panel,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 10,
-                padding: "9px 10px",
-              }}
-            >
-              {entry.label ? <strong>{entry.label}: </strong> : null}
+      {open && (
+        <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
+          {allEntries.map((entry, i) => (
+            <div key={i} style={{ fontSize: 12, lineHeight: 1.5, color: COLORS.textSoft }}>
               {entry.href ? (
-                <a href={entry.href} target="_blank" rel="noreferrer">
-                  {entry.text || entry.href}
+                <a href={entry.href} target="_blank" rel="noreferrer" style={{ color: COLORS.gold, textDecoration: "none" }}>
+                  {entry.label || entry.href}
                 </a>
               ) : (
-                entry.text || ""
+                <span style={{ color: COLORS.textSoft }}>{entry.label || entry.text || ""}</span>
               )}
             </div>
           ))}
         </div>
-      ) : null}
+      )}
     </section>
   );
 }

@@ -34,7 +34,7 @@ export default function LandusePage() {
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
       </div>
-      <InvestigativeTrail entries={activeTab?.trail || []} />
+      <InvestigativeTrail issues={liveIssues} />
     </div>
   );
 }

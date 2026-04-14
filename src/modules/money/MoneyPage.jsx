@@ -39,7 +39,7 @@ export default function MoneyPage() {
           ))}
         </div>
       )}
-      <InvestigativeTrail entries={activeTab?.trail || []} />
+      <InvestigativeTrail issues={liveIssues} />
     </div>
   );
 }
