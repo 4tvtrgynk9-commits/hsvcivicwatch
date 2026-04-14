@@ -99,14 +99,14 @@ function Block({ children, isLast }) {
   );
 }
 
-function SlateRow({ label, value, href }) {
+function SlateRow({ label, value, href, isData }) {
   if (!value) return null;
   return (
     <div style={{ fontSize: 15, marginBottom: 6 }}>
       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 56, display: "inline-block" }}>{label}:</span>
       {href
         ? <a href={href} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{value}</a>
-        : <span style={{ color: "#9aaabb", fontSize: 15 }}>{value}</span>
+        : <span style={{ color: isData ? "#ddd5c4" : "#9aaabb", fontSize: 15 }}>{value}</span>
       }
     </div>
   );
@@ -254,8 +254,8 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
               return (
                 <Block key={bi} isLast={isLast}>
                   <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{m.title}</div>
-                  <SlateRow label="When" value={m.frequency} />
-                  <SlateRow label="Where" value={m.location} />
+                  <SlateRow label="When" value={m.frequency} isData />
+                  <SlateRow label="Where" value={m.location} isData />
                   <SlateRow label="Purpose" value={m.why} />
                   {m.link ? <GreenLink href={m.link} label="View meeting schedule" /> : null}
                 </Block>
@@ -270,7 +270,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
               return (
                 <Block key={bi} isLast={isLast}>
                   <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{title}</div>
-                  <SlateRow label="Type" value={p.type} />
+                  <SlateRow label="Type" value={p.type} isData />
                   <SlateRow label="Purpose" value={p.why} />
                   {url ? <GreenLink href={url} label={label} /> : null}
                 </Block>
