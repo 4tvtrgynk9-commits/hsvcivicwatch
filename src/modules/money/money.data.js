@@ -23,8 +23,8 @@ const data = {
       trail: []
     },
     {
-      id: "exec_compensation",
-      label: "Executive Compensation",
+      id: "exec_vs_worker",
+      label: "Exec Pay vs. Worker Pay",
       stats: [
         ["HHHS CEO Pay", "$4.2M/yr", "David Spillers total compensation — nonprofit system paying zero property or income tax", "#dc2626"],
         ["Huntsville Utilities CEO", "Not disclosed", "HU executive compensation is not publicly reported as a city-owned utility", "#ea580c"],
