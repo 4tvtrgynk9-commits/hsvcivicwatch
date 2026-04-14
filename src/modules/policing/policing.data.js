@@ -1,14 +1,14 @@
 const data = {
   id: 'policing',
-  title: 'Law Enforcement &#38; Accountability',
+  title: 'Law Enforcement & Accountability',
   intro:
-    'Huntsville allocates over 50&#37; of its $343M budget to &quot;Public Safety,&quot; yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city&#39;s financial priorities are engineered to protect the badge, not the resident.',
+    'Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city's financial priorities are engineered to protect the badge, not the resident.',
   tabs: [
     {
       id: 'budget',
       label: 'The $343M Loop',
       stats: [
-        ['Public Safety', '54&#37;', 'Share of the $343.7M total city budget', '#e53e3e'],
+        ['Public Safety', '54%', 'Share of the $343.7M total city budget', '#e53e3e'],
         ['HPD Personnel', '$80.6M', 'Direct salary and benefit costs for 2026', '#3182ce'],
         ['Crisis Care Cut', '$36,000', 'Amount diverted from WellStone mental health', '#dd6b20']
       ],
@@ -16,11 +16,11 @@ const data = {
         {
           id: 'necessity_tax',
           label: 'The Baby Tax',
-          title: 'Taxing the Cradle: The 4.5&#37; Necessity Surcharge',
+          title: 'Taxing the Cradle: The 4.5% Necessity Surcharge',
           summary:
-            'While the State of Alabama exempted diapers and formula from its 4&#37; tax in 2025, the City of Huntsville continues to collect its 4.5&#37; local tax on these items to fuel the General Fund.',
+            'While the State of Alabama exempted diapers and formula from its 4% tax in 2025, the City of Huntsville continues to collect its 4.5% local tax on these items to fuel the General Fund.',
           details:
-            'Under Act 2025-304, Alabama finally recognized that essential items like baby formula, diapers, and menstrual hygiene products should not be taxed. However, the City of Huntsville has refused to pass a matching local ordinance. This means every time a parent buys formula, diapers, or other hygiene necessities, they are still paying a 4.5&#37; local tax that flows into the General Fund. That same General Fund is the primary source for the $80.6M **HPD (Huntsville Police Department)** budget. In Huntsville, the biological realities of raising a child or managing a period are still treated like a revenue stream for police spending.',
+            'Under Act 2025-304, Alabama finally recognized that essential items like baby formula, diapers, and menstrual hygiene products should not be taxed. However, the City of Huntsville has refused to pass a matching local ordinance. This means every time a parent buys formula, diapers, or other hygiene necessities, they are still paying a 4.5% local tax that flows into the General Fund. That same General Fund is the primary source for the $80.6M **HPD (Huntsville Police Department)** budget. In Huntsville, the biological realities of raising a child or managing a period are still treated like a revenue stream for police spending.',
           decoder: {
             whatsHappening:
               'The city is maintaining a local necessity tax on infants and healthcare essentials instead of cutting into the police-heavy General Fund.',
@@ -64,7 +64,7 @@ const data = {
         {
           id: 'darby_defense_fund',
           label: 'The Slush Fund',
-          title: 'The $125k &quot;Protocol&quot; Murder Defense',
+          title: 'The $125k "Protocol" Murder Defense',
           summary:
             'The City of Huntsville used $125,486 in taxpayer funds to hire private attorneys to defend William Darby after he was indicted for murder.',
           details:
@@ -129,25 +129,25 @@ const data = {
       label: 'Shadow Revenue',
       stats: [
         ['Asset Forfeiture', '$1.2M', 'Reported seizures by local agencies in 2024 to 2025', '#e53e3e'],
-        ['Jail Commissions', '60&#37;', 'Kickback rate tied to Securus jail phone contracts', '#3182ce'],
+        ['Jail Commissions', '60%', 'Kickback rate tied to Securus jail phone contracts', '#3182ce'],
         ['Phone Call Cost', '$15.00', 'Potential cost of a single 15-minute jail call', '#dd6b20']
       ],
       issues: [
         {
           id: 'securus_kickback',
           label: 'The Jail Tax',
-          title: 'Sheriff Turner&#39;s Securus Profit Machine',
+          title: 'Sheriff Turner's Securus Profit Machine',
           summary:
             'Madison County Sheriff Kevin Turner maintains a monopoly contract with Securus Technologies, extracting money from families through jail phone commissions.',
           details:
             'The Madison County Jail functions as a revenue center. Families, often already struggling financially, must pay inflated rates to speak with incarcerated loved ones. Under commission-based jail phone contracts, a large portion of that revenue flows back to the county through so-called site commissions. That means every phone call is not just communication. It is a money stream built on isolation, poverty, and captivity. These funds can then be routed into discretionary spending channels with far less public scrutiny than the normal budget process.',
           decoder: {
             whatsHappening:
-              'The Sheriff&#39;s office benefits from a commission structure that turns family contact into a source of institutional revenue.',
+              'The Sheriff's office benefits from a commission structure that turns family contact into a source of institutional revenue.',
             connections:
               'Officials present themselves as public servants, but the contract model depends on extracting money from families with the fewest options. The people with the least power are forced to subsidize a system that claims to protect the public while profiting from confinement.',
             benefits:
-              'The main beneficiaries are the Sheriff&#39;s office and **Securus Technologies**, which profit from a captive market with little meaningful competition or public control.',
+              'The main beneficiaries are the Sheriff's office and **Securus Technologies**, which profit from a captive market with little meaningful competition or public control.',
             impact:
               'This is a poverty extraction system. Money that could go to rent, groceries, childcare, or school supplies instead gets pulled into jail telecom fees and commission structures.',
             actions: {
@@ -242,7 +242,7 @@ const data = {
           label: 'Iron Curtain',
           title: 'HB289: The Bodycam Law',
           summary:
-            'How Alabama&#39;s custodial law enforcement recording protections can be used to hide police misconduct footage from the public.'
+            'How Alabama's custodial law enforcement recording protections can be used to hide police misconduct footage from the public.'
         }
       ],
       trail: [

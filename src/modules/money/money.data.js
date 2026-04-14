@@ -4,6 +4,13 @@ const data = {
   intro: "Track donations, networks, and how money shapes policy decisions and public outcomes.",
   tabs: [
     {
+      id: "connections_map",
+      label: "Connections Map",
+      isConnectionsMap: true,
+      issues: [],
+      trail: []
+    },
+    {
       id: "overview",
       label: "Overview",
       visual: { type: "placeholder", title: "In-progress visual", description: "This section is being expanded now. The shell is in place so the page loads cleanly while content is rebuilt." },

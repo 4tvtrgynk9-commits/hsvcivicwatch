@@ -8,7 +8,7 @@ const data = {
       id: "overview",
       label: "Overview",
       stats: [
-        ["2024 New Units", "6,404", "81% were multifamily &mdash; the most since 1984", "#dc2626"],
+        ["2024 New Units", "6,404", "81% were multifamily --- the most since 1984", "#dc2626"],
         ["Renters Cost-Burdened", "~40%", "Pay more than 30% of income on rent and utilities", "#ea580c"],
         ["Living Wage Gap", "$22.81/hr", "What a single adult in Madison County needs just to survive", "#dc2626"],
         ["Unhoused in Huntsville", "~600", "Estimated by local advocates and city data", "#7c3aed"],
@@ -19,7 +19,7 @@ const data = {
           label: "Units vs. Affordability",
           title: "The city is counting units. That is not the same as counting affordability.",
           summary:
-            "Huntsville celebrated 6,404 new residential units in 2024, with 81% tied to multifamily construction &mdash; the most completed in a single year since 1984. Mayor Tommy Battle said the city's focus is on &#34;maintaining affordability.&#34; But counting units produced is not the same as showing those units are affordable to the people already living here.",
+            "Huntsville celebrated 6,404 new residential units in 2024, with 81% tied to multifamily construction --- the most completed in a single year since 1984. Mayor Tommy Battle said the city's focus is on &#34;maintaining affordability.&#34; But counting units produced is not the same as showing those units are affordable to the people already living here.",
           details:
             "The city's own 2024 Development Review frames the boom as proof of a successful &#34;economic growth strategy.&#34; Shane Davis, Director of Urban and Economic Development, credited 46,000 new jobs since 2014 as the engine. That framing makes sense for high-skill workers in defense and tech. It explains far less about what a food service worker, retail clerk, or home health aide is supposed to do when the apartment pipeline is built for a different income level. A city can post record construction numbers and still leave its existing workforce priced out. The question is never just how many units, but affordable at what rent, for what income, with what screening rules.",
           decoder: {
@@ -30,7 +30,7 @@ const data = {
             benefits:
               "Developers, commercial real estate investors, downtown business interests, and the city's tax base all benefit when high-density, market-rate development is framed as the answer to affordability. It justifies approvals without requiring affordability conditions.",
             impact:
-              "Working-class residents, renters in the lower half of the income scale, and people relocating from public housing are the ones who absorb the cost of a gap between what gets built and what they can afford. The 40% cost-burden rate &mdash; where renters pay more than 30% of income on housing &mdash; is one concrete measure of that pressure.",
+              "Working-class residents, renters in the lower half of the income scale, and people relocating from public housing are the ones who absorb the cost of a gap between what gets built and what they can afford. The 40% cost-burden rate --- where renters pay more than 30% of income on housing --- is one concrete measure of that pressure.",
             actions: {
               intro:
                 "If you want to push the city to account for who its housing pipeline actually serves, the council and planning process are the pressure points.",
@@ -135,7 +135,7 @@ const data = {
           summary:
             "Public attention tends to focus on visible unhoused populations. But the crisis is larger than that. A local housing provider reported that some nominally &#34;affordable&#34; apartments were &#34;roach-infested&#34; and &#34;not up to living standards,&#34; and said the Huntsville Housing Authority had told her that for many clients, &#34;the best thing is to leave Huntsville.&#34; Telling people to leave is not a housing plan.",
           details:
-            "Housing insecurity exists on a spectrum. It starts with a single adult spending 40% of their paycheck on rent, includes families in substandard conditions who can't afford to move, and ends with people sleeping outside. Each step on that path is connected. When affordable supply is thin and what exists is deteriorating, the exit routes narrow. The official response to homelessness in Huntsville &mdash; emphasizing services, shelter referrals, and individual-level solutions &mdash; is disconnected from the upstream supply and wage conditions that keep pushing people down that path.",
+            "Housing insecurity exists on a spectrum. It starts with a single adult spending 40% of their paycheck on rent, includes families in substandard conditions who can't afford to move, and ends with people sleeping outside. Each step on that path is connected. When affordable supply is thin and what exists is deteriorating, the exit routes narrow. The official response to homelessness in Huntsville --- emphasizing services, shelter referrals, and individual-level solutions --- is disconnected from the upstream supply and wage conditions that keep pushing people down that path.",
           decoder: {
             whatsHappening:
               "Huntsville's visible housing conversation is about new construction. The less visible conversation is about whether existing low-cost rentals are safe and habitable, whether voucher holders can actually use their vouchers, and whether the path from housing instability to homelessness has any real off-ramps.",
@@ -195,7 +195,7 @@ const data = {
           text: "Source for permit totals, multifamily share, and occupancy certificate figures",
         },
         {
-          label: "MIT Living Wage Calculator &mdash; Madison County, AL",
+          label: "MIT Living Wage Calculator --- Madison County, AL",
           text: "Source for income requirements by household type; data updated February 2026",
         },
         {
@@ -210,7 +210,7 @@ const data = {
       stats: [
         ["Single Adult Living Wage", "$22.81/hr", "Or $47,437/yr before taxes just to cover basics in Madison County", "#dc2626"],
         ["Family of 4 Living Wage", "$104,712/yr", "Required before taxes when both adults work, with two children", "#ea580c"],
-        ["Food Service Average Pay", "$28,170/yr", "BLS Huntsville metro data &mdash; vs. $47,437 needed to survive alone", "#dc2626"],
+        ["Food Service Average Pay", "$28,170/yr", "BLS Huntsville metro data --- vs. $47,437 needed to survive alone", "#dc2626"],
         ["Healthcare Support Pay", "$33,290/yr", "Still nearly $15,000 short of a single adult living wage", "#7c3aed"],
       ],
       issues: [
@@ -219,9 +219,9 @@ const data = {
           label: "Jobs vs. Rent",
           title: "The jobs Huntsville runs on do not pay what Huntsville housing now costs",
           summary:
-            "The MIT Living Wage Calculator shows a single adult in Madison County needs $22.81 an hour &mdash; about $47,437 a year before taxes &mdash; just to cover basic expenses. That is not a comfortable budget. It is a survival budget. Food service workers in the metro average $28,170 a year. Healthcare support workers average $33,290. Production workers average $46,110. The math does not work for most of the workforce that keeps the city running.",
+            "The MIT Living Wage Calculator shows a single adult in Madison County needs $22.81 an hour --- about $47,437 a year before taxes --- just to cover basic expenses. That is not a comfortable budget. It is a survival budget. Food service workers in the metro average $28,170 a year. Healthcare support workers average $33,290. Production workers average $46,110. The math does not work for most of the workforce that keeps the city running.",
           details:
-            "The living wage figure covers food, housing, transportation, medical, and other basics &mdash; not savings, not emergencies, not entertainment. MIT's housing cost estimate for Madison County is about $12,953 a year for a single adult renting alone, which corresponds to roughly $1,079 a month. That figure represents the lower end of current market averages. As market-rate construction focuses on higher price points, even that baseline is under pressure. The standard financial rule that renters should spend no more than 30% of income on housing means a food service worker earning $28,170 can afford about $705 a month. That number is increasingly disconnected from actual available inventory.",
+            "The living wage figure covers food, housing, transportation, medical, and other basics --- not savings, not emergencies, not entertainment. MIT's housing cost estimate for Madison County is about $12,953 a year for a single adult renting alone, which corresponds to roughly $1,079 a month. That figure represents the lower end of current market averages. As market-rate construction focuses on higher price points, even that baseline is under pressure. The standard financial rule that renters should spend no more than 30% of income on housing means a food service worker earning $28,170 can afford about $705 a month. That number is increasingly disconnected from actual available inventory.",
           decoder: {
             whatsHappening:
               "A large share of Huntsville's working population is employed in sectors where wages are structurally below what the housing market now requires. This is not a temporary mismatch. It is a durable gap that grows whenever construction skews toward the upper market and wage growth in service sectors stays flat.",
@@ -230,7 +230,7 @@ const data = {
             benefits:
               "Low-wage employers maintain a captive workforce. Developers who build for the upper market avoid affordability conditions. The city's revenue base grows with market-rate property values. The workers who do not benefit are not the ones at the table when development agreements are negotiated.",
             impact:
-              "For workers earning at or near $28,000 to $35,000 a year, the housing market leaves almost no margin. Cost-burdening &mdash; spending more than 30% of income on housing &mdash; is not a personal failure. It is the predictable result of a wage and housing market that are moving in different directions.",
+              "For workers earning at or near $28,000 to $35,000 a year, the housing market leaves almost no margin. Cost-burdening --- spending more than 30% of income on housing --- is not a personal failure. It is the predictable result of a wage and housing market that are moving in different directions.",
             actions: {
               intro:
                 "The connection between wages and housing costs is a policy choice, not an immutable fact. Councils can tie development incentives to affordability. They can ask employers receiving public subsidies what they pay.",
@@ -270,14 +270,14 @@ const data = {
           summary:
             "The Front Row project is adding 545 luxury apartments to downtown Huntsville, paired with high-end retail and office space. It is a visible symbol of the development pipeline. Affordable projects do exist, but they are smaller, slower, and typically require stacked subsidy structures that take years to assemble. The result is that the market builds what pencils easiest, and what pencils easiest is not what most Huntsville workers can afford.",
           details:
-            "Luxury and market-rate development moves faster because it does not require Low Income Housing Tax Credits, competitive federal grants, housing authority partnerships, or multi-year planning timelines. Affordable development almost always requires all of those. The gap in production speed is not a coincidence &mdash; it is a feature of how the incentive structure works. The city has not, as of this writing, made affordability conditions a standard requirement for approvals of large market-rate projects. When affordability is present, it tends to be voluntary, promotional, or tied to specific public financing vehicles rather than baseline standards.",
+            "Luxury and market-rate development moves faster because it does not require Low Income Housing Tax Credits, competitive federal grants, housing authority partnerships, or multi-year planning timelines. Affordable development almost always requires all of those. The gap in production speed is not a coincidence --- it is a feature of how the incentive structure works. The city has not, as of this writing, made affordability conditions a standard requirement for approvals of large market-rate projects. When affordability is present, it tends to be voluntary, promotional, or tied to specific public financing vehicles rather than baseline standards.",
           decoder: {
             whatsHappening:
               "The private development market produces what returns the most profit. Without mandatory affordability requirements tied to zoning approvals or infrastructure support, the market will continue to produce at the upper end. Huntsville's current policy framework does not require developers to build affordable units as a condition of approval.",
             connections:
               "Developers, business improvement districts, and downtown property interests benefit from high-end residential development that raises surrounding property values. Local political networks that rely on business-sector support have limited incentive to impose conditions that reduce developer margins.",
             benefits:
-              "Market-rate and luxury developers, downtown commercial property owners, and investors in adjacent real estate all benefit from the current pipeline. The city's assessed property values also benefit, which funds general city operations &mdash; creating a fiscal incentive to favor higher-value development.",
+              "Market-rate and luxury developers, downtown commercial property owners, and investors in adjacent real estate all benefit from the current pipeline. The city's assessed property values also benefit, which funds general city operations --- creating a fiscal incentive to favor higher-value development.",
             impact:
               "Residents earning below area median income, service workers, and people relying on the voucher program bear the cost of a market that is not building for them. As luxury supply increases, the gap between visible new housing and actually accessible housing widens.",
             actions: {
@@ -329,7 +329,7 @@ const data = {
           summary:
             "MIT Living Wage data shows a single adult in Madison County needs $22.81 an hour just to cover food, housing, transportation, healthcare, and other basics. Alabama's minimum wage is $7.25. The state has no minimum wage above the federal floor. That $15.56-an-hour gap between survival and the legal floor is not a temporary problem. It is baked into the state's policy choices.",
           details:
-            "The $22.81 living wage requirement assumes the person works full-time, has no debt, and faces no medical emergency, car breakdown, or other unexpected cost. It is a baseline, not a comfortable income. At that wage, housing costs of about $1,079 a month represent 28% of gross income &mdash; barely inside the 30% threshold. At $15 an hour, a full-time worker earns $31,200 before taxes. That leaves housing consuming more than 40% of gross income if they are paying market rates. For the large share of Huntsville workers earning between $28,000 and $35,000 a year, cost-burden is not a risk. It is a baseline condition.",
+            "The $22.81 living wage requirement assumes the person works full-time, has no debt, and faces no medical emergency, car breakdown, or other unexpected cost. It is a baseline, not a comfortable income. At that wage, housing costs of about $1,079 a month represent 28% of gross income --- barely inside the 30% threshold. At $15 an hour, a full-time worker earns $31,200 before taxes. That leaves housing consuming more than 40% of gross income if they are paying market rates. For the large share of Huntsville workers earning between $28,000 and $35,000 a year, cost-burden is not a risk. It is a baseline condition.",
           decoder: {
             whatsHappening:
               "Alabama's minimum wage and wage structure leaves a large share of the workforce structurally unable to afford basic costs in the Huntsville metro. This is a state-level policy choice that the city has not attempted to counteract through its own wage standards or affordability requirements.",
@@ -379,11 +379,11 @@ const data = {
       ],
       trail: [
         {
-          label: "MIT Living Wage Calculator &mdash; Madison County, AL (Feb 2026)",
+          label: "MIT Living Wage Calculator --- Madison County, AL (Feb 2026)",
           text: "All wage and income requirement figures sourced directly from livingwage.mit.edu/counties/01089",
         },
         {
-          label: "BLS Occupational Employment and Wage Statistics &mdash; Huntsville Metro",
+          label: "BLS Occupational Employment and Wage Statistics --- Huntsville Metro",
           text: "Occupational wage averages cited via MIT Living Wage Calculator typical salary table",
         },
         {
@@ -394,11 +394,11 @@ const data = {
     },
     {
       id: "displacement",
-      label: "Unhoused &amp; Displacement",
+      label: "Unhoused & Displacement",
       stats: [
         ["Butler Terrace / Johnson Towers", "~254 units", "Original public housing stock being replaced at Mill Creek over 8 years", "#dc2626"],
-        ["Mill Creek Total Units Planned", "705", "Mixed-income &mdash; not all public housing replacement", "#ea580c"],
-        ["The Slab Encampment", "75&ndash;100 people", "Fourth closure in four years, per SPLC reporting", "#dc2626"],
+        ["Mill Creek Total Units Planned", "705", "Mixed-income --- not all public housing replacement", "#ea580c"],
+        ["The Slab Encampment", "75--100 people", "Fourth closure in four years, per SPLC reporting", "#dc2626"],
         ["Mill Creek Timeline", "8 years", "Project runs to 2033; residents live in limbo during construction", "#7c3aed"],
       ],
       issues: [
@@ -407,14 +407,14 @@ const data = {
           label: "Public Housing",
           title: "They say &#34;affordability&#34; while replacing public housing with a mixed-income model",
           summary:
-            "The Mill Creek redevelopment will replace Butler Terrace and Johnson Towers &mdash; the two main public housing sites in west Huntsville &mdash; with a $350 million mixed-income project backed by a $50 million HUD Choice Neighborhoods grant. The city calls it a transformation. What it is, structurally, is the conversion of a deeply affordable public housing campus into a mixed-income development that includes market-rate, workforce, and affordable units in a single project &mdash; with a timeline of 8 years and a final report due to HUD in 2033.",
+            "The Mill Creek redevelopment will replace Butler Terrace and Johnson Towers --- the two main public housing sites in west Huntsville --- with a $350 million mixed-income project backed by a $50 million HUD Choice Neighborhoods grant. The city calls it a transformation. What it is, structurally, is the conversion of a deeply affordable public housing campus into a mixed-income development that includes market-rate, workforce, and affordable units in a single project --- with a timeline of 8 years and a final report due to HUD in 2033.",
           details:
-            "Butler Terrace originally held 170 units. Butler Terrace Addition held 84 units. That's approximately 254 units of traditional public housing. The Mill Creek plan calls for 705 total mixed-income units across all phases &mdash; more units on paper, but not all public housing replacement. Of those, 125 are being contributed by Huntsville Hospital as workforce housing for its employees. The Housing Authority says there is a 1-to-1 replacement plan, but that math applies to households relocated, not necessarily to the number of units at the same affordability level. More than 100 individuals and families were already relocated before construction began. Whether they come back depends on screening criteria, income thresholds, background check policies, and project timeline &mdash; none of which are prominently disclosed in public communications.",
+            "Butler Terrace originally held 170 units. Butler Terrace Addition held 84 units. That's approximately 254 units of traditional public housing. The Mill Creek plan calls for 705 total mixed-income units across all phases --- more units on paper, but not all public housing replacement. Of those, 125 are being contributed by Huntsville Hospital as workforce housing for its employees. The Housing Authority says there is a 1-to-1 replacement plan, but that math applies to households relocated, not necessarily to the number of units at the same affordability level. More than 100 individuals and families were already relocated before construction began. Whether they come back depends on screening criteria, income thresholds, background check policies, and project timeline --- none of which are prominently disclosed in public communications.",
           decoder: {
             whatsHappening:
-              "Traditional public housing serves people at the very bottom of the income scale with no screening requirements beyond program eligibility. Mixed-income models typically include units at multiple income levels &mdash; 30%, 50%, 60%, and 80% of AMI &mdash; plus market-rate units. The shift is not just aesthetic. It changes who can actually live there. Mixed-income is not the same as public housing. It is a policy choice about who the development is primarily for.",
+              "Traditional public housing serves people at the very bottom of the income scale with no screening requirements beyond program eligibility. Mixed-income models typically include units at multiple income levels --- 30%, 50%, 60%, and 80% of AMI --- plus market-rate units. The shift is not just aesthetic. It changes who can actually live there. Mixed-income is not the same as public housing. It is a policy choice about who the development is primarily for.",
             connections:
-              "The city, the Housing Authority, HUD, McCormack Baron Salazar (the developer), and Huntsville Hospital are all partners in Mill Creek. The framing &mdash; transformation, investment, inclusion &mdash; is consistent across all of them. The harder questions about replacement math, return rates, screening policies, and timeline risk are not prominently raised in official communications.",
+              "The city, the Housing Authority, HUD, McCormack Baron Salazar (the developer), and Huntsville Hospital are all partners in Mill Creek. The framing --- transformation, investment, inclusion --- is consistent across all of them. The harder questions about replacement math, return rates, screening policies, and timeline risk are not prominently raised in official communications.",
             benefits:
               "The developer, McCormack Baron Salazar, brings a national reputation and a fee structure. Huntsville Hospital gets 125 workforce housing units for its employees on an adjacent site. The city gets a $350 million redevelopment it can point to as evidence of affordability commitment. Former public housing residents get a promise of return that depends on conditions they do not control.",
             impact:
@@ -469,7 +469,7 @@ const data = {
           summary:
             "The Southern Poverty Law Center reported that Huntsville officials moved to close &#34;The Slab&#34; encampment on Derrick Street, where about 75 to 100 people were living, after a September 2024 fire. Advocates noted it was the fourth closure in four years. The city called it a &#34;reset.&#34; Love Huntsville Executive Director Emma Steelman said at the time: &#34;Right now it's impossible to end homelessness when there is no housing to put people into.&#34;",
           details:
-            "The Derrick Street encampment sits in the Mill Creek Redevelopment District &mdash; the same area targeted by the $350 million mixed-income project. That overlap is not coincidental. As redevelopment pressure increases in west Huntsville, informal survival spaces in the same footprint become a visibility and liability problem for the larger project narrative. The pattern described by local advocates is consistent: a camp is closed, residents are moved down the road or to another informal site, and the cycle continues. The SPLC noted that Huntsville has closed camps in this pattern across multiple administrations, with each closure framed as a safety or health response rather than as part of a systemic strategy to reduce homelessness.",
+            "The Derrick Street encampment sits in the Mill Creek Redevelopment District --- the same area targeted by the $350 million mixed-income project. That overlap is not coincidental. As redevelopment pressure increases in west Huntsville, informal survival spaces in the same footprint become a visibility and liability problem for the larger project narrative. The pattern described by local advocates is consistent: a camp is closed, residents are moved down the road or to another informal site, and the cycle continues. The SPLC noted that Huntsville has closed camps in this pattern across multiple administrations, with each closure framed as a safety or health response rather than as part of a systemic strategy to reduce homelessness.",
           decoder: {
             whatsHappening:
               "Camp closures are framed as safety interventions. What they do in practice is displace people from informal shelter without providing formal housing. Each closure requires residents to rebuild survival infrastructure somewhere else, losing belongings, social connections, and access to services in the process.",
@@ -523,7 +523,7 @@ const data = {
           summary:
             "In June 2024, the U.S. Supreme Court ruled in City of Grants Pass v. Johnson that anti-camping ordinances do not violate the Eighth Amendment, even when no shelter space is available. That ruling removed a key legal barrier to criminalizing outdoor sleeping. Huntsville already has public-camping restrictions on the books. Combined with persistent encampment closures and limited affordable supply, the legal landscape now makes it easier to punish people for being unhoused.",
           details:
-            "Outdoor camping is technically illegal in Huntsville city limits. Prior to the Grants Pass ruling, enforcement was constrained in some jurisdictions by Ninth Circuit precedent, though Alabama is not in the Ninth Circuit. The ruling matters because it signals to local governments that anti-camping enforcement is constitutionally permissible regardless of shelter availability. That removes a legal incentive to provide alternatives before closing camps. The throughline the research documents have described &mdash; from rent burden, to displacement, to encampment, to sweep, to criminalization &mdash; is now legally easier to complete at each step.",
+            "Outdoor camping is technically illegal in Huntsville city limits. Prior to the Grants Pass ruling, enforcement was constrained in some jurisdictions by Ninth Circuit precedent, though Alabama is not in the Ninth Circuit. The ruling matters because it signals to local governments that anti-camping enforcement is constitutionally permissible regardless of shelter availability. That removes a legal incentive to provide alternatives before closing camps. The throughline the research documents have described --- from rent burden, to displacement, to encampment, to sweep, to criminalization --- is now legally easier to complete at each step.",
           decoder: {
             whatsHappening:
               "The Supreme Court's Grants Pass ruling cleared the path for local governments to criminalize camping without first securing shelter capacity. In Huntsville, where encampment closures are already a documented pattern and affordable housing supply is thin, this legal shift makes the low end of the housing market even more punishing for people who fall off it.",
@@ -597,7 +597,7 @@ const data = {
     },
     {
       id: "policy",
-      label: "Policy &amp; Zoning",
+      label: "Policy & Zoning",
       stats: [
         ["TIF Districts Active", "Yes", "City uses Tax Increment Financing to support growth infrastructure", "#dc2626"],
         ["Rent Control Allowed", "No", "Alabama state law prohibits local rent control ordinances", "#ea580c"],
@@ -607,10 +607,10 @@ const data = {
       issues: [
         {
           id: "public_money_private_growth",
-          label: "TIF &amp; Public Money",
-          title: "Public money helps shape private growth &mdash; without affordability requirements",
+          label: "TIF & Public Money",
+          title: "Public money helps shape private growth --- without affordability requirements",
           summary:
-            "Huntsville uses Tax Increment Financing, a public financing tool, to support growth-related infrastructure and improvements in designated development corridors. TIF captures future property tax revenue increases in a district and directs it back into that district's development. That means public dollars are being used to support private development projects &mdash; without, as of this writing, mandatory affordability conditions attached.",
+            "Huntsville uses Tax Increment Financing, a public financing tool, to support growth-related infrastructure and improvements in designated development corridors. TIF captures future property tax revenue increases in a district and directs it back into that district's development. That means public dollars are being used to support private development projects --- without, as of this writing, mandatory affordability conditions attached.",
           details:
             "TIF is not inherently problematic. It is a legitimate economic development tool used by cities across the country. The issue is accountability. When public money is channeled into a development district, it is reasonable to ask what public obligations are attached. If TIF-supported infrastructure makes a luxury apartment project financially viable, the public has a legitimate interest in whether that project includes affordable units, local hiring commitments, or other community benefit conditions. Currently, those conditions are not a documented standard part of Huntsville's TIF framework.",
           decoder: {
@@ -633,7 +633,7 @@ const data = {
                 },
                 {
                   name: "Urban and Economic Development Department",
-                  role: "Shane Davis, Director &mdash; administers growth and development policy",
+                  role: "Shane Davis, Director --- administers growth and development policy",
                   officialLink: "https://www.huntsvilleal.gov/urban-economic-development/",
                 },
               ],
@@ -730,9 +730,9 @@ const data = {
           label: "State Law Limits",
           title: "Alabama state law has already narrowed the renter-protection toolbox",
           summary:
-            "Alabama cities cannot adopt rent control ordinances. State law prevents it. Alabama landlord-tenant law also provides landlords with a relatively fast legal path in nonpayment cases, often allowing eviction proceedings to begin within days of a missed payment. These are not Huntsville-specific failures. They are state-level policy choices that constrain what local officials can do &mdash; even if they wanted to do more.",
+            "Alabama cities cannot adopt rent control ordinances. State law prevents it. Alabama landlord-tenant law also provides landlords with a relatively fast legal path in nonpayment cases, often allowing eviction proceedings to begin within days of a missed payment. These are not Huntsville-specific failures. They are state-level policy choices that constrain what local officials can do --- even if they wanted to do more.",
           details:
-            "The absence of local rent control authority means that when market rents rise rapidly, tenants have no legal protection against increases. A landlord can raise rent to market rate at the end of any lease term, and a tenant's only options are to pay, move, or face eviction. Alabama's eviction process is among the faster ones in the South. Notice periods in nonpayment cases are short, and courts typically process cases quickly. Tenants who cannot pay have limited time to find alternatives before enforcement begins. The combination &mdash; rising rents, no rent control, fast eviction &mdash; is not a market failure. It is the intended result of a state legal framework that is structured around landlord interests.",
+            "The absence of local rent control authority means that when market rents rise rapidly, tenants have no legal protection against increases. A landlord can raise rent to market rate at the end of any lease term, and a tenant's only options are to pay, move, or face eviction. Alabama's eviction process is among the faster ones in the South. Notice periods in nonpayment cases are short, and courts typically process cases quickly. Tenants who cannot pay have limited time to find alternatives before enforcement begins. The combination --- rising rents, no rent control, fast eviction --- is not a market failure. It is the intended result of a state legal framework that is structured around landlord interests.",
           decoder: {
             whatsHappening:
               "Alabama has preempted local rent control authority and maintained a landlord-friendly eviction framework. Cities like Huntsville operate inside that framework and cannot adopt tools that many other cities use to protect renters. This limits local options without eliminating them. The city still controls zoning, affordability conditions, development incentives, and how it allocates housing funds.",
@@ -796,7 +796,7 @@ const data = {
           text: "Public endorsement and contribution records for local races",
         },
         {
-          label: "Alabama Code Title 35 &mdash; Landlord-Tenant Law",
+          label: "Alabama Code Title 35 --- Landlord-Tenant Law",
           text: "Source for state preemption of rent control and eviction timeline structure",
         },
         {

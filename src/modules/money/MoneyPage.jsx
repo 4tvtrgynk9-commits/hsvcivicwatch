@@ -6,6 +6,7 @@ import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././money.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
+import ConnectionsMap from "../../components/ConnectionsMap";
 
 export default function MoneyPage() {
   const { liveIssues, liveStats, loading } = useSupabaseModule("money");
@@ -23,11 +24,15 @@ export default function MoneyPage() {
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={activeTab?.stats || data.stats} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
-      <div>
-        {(mergedIssues).map((issue, index) => (
-          <IssueCard key={issue.id || index} issue={issue} />
-        ))}
-      </div>
+      {activeTab?.isConnectionsMap ? (
+        <ConnectionsMap />
+      ) : (
+        <div>
+          {(mergedIssues).map((issue, index) => (
+            <IssueCard key={issue.id || index} issue={issue} />
+          ))}
+        </div>
+      )}
       <InvestigativeTrail entries={activeTab?.trail || []} />
     </div>
   );
