@@ -170,7 +170,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Address</span><span style={{ color: "#ddd5c4" }}>{c.address}</span></div>
                 ) : null}
                 {c.officialLink ? (
-                  <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Official page ↗</a>
+                  <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Official page <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
                 ) : null}
               </div>
             );
@@ -187,7 +187,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Where</span><span style={{ color: "#ddd5c4" }}>{m.location}</span></div>
                 ) : null}
                 {m.link ? (
-                  <a href={m.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>View meeting schedule ↗</a>
+                  <a href={m.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>View meeting schedule <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
                 ) : null}
                 {m.why ? (
                   <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Why</span><span style={{ color: "#9aaabb" }}>{m.why}</span></div>
@@ -207,7 +207,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   <div style={{ fontSize: 13, marginBottom: 4 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Goal</span><span style={{ color: "#9aaabb" }}>{p.why}</span></div>
                 ) : null}
                 {p.link ? (
-                  <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Open filing path ↗</a>
+                  <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Open filing path <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
                 ) : null}
               </div>
             );
