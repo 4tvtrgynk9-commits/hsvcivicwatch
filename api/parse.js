@@ -130,6 +130,53 @@ export default async function handler(req, res) {
       const text = data.content.map(i => i.text || "").join("");
       const clean = text.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
+
+      // Normalize module names to snake_case IDs matching Supabase
+      const MODULE_NORMALIZE = {
+        "policing": "policing",
+        "housing": "housing_crisis",
+        "housing crisis": "housing_crisis",
+        "criminal justice": "criminal_justice",
+        "utilities": "utilities",
+        "workers": "workers_childcare",
+        "workers childcare": "workers_childcare",
+        "taxes": "taxation",
+        "taxation": "taxation",
+        "officials": "officials_elections",
+        "officials elections": "officials_elections",
+        "environment": "environment",
+        "unhoused": "housing_crisis",
+        "annexation": "landuse",
+        "land": "landuse",
+        "land use": "landuse",
+        "transit": "housing_crisis",
+        "education": "equity",
+        "insurance": "insurance_burdens",
+        "boards": "boards_oversight",
+        "voting": "voting_rights",
+        "data": "data_collection",
+        "money": "money",
+        "information": "information_warfare",
+        "proposals": "proposals",
+        "action": "action",
+        "health system": "health",
+        "health": "health",
+        "equity": "equity",
+      };
+
+      const normalizeModule = (m) => {
+        if (!m) return m;
+        const key = m.toLowerCase().trim();
+        return MODULE_NORMALIZE[key] || key.replace(/\s+/g, "_");
+      };
+
+      if (parsed.issueCards) {
+        parsed.issueCards = parsed.issueCards.map(c => ({ ...c, module: normalizeModule(c.module) }));
+      }
+      if (parsed.statBlocks) {
+        parsed.statBlocks = parsed.statBlocks.map(b => ({ ...b, module: normalizeModule(b.module) }));
+      }
+
       return res.status(200).json(parsed);
   
     } catch (error) {
