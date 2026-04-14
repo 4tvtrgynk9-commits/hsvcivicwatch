@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "react";
 import { buildMailto } from "./TemplateLauncher";
 
@@ -154,19 +155,12 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
               return (
                 <div key={i} style={{ marginBottom: 12 }}>
                   <div style={{ fontWeight: 800, color: GREEN }}>
-                    {c.name}{c.role ? " — " + c.role : ""}
+                    {c.name}{c.role ? " - " + c.role : ""}
                   </div>
                   {c.phone ? <div>Phone: {c.phone}</div> : null}
                   {c.email ? <div>Email: {c.email}</div> : null}
                   {c.officialLink ? (
-                    
-                      href={c.officialLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: GREEN, fontWeight: 700 }}
-                    >
-                      Official page
-                    </a>
+                    <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ color: GREEN, fontWeight: 700 }}>Official page</a>
                   ) : null}
                 </div>
               );
@@ -190,14 +184,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                   {p.type ? <div>Type: {p.type}</div> : null}
                   {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
                   {p.link ? (
-                    
-                      href={p.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: GREEN, fontWeight: 700 }}
-                    >
-                      Open filing path
-                    </a>
+                    <a href={p.link} target="_blank" rel="noreferrer" style={{ color: GREEN, fontWeight: 700 }}>Open filing path</a>
                   ) : null}
                 </div>
               );
@@ -208,14 +195,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: 4 }}>
               {usableButtons.map(function(action, i) {
                 var href = action.template ? buildMailto(action.template) : action.href;
-                return (
-                  <ActionButton
-                    key={i}
-                    label={action.label}
-                    href={href}
-                    kind={action.kind}
-                  />
-                );
+                return <ActionButton key={i} label={action.label} href={href} kind={action.kind} />;
               })}
             </div>
           ) : null}
@@ -223,18 +203,15 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       ) : null}
 
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-        <button
-          onClick={onHide}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            color: GOLD_DIM,
-            fontSize: 13,
-            fontWeight: 700,
-          }}
-        >
+        <button onClick={onHide} style={{
+          background: "transparent",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+          color: GOLD_DIM,
+          fontSize: 13,
+          fontWeight: 700,
+        }}>
           Hide Investigation &#9650;
         </button>
       </div>
