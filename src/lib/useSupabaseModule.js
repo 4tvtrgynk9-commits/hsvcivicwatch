@@ -52,6 +52,7 @@ function toIssueShape(row) {
     details: row.details || "",
     sources: row.sources || [],
     _fromSupabase: true,
+    tab: row.tab || null,
     visual_score: row.visual_score || 0,
     visual_config: row.visual_config || null,
     decoder: {

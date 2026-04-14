@@ -5,8 +5,8 @@ const data = {
     `Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city's financial priorities are engineered to protect the badge, not the resident.`,
   tabs: [
     {
-      id: 'budget',
-      label: 'The $343M Loop',
+      id: 'hpd',
+      label: 'HPD',
       stats: [
         ['Public Safety', '54%', 'Share of the $343.7M total city budget', '#e53e3e'],
         ['HPD Personnel', '$80.6M', 'Direct salary and benefit costs for 2026', '#3182ce'],
@@ -125,8 +125,8 @@ const data = {
       ]
     },
     {
-      id: 'oversight',
-      label: 'Shadow Revenue',
+      id: 'sheriff',
+      label: 'Madison County Sheriff',
       stats: [
         ['Asset Forfeiture', '$1.2M', 'Reported seizures by local agencies in 2024 to 2025', '#e53e3e'],
         ['Jail Commissions', '60%', 'Kickback rate tied to Securus jail phone contracts', '#3182ce'],

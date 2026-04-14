@@ -114,7 +114,7 @@ export default function App() {
     utilities: "Utilities: Power, Water, & Gas",
     health: "Healthcare & Hospital System",
     insurance_burdens: "Insurance Burdens",
-    workers_childcare: "Workers Rights & Child Care",
+    workers_childcare: "Worker Rights & Child Care",
     taxation: "Taxation",
     housing_crisis: "Housing Crisis",
     officials_elections: "Officials & Elections",

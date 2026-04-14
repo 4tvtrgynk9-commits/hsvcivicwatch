@@ -5,8 +5,8 @@ const data = {
     `Huntsville markets itself as "The Smart Place" to attract tech investment, but underneath the branding is an unregulated digital dragnet. From retail profiling enabled by state loopholes to police license plate readers with zero civilian audit, the city is building a surveillance machine where the only ones protected are the corporations and politicians who benefit from it.`,
   tabs: [
     {
-      id: 'retail',
-      label: 'Retail Surveillance',
+      id: 'data_collection',
+      label: 'Data Collection',
       stats: [
         ['Retail PAC Support', '$11,500&#43;', '2026 cycle donations to key local reps', '#e53e3e'],
         ['Privacy Gap', 'Active', `HB351 "Loyalty" carveout in effect`, '#3182ce'],
@@ -138,8 +138,8 @@ const data = {
       ]
     },
     {
-      id: 'policing',
-      label: 'Police Surveillance',
+      id: 'surveillance',
+      label: 'Surveillance',
       stats: [
         ['Flock Cameras', '90&#43;', 'Estimated active units city--wide by late 2025', '#e53e3e'],
         ['Search Logs', 'Internal Only', 'Zero independent civilian audit of access', '#dd6b20'],

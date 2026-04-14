@@ -1287,6 +1287,7 @@ export default function AdminPanel() {
         decoder: confirmIssue.decoder, actions: confirmIssue.actions,
         visual_score: confirmIssue.visual_score || 0,
         visual_config: confirmIssue.visual_config || null,
+        tab: confirmIssue.tab || null,
         ref_number
       }).select();
       if (!error && data) {
@@ -1365,6 +1366,7 @@ export default function AdminPanel() {
           decoder: card.decoder, actions: card.actions,
           visual_score: card.visual_score || 0,
           visual_config: card.visual_config || null,
+          tab: card.tab || null,
           ref_number
         }).select();
         if (data) newPubIssues.push(data[0]);

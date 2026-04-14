@@ -71,6 +71,7 @@ export default async function handler(req, res) {
       "whoBenefits": string,
       "impact": string
     },
+    "tab": string|null,
     "actions": {
       "intro": string|null,
       "contacts": [{ "name": string, "role": string|null, "phone": string|null, "email": string|null, "address": string|null, "officialLink": string|null }],
@@ -164,6 +165,58 @@ export default async function handler(req, res) {
         "equity": "equity",
       };
 
+      // Tab label normalization map per module
+      const TAB_MAP = {
+        insurance_burdens: {
+          "health insurance": "health", "health": "health",
+          "auto insurance": "auto", "auto": "auto",
+          "dental": "dental_vision", "dental & vision": "dental_vision", "dental and vision": "dental_vision",
+          "homeowners": "homeowners", "homeowners insurance": "homeowners",
+        },
+        workers_childcare: {
+          "worker rights": "worker_rights", "workers rights": "worker_rights",
+          "child care": "child_care", "childcare": "child_care",
+        },
+        policing: {
+          "hpd": "hpd", "madison county sheriff": "sheriff", "sheriff": "sheriff",
+        },
+        criminal_justice: {
+          "bail": "bail_pretrial", "pretrial": "bail_pretrial", "bail & pretrial": "bail_pretrial",
+          "sentencing": "sentencing",
+          "prison": "incarceration", "incarceration": "incarceration",
+        },
+        data_collection: {
+          "surveillance": "surveillance",
+          "data collection": "data_collection", "data": "data_collection",
+        },
+        voting_rights: {
+          "voter registration": "voter_registration", "registration": "voter_registration",
+          "polling": "polling_access", "polling & access": "polling_access",
+          "representatives": "your_reps", "your representatives": "your_reps",
+        },
+        money: {
+          "connections map": "connections_map", "connections": "connections_map",
+          "donor profiles": "donor_profiles", "donors": "donor_profiles",
+          "executive compensation": "exec_compensation", "ceo pay": "exec_compensation",
+          "contracts": "contracts_vendors", "contracts & vendors": "contracts_vendors",
+        },
+        information_warfare: {
+          "narrative control": "narrative_control", "narrative": "narrative_control",
+          "disinformation": "disinformation", "disinformation campaigns": "disinformation",
+          "media capture": "media_capture", "media": "media_capture",
+        },
+        proposals: {
+          "economic justice": "economic_justice",
+          "housing & infrastructure": "housing_infrastructure", "housing": "housing_infrastructure",
+          "public safety reform": "public_safety", "public safety": "public_safety",
+          "governance & democracy": "governance", "governance": "governance",
+        },
+      };
+      const normalizeTab = (module, tab) => {
+        if (!tab) return null;
+        const modMap = TAB_MAP[module] || {};
+        return modMap[tab.toLowerCase().trim()] || tab.toLowerCase().trim().replace(/\s+/g, "_");
+      };
       const normalizeModule = (m) => {
         if (!m) return m;
         const key = m.toLowerCase().trim();
@@ -171,7 +224,11 @@ export default async function handler(req, res) {
       };
 
       if (parsed.issueCards) {
-        parsed.issueCards = parsed.issueCards.map(c => ({ ...c, module: normalizeModule(c.module) }));
+        parsed.issueCards = parsed.issueCards.map(c => ({
+          ...c,
+          module: normalizeModule(c.module),
+          tab: normalizeTab(normalizeModule(c.module), c.tab)
+        }));
       }
       if (parsed.statBlocks) {
         parsed.statBlocks = parsed.statBlocks.map(b => ({ ...b, module: normalizeModule(b.module) }));

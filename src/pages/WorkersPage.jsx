@@ -105,7 +105,7 @@ function WorkersPage(){
       <div className="page-header">
         <div style={{fontSize:9,fontWeight:800,color:"#c9a84c",letterSpacing:2,marginBottom:6,textTransform:"uppercase"}}>HUNTSVILLE CIVIC INVESTIGATOR — THE TRUTH ABOUT YOUR CITY</div>
         <span className="tag tag-orange">WORKERS · INVESTIGATION</span>
-        <h2>Workers Rights & <em>Child Care</em></h2>
+        <h2>Worker Rights & <em>Child Care</em></h2>
         <p>Alabama banned cities from raising the minimum wage. Infant care costs more than college tuition. Worker protections are among the weakest in the nation. Here is who decided that — and what 2026 can change.</p>
       </div>
       <div style={{background:"#eff3f8",border:"1px solid #93b4d4",borderRadius:5,padding:"9px 14px",marginBottom:12,fontSize:11.5,color:"#374151",lineHeight:1.7}}>

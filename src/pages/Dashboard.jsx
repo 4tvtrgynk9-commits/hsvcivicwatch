@@ -33,7 +33,7 @@ function Dashboard({go}){
       {id:"health",icon:"✚",label:"Health System",sub:"HHHS $2.4B monopoly · CEO $3.1M · Medicaid gap · $63M tax exemption"},
       {id:"money",icon:"💰",label:"Follow the Money",sub:"City budget · no-bid contracts · donor→policy · pay clocks"},
       {id:"insurance",icon:"🛡",label:"Insurance Costs & Coverage",sub:"19-25% premium spike · 90k uninsured gap · BCBS monopoly · car/dental/vision costs"},
-      {id:"workers",icon:"👷",label:"Workers Rights & Child Care",sub:"$7.25/hr wage ban · $14,400/yr infant care · NLRB · right-to-work"},
+      {id:"workers",icon:"👷",label:"Worker Rights & Child Care",sub:"$7.25/hr wage ban · $14,400/yr infant care · NLRB · right-to-work"},
       {id:"taxes",icon:"🧾",label:"Taxes",sub:"Property · grocery · income · corporate vs individual · millage calculator"},
     ]},
     {label:"GOVERNANCE",color:C.navy,items:[

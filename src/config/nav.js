@@ -6,7 +6,7 @@ export const NAV = [
       { id: "utilities", label: "Utilities: Power, Water, & Gas", emoji: "⚡" },
       { id: "health", label: "Healthcare & Hospital System", emoji: "🏥" },
       { id: "insurance_burdens", label: "Insurance Burdens", emoji: "💳" },
-      { id: "workers_childcare", label: "Workers Rights & Child Care", emoji: "👷" },
+      { id: "workers_childcare", label: "Worker Rights & Child Care", emoji: "👷" },
       { id: "taxation", label: "Taxation", emoji: "💸" },
       { id: "housing_crisis", label: "Housing Crisis", emoji: "🏠" },
     ],
