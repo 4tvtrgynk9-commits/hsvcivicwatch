@@ -8,7 +8,6 @@ import {
 
 const ADMIN_PASSWORD = "hsv2026";
 
-// Module prefix map for ref numbers
 const MODULE_PREFIX = {
   "Health System": "HS", "Housing": "HO", "Criminal Justice": "CJ",
   "Utilities": "UT", "Workers": "WK", "Taxes": "TX", "Officials": "OF",
@@ -33,17 +32,17 @@ ISSUE CARDS
 --- ISSUE CARD START ---
 MODULE: [Housing / Criminal Justice / Health System / Transit / Utilities / Education / Workers / Taxes / Officials / Environment / Unhoused / Annexation]
 LABEL: [2-4 word category tag]
-TITLE: [specific headline — what happened and who did it]
+TITLE: [specific headline -- what happened and who did it]
 SUMMARY: [2-3 sentences. Plain language. What is the problem, who is responsible, why does it matter.]
 DETAILS: [Full paragraph. Context, history, dollar amounts, dates, vote records, contract numbers.]
 SOURCES:
-- [Source 1 — URL or document name and date]
+- [Source 1 -- URL or document name and date]
 - [Source 2]
 
 --- DECODER ---
 WHATS HAPPENING: [Core contradiction in 2-3 plain sentences.]
 CONNECTIONS: [Use their own public statements, slogans, social posts, votes, and donations against them. Format: They said X. They did Y. Name officials, amounts, dates. Include deliberate actions and things done behind closed doors if documented.]
-WHO BENEFITS: [Named people only — officials, developers, CEOs, companies, boards. No vague categories.]
+WHO BENEFITS: [Named people only -- officials, developers, CEOs, companies, boards. No vague categories.]
 IMPACT: [Who is harmed, which neighborhoods, what they lose, dollar amounts where known.]
 
 --- ACTIONS ---
@@ -157,6 +156,8 @@ CONTEXT: [one line]
 
 const COLOR_MAP = { red:"#c0392b", gold:"#b8860b", purple:"#6c3483", green:"#1e8449", blue:"#1a5276" };
 const COLOR_BG  = { red:"#2a0a0a", gold:"#2a1f00", purple:"#1a0a2a", green:"#0a1f0a", blue:"#0a1520" };
+
+// --- Stat Block Renderers ----------------------------------------------------
 
 function KeyNumberBlock({ block }) {
   const c = COLOR_MAP[block.color] || "#b8860b";
@@ -349,6 +350,8 @@ function IssueCardMini({ card }) {
   );
 }
 
+// --- Modals ------------------------------------------------------------------
+
 function ConfirmIssueModal({ card, onConfirm, onCancel, publishing }) {
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
@@ -378,7 +381,7 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
           <div style={{ color:"#1a1a1a", fontSize:18, fontWeight:700 }}>This visual will go live on HSV Civic Watch</div>
-          <div style={{ color:"#888", fontSize:13, marginTop:4 }}>{block.module} — {block.tab} — {block.type}</div>
+          <div style={{ color:"#888", fontSize:13, marginTop:4 }}>{block.module} -- {block.tab} -- {block.type}</div>
           {issueCardsForModule?.length > 0 && (
             <div style={{ marginTop:14 }}>
               <div style={{ color:"#555", fontSize:13, fontWeight:600, marginBottom:6 }}>Link to Issue Card:</div>
@@ -386,7 +389,7 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
                 style={{ width:"100%", background:"#fff", border:"1px solid #ddd8cf", borderRadius:4, padding:"10px 12px", fontSize:13, color:"#1a1a1a", outline:"none" }}>
                 <option value="">No link (module-level only)</option>
                 {issueCardsForModule.map(ic => (
-                  <option key={ic.ref_number} value={ic.ref_number}>{ic.ref_number} — {ic.title}</option>
+                  <option key={ic.ref_number} value={ic.ref_number}>{ic.ref_number} -- {ic.title}</option>
                 ))}
               </select>
             </div>
@@ -428,9 +431,9 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
             <div key={"sb"+i} style={{ padding:"12px 16px", background:"#fff", border:"1px solid #ddd8cf", borderRadius:6, marginBottom:10, display:"flex", gap:12 }}>
               <span style={{ color:"#1a5276", fontSize:20, flexShrink:0 }}>&#9670;</span>
               <div>
-                <div style={{ color:"#1a5276", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Stat Block — {b.type}</div>
+                <div style={{ color:"#1a5276", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Stat Block -- {b.type}</div>
                 <div style={{ color:"#1a1a1a", fontSize:15, fontWeight:700 }}>{b.label || b.title}</div>
-                <div style={{ color:"#888", fontSize:13 }}>{b.module} — {b.tab}</div>
+                <div style={{ color:"#888", fontSize:13 }}>{b.module} -- {b.tab}</div>
               </div>
             </div>
           ))}
@@ -445,6 +448,8 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
     </div>
   );
 }
+
+// --- Review Row Components ---------------------------------------------------
 
 function IssueRow({ card, selected, onToggle, onApprove, onReject }) {
   return (
@@ -483,29 +488,30 @@ function StatRow({ block, selected, onToggle, onApprove, onReject }) {
         <button onClick={onApprove} style={{ width:46, height:46, borderRadius:"50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10003;</button>
         <button onClick={onReject} style={{ width:46, height:46, borderRadius:"50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10005;</button>
       </div>
-      <div style={{ padding:"0 22px 12px 64px", color:"#777", fontSize:13 }}>{block.tab} tab — {block.context}</div>
+      <div style={{ padding:"0 22px 12px 64px", color:"#777", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
       {expanded && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block} /></div>}
     </div>
   );
 }
 
-// Published tab components
+// --- Published Tab -----------------------------------------------------------
+
 function PublishedIssueCard({ card, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:12, overflow:"hidden" }}>
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"16px 20px" }}>
-        <span style={{ background:"#2e3440", color:"#b8860b", fontSize:12, fontWeight:900, padding:"4px 10px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{card.ref_number}</span>
+      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
+        <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{card.ref_number}</span>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
-          <span style={{ background:"#b8860b", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
+          <span style={{ background:"#b8860b", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:15, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
-        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:12, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Details"}</button>
-        <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"6px 12px", fontSize:12, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
+        <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
+        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Details"}</button>
+        <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
       {expanded && (
-        <div style={{ padding:"0 20px 18px", borderTop:"1px solid #e8e4dc" }}>
-          <div style={{ color:"#555", fontSize:13, lineHeight:1.6, marginTop:14 }}>{card.summary}</div>
+        <div style={{ padding:"0 22px 20px", borderTop:"1px solid #e8e4dc" }}>
+          <div style={{ color:"#555", fontSize:15, lineHeight:1.6, marginTop:14 }}>{card.summary}</div>
         </div>
       )}
     </div>
@@ -517,22 +523,22 @@ function PublishedStatBlock({ block, onDelete }) {
   const scoreColor = block.strength_score >= 8 ? "#1a7a3a" : block.strength_score >= 5 ? "#b8860b" : "#888";
   return (
     <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:12, overflow:"hidden" }}>
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"16px 20px" }}>
-        <span style={{ background:"#2e3440", color:"#7ab", fontSize:12, fontWeight:900, padding:"4px 10px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{block.ref_number}</span>
+      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
+        <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{block.ref_number}</span>
         <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
-          <span style={{ background:"#1a5276", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
+          <span style={{ background:"#1a5276", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
           {block.issue_card_ref && (
-            <span style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3 }}>&#8594; {block.issue_card_ref}</span>
+            <span style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#8594; {block.issue_card_ref}</span>
           )}
           {block.strength_score && (
-            <span style={{ background: scoreColor+"22", color: scoreColor, border:`1px solid ${scoreColor}`, fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3 }}>&#9733; {block.strength_score}/10</span>
+            <span style={{ background: scoreColor+"22", color: scoreColor, border:`1px solid ${scoreColor}`, fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#9733; {block.strength_score}/10</span>
           )}
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:15, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
-        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:12, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Preview"}</button>
-        <button onClick={() => onDelete(block)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"6px 12px", fontSize:12, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
+        <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
+        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Preview"}</button>
+        <button onClick={() => onDelete(block)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
-      {expanded && <div style={{ padding:"0 20px 20px" }}><StatBlockPreview block={block.data || block} /></div>}
+      {expanded && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block.data || block} /></div>}
     </div>
   );
 }
@@ -540,7 +546,6 @@ function PublishedStatBlock({ block, onDelete }) {
 function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
   const [section, setSection] = useState("issues");
 
-  // Group by module
   const issuesByModule = {};
   pubIssues.forEach(c => {
     const m = c.module || "Unknown";
@@ -555,28 +560,22 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
     statsByModule[m].push(b);
   });
 
-  const secBtn = (id, label, count) => ({
+  const secBtn = (id) => ({
     background: section === id ? "#2e3440" : "#e8e4dc",
     color: section === id ? "#b8860b" : "#555",
     border: section === id ? "2px solid #b8860b" : "2px solid #ddd8cf",
-    borderRadius: 6, padding: "10px 22px", fontSize: 14, fontWeight: 700,
+    borderRadius: 6, padding: "11px 24px", fontSize: 15, fontWeight: 700,
     cursor: "pointer", textTransform: "uppercase", letterSpacing: 1
   });
 
   return (
     <div>
       <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
-      <p style={{ color:"#aaa", fontSize:15, margin:"0 0 24px" }}>{pubIssues.length} issue card(s) · {pubStats.length} stat block(s) live</p>
-
+      <p style={{ color:"#aaa", fontSize:15, margin:"0 0 24px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
       <div style={{ display:"flex", gap:12, marginBottom:28 }}>
-        <button style={secBtn("issues")} onClick={() => setSection("issues")}>
-          Issue Cards ({pubIssues.length})
-        </button>
-        <button style={secBtn("stats")} onClick={() => setSection("stats")}>
-          Stat Blocks ({pubStats.length})
-        </button>
+        <button style={secBtn("issues")} onClick={() => setSection("issues")}>Issue Cards ({pubIssues.length})</button>
+        <button style={secBtn("stats")} onClick={() => setSection("stats")}>Stat Blocks ({pubStats.length})</button>
       </div>
-
       {section === "issues" && (
         <div>
           {Object.keys(issuesByModule).length === 0 && (
@@ -588,15 +587,14 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
           {Object.entries(issuesByModule).map(([module, cards]) => (
             <div key={module} style={{ marginBottom:32 }}>
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
-                <span style={{ background:"#b8860b", color:"#fff", fontSize:11, fontWeight:700, padding:"4px 12px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
-                <span style={{ color:"#aaa", fontSize:13 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
+                <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
+                <span style={{ color:"#aaa", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
               {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} />)}
             </div>
           ))}
         </div>
       )}
-
       {section === "stats" && (
         <div>
           {Object.keys(statsByModule).length === 0 && (
@@ -608,8 +606,8 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
           {Object.entries(statsByModule).map(([module, blocks]) => (
             <div key={module} style={{ marginBottom:32 }}>
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
-                <span style={{ background:"#1a5276", color:"#fff", fontSize:11, fontWeight:700, padding:"4px 12px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
-                <span style={{ color:"#aaa", fontSize:13 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
+                <span style={{ background:"#1a5276", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
+                <span style={{ color:"#aaa", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
               </div>
               {[...blocks].sort((a,b) => (b.strength_score||0)-(a.strength_score||0)).map((block, i) => (
                 <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} />
@@ -621,6 +619,504 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
     </div>
   );
 }
+
+// --- Social Cards Queue Logic ---
+function buildRotationList(cards) {
+  const byModule = {};
+  cards.forEach(c => {
+    const m = c.module || "Unknown";
+    if (!byModule[m]) byModule[m] = [];
+    byModule[m].push(c);
+  });
+  const modules = Object.keys(byModule).sort();
+  modules.forEach(m => {
+    byModule[m].sort((a, b) => (a.ref_number || "").localeCompare(b.ref_number || ""));
+  });
+  const maxCards = Math.max(...modules.map(m => byModule[m].length));
+  const ordered = [];
+  for (let cardIdx = 0; cardIdx < maxCards; cardIdx++) {
+    for (const mod of modules) {
+      if (byModule[mod][cardIdx]) ordered.push(byModule[mod][cardIdx]);
+    }
+  }
+  return ordered;
+}
+
+function getQueueState() {
+  try { return JSON.parse(localStorage.getItem("hsv_social_queue") || "{}"); }
+  catch { return {}; }
+}
+
+function saveQueueState(state) {
+  localStorage.setItem("hsv_social_queue", JSON.stringify(state));
+}
+
+function getCurrentQueueIndex(rotationList) {
+  const state = getQueueState();
+  if (!state.currentIndex && state.currentIndex !== 0) return 0;
+  return state.currentIndex % Math.max(rotationList.length, 1);
+}
+
+function advanceQueue(rotationList) {
+  const state = getQueueState();
+  const current = state.currentIndex || 0;
+  const next = (current + 1) % Math.max(rotationList.length, 1);
+  saveQueueState({ ...state, currentIndex: next, lastPostedAt: Date.now() });
+}
+
+// --- Social Slide Renderer ---
+
+const SLIDE_META = [
+  { label:"Hook",     color:"#b8860b", icon:"&#9889;" },
+  { label:"Problem",  color:"#c0392b", icon:"&#9888;" },
+  { label:"Evidence", color:"#1a5276", icon:"&#128269;" },
+  { label:"Link",     color:"#1a7a3a", icon:"&#127760;" },
+];
+
+function SocialSlide({ slide, index, imageUrl, slideRef }) {
+  const meta = SLIDE_META[index];
+  const isLink = index === 3;
+  return (
+    <div ref={slideRef} style={{
+      width:540, height:540,
+      background:"linear-gradient(145deg,#0d1117 0%,#1a1f2e 60%,#0a0e1a 100%)",
+      border:"2px solid " + meta.color,
+      position:"relative", overflow:"hidden",
+      display:"flex", flexDirection:"column",
+      fontFamily:"Georgia,serif",
+      boxShadow:"0 0 40px " + meta.color + "33",
+      flexShrink:0
+    }}>
+      {imageUrl && !isLink && (
+        <div style={{
+          position:"absolute", inset:0,
+          backgroundImage:"url(" + imageUrl + ")",
+          backgroundSize:"cover", backgroundPosition:"center",
+          opacity:0.15, filter:"grayscale(50%)"
+        }}/>
+      )}
+      <div style={{ height:5, background:"linear-gradient(90deg," + meta.color + ",transparent)", flexShrink:0 }}/>
+      <div style={{ padding:"10px 18px", display:"flex", alignItems:"center", gap:10, borderBottom:"1px solid " + meta.color + "33", flexShrink:0, position:"relative" }}>
+        <div style={{ background:meta.color, color:"#fff", fontSize:8, fontWeight:900, padding:"3px 8px", borderRadius:2, letterSpacing:2, textTransform:"uppercase" }}>HSV CIVIC WATCH</div>
+        <div style={{ color:"#556", fontSize:8, letterSpacing:1, textTransform:"uppercase" }}>Huntsville, AL</div>
+        <div style={{ marginLeft:"auto", color:meta.color, fontSize:10, fontWeight:700 }}>{index+1} / 4</div>
+      </div>
+      <div style={{
+        flex:1, padding:"18px 22px",
+        display:"flex", flexDirection:"column",
+        justifyContent:isLink ? "center" : "flex-start",
+        alignItems:isLink ? "center" : "flex-start",
+        textAlign:isLink ? "center" : "left",
+        position:"relative"
+      }}>
+        {isLink ? (
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14 }}>
+            <div style={{ color:meta.color, fontSize:28, fontWeight:900, letterSpacing:-1, lineHeight:1 }}>HSV<br/>CIVIC<br/>WATCH</div>
+            <div style={{ width:36, height:2, background:meta.color }}/>
+            <div style={{ color:"#ccc", fontSize:12, lineHeight:1.6, maxWidth:200 }}>{slide.body}</div>
+            <div style={{ background:meta.color, color:"#fff", fontSize:11, fontWeight:700, padding:"10px 20px", borderRadius:4, letterSpacing:1, textTransform:"uppercase" }}>
+              www.hsvcivicwatch.org
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ color:meta.color, fontSize:9, fontWeight:700, letterSpacing:3, textTransform:"uppercase", marginBottom:10, display:"flex", alignItems:"center", gap:5 }}>
+              <span dangerouslySetInnerHTML={{ __html:meta.icon }}/>
+              {meta.label}
+            </div>
+            <div style={{ color:"#fff", fontSize:index===0 ? 19 : 16, fontWeight:900, lineHeight:1.25, marginBottom:12 }}>
+              {slide.headline}
+            </div>
+            {slide.stat && (
+              <div style={{ background:meta.color + "22", border:"1px solid " + meta.color, borderLeft:"4px solid " + meta.color, borderRadius:6, padding:"8px 12px", marginBottom:12 }}>
+                <div style={{ color:meta.color, fontSize:26, fontWeight:900, lineHeight:1, fontFamily:"Georgia,serif" }}>{slide.stat}</div>
+                {slide.statLabel && <div style={{ color:"#ccc", fontSize:10, marginTop:3 }}>{slide.statLabel}</div>}
+              </div>
+            )}
+            <div style={{ color:"#bbb", fontSize:11, lineHeight:1.65, flex:1 }}>{slide.body}</div>
+            {index===2 && slide.source && (
+              <div style={{ marginTop:10, color:"#556", fontSize:9, fontStyle:"italic", borderTop:"1px solid " + meta.color + "33", paddingTop:7 }}>
+                Source: {slide.source}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      <div style={{ height:3, background:"linear-gradient(90deg,transparent," + meta.color + ")", flexShrink:0 }}/>
+    </div>
+  );
+}
+
+// --- Social Cards Tab ---
+
+function SocialCardsTab({ pubIssues, pubStats }) {
+  const rotationList = buildRotationList(pubIssues);
+  const [selectedIndex, setSelectedIndex] = useState(() => getCurrentQueueIndex(rotationList));
+  const [slides, setSlides] = useState(null);
+  const [imageUrls, setImageUrls] = useState([null, null, null]);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState("");
+  const [copied, setCopied] = useState(null);
+  const [markedPosted, setMarkedPosted] = useState(false);
+  const [downloading, setDownloading] = useState(null);
+
+  const slideRef0 = useRef(null);
+  const slideRef1 = useRef(null);
+  const slideRef2 = useRef(null);
+  const slideRef3 = useRef(null);
+  const slideRefs = [slideRef0, slideRef1, slideRef2, slideRef3];
+
+  const selectedCard = rotationList[selectedIndex] || null;
+
+  const moduleStats = pubStats
+    .filter(s => s.module === selectedCard?.module)
+    .sort((a, b) => (b.strength_score || 0) - (a.strength_score || 0))
+    .slice(0, 3);
+
+  const queueState = getQueueState();
+  const nextPostDate = queueState.lastPostedAt
+    ? new Date(queueState.lastPostedAt + 3*24*60*60*1000).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})
+    : "Ready now";
+
+  const generateSlides = async () => {
+    if (!selectedCard) return;
+    setGenerating(true);
+    setGenError("");
+    setSlides(null);
+    setImageUrls([null, null, null]);
+
+    const statSummary = moduleStats.map(s => {
+      const d = s.data || s;
+      if (d.type === "key-number") return "KEY STAT: " + d.value + " -- " + d.label + " (" + (d.context||"") + ")";
+      if (d.type === "comparison-bar") return "COMPARISON: " + d.leftLabel + " " + d.leftValue + " vs " + d.rightLabel + " " + d.rightValue + " " + (d.unit||"") + " -- " + d.title;
+      if (d.type === "pay-clock") return "PAY CLOCK: " + d.label + " earns $" + (d.annualAmount||0).toLocaleString() + "/year";
+      if (d.type === "trend-line") return "TREND: " + d.title + " -- " + (d.context||"");
+      if (d.type === "pie-chart") return "PIE: " + d.title + " -- " + (d.slices||[]).map(sl => (sl.name||sl.label) + " " + sl.value + "%").join(", ");
+      if (d.type === "bar-chart") return "BAR CHART: " + d.title;
+      return "VISUAL DATA: " + (d.title||d.label||d.type);
+    }).join("\n");
+
+    const prompt = `You are the social media writer for HSV Civic Watch, a civic transparency and accountability app for Huntsville, Alabama residents.
+
+Your job is to write a 4-slide Instagram/Facebook post series that exposes a local civic issue in a way that grabs attention, builds understanding, shows evidence, and drives residents to the website for the full story and action steps.
+
+=== ISSUE CARD DATA ===
+Module: ${selectedCard.module}
+Label: ${selectedCard.label}
+Ref: ${selectedCard.ref_number}
+Title: ${selectedCard.title}
+Summary: ${selectedCard.summary}
+Details: ${selectedCard.details || ""}
+What's Happening (Decoder): ${selectedCard.decoder?.whatsHappening || ""}
+The Connections (Decoder): ${selectedCard.decoder?.connections || ""}
+Who Benefits (Decoder): ${selectedCard.decoder?.whoBenefits || ""}
+The Impact (Decoder): ${selectedCard.decoder?.impact || ""}
+Sources: ${JSON.stringify(selectedCard.sources || [])}
+
+=== SUPPORTING STAT BLOCKS (use these numbers -- they are verified data) ===
+${statSummary || "No stat blocks available -- use numbers from the issue card details above."}
+
+=== SLIDE FORMAT RULES ===
+
+SLIDE 1 -- HOOK
+Goal: Stop the scroll. Make a Huntsville resident feel this is about them RIGHT NOW.
+Choose whichever hook format is most powerful for this specific issue:
+  - A bold provocative headline slammed over a photo of the implicated person, building, or entity, with a key stat overlaid on top.
+  - Lead with the single most shocking number from the stat blocks formatted as a large visual (e.g. "$4.2M" or "3x more"), with 1-2 punchy context sentences beneath.
+  - A provocative question the resident cannot ignore (e.g. "Why is your water bill funding a CEO bonus?").
+Use a real named number from the stat blocks if one exists and is powerful.
+Headline: Max 12 words. Punchy. Direct. No jargon.
+Body: 1-2 sentences. Make the reader need to see slide 2.
+Stat: The single strongest number from stat blocks or issue card details. Format it large (e.g. "$4.2M", "87%", "3x higher"). Empty string if nothing strong.
+StatLabel: 2-5 words describing the stat. Empty if no stat.
+ImageQuery: 5-7 word search for a real photo. Huntsville AL location, named official, corporate building, or government facility directly tied to this issue.
+
+SLIDE 2 -- PROBLEM
+Goal: Explain the issue clearly to someone with no background. Name names.
+Headline: Who is doing what and why it is wrong. Max 14 words. Name the responsible person, board, or company.
+Body: 2-3 sentences. Name the responsible party. Explain the failure or harm. Plain language -- no acronyms without explanation.
+No stat on this slide.
+ImageQuery: 5-7 words for a photo of the responsible entity: office building, headshot, corporate logo in public context, or the affected location.
+
+SLIDE 3 -- EVIDENCE
+Goal: Hard documented proof. Names, dollars, dates, votes, donations, contracts.
+Headline: "Here is what the records show" style. Max 14 words. Name names.
+Body: 2-3 sentences. Dollar amounts, vote records, contract numbers, donation amounts, specific dates, named individuals only.
+Source: Short citation of strongest source (e.g. "Huntsville City Council minutes, March 2024").
+ImageQuery: 5-7 words for a photo of the implicated entity, a relevant government building, corporate headquarters, or named official in a public setting.
+
+SLIDE 4 -- LINK
+Goal: Drive traffic to hsvcivicwatch.org.
+Body: One specific sentence telling the reader what they will find at the site (full sourced story, action steps, who to contact). Not generic -- be specific.
+
+=== VISUAL GUIDANCE FOR IMAGE QUERIES ===
+Prioritize in this order:
+1. Named Huntsville AL government buildings (City Hall, Madison County Courthouse, Huntsville Utilities building, specific school, etc.)
+2. Named officials in a public/professional setting: "[Full Name] Huntsville Alabama"
+3. Named corporations or their Huntsville facilities
+4. The affected Huntsville neighborhood or location
+5. A relevant facility type: "Huntsville Alabama public housing", "Madison County jail exterior"
+Never use generic stock photo queries. Always tie the query to Huntsville AL or the named entity.
+
+=== OUTPUT FORMAT ===
+Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
+
+{"slides":[{"slideNum":1,"label":"Hook","headline":"...","stat":"...","statLabel":"...","body":"...","imageQuery":"..."},{"slideNum":2,"label":"Problem","headline":"...","stat":"","statLabel":"","body":"...","imageQuery":"..."},{"slideNum":3,"label":"Evidence","headline":"...","stat":"","statLabel":"","body":"...","source":"...","imageQuery":"..."},{"slideNum":4,"label":"Link","headline":"","stat":"","statLabel":"","body":"..."}]}`;
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:1000,
+          messages:[{ role:"user", content:prompt }]
+        })
+      });
+      const data = await res.json();
+      const textBlock = data.content?.find(b => b.type === "text");
+      if (!textBlock) throw new Error("No text response from AI");
+      const clean = textBlock.text.replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(clean);
+      setSlides(parsed.slides);
+      const urls = await Promise.all(
+        parsed.slides.slice(0,3).map(s => s.imageQuery ? fetchImage(s.imageQuery) : Promise.resolve(null))
+      );
+      setImageUrls(urls);
+    } catch(e) {
+      setGenError("Could not generate slides: " + e.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const fetchImage = async (query) => {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:1000,
+          tools:[{ type:"web_search_20250305", name:"web_search" }],
+          messages:[{ role:"user", content:"Search for a real publicly accessible photo of: " + query + " Huntsville Alabama. Return ONLY this JSON with no other text: {\"imageUrl\":\"URL\"} or {\"imageUrl\":null} if not found." }]
+        })
+      });
+      const data = await res.json();
+      const textBlock = data.content?.find(b => b.type === "text");
+      if (!textBlock) return null;
+      const clean = textBlock.text.replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(clean);
+      return parsed.imageUrl || null;
+    } catch { return null; }
+  };
+
+  const downloadSlide = async (index) => {
+    const el = slideRefs[index]?.current;
+    if (!el) return;
+    setDownloading(index);
+    try {
+      if (!window.html2canvas) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      const canvas = await window.html2canvas(el, {
+        scale:2, useCORS:true, allowTaint:true,
+        backgroundColor:null, width:540, height:540
+      });
+      const link = document.createElement("a");
+      link.download = "hsvcivicwatch-slide-" + (index+1) + "-" + SLIDE_META[index].label.toLowerCase() + ".png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch(e) { console.error("Download failed:", e); }
+    finally { setDownloading(null); }
+  };
+
+  const downloadAll = async () => {
+    for (let i = 0; i < 4; i++) {
+      await downloadSlide(i);
+      await new Promise(r => setTimeout(r, 400));
+    }
+  };
+
+  const copySlideText = (slide, i) => {
+    const lines = [
+      "Slide " + (i+1) + ": " + SLIDE_META[i].label,
+      slide.headline||"",
+      slide.stat ? slide.stat + " -- " + slide.statLabel : "",
+      slide.body||"",
+      slide.source ? "Source: " + slide.source : "",
+      i===3 ? "www.hsvcivicwatch.org" : ""
+    ].filter(Boolean).join("\n");
+    navigator.clipboard.writeText(lines);
+    setCopied(i);
+    setTimeout(()=>setCopied(null),2000);
+  };
+
+  const copyAllText = () => {
+    if (!slides) return;
+    const all = slides.map((slide,i)=>[
+      "== Slide " + (i+1) + ": " + SLIDE_META[i].label + " ==",
+      slide.headline||"",
+      slide.stat ? slide.stat + " -- " + slide.statLabel : "",
+      slide.body||"",
+      slide.source ? "Source: " + slide.source : "",
+      i===3 ? "www.hsvcivicwatch.org" : ""
+    ].filter(Boolean).join("\n")).join("\n\n");
+    navigator.clipboard.writeText(all);
+    setCopied("all");
+    setTimeout(()=>setCopied(null),2000);
+  };
+
+  const handleMarkPosted = () => {
+    advanceQueue(rotationList);
+    const nextIdx = (selectedIndex + 1) % Math.max(rotationList.length, 1);
+    setSelectedIndex(nextIdx);
+    setSlides(null);
+    setImageUrls([null,null,null]);
+    setMarkedPosted(true);
+    setTimeout(()=>setMarkedPosted(false),3000);
+  };
+
+  if (pubIssues.length === 0) {
+    return (
+      <div style={{ textAlign:"center", padding:"80px 0", color:"#aaa" }}>
+        <div style={{ fontSize:44, marginBottom:18 }}>&#128247;</div>
+        <div style={{ fontSize:18, marginBottom:8 }}>No published issue cards yet.</div>
+        <div style={{ fontSize:14, color:"#556" }}>Publish issue cards first to generate social media content.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
+        <div>
+          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 6px" }}>Social Cards</h2>
+          <p style={{ color:"#aaa", fontSize:14, margin:0 }}>
+            Rotation {selectedIndex+1} of {rotationList.length} &middot; Next scheduled: <span style={{ color:"#b8860b", fontWeight:700 }}>{nextPostDate}</span>
+          </p>
+        </div>
+        {slides && (
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"flex-end" }}>
+            <button onClick={copyAllText} style={{ background:copied==="all"?"#1a7a3a":"#353b48", color:copied==="all"?"#fff":"#ccc", border:"1px solid #4a5268", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+              {copied==="all"?"Copied!":"Copy All Text"}
+            </button>
+            <button onClick={downloadAll} style={{ background:"#353b48", color:"#b8860b", border:"1px solid #b8860b44", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+              Download All 4 PNGs
+            </button>
+            <button onClick={handleMarkPosted} style={{ background:markedPosted?"#1a7a3a":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+              {markedPosted ? "Marked! Next card loaded" : "Mark as Posted & Advance"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"14px 20px", marginBottom:24 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <div style={{ width:8, height:8, borderRadius:"50%", background:"#b8860b" }}/>
+            <span style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Queued</span>
+          </div>
+          {selectedCard && (
+            <>
+              <span style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>{selectedCard.ref_number} -- {selectedCard.title}</span>
+              <span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:11, fontWeight:700, padding:"2px 10px", borderRadius:3, textTransform:"uppercase" }}>{selectedCard.module}</span>
+            </>
+          )}
+        </div>
+        {moduleStats.length > 0 && (
+          <div style={{ marginTop:8, color:"#556", fontSize:12 }}>
+            {moduleStats.length} stat block{moduleStats.length!==1?"s":""} from this module will be used in generation
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginBottom:24 }}>
+        <div style={{ color:"#aaa", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+          Rotation Order -- Select to Override
+        </div>
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+          {rotationList.map((card,i)=>(
+            <button key={card.id||i} onClick={()=>{ setSelectedIndex(i); setSlides(null); setImageUrls([null,null,null]); }}
+              style={{
+                background:selectedIndex===i?"#b8860b":"#353b48",
+                color:selectedIndex===i?"#fff":"#aaa",
+                border:selectedIndex===i?"2px solid #b8860b":"2px solid #4a5268",
+                borderRadius:6, padding:"7px 12px", fontSize:11,
+                fontWeight:700, cursor:"pointer",
+                display:"flex", flexDirection:"column", alignItems:"flex-start",
+                gap:2, textAlign:"left", maxWidth:170
+              }}>
+              <span style={{ fontSize:9, opacity:0.7 }}>{card.ref_number} &middot; {card.module}</span>
+              <span style={{ fontSize:11, lineHeight:1.3, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:160 }}>{card.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <button onClick={generateSlides} disabled={generating||!selectedCard}
+        style={{
+          background:generating?"#4a5268":"linear-gradient(135deg,#b8860b,#d4a017)",
+          color:"#fff", border:"none", borderRadius:6,
+          padding:"14px 32px", fontSize:15, fontWeight:700,
+          cursor:generating?"not-allowed":"pointer",
+          textTransform:"uppercase", letterSpacing:1,
+          marginBottom:28, boxShadow:generating?"none":"0 4px 20px rgba(184,134,11,0.4)"
+        }}>
+        {generating ? "Generating slides + finding images..." : "Generate 4 Social Slides"}
+      </button>
+
+      {genError && (
+        <div style={{ background:"#2a0a0a", border:"1px solid #c0392b", borderRadius:6, padding:"14px 18px", marginBottom:20, color:"#e57373", fontSize:14 }}>
+          {genError}
+        </div>
+      )}
+
+      {slides && (
+        <div>
+          <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:16 }}>
+            Preview -- {selectedCard?.title}
+          </div>
+          <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
+            {slides.map((slide,i)=>(
+              <div key={i} style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                <SocialSlide slide={slide} index={i} imageUrl={imageUrls[i]} slideRef={slideRefs[i]}/>
+                <div style={{ width:540, background:"#353b48", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px" }}>
+                  {slide.headline && <div style={{ color:"#f5f0e8", fontWeight:700, marginBottom:4, fontSize:12, fontFamily:"Georgia,serif" }}>{slide.headline}</div>}
+                  {slide.stat && <div style={{ color:"#b8860b", fontWeight:700, marginBottom:2, fontSize:12 }}>{slide.stat} {slide.statLabel}</div>}
+                  <div style={{ color:"#bbb", fontSize:11 }}>{slide.body}</div>
+                  {slide.source && <div style={{ color:"#556", marginTop:4, fontStyle:"italic", fontSize:11 }}>Source: {slide.source}</div>}
+                  {i===3 && <div style={{ color:"#b8860b", fontWeight:700, marginTop:4, fontSize:12 }}>www.hsvcivicwatch.org</div>}
+                  <div style={{ display:"flex", gap:8, marginTop:10 }}>
+                    <button onClick={()=>copySlideText(slide,i)}
+                      style={{ background:copied===i?"#1a7a3a":"#2e3440", color:copied===i?"#fff":"#aaa", border:"1px solid #4a5268", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:"pointer", flex:1 }}>
+                      {copied===i?"Copied!":"Copy Text"}
+                    </button>
+                    <button onClick={()=>downloadSlide(i)} disabled={downloading===i}
+                      style={{ background:downloading===i?"#4a5268":"#2e3440", color:downloading===i?"#888":"#b8860b", border:"1px solid #b8860b44", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:downloading===i?"not-allowed":"pointer", flex:1 }}>
+                      {downloading===i?"Saving...":"Download PNG"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"16px 20px", marginTop:28, color:"#aaa", fontSize:13, lineHeight:1.6 }}>
+            <strong style={{ color:"#b8860b" }}>Posting workflow:</strong> Download all 4 PNGs, then upload as a multi-image post on Instagram or Facebook. Paste the slide text as your caption. Once posted, click <strong style={{ color:"#f5f0e8" }}>Mark as Posted &amp; Advance</strong> to move the queue to the next card.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Main Admin Panel --------------------------------------------------------
 
 export default function AdminPanel() {
   const [authed, setAuthed] = useState(false);
@@ -650,13 +1146,17 @@ export default function AdminPanel() {
   };
 
   const loadPublished = async () => {
-    const { data: issues } = await supabase.from('issue_cards').select('*').order('created_at', { ascending: false });
-    const { data: stats } = await supabase.from('stat_blocks').select('*').order('strength_score', { ascending: false });
-    if (issues) setPubIssues(issues);
-    if (stats) setPubStats(stats);
+    if (!supabase) return;
+    try {
+      const { data: issues } = await supabase.from('issue_cards').select('*').order('created_at', { ascending: false });
+      const { data: stats } = await supabase.from('stat_blocks').select('*').order('strength_score', { ascending: false });
+      if (issues) setPubIssues(issues);
+      if (stats) setPubStats(stats);
+    } catch (e) { console.error("loadPublished error:", e); }
   };
 
   const generateRefNumber = async (module, type) => {
+    if (!supabase) return `XX-${type === "issue" ? "IC" : "SB"}-1`;
     const prefix = getPrefix(module);
     const table = type === "issue" ? "issue_cards" : "stat_blocks";
     const suffix = type === "issue" ? "IC" : "SB";
@@ -714,19 +1214,22 @@ export default function AdminPanel() {
   };
 
   const confirmSingleIssue = async () => {
+    if (!supabase) return;
     setPublishing(true);
-    const ref_number = await generateRefNumber(confirmIssue.module, "issue");
-    const { error, data } = await supabase.from('issue_cards').insert({
-      module: confirmIssue.module, label: confirmIssue.label,
-      title: confirmIssue.title, summary: confirmIssue.summary,
-      details: confirmIssue.details, sources: confirmIssue.sources,
-      decoder: confirmIssue.decoder, actions: confirmIssue.actions,
-      ref_number
-    }).select();
-    if (!error && data) {
-      setPubIssues(p => [data[0], ...p]);
-      setPendingIssues(p => p.filter(c => c !== confirmIssue));
-    }
+    try {
+      const ref_number = await generateRefNumber(confirmIssue.module, "issue");
+      const { error, data } = await supabase.from('issue_cards').insert({
+        module: confirmIssue.module, label: confirmIssue.label,
+        title: confirmIssue.title, summary: confirmIssue.summary,
+        details: confirmIssue.details, sources: confirmIssue.sources,
+        decoder: confirmIssue.decoder, actions: confirmIssue.actions,
+        ref_number
+      }).select();
+      if (!error && data) {
+        setPubIssues(p => [data[0], ...p]);
+        setPendingIssues(p => p.filter(c => c !== confirmIssue));
+      }
+    } catch(e) { console.error("confirmSingleIssue error:", e); }
     setSelIssues([]); setConfirmIssue(null); setPublishing(false);
   };
 
@@ -742,38 +1245,40 @@ export default function AdminPanel() {
   };
 
   const confirmSingleStat = async (linkedRef) => {
+    if (!supabase) return;
     setPublishing(true);
-    const ref_number = await generateRefNumber(confirmStat.module, "stat");
-    // Score this block
-    const scores = await scoreStatBlocks([{ ...confirmStat, ref_number }], confirmStat.module);
-    const score = scores.find(s => s.ref_number === ref_number)?.score || null;
-
-    const { error, data } = await supabase.from('stat_blocks').insert({
-      module: confirmStat.module, tab: confirmStat.tab,
-      type: confirmStat.type, color: confirmStat.color,
-      data: confirmStat, ref_number,
-      issue_card_ref: linkedRef || null,
-      strength_score: score
-    }).select();
-    if (!error && data) {
-      setPubStats(p => [data[0], ...p]);
-      setPendingStats(p => p.filter(b => b !== confirmStat));
-      // Re-score all stats for this module
-      rescoreModule(confirmStat.module);
-    }
+    try {
+      const ref_number = await generateRefNumber(confirmStat.module, "stat");
+      const scores = await scoreStatBlocks([{ ...confirmStat, ref_number }], confirmStat.module);
+      const score = scores.find(s => s.ref_number === ref_number)?.score || null;
+      const { error, data } = await supabase.from('stat_blocks').insert({
+        module: confirmStat.module, tab: confirmStat.tab,
+        type: confirmStat.type, color: confirmStat.color,
+        data: confirmStat, ref_number,
+        issue_card_ref: linkedRef || null,
+        strength_score: score
+      }).select();
+      if (!error && data) {
+        setPubStats(p => [data[0], ...p]);
+        setPendingStats(p => p.filter(b => b !== confirmStat));
+        rescoreModule(confirmStat.module);
+      }
+    } catch(e) { console.error("confirmSingleStat error:", e); }
     setSelStats([]); setConfirmStat(null); setPublishing(false);
   };
 
   const rescoreModule = async (module) => {
-    const { data: moduleStats } = await supabase.from('stat_blocks').select('*').eq('module', module);
-    if (!moduleStats?.length) return;
-    const scores = await scoreStatBlocks(moduleStats.map(s => ({ ...s.data, ref_number: s.ref_number })), module);
-    for (const score of scores) {
-      await supabase.from('stat_blocks').update({ strength_score: score.score }).eq('ref_number', score.ref_number);
-    }
-    // Refresh published
-    const { data: updated } = await supabase.from('stat_blocks').select('*').order('strength_score', { ascending: false });
-    if (updated) setPubStats(updated);
+    if (!supabase) return;
+    try {
+      const { data: moduleStats } = await supabase.from('stat_blocks').select('*').eq('module', module);
+      if (!moduleStats?.length) return;
+      const scores = await scoreStatBlocks(moduleStats.map(s => ({ ...s.data, ref_number: s.ref_number })), module);
+      for (const score of scores) {
+        await supabase.from('stat_blocks').update({ strength_score: score.score }).eq('ref_number', score.ref_number);
+      }
+      const { data: updated } = await supabase.from('stat_blocks').select('*').order('strength_score', { ascending: false });
+      if (updated) setPubStats(updated);
+    } catch(e) { console.error("rescoreModule error:", e); }
   };
 
   const handleBulkPublish = () => {
@@ -781,60 +1286,62 @@ export default function AdminPanel() {
   };
 
   const confirmBulkPublish = async () => {
+    if (!supabase) return;
     setPublishing(true);
     const issuesToPub = selIssues.map(i => pendingIssues[i]);
     const statsToPub = selStats.map(i => pendingStats[i]);
     const newPubIssues = [];
     const newPubStats = [];
-
-    for (const card of issuesToPub) {
-      const ref_number = await generateRefNumber(card.module, "issue");
-      const { data } = await supabase.from('issue_cards').insert({
-        module: card.module, label: card.label, title: card.title,
-        summary: card.summary, details: card.details, sources: card.sources,
-        decoder: card.decoder, actions: card.actions, ref_number
-      }).select();
-      if (data) newPubIssues.push(data[0]);
-    }
-
-    for (const block of statsToPub) {
-      const ref_number = await generateRefNumber(block.module, "stat");
-      const scores = await scoreStatBlocks([{ ...block, ref_number }], block.module);
-      const score = scores[0]?.score || null;
-      // Auto-link to first issue card of same module
-      const sameModuleIssue = newPubIssues.find(ic => ic.module === block.module) ||
-        pubIssues.find(ic => ic.module === block.module);
-      const { data } = await supabase.from('stat_blocks').insert({
-        module: block.module, tab: block.tab, type: block.type,
-        color: block.color, data: block, ref_number,
-        issue_card_ref: sameModuleIssue?.ref_number || null,
-        strength_score: score
-      }).select();
-      if (data) newPubStats.push(data[0]);
-    }
-
-    setPubIssues(p => [...newPubIssues, ...p]);
-    setPubStats(p => [...newPubStats, ...p]);
-    setPendingIssues(p => p.filter((_,i) => !selIssues.includes(i)));
-    setPendingStats(p => p.filter((_,i) => !selStats.includes(i)));
-
-    // Re-score affected modules
-    const affectedModules = [...new Set(statsToPub.map(b => b.module))];
-    for (const mod of affectedModules) await rescoreModule(mod);
-
+    try {
+      for (const card of issuesToPub) {
+        const ref_number = await generateRefNumber(card.module, "issue");
+        const { data } = await supabase.from('issue_cards').insert({
+          module: card.module, label: card.label, title: card.title,
+          summary: card.summary, details: card.details, sources: card.sources,
+          decoder: card.decoder, actions: card.actions, ref_number
+        }).select();
+        if (data) newPubIssues.push(data[0]);
+      }
+      for (const block of statsToPub) {
+        const ref_number = await generateRefNumber(block.module, "stat");
+        const scores = await scoreStatBlocks([{ ...block, ref_number }], block.module);
+        const score = scores[0]?.score || null;
+        const sameModuleIssue = newPubIssues.find(ic => ic.module === block.module) ||
+          pubIssues.find(ic => ic.module === block.module);
+        const { data } = await supabase.from('stat_blocks').insert({
+          module: block.module, tab: block.tab, type: block.type,
+          color: block.color, data: block, ref_number,
+          issue_card_ref: sameModuleIssue?.ref_number || null,
+          strength_score: score
+        }).select();
+        if (data) newPubStats.push(data[0]);
+      }
+      setPubIssues(p => [...newPubIssues, ...p]);
+      setPubStats(p => [...newPubStats, ...p]);
+      setPendingIssues(p => p.filter((_,i) => !selIssues.includes(i)));
+      setPendingStats(p => p.filter((_,i) => !selStats.includes(i)));
+      const affectedModules = [...new Set(statsToPub.map(b => b.module))];
+      for (const mod of affectedModules) await rescoreModule(mod);
+    } catch(e) { console.error("confirmBulkPublish error:", e); }
     setSelIssues([]); setSelStats([]); setConfirmBulk(false); setPublishing(false);
   };
 
   const handleDeleteIssue = async (card) => {
+    if (!supabase) return;
     if (!window.confirm(`Delete "${card.title}"? This cannot be undone.`)) return;
-    await supabase.from('issue_cards').delete().eq('id', card.id);
-    setPubIssues(p => p.filter(c => c.id !== card.id));
+    try {
+      await supabase.from('issue_cards').delete().eq('id', card.id);
+      setPubIssues(p => p.filter(c => c.id !== card.id));
+    } catch(e) { console.error("deleteIssue error:", e); }
   };
 
   const handleDeleteStat = async (block) => {
+    if (!supabase) return;
     if (!window.confirm(`Delete "${block.label || block.title}"? This cannot be undone.`)) return;
-    await supabase.from('stat_blocks').delete().eq('id', block.id);
-    setPubStats(p => p.filter(b => b.id !== block.id));
+    try {
+      await supabase.from('stat_blocks').delete().eq('id', block.id);
+      setPubStats(p => p.filter(b => b.id !== block.id));
+    } catch(e) { console.error("deleteStat error:", e); }
   };
 
   const toggleIssue = (i) => setSelIssues(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i]);
@@ -855,7 +1362,6 @@ export default function AdminPanel() {
     cursor: "pointer", textTransform: "uppercase", letterSpacing: 1
   });
 
-  // Issue cards for same module (for stat block linking)
   const issueCardsForStatModule = confirmStat
     ? pubIssues.filter(ic => ic.module === confirmStat.module)
     : [];
@@ -884,6 +1390,7 @@ export default function AdminPanel() {
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
 
+      {/* Header */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"18px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", background:"#2e3440" }}>
         <div>
           <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
@@ -894,11 +1401,15 @@ export default function AdminPanel() {
         </button>
       </div>
 
+      {/* Nav tabs */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
         <button onClick={() => setActiveTab("paste")} style={tabStyle("paste")}>1. Paste Research</button>
         <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>2. Review{totalPending ? " ("+totalPending+")" : ""}</button>
         <button onClick={() => setActiveTab("drafts")} style={tabStyle("drafts")}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
         <button onClick={() => setActiveTab("published")} style={tabStyle("published")}>Published ({pubIssues.length + pubStats.length})</button>
+        <button onClick={() => setActiveTab("social")} style={{ ...tabStyle("social"), color: activeTab==="social" ? "#b8860b" : "#f5a623" }}>
+          &#128247; Social Cards
+        </button>
         <button onClick={() => setActiveTab("template")} style={{ ...tabStyle("template"), color: activeTab==="template" ? "#b8860b" : "#7ab" }}>Research Template</button>
       </div>
 
@@ -920,7 +1431,7 @@ export default function AdminPanel() {
                 {parsing ? "Processing..." : "Process & Organize"}
               </button>
               <span style={{ color:"#bbb", fontSize:14 }}>
-                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) · "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
+                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) &middot; "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
               </span>
             </div>
           </div>
@@ -930,7 +1441,7 @@ export default function AdminPanel() {
           <div>
             <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
             <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>
-              {totalPending ? pendingIssues.length+" issue card(s) · "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
+              {totalPending ? pendingIssues.length+" issue card(s) &middot; "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
             </p>
             {totalPending === 0 && (
               <div style={{ textAlign:"center", padding:"80px 0", color:"#aaa" }}>
@@ -992,7 +1503,7 @@ export default function AdminPanel() {
                 {draftIssues.map((card,i) => (
                   <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
                     <div style={{ background:"#fef2f2", borderBottom:"1px solid #fca5a5", padding:"10px 22px" }}>
-                      <span style={{ color:"#b91c1c", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft — Issue Card</span>
+                      <span style={{ color:"#b91c1c", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft &mdash; Issue Card</span>
                     </div>
                     <div style={{ padding:"18px 22px" }}>
                       <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:8 }}>{card.title}</div>
@@ -1009,11 +1520,11 @@ export default function AdminPanel() {
                 {draftStats.map((block,i) => (
                   <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
                     <div style={{ background:"#eff6ff", borderBottom:"1px solid #93c5fd", padding:"10px 22px" }}>
-                      <span style={{ color:"#1a4a7a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft — {block.type}</span>
+                      <span style={{ color:"#1a4a7a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Draft &mdash; {block.type}</span>
                     </div>
                     <div style={{ padding:"18px 22px" }}>
                       <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
-                      <div style={{ color:"#888", fontSize:14, marginBottom:14 }}>{block.module} — {block.tab}</div>
+                      <div style={{ color:"#888", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
                       <div style={{ display:"flex", gap:12 }}>
                         <button onClick={() => { setPendingStats(p => [...p, block]); setDraftStats(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
                           style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
@@ -1029,12 +1540,11 @@ export default function AdminPanel() {
         )}
 
         {activeTab === "published" && (
-          <PublishedTab
-            pubIssues={pubIssues}
-            pubStats={pubStats}
-            onDeleteIssue={handleDeleteIssue}
-            onDeleteStat={handleDeleteStat}
-          />
+          <PublishedTab pubIssues={pubIssues} pubStats={pubStats} onDeleteIssue={handleDeleteIssue} onDeleteStat={handleDeleteStat} />
+        )}
+
+        {activeTab === "social" && (
+          <SocialCardsTab pubIssues={pubIssues} pubStats={pubStats} />
         )}
 
         {activeTab === "template" && (
