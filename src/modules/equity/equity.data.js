@@ -12,23 +12,7 @@ const data = {
         ["School Funding Gap", "$847/pupil", "Less in lower-income HCS schools", "#ea580c"],
         ["Battle Developer Donors", "$380k", "From those who benefit from status quo", "#dc2626"]
       ],
-      issues: [
-        {
-          id: "schools",
-          label: "School Equity",
-          title: "Jemison and Columbia show the deeper pattern",
-          summary: "Jemison and Columbia are both treated as under-resourced schools despite being in different parts of the city. The pattern is not just geography; it follows demographics and income.",
-          details: "J.O. Johnson High School closed in 2016 and was demolished in 2021. Its replacement, Mae C. Jemison High School, now serves the same northwest Huntsville community. In 2023–2024, Jemison had a 44% AP participation rate and 13 AP programs, but only 6–9% of students tested as proficient in math. Columbia High, another heavily minority and economically disadvantaged school, shows a similar under-resourced pattern. Huntsville City Schools has not adopted a weighted funding formula to ensure lower-income schools receive sufficient resources.",
-          decoder: {
-            whatsHappening: "Huntsville schools serving lower-income communities are not being resourced in a way that closes the gap, even when those schools still show signs of student ambition and advanced-course participation.",
-            connections: "School funding choices, district priorities, and the lack of a weighted funding formula all connect to this outcome. When elected leaders and school leadership do not change the formula, the same schools keep carrying the same burdens.",
-            benefits: "The status quo benefits officials and decision-makers who avoid the political cost of redistributing resources more fairly.",
-            impact: "Students in lower-income communities lose opportunity, teachers face harder conditions, and families are left carrying the cost of educational inequality.",
-            actions: {
-              intro: "If you care about educational opportunity, school funding fairness, and what students in your city are actually getting, take action below.",
-              contacts: [
-                { name: "Huntsville City Schools", role: "District leadership", officialLink: "https://www.huntsvillecityschools.org" }
-              ],
+      issues: [],
               meetings: [
                 { title: "School Board Meetings", frequency: "Check district calendar", why: "Funding priorities and board oversight decisions happen here." }
               ],

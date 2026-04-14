@@ -12,23 +12,7 @@ const data = {
         ["ADEM Enforcement", "Weak", "Compared with stronger state agencies", "#ea580c"],
         ["Energy PACs", "$340k", "Donor influence tied to appointments and policy", "#dc2626"]
       ],
-      issues: [
-        {
-          id: "pfas",
-          label: "PFAS",
-          title: "Forever chemicals remain a public health risk",
-          summary: "PFAS contamination from military and industrial activity continues to affect North Alabama, while communities like Triana still carry the legacy burden.",
-          details: "PFAS from Redstone Arsenal contaminate soil and groundwater and are linked to cancer, thyroid disease, and immune damage. Triana remains tied to a long-running contamination story connected to Redstone Arsenal and industrial pollution. Oversight and cleanup transparency remain limited.",
-          decoder: {
-            whatsHappening: "Residents are dealing with pollution risks that have lasted for years while the public still lacks full clarity about the extent of contamination and the pace of cleanup.",
-            connections: "Military installations, industrial actors, environmental regulators, political appointees, and weak enforcement all connect to why contamination can persist without strong public accountability.",
-            benefits: "Institutions that avoid stronger cleanup obligations, tighter enforcement, or deeper transparency benefit when the burden stays diffuse and the public lacks clear leverage.",
-            impact: "Nearby communities, the environment, taxpayers, and residents worried about water and health absorb the cost.",
-            actions: {
-              intro: "If you care about contamination, cleanup transparency, and who is responsible for environmental harm, take action below.",
-              contacts: [
-                { name: "ADEM", role: "State environmental regulator", officialLink: "https://adem.alabama.gov" }
-              ],
+      issues: [],
               meetings: [],
               paths: [
                 { destination: "Environmental complaint / records route", type: "Complaint / records request", why: "Request contamination, monitoring, and cleanup information.", link: "https://adem.alabama.gov" }

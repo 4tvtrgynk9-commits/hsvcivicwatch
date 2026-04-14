@@ -13,39 +13,7 @@ const data = {
         ["Living Wage Gap", "$22.81/hr", "What a single adult in Madison County needs just to survive", "#dc2626"],
         ["Unhoused in Huntsville", "~600", "Estimated by local advocates and city data", "#7c3aed"],
       ],
-      issues: [
-        {
-          id: "counting_units",
-          label: "Units vs. Affordability",
-          title: "The city is counting units. That is not the same as counting affordability.",
-          summary:
-            "Huntsville celebrated 6,404 new residential units in 2024, with 81% tied to multifamily construction --- the most completed in a single year since 1984. Mayor Tommy Battle said the city`s focus is on &#34;maintaining affordability.&#34; But counting units produced is not the same as showing those units are affordable to the people already living here.",
-          details:
-            "The city`s own 2024 Development Review frames the boom as proof of a successful &#34;economic growth strategy.&#34; Shane Davis, Director of Urban and Economic Development, credited 46,000 new jobs since 2014 as the engine. That framing makes sense for high-skill workers in defense and tech. It explains far less about what a food service worker, retail clerk, or home health aide is supposed to do when the apartment pipeline is built for a different income level. A city can post record construction numbers and still leave its existing workforce priced out. The question is never just how many units, but affordable at what rent, for what income, with what screening rules.",
-          decoder: {
-            whatsHappening:
-              "Huntsville is producing more housing than at any point in decades, but the official metrics focus entirely on volume. The city counts occupancy certificates and permit totals. It does not publicly report what share of new units are affordable at area median income, or at 50% or 30% of AMI, where the real pressure is.",
-            connections:
-              "The growth narrative serves the city`s economic development goals, the chamber ecosystem, and developers who need favorable permitting and infrastructure support. Framing production as proof of affordability lets officials answer affordability criticism with construction data, without being accountable for who those units actually serve.",
-            benefits:
-              "Developers, commercial real estate investors, downtown business interests, and the city`s tax base all benefit when high-density, market-rate development is framed as the answer to affordability. It justifies approvals without requiring affordability conditions.",
-            impact:
-              "Working-class residents, renters in the lower half of the income scale, and people relocating from public housing are the ones who absorb the cost of a gap between what gets built and what they can afford. The 40% cost-burden rate --- where renters pay more than 30% of income on housing --- is one concrete measure of that pressure.",
-            actions: {
-              intro:
-                "If you want to push the city to account for who its housing pipeline actually serves, the council and planning process are the pressure points.",
-              contacts: [
-                {
-                  name: "Huntsville City Council",
-                  role: "5-member council with land use and budget authority",
-                  officialLink: "https://www.huntsvilleal.gov/city-council/",
-                },
-                {
-                  name: "City Planning Department",
-                  role: "Reviews and recommends development approvals",
-                  officialLink: "https://www.huntsvilleal.gov/planning/",
-                },
-              ],
+      issues: [],
               meetings: [
                 {
                   title: "City Council Regular Meetings",
@@ -213,34 +181,7 @@ const data = {
         ["Food Service Average Pay", "$28,170/yr", "BLS Huntsville metro data --- vs. $47,437 needed to survive alone", "#dc2626"],
         ["Healthcare Support Pay", "$33,290/yr", "Still nearly $15,000 short of a single adult living wage", "#7c3aed"],
       ],
-      issues: [
-        {
-          id: "jobs_dont_match_rent",
-          label: "Jobs vs. Rent",
-          title: "The jobs Huntsville runs on do not pay what Huntsville housing now costs",
-          summary:
-            "The MIT Living Wage Calculator shows a single adult in Madison County needs $22.81 an hour --- about $47,437 a year before taxes --- just to cover basic expenses. That is not a comfortable budget. It is a survival budget. Food service workers in the metro average $28,170 a year. Healthcare support workers average $33,290. Production workers average $46,110. The math does not work for most of the workforce that keeps the city running.",
-          details:
-            "The living wage figure covers food, housing, transportation, medical, and other basics --- not savings, not emergencies, not entertainment. MIT`s housing cost estimate for Madison County is about $12,953 a year for a single adult renting alone, which corresponds to roughly $1,079 a month. That figure represents the lower end of current market averages. As market-rate construction focuses on higher price points, even that baseline is under pressure. The standard financial rule that renters should spend no more than 30% of income on housing means a food service worker earning $28,170 can afford about $705 a month. That number is increasingly disconnected from actual available inventory.",
-          decoder: {
-            whatsHappening:
-              "A large share of Huntsville`s working population is employed in sectors where wages are structurally below what the housing market now requires. This is not a temporary mismatch. It is a durable gap that grows whenever construction skews toward the upper market and wage growth in service sectors stays flat.",
-            connections:
-              "Employers in food service, retail, and hospitality benefit from workers who cannot afford to leave the local area but also cannot afford to live comfortably within it. The city`s economic development strategy has not historically included wage standards as part of how it evaluates growth.",
-            benefits:
-              "Low-wage employers maintain a captive workforce. Developers who build for the upper market avoid affordability conditions. The city`s revenue base grows with market-rate property values. The workers who do not benefit are not the ones at the table when development agreements are negotiated.",
-            impact:
-              "For workers earning at or near $28,000 to $35,000 a year, the housing market leaves almost no margin. Cost-burdening --- spending more than 30% of income on housing --- is not a personal failure. It is the predictable result of a wage and housing market that are moving in different directions.",
-            actions: {
-              intro:
-                "The connection between wages and housing costs is a policy choice, not an immutable fact. Councils can tie development incentives to affordability. They can ask employers receiving public subsidies what they pay.",
-              contacts: [
-                {
-                  name: "Huntsville City Council",
-                  role: "Development and budget authority",
-                  officialLink: "https://www.huntsvilleal.gov/city-council/",
-                },
-              ],
+      issues: [],
               meetings: [
                 {
                   title: "City Council Meetings",
@@ -401,39 +342,7 @@ const data = {
         ["The Slab Encampment", "75--100 people", "Fourth closure in four years, per SPLC reporting", "#dc2626"],
         ["Mill Creek Timeline", "8 years", "Project runs to 2033; residents live in limbo during construction", "#7c3aed"],
       ],
-      issues: [
-        {
-          id: "public_housing_replacement",
-          label: "Public Housing",
-          title: "They say &#34;affordability&#34; while replacing public housing with a mixed-income model",
-          summary:
-            "The Mill Creek redevelopment will replace Butler Terrace and Johnson Towers --- the two main public housing sites in west Huntsville --- with a $350 million mixed-income project backed by a $50 million HUD Choice Neighborhoods grant. The city calls it a transformation. What it is, structurally, is the conversion of a deeply affordable public housing campus into a mixed-income development that includes market-rate, workforce, and affordable units in a single project --- with a timeline of 8 years and a final report due to HUD in 2033.",
-          details:
-            "Butler Terrace originally held 170 units. Butler Terrace Addition held 84 units. That`s approximately 254 units of traditional public housing. The Mill Creek plan calls for 705 total mixed-income units across all phases --- more units on paper, but not all public housing replacement. Of those, 125 are being contributed by Huntsville Hospital as workforce housing for its employees. The Housing Authority says there is a 1-to-1 replacement plan, but that math applies to households relocated, not necessarily to the number of units at the same affordability level. More than 100 individuals and families were already relocated before construction began. Whether they come back depends on screening criteria, income thresholds, background check policies, and project timeline --- none of which are prominently disclosed in public communications.",
-          decoder: {
-            whatsHappening:
-              "Traditional public housing serves people at the very bottom of the income scale with no screening requirements beyond program eligibility. Mixed-income models typically include units at multiple income levels --- 30%, 50%, 60%, and 80% of AMI --- plus market-rate units. The shift is not just aesthetic. It changes who can actually live there. Mixed-income is not the same as public housing. It is a policy choice about who the development is primarily for.",
-            connections:
-              "The city, the Housing Authority, HUD, McCormack Baron Salazar (the developer), and Huntsville Hospital are all partners in Mill Creek. The framing --- transformation, investment, inclusion --- is consistent across all of them. The harder questions about replacement math, return rates, screening policies, and timeline risk are not prominently raised in official communications.",
-            benefits:
-              "The developer, McCormack Baron Salazar, brings a national reputation and a fee structure. Huntsville Hospital gets 125 workforce housing units for its employees on an adjacent site. The city gets a $350 million redevelopment it can point to as evidence of affordability commitment. Former public housing residents get a promise of return that depends on conditions they do not control.",
-            impact:
-              "Displaced Butler Terrace and Johnson Towers residents are the most exposed. They were moved out before construction and must navigate a multi-year gap to return to a development where their eligibility, screening, and priority access are not clearly guaranteed. For those who cannot meet new screening criteria, or who cannot wait 8 years, the displacement is permanent.",
-            actions: {
-              intro:
-                "The Housing Authority is a public body with a board. HUD has reporting requirements for Choice Neighborhoods grantees. These are accountability levers.",
-              contacts: [
-                {
-                  name: "Huntsville Housing Authority",
-                  role: "Administers Mill Creek and public housing programs",
-                  officialLink: "https://hsvha.org",
-                },
-                {
-                  name: "HUD Region 4 Office",
-                  role: "Oversight agency for the $50M Choice Neighborhoods grant",
-                  officialLink: "https://www.hud.gov/program_offices/field_policy_mgt/localoffices#IV",
-                },
-              ],
+      issues: [],
               meetings: [
                 {
                   title: "Huntsville Housing Authority Board Meetings",
@@ -604,39 +513,7 @@ const data = {
         ["BizPAC Endorsements", "Active", "Committee of 100-linked PAC endorses and funds local races including mayor and council", "#dc2626"],
         ["Eviction Timeline", "Fast", "Alabama landlord-tenant law provides a rapid path in nonpayment cases", "#7c3aed"],
       ],
-      issues: [
-        {
-          id: "public_money_private_growth",
-          label: "TIF & Public Money",
-          title: "Public money helps shape private growth --- without affordability requirements",
-          summary:
-            "Huntsville uses Tax Increment Financing, a public financing tool, to support growth-related infrastructure and improvements in designated development corridors. TIF captures future property tax revenue increases in a district and directs it back into that district`s development. That means public dollars are being used to support private development projects --- without, as of this writing, mandatory affordability conditions attached.",
-          details:
-            "TIF is not inherently problematic. It is a legitimate economic development tool used by cities across the country. The issue is accountability. When public money is channeled into a development district, it is reasonable to ask what public obligations are attached. If TIF-supported infrastructure makes a luxury apartment project financially viable, the public has a legitimate interest in whether that project includes affordable units, local hiring commitments, or other community benefit conditions. Currently, those conditions are not a documented standard part of Huntsville`s TIF framework.",
-          decoder: {
-            whatsHappening:
-              "Tax Increment Financing redirects future public tax revenues into a designated growth zone. This effectively subsidizes development activity in that area. Huntsville is using this tool to support growth in targeted corridors, including areas connected to major development projects. The mechanism is public. The accountability for what kinds of housing and community benefit get built is not clearly defined.",
-            connections:
-              "Developers who operate in TIF districts receive infrastructure support and reduced project costs. Business groups, engineering firms, and contractors who participate in TIF-funded work benefit from the public subsidy. The political connection is that business-aligned local government is unlikely to impose conditions on development tools that serve business interests.",
-            benefits:
-              "Developers, commercial property investors, and contractors in TIF-designated corridors benefit from public infrastructure investment that reduces their project costs. Property values in those corridors typically rise, which benefits existing property owners. The revenue recapture benefits the city`s development goals but not necessarily its lowest-income residents.",
-            impact:
-              "If TIF funds support development that does not include affordability conditions, the public is subsidizing a market-rate or luxury pipeline without community benefit requirements. The cost is borne by residents who are priced out of the resulting development.",
-            actions: {
-              intro:
-                "TIF agreements are public documents. Asking for them and demanding community benefit conditions is a legitimate civic action.",
-              contacts: [
-                {
-                  name: "Huntsville City Council",
-                  role: "Authorizes TIF districts and development agreements",
-                  officialLink: "https://www.huntsvilleal.gov/city-council/",
-                },
-                {
-                  name: "Urban and Economic Development Department",
-                  role: "Shane Davis, Director --- administers growth and development policy",
-                  officialLink: "https://www.huntsvilleal.gov/urban-economic-development/",
-                },
-              ],
+      issues: [],
               meetings: [
                 {
                   title: "City Council Meetings",
