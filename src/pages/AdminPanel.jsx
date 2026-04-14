@@ -570,8 +570,24 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
 
   return (
     <div>
-      <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
-      <p style={{ color:"#aaa", fontSize:15, margin:"0 0 24px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+        <div>
+          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
+          <p style={{ color:"#aaa", fontSize:15, margin:"0 0 24px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+        </div>
+        <button
+          onClick={async () => {
+            if (!window.confirm("Delete ALL published content? This cannot be undone.")) return;
+            const allItems = section === "issues" ? pubIssues : pubStats;
+            for (const item of allItems) {
+              if (section === "issues") await onDeleteIssue(item, true);
+              else await onDeleteStat(item, true);
+            }
+          }}
+          style={{ background:"#7f1d1d", color:"#fff", border:"1px solid #b91c1c", borderRadius:4, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0 }}>
+          Delete All {section === "issues" ? "Issue Cards" : "Stat Blocks"}
+        </button>
+      </div>
       <div style={{ display:"flex", gap:12, marginBottom:28 }}>
         <button style={secBtn("issues")} onClick={() => setSection("issues")}>Issue Cards ({pubIssues.length})</button>
         <button style={secBtn("stats")} onClick={() => setSection("stats")}>Stat Blocks ({pubStats.length})</button>
@@ -1326,18 +1342,18 @@ export default function AdminPanel() {
     setSelIssues([]); setSelStats([]); setConfirmBulk(false); setPublishing(false);
   };
 
-  const handleDeleteIssue = async (card) => {
+  const handleDeleteIssue = async (card, silent = false) => {
     if (!supabase) return;
-    if (!window.confirm(`Delete "${card.title}"? This cannot be undone.`)) return;
+    if (!silent && !window.confirm(`Delete "${card.title}"? This cannot be undone.`)) return;
     try {
       await supabase.from('issue_cards').delete().eq('id', card.id);
       setPubIssues(p => p.filter(c => c.id !== card.id));
     } catch(e) { console.error("deleteIssue error:", e); }
   };
 
-  const handleDeleteStat = async (block) => {
+  const handleDeleteStat = async (block, silent = false) => {
     if (!supabase) return;
-    if (!window.confirm(`Delete "${block.label || block.title}"? This cannot be undone.`)) return;
+    if (!silent && !window.confirm(`Delete "${block.label || block.title}"? This cannot be undone.`)) return;
     try {
       await supabase.from('stat_blocks').delete().eq('id', block.id);
       setPubStats(p => p.filter(b => b.id !== block.id));

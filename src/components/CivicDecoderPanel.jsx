@@ -154,43 +154,65 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             </p>
           ) : null}
 
-          {usableContacts.map(function(c, i) {
+          {(function() {
+            var officials = usableContacts.filter(function(c) { return !c.isTipLine; });
+            var tipLines = usableContacts.filter(function(c) { return c.isTipLine; });
+            var hasMore = usableMeetings.length || usablePaths.length || usableButtons.length;
             return (
-              <div key={i} style={{ borderLeft: "3px solid #5DBF85", paddingLeft: "1rem", paddingBottom: "1.2rem", marginBottom: "1.2rem", borderBottom: i < usableContacts.length - 1 || usableMeetings.length || usablePaths.length || usableButtons.length ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
-                <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>
-                  {c.name}{c.role ? " – " + c.role : ""}
-                </div>
-                {c.phone ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Phone</span><span style={{ color: "#ddd5c4" }}>{c.phone}</span></div>
+              <React.Fragment>
+                {officials.map(function(c, i) {
+                  return (
+                    <div key={i} style={{ borderLeft: "3px solid #5DBF85", paddingLeft: "1rem", paddingBottom: "1.2rem", marginBottom: "1.2rem", borderBottom: i < officials.length - 1 || tipLines.length || hasMore ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
+                      <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>
+                        {c.name}{c.role ? " – " + c.role : ""}
+                      </div>
+                      {c.phone ? (
+                        <div style={{ fontSize: 15, marginBottom: 6 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Phone</span><a href={"tel:" + c.phone.replace(/[^0-9+]/g, "")} style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{c.phone}</a></div>
+                      ) : null}
+                      {c.email ? (
+                        <div style={{ fontSize: 15, marginBottom: 6 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Email</span><a href={"mailto:" + c.email} style={{ color: "#5DBF85", textDecoration: "none", fontSize: 15 }}>{c.email}</a></div>
+                      ) : null}
+                      {c.address ? (
+                        <div style={{ fontSize: 15, marginBottom: 6 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Address</span><a href={"https://maps.google.com/?q=" + encodeURIComponent(c.address)} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{c.address}</a></div>
+                      ) : null}
+                      {c.officialLink ? (
+                        <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Official page <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
+                      ) : null}
+                    </div>
+                  );
+                })}
+                {tipLines.length > 0 ? (
+                  <div style={{ borderLeft: "3px solid #5DBF85", paddingLeft: "1rem", paddingBottom: "1.2rem", marginBottom: "1.2rem", borderBottom: hasMore ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
+                    <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 10 }}>Media Tip Lines</div>
+                    {tipLines.map(function(t, ti) {
+                      var mailto = "mailto:" + t.email + (t.tipSubject ? "?subject=" + encodeURIComponent(t.tipSubject) + "&body=" + encodeURIComponent(t.tipBody || "") : "");
+                      return (
+                        <div key={ti} style={{ marginBottom: 8 }}>
+                          <a href={mailto} style={{ fontSize: 14, color: GREEN, textDecoration: "none" }}>{t.name.replace(" – News Tip Line", "")} — Email tip <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
+                        </div>
+                      );
+                    })}
+                  </div>
                 ) : null}
-                {c.email ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Email</span><span style={{ color: "#ddd5c4" }}>{c.email}</span></div>
-                ) : null}
-                {c.address ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Address</span><span style={{ color: "#ddd5c4" }}>{c.address}</span></div>
-                ) : null}
-                {c.officialLink ? (
-                  <a href={c.officialLink} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Official page <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
-                ) : null}
-              </div>
+              </React.Fragment>
             );
-          })}
+          })()}
 
           {usableMeetings.map(function(m, i) {
             return (
               <div key={i} style={{ borderLeft: "3px solid #5DBF85", paddingLeft: "1rem", paddingBottom: "1.2rem", marginBottom: "1.2rem", borderBottom: i < usableMeetings.length - 1 || usablePaths.length || usableButtons.length ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
                 <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{m.title}</div>
                 {m.frequency ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>When</span><span style={{ color: "#ddd5c4" }}>{m.frequency}</span></div>
+                  <div style={{ fontSize: 15, marginBottom: 6 }}>(<span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>When</span><span style={{ color: "#ddd5c4", fontSize: 15 }}>{m.frequency}</span></div>
                 ) : null}
                 {m.location ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Where</span><span style={{ color: "#ddd5c4" }}>{m.location}</span></div>
+                  <div style={{ fontSize: 15, marginBottom: 6 }}>(<span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Where</span><span style={{ color: "#ddd5c4", fontSize: 15 }}>{m.location}</span></div>
                 ) : null}
                 {m.link ? (
                   <a href={m.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>View meeting schedule <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>
                 ) : null}
                 {m.why ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Why</span><span style={{ color: "#9aaabb" }}>{m.why}</span></div>
+                  <div style={{ fontSize: 15, marginBottom: 6 }}>(<span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Why</span><span style={{ color: "#9aaabb", fontSize: 15 }}>{m.why}</span></div>
                 ) : null}
               </div>
             );
@@ -201,10 +223,10 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
               <div key={i} style={{ borderLeft: "3px solid #5DBF85", paddingLeft: "1rem", paddingBottom: "1.2rem", marginBottom: "1.2rem", borderBottom: i < usablePaths.length - 1 || usableButtons.length ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
                 <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{p.destination}</div>
                 {p.type ? (
-                  <div style={{ fontSize: 13, marginBottom: 2 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Type</span><span style={{ color: "#9aaabb" }}>{p.type}</span></div>
+                  <div style={{ fontSize: 15, marginBottom: 6 }}>(<span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Type</span><span style={{ color: "#9aaabb", fontSize: 15 }}>{p.type}</span></div>
                 ) : null}
                 {p.why ? (
-                  <div style={{ fontSize: 13, marginBottom: 4 }}><span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Goal</span><span style={{ color: "#9aaabb" }}>{p.why}</span></div>
+                  <div style={{ fontSize: 15, marginBottom: 6 }}>(<span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 48, display: "inline-block" }}>Goal</span><span style={{ color: "#9aaabb", fontSize: 15 }}>{p.why}</span></div>
                 ) : null}
                 {p.link ? (
                   <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 4 }}>Open filing path <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></a>

@@ -72,15 +72,12 @@ export default async function handler(req, res) {
       "impact": string
     },
     "actions": {
-      "contacts": [{ "name": string, "phone": string|null, "email": string|null, "address": string|null, "officeHours": string|null }],
-      "meetings": [{ "body": string, "nextMeeting": string|null, "howToSpeak": string|null }],
-      "recordsRequest": { "applies": boolean, "whatToRequest": string|null, "whereToSend": string|null },
-      "complaint": { "applies": boolean, "agency": string|null, "linkOrAddress": string|null },
-      "investigationRequest": { "applies": boolean, "body": string|null, "linkOrAddress": string|null },
-      "misconductReport": { "applies": boolean, "body": string|null, "linkOrAddress": string|null },
-      "elections": [{ "official": string, "nextElection": string|null, "district": string|null, "voterRegistrationLink": string|null }],
-      "mediaOutreach": { "applies": boolean, "outlets": [{ "name": string, "tipEmail": string }] },
-      "emailTemplate": { "to": string|null, "subject": string|null, "body": string|null }
+      "intro": string|null,
+      "contacts": [{ "name": string, "role": string|null, "phone": string|null, "email": string|null, "address": string|null, "officialLink": string|null }],
+      "meetings": [{ "title": string, "frequency": string|null, "location": string|null, "why": string|null, "link": string|null }],
+      "paths": [{ "destination": string, "type": string|null, "why": string|null, "link": string|null }],
+      "actions": [{ "label": string, "kind": string, "href": string|null, "template": { "email": string|null, "subject": string|null, "body": string|null }|null }],
+      "mediaOutreach": { "applies": boolean, "outlets": [{ "name": string, "tipEmail": string, "subject": string|null, "body": string|null }] }
     }
   }
   

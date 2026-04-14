@@ -28,6 +28,22 @@ const MODULE_NAME_MAP = {
 function toIssueShape(row) {
   const dec = row.decoder || {};
   const act = dec.actions || row.actions || {};
+
+  // Build media outreach contacts from outlets
+  const mediaContacts = act.mediaOutreach?.applies && act.mediaOutreach?.outlets
+    ? act.mediaOutreach.outlets.map(o => ({
+        name: o.name || "",
+        role: "News Tip Line",
+        phone: "",
+        email: o.tipEmail || "",
+        address: "",
+        officialLink: "",
+        isTipLine: true,
+        tipSubject: o.subject || "",
+        tipBody: o.body || "",
+      }))
+    : [];
+
   return {
     id:      row.ref_number || row.id,
     label:   row.label   || "",
@@ -43,10 +59,13 @@ function toIssueShape(row) {
       impact:         dec.impact         || "",
       actions: {
         intro:    act.intro    || "",
-        contacts: (act.contacts || []).map(c => ({
-          name: c.name || "", role: c.role || c.title || "", phone: c.phone || "",
-          email: c.email || "", address: c.address || "", officialLink: c.officialLink || ""
-        })),
+        contacts: [
+          ...(act.contacts || []).map(c => ({
+            name: c.name || "", role: c.role || "", phone: c.phone || "",
+            email: c.email || "", address: c.address || "", officialLink: c.officialLink || ""
+          })),
+          ...mediaContacts,
+        ],
         meetings: (act.meetings || []).map(m => ({
           title: m.title || "", frequency: m.frequency || "", location: m.location || "",
           why: m.why || "", link: m.link || ""
