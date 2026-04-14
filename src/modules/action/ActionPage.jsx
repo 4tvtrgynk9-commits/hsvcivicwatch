@@ -5,10 +5,18 @@ import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././action.data";
+import useSupabaseModule from "../../lib/useSupabaseModule";
 
 export default function ActionPage() {
+  const { liveIssues, liveStats, loading } = useSupabaseModule("action");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
+
+  const activeTabIssues = activeTab?.issues || [];
+  const mergedIssues = [
+    ...liveIssues.filter((li) => !activeTabIssues.find((hi) => hi.id === li.id)),
+    ...activeTabIssues,
+  ];
 
   return (
     <div>
@@ -16,7 +24,7 @@ export default function ActionPage() {
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={activeTab?.stats || data.stats} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       <div>
-        {(activeTab?.issues || []).map((issue, index) => (
+        {(mergedIssues).map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
       </div>
