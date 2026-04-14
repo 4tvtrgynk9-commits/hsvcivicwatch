@@ -3,31 +3,31 @@ import { supabase } from "./supabase";
 
 // Maps module page IDs to the module name stored in Supabase
 const MODULE_NAME_MAP = {
-  health:             "Health System",
-  utilities:          "Utilities",
-  housing_crisis:     "Housing",
-  criminal_justice:   "Criminal Justice",
-  workers_childcare:  "Workers",
-  taxation:           "Taxes",
-  officials_elections:"Officials",
-  equity:             "Equity",
-  insurance_burdens:  "Insurance",
-  boards_oversight:   "Boards",
-  voting_rights:      "Voting",
-  policing:           "Policing",
-  data_collection:    "Data",
-  money:              "Money",
-  landuse:            "Land",
-  environment:        "Environment",
-  information_warfare:"Information",
-  proposals:          "Proposals",
-  action:             "Action",
+  health:             "health",
+  utilities:          "utilities",
+  housing_crisis:     "housing_crisis",
+  criminal_justice:   "criminal_justice",
+  workers_childcare:  "workers_childcare",
+  taxation:           "taxation",
+  officials_elections:"officials_elections",
+  equity:             "equity",
+  insurance_burdens:  "insurance_burdens",
+  boards_oversight:   "boards_oversight",
+  voting_rights:      "voting_rights",
+  policing:           "policing",
+  data_collection:    "data_collection",
+  money:              "money",
+  landuse:            "landuse",
+  environment:        "environment",
+  information_warfare:"information_warfare",
+  proposals:          "proposals",
+  action:             "action",
 };
 
 // Convert a Supabase issue_card row into the shape IssueCard expects
 function toIssueShape(row) {
   const dec = row.decoder || {};
-  const act = row.actions || {};
+  const act = dec.actions || row.actions || {};
   return {
     id:      row.ref_number || row.id,
     label:   row.label   || "",
@@ -39,25 +39,30 @@ function toIssueShape(row) {
     decoder: {
       whatsHappening: dec.whatsHappening || "",
       connections:    dec.connections    || "",
-      benefits:       dec.whoBenefits    || "",
+      whoBenefits:    dec.whoBenefits    || "",
       impact:         dec.impact         || "",
       actions: {
-        contacts:  (act.contacts  || []).map(c => ({
-          name: c.name, role: c.role || c.title || "", officialLink: c.email || ""
+        intro:    act.intro    || "",
+        contacts: (act.contacts || []).map(c => ({
+          name: c.name || "", role: c.role || c.title || "", phone: c.phone || "",
+          email: c.email || "", address: c.address || "", officialLink: c.officialLink || ""
         })),
-        meetings:  (act.meetings  || []).map(m => ({
-          title: m.body || "", frequency: m.nextMeeting || "", why: m.howToSpeak || ""
+        meetings: (act.meetings || []).map(m => ({
+          title: m.title || "", frequency: m.frequency || "", location: m.location || "",
+          why: m.why || "", link: m.link || ""
         })),
-        paths:     [],
-        actions:   act.emailTemplate ? [{
-          label:    "Email Official",
-          kind:     "primary",
-          template: {
-            email:   act.emailTemplate.to      || "",
-            subject: act.emailTemplate.subject || "",
-            body:    act.emailTemplate.body    || "",
-          }
-        }] : [],
+        paths: (act.paths || []).map(p => ({
+          destination: p.destination || "", type: p.type || "", why: p.why || "", link: p.link || ""
+        })),
+        actions: (act.actions || []).map(a => ({
+          label: a.label || "", kind: a.kind || "primary",
+          href: a.href || "",
+          template: a.template ? {
+            email:   a.template.email   || "",
+            subject: a.template.subject || "",
+            body:    a.template.body    || "",
+          } : null
+        })),
       }
     }
   };
@@ -98,12 +103,12 @@ export default function useSupabaseModule(pageId) {
           supabase
             .from("issue_cards")
             .select("*")
-            .ilike("module", "%" + moduleName + "%")
+            .eq("module", moduleName)
             .order("created_at", { ascending: true }),
           supabase
             .from("stat_blocks")
             .select("*")
-            .ilike("module", "%" + moduleName + "%")
+            .eq("module", moduleName)
             .order("strength_score", { ascending: false }),
         ]);
         setLiveIssues((issues || []).map(toIssueShape));

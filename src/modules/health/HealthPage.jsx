@@ -13,9 +13,11 @@ export default function HealthPage() {
 
   const { liveIssues, liveStats, loading } = useSupabaseModule("health");
 
-  const issues = liveIssues.length > 0
-    ? liveIssues
-    : (activeTab?.issues || []);
+  const activeTabIssues = activeTab?.issues || [];
+  const mergedIssues = [
+    ...liveIssues.filter((li) => !activeTabIssues.find((hi) => hi.id === li.id)),
+    ...activeTabIssues,
+  ];
 
   const stats = liveStats.length > 0
     ? liveStats
@@ -32,7 +34,7 @@ export default function HealthPage() {
         </div>
       )}
       <div>
-        {issues.map((issue, index) => (
+        {mergedIssues.map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
       </div>
