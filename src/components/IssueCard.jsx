@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
 
@@ -10,56 +10,52 @@ export default function IssueCard({ issue }) {
 
   const fullText = useMemo(() => issue?.details || issue?.summary || "", [issue]);
   const long = fullText.length > PREVIEW_LIMIT;
-  const body = expanded || !long ? fullText : `${fullText.slice(0, PREVIEW_LIMIT)}...`;
+  const body = expanded || !long ? fullText : fullText.slice(0, PREVIEW_LIMIT) + "...";
 
   return (
-    <div
-      style={{
-        background: COLORS.panel,
-        border: `1px solid ${COLORS.border}`,
-        borderRadius: 14,
-        padding: 15,
-        marginBottom: 12,
-        boxShadow: "0 1px 0 rgba(25,49,80,0.03)",
-      }}
-    >
+    <div style={{
+      background: COLORS.panel,
+      border: `1px solid ${COLORS.border}`,
+      borderRadius: 14,
+      padding: "18px 20px",
+      marginBottom: 14,
+      boxShadow: "0 1px 0 rgba(25,49,80,0.03)",
+    }}>
+      {/* Label */}
       {issue.label ? (
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 900,
-            color: issue.labelColor || COLORS.navy,
-            letterSpacing: 1.1,
-            marginBottom: 8,
-            textTransform: "uppercase",
-          }}
-        >
+        <div style={{
+          fontSize: 12,
+          fontWeight: 900,
+          color: issue.labelColor || COLORS.navy,
+          letterSpacing: 1.2,
+          marginBottom: 10,
+          textTransform: "uppercase",
+        }}>
           {issue.label}
         </div>
       ) : null}
 
-      <div
-        style={{
-          fontSize: 19,
-          fontWeight: 900,
-          color: COLORS.text,
-          marginBottom: 8,
-          lineHeight: 1.2,
-        }}
-      >
+      {/* Title */}
+      <div style={{
+        fontSize: 22,
+        fontWeight: 900,
+        color: COLORS.text,
+        marginBottom: 10,
+        lineHeight: 1.2,
+      }}>
         {issue.title}
       </div>
 
-      <div
-        style={{
-          fontSize: 16,
-          color: COLORS.text,
-          lineHeight: 1.62,
-        }}
-      >
+      {/* Body */}
+      <div style={{
+        fontSize: 17,
+        color: COLORS.text,
+        lineHeight: 1.65,
+      }}>
         {body}
       </div>
 
+      {/* Read more / Show less */}
       {long ? (
         <button
           onClick={() => setExpanded(!expanded)}
@@ -69,16 +65,17 @@ export default function IssueCard({ issue }) {
             padding: 0,
             cursor: "pointer",
             color: COLORS.gold,
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: 800,
             marginTop: 10,
           }}
         >
-          {expanded ? "Show less ▲" : "Read more ▼"}
+          {expanded ? "Show less \u25b2" : "Read more \u25bc"}
         </button>
       ) : null}
 
-      <div style={{ marginTop: 12 }}>
+      {/* Decode button */}
+      <div style={{ marginTop: 14 }}>
         <button
           onClick={() => setDecoded(!decoded)}
           style={{
@@ -86,17 +83,19 @@ export default function IssueCard({ issue }) {
             color: COLORS.navyDark,
             border: "none",
             borderRadius: 10,
-            padding: "8px 12px",
+            padding: "10px 16px",
             cursor: "pointer",
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: 900,
           }}
         >
-          {decoded ? "Hide Decoder ▲" : "Decode This 🔎"}
+          {decoded ? "Hide Decoder \u25b2" : "Decode This \uD83D\uDD0E"}
         </button>
       </div>
 
-      {decoded ? <CivicDecoderPanel analysis={issue.decoder} onHide={() => setDecoded(false)} /> : null}
+      {decoded ? (
+        <CivicDecoderPanel analysis={issue.decoder} onHide={() => setDecoded(false)} />
+      ) : null}
     </div>
   );
 }
