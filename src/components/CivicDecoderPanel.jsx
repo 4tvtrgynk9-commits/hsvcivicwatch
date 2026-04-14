@@ -2,20 +2,22 @@ import React from "react";
 import { buildMailto } from "./TemplateLauncher";
 
 const SIDEBAR_BG = "#193150";
-const GOLD     = "#E8C35A";
+const GOLD = "#E8C35A";
 const GOLD_DIM = "rgba(232,195,90,0.55)";
-const BLUE     = "#89C4E8";
+const BLUE = "#89C4E8";
 const LAVENDER = "#B98FD8";
-const RED      = "#E07068";
-const GREEN    = "#5DBF85";
+const RED = "#E07068";
+const GREEN = "#5DBF85";
+
+function getActionBg(kind) {
+  if (kind === "gold") return "#C6A34D";
+  if (kind === "red") return "#B4473E";
+  if (kind === "blue") return "#2F5D8A";
+  return "#3E8B5B";
+}
 
 function ActionButton({ label, href, kind }) {
   if (!href) return null;
-  const bg =
-    kind === "gold" ? "#C6A34D" :
-    kind === "red"  ? "#B4473E" :
-    kind === "blue" ? "#2F5D8A" :
-                      "#3E8B5B";
   return (
     
       href={href}
@@ -24,7 +26,7 @@ function ActionButton({ label, href, kind }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        background: bg,
+        background: getActionBg(kind),
         color: "#fff",
         border: "none",
         borderRadius: 8,
@@ -44,11 +46,7 @@ function ActionButton({ label, href, kind }) {
 function DecoderSection({ color, title, children }) {
   if (!children) return null;
   return (
-    <div style={{
-      borderLeft: "3px solid " + color,
-      paddingLeft: 14,
-      marginBottom: 22,
-    }}>
+    <div style={{ borderLeft: "3px solid " + color, paddingLeft: 14, marginBottom: 22 }}>
       <div style={{
         fontSize: 10,
         fontWeight: 900,
@@ -60,11 +58,7 @@ function DecoderSection({ color, title, children }) {
       }}>
         {title}
       </div>
-      <div style={{
-        fontSize: 15,
-        lineHeight: 1.7,
-        color: "rgba(255,255,255,0.88)",
-      }}>
+      <div style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.88)" }}>
         {children}
       </div>
     </div>
@@ -74,13 +68,7 @@ function DecoderSection({ color, title, children }) {
 export default function CivicDecoderPanel({ analysis, onHide }) {
   if (!analysis) return null;
 
-  const {
-    whatsHappening,
-    connections,
-    whoBenefits,
-    impact,
-    actions,
-  } = analysis;
+  const { whatsHappening, connections, whoBenefits, impact, actions } = analysis;
 
   const {
     intro,
@@ -90,15 +78,13 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
     actions: actionButtons = [],
   } = actions || {};
 
-  const usableContacts = contacts.filter(c => c.phone || c.email || c.officialLink);
-  const usableMeetings = meetings.filter(m =>
-    m.title && m.frequency && m.frequency.toLowerCase() !== "unknown"
-  );
-  const usablePaths = paths.filter(p => p.link || p.destination);
-  const usableButtons = actionButtons.filter(a => a.template?.email || a.href);
+  const usableContacts = contacts.filter(function(c) { return c.phone || c.email || c.officialLink; });
+  const usableMeetings = meetings.filter(function(m) { return m.title && m.frequency && m.frequency.toLowerCase() !== "unknown"; });
+  const usablePaths = paths.filter(function(p) { return p.link || p.destination; });
+  const usableButtons = actionButtons.filter(function(a) { return (a.template && a.template.email) || a.href; });
 
   const hasAnything = intro || usableContacts.length || usableMeetings.length ||
-                      usablePaths.length || usableButtons.length;
+    usablePaths.length || usableButtons.length;
 
   return (
     <div style={{
@@ -136,11 +122,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       </DecoderSection>
 
       {hasAnything ? (
-        <div style={{
-          borderLeft: "3px solid " + GREEN,
-          paddingLeft: 14,
-          marginBottom: 14,
-        }}>
+        <div style={{ borderLeft: "3px solid " + GREEN, paddingLeft: 14, marginBottom: 14 }}>
           <div style={{
             fontSize: 10,
             fontWeight: 900,
@@ -156,53 +138,57 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
           <div style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.88)" }}>
             {intro ? <p style={{ margin: "0 0 12px" }}>{intro}</p> : null}
 
-            {usableContacts.map((c, i) => (
-              <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800, color: GREEN }}>
-                  {c.name}{c.role ? " — " + c.role : ""}
+            {usableContacts.map(function(c, i) {
+              return (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ fontWeight: 800, color: GREEN }}>
+                    {c.name}{c.role ? " — " + c.role : ""}
+                  </div>
+                  {c.phone ? <div>Phone: {c.phone}</div> : null}
+                  {c.email ? <div>Email: {c.email}</div> : null}
+                  {c.officialLink ? (
+                    <a href={c.officialLink} target="_blank" rel="noreferrer"
+                      style={{ color: GREEN, fontWeight: 700 }}>
+                      Official page
+                    </a>
+                  ) : null}
                 </div>
-                {c.phone ? <div>Phone: {c.phone}</div> : null}
-                {c.email ? <div>Email: {c.email}</div> : null}
-                {c.officialLink ? (
-                  <a href={c.officialLink} target="_blank" rel="noreferrer"
-                    style={{ color: GREEN, fontWeight: 700 }}>
-                    Official page
-                  </a>
-                ) : null}
-              </div>
-            ))}
+              );
+            })}
 
-            {usableMeetings.map((m, i) => (
-              <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800, color: GREEN }}>{m.title}</div>
-                {m.frequency ? <div>When: {m.frequency}</div> : null}
-                {m.location ? <div>Where: {m.location}</div> : null}
-                {m.why ? <div style={{ marginTop: 4 }}>{m.why}</div> : null}
-              </div>
-            ))}
+            {usableMeetings.map(function(m, i) {
+              return (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ fontWeight: 800, color: GREEN }}>{m.title}</div>
+                  {m.frequency ? <div>When: {m.frequency}</div> : null}
+                  {m.location ? <div>Where: {m.location}</div> : null}
+                  {m.why ? <div style={{ marginTop: 4 }}>{m.why}</div> : null}
+                </div>
+              );
+            })}
 
-            {usablePaths.map((p, i) => (
-              <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800, color: GREEN }}>{p.destination}</div>
-                {p.type ? <div>Type: {p.type}</div> : null}
-                {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
-                {p.link ? (
-                  <a href={p.link} target="_blank" rel="noreferrer"
-                    style={{ color: GREEN, fontWeight: 700 }}>
-                    Open filing path
-                  </a>
-                ) : null}
-              </div>
-            ))}
+            {usablePaths.map(function(p, i) {
+              return (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ fontWeight: 800, color: GREEN }}>{p.destination}</div>
+                  {p.type ? <div>Type: {p.type}</div> : null}
+                  {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
+                  {p.link ? (
+                    <a href={p.link} target="_blank" rel="noreferrer"
+                      style={{ color: GREEN, fontWeight: 700 }}>
+                      Open filing path
+                    </a>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
 
           {usableButtons.length ? (
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: 4 }}>
-              {usableButtons.map((action, i) => {
-                const href = action.template ? buildMailto(action.template) : action.href;
-                return (
-                  <ActionButton key={i} label={action.label} href={href} kind={action.kind} />
-                );
+              {usableButtons.map(function(action, i) {
+                var href = action.template ? buildMailto(action.template) : action.href;
+                return <ActionButton key={i} label={action.label} href={href} kind={action.kind} />;
               })}
             </div>
           ) : null}
