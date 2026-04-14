@@ -2,11 +2,9 @@ import React from "react";
 import { buildMailto } from "./TemplateLauncher";
 
 const SIDEBAR_BG = "#193150";
-
-// Section colors -- calibrated for legibility on dark sidebar blue
 const GOLD     = "#E8C35A";
-const GOLD_DIM = "rgba(232,195,90,0.55)"; // dimmed for panel header
-const BLUE     = "#89C4E8";               // lighter blue per feedback
+const GOLD_DIM = "rgba(232,195,90,0.55)";
+const BLUE     = "#89C4E8";
 const LAVENDER = "#B98FD8";
 const RED      = "#E07068";
 const GREEN    = "#5DBF85";
@@ -19,7 +17,7 @@ function ActionButton({ label, href, kind }) {
     kind === "blue" ? "#2F5D8A" :
                       "#3E8B5B";
   return (
-    <a
+    
       href={href}
       target="_blank"
       rel="noreferrer"
@@ -44,26 +42,28 @@ function ActionButton({ label, href, kind }) {
 }
 
 function DecoderSection({ color, title, children }) {
+  if (!children) return null;
   return (
     <div style={{
       borderLeft: "3px solid " + color,
       paddingLeft: 14,
-      marginBottom: 18,
+      marginBottom: 22,
     }}>
       <div style={{
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: 900,
-        letterSpacing: 1.8,
+        letterSpacing: 2,
         textTransform: "uppercase",
         color: color,
-        marginBottom: 6,
+        marginBottom: 8,
+        opacity: 0.9,
       }}>
         {title}
       </div>
       <div style={{
-        fontSize: 16,
-        lineHeight: 1.65,
-        color: color,
+        fontSize: 15,
+        lineHeight: 1.7,
+        color: "rgba(255,255,255,0.88)",
       }}>
         {children}
       </div>
@@ -77,7 +77,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
   const {
     whatsHappening,
     connections,
-    benefits,
+    whoBenefits,
     impact,
     actions,
   } = analysis;
@@ -105,44 +105,35 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
       background: SIDEBAR_BG,
       border: "1px solid rgba(255,255,255,0.10)",
       borderRadius: 14,
-      padding: "18px 20px",
-      marginTop: 12,
+      padding: "20px 22px",
+      marginTop: 14,
     }}>
-      {/* Panel header -- dimmed gold, smaller, clearly subordinate */}
       <div style={{
         fontSize: 10,
         fontWeight: 700,
         letterSpacing: 2.5,
         color: GOLD_DIM,
-        marginBottom: 20,
+        marginBottom: 22,
         textTransform: "uppercase",
       }}>
         Civic Investigator Analysis
       </div>
 
-      {whatsHappening ? (
-        <DecoderSection color={GOLD} title="What's Happening">
-          {whatsHappening}
-        </DecoderSection>
-      ) : null}
+      <DecoderSection color={GOLD} title="What's Happening">
+        {whatsHappening}
+      </DecoderSection>
 
-      {connections ? (
-        <DecoderSection color={BLUE} title="The Connections">
-          {connections}
-        </DecoderSection>
-      ) : null}
+      <DecoderSection color={BLUE} title="The Connections">
+        {connections}
+      </DecoderSection>
 
-      {benefits ? (
-        <DecoderSection color={LAVENDER} title="Who Benefits">
-          {benefits}
-        </DecoderSection>
-      ) : null}
+      <DecoderSection color={LAVENDER} title="Who Benefits">
+        {whoBenefits}
+      </DecoderSection>
 
-      {impact ? (
-        <DecoderSection color={RED} title="The Impact">
-          {impact}
-        </DecoderSection>
-      ) : null}
+      <DecoderSection color={RED} title="The Impact">
+        {impact}
+      </DecoderSection>
 
       {hasAnything ? (
         <div style={{
@@ -151,23 +142,24 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
           marginBottom: 14,
         }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 900,
-            letterSpacing: 1.8,
+            letterSpacing: 2,
             textTransform: "uppercase",
             color: GREEN,
-            marginBottom: 6,
+            marginBottom: 8,
+            opacity: 0.9,
           }}>
             What You Can Do
           </div>
 
-          <div style={{ fontSize: 16, lineHeight: 1.65, color: GREEN }}>
+          <div style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.88)" }}>
             {intro ? <p style={{ margin: "0 0 12px" }}>{intro}</p> : null}
 
             {usableContacts.map((c, i) => (
               <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800 }}>
-                  {c.name}{c.role ? " -- " + c.role : ""}
+                <div style={{ fontWeight: 800, color: GREEN }}>
+                  {c.name}{c.role ? " — " + c.role : ""}
                 </div>
                 {c.phone ? <div>Phone: {c.phone}</div> : null}
                 {c.email ? <div>Email: {c.email}</div> : null}
@@ -182,7 +174,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
 
             {usableMeetings.map((m, i) => (
               <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800 }}>{m.title}</div>
+                <div style={{ fontWeight: 800, color: GREEN }}>{m.title}</div>
                 {m.frequency ? <div>When: {m.frequency}</div> : null}
                 {m.location ? <div>Where: {m.location}</div> : null}
                 {m.why ? <div style={{ marginTop: 4 }}>{m.why}</div> : null}
@@ -191,7 +183,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
 
             {usablePaths.map((p, i) => (
               <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800 }}>{p.destination}</div>
+                <div style={{ fontWeight: 800, color: GREEN }}>{p.destination}</div>
                 {p.type ? <div>Type: {p.type}</div> : null}
                 {p.why ? <div style={{ marginTop: 4 }}>{p.why}</div> : null}
                 {p.link ? (
@@ -217,7 +209,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
         </div>
       ) : null}
 
-      <div style={{ marginTop: 8 }}>
+      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.07)" }}>
         <button onClick={onHide} style={{
           background: "transparent",
           border: "none",
