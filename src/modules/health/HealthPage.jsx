@@ -14,7 +14,12 @@ export default function HealthPage() {
   const { liveIssues, liveStats, loading } = useSupabaseModule("health");
 
   const activeTabIssues = activeTab?.issues || [];
-  const tabLiveIssues = liveIssues.filter((li) => !li.tab || li.tab === tabId);
+  const tabLiveIssues = liveIssues.filter((li) => {
+    if (tabId === "overview") {
+      return li.show_on_overview || !li.tab;
+    }
+    return li.tab === tabId;
+  });
   const mergedIssues = [
     ...tabLiveIssues.filter((li) => !activeTabIssues.find((hi) => hi.id === li.id)),
     ...activeTabIssues,

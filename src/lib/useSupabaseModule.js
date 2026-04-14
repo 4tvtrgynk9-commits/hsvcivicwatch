@@ -53,6 +53,7 @@ function toIssueShape(row) {
     sources: row.sources || [],
     _fromSupabase: true,
     tab: row.tab || null,
+    show_on_overview: row.show_on_overview || false,
     visual_score: row.visual_score || 0,
     visual_config: row.visual_config || null,
     decoder: {

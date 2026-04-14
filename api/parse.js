@@ -253,6 +253,13 @@ Impact: ${card.decoder?.impact || ""}`;
 For each issue card, you must:
 1. Score it 1-10 for how much it would benefit from an inline data visualization (7+ = generate a visual)
 2. If score >= 7, generate a visual_config JSON object for that card
+3. Decide if the card should appear on the Overview tab (show_on_overview: true/false)
+
+Overview tab rules:
+- show_on_overview: true if the card explains the OVERALL issue broadly — a reader with no prior knowledge would benefit from seeing it first
+- show_on_overview: true if the card is the single most important card on that subtopic
+- show_on_overview: false if the card is highly specific to one subtopic and assumes prior context
+- When in doubt, set show_on_overview: false — Overview should be curated, not a dump of all cards
 
 Scoring criteria:
 - 9-10: Card has multiple specific numbers, percentages, dollar amounts, or comparative data that tell a stronger story visually than in text
@@ -292,6 +299,7 @@ Return ONLY a JSON array with one object per card, in order:
   {
     "cardIndex": 0,
     "visual_score": 8,
+    "show_on_overview": true,
     "visual_config": {
       "type": "comparison",
       "title": "CEO Pay vs. CNA Starting Wage",
@@ -304,6 +312,7 @@ Return ONLY a JSON array with one object per card, in order:
   {
     "cardIndex": 1,
     "visual_score": 4,
+    "show_on_overview": false,
     "visual_config": null
   }
 ]
@@ -341,6 +350,7 @@ Return ONLY valid JSON array. No markdown. No explanation.`;
               if (parsed.issueCards[result.cardIndex]) {
                 parsed.issueCards[result.cardIndex].visual_score = result.visual_score || 0;
                 parsed.issueCards[result.cardIndex].visual_config = result.visual_config || null;
+                parsed.issueCards[result.cardIndex].show_on_overview = result.show_on_overview || false;
               }
             });
           }

@@ -1288,6 +1288,7 @@ export default function AdminPanel() {
         visual_score: confirmIssue.visual_score || 0,
         visual_config: confirmIssue.visual_config || null,
         tab: confirmIssue.tab || null,
+        show_on_overview: confirmIssue.show_on_overview || false,
         ref_number
       }).select();
       if (!error && data) {
@@ -1367,6 +1368,7 @@ export default function AdminPanel() {
           visual_score: card.visual_score || 0,
           visual_config: card.visual_config || null,
           tab: card.tab || null,
+          show_on_overview: card.show_on_overview || false,
           ref_number
         }).select();
         if (data) newPubIssues.push(data[0]);
