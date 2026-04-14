@@ -1,6 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart, Line, PieChart, Pie, Cell
+} from "recharts";
 
 const PREVIEW_LIMIT = 300;
 
@@ -10,6 +14,153 @@ const GOLD = "#C6A34D";
 const LAVENDER = "#7A4FA3";
 const RED = "#B4473E";
 const GREEN = "#3E8B5B";
+
+
+const CHART_COLORS = {
+  red: "#B4473E",
+  gold: "#C6A34D",
+  blue: "#2F5D8A",
+  green: "#3E8B5B",
+  lavender: "#7A4FA3",
+};
+const DEFAULT_COLORS = ["#C6A34D", "#2F5D8A", "#B4473E", "#3E8B5B", "#7A4FA3"];
+
+function IssueCardVisual({ config }) {
+  if (!config || !config.type || !config.data) return null;
+  const { type, title, data } = config;
+
+  const containerStyle = {
+    background: "#193150",
+    borderRadius: 10,
+    padding: "14px 16px",
+    marginBottom: 14,
+  };
+  const titleStyle = {
+    color: "#9aaabb",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    marginBottom: 12,
+  };
+
+  if (type === "tiles") {
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {data.map(function(d, i) {
+            const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+            return (
+              <div key={i} style={{ flex: "1 1 120px", background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ color: color, fontSize: 22, fontWeight: 900, lineHeight: 1 }}>{d.value}</div>
+                <div style={{ color: "#9aaabb", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>{d.label}</div>
+                {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 3 }}>{d.context}</div> : null}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "comparison" && data.length === 2) {
+    const max = Math.max(data[0].value, data[1].value);
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        {data.map(function(d, i) {
+          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i];
+          const pct = Math.round((d.value / max) * 100);
+          const display = d.unit === "$"
+            ? "$" + (d.value >= 1000000 ? (d.value/1000000).toFixed(1)+"M" : d.value >= 1000 ? (d.value/1000).toFixed(0)+"k" : d.value)
+            : d.value + (d.unit || "");
+          return (
+            <div key={i} style={{ marginBottom: i === 0 ? 10 : 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ color: "#ddd5c4", fontSize: 13, fontWeight: 600 }}>{d.label}</span>
+                <span style={{ color: color, fontSize: 15, fontWeight: 900 }}>{display}</span>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
+                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 8 }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (type === "bar") {
+    const chartData = data.map(d => ({ name: d.label, value: d.value }));
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 40 }}>
+            <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
+            <YAxis tick={{ fill: "#9aaabb", fontSize: 10 }} />
+            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
+            <Bar dataKey="value" radius={[4,4,0,0]}>
+              {chartData.map(function(_, i) {
+                return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
+              })}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
+  if (type === "trend") {
+    const chartData = data.map(d => ({ name: d.label, value: d.value }));
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <ResponsiveContainer width="100%" height={160}>
+          <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+            <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 11 }} />
+            <YAxis tick={{ fill: "#9aaabb", fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
+            <Line type="monotone" dataKey="value" stroke="#C6A34D" strokeWidth={2} dot={{ fill: "#C6A34D", r: 4 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
+  if (type === "pie") {
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <ResponsiveContainer width={140} height={140}>
+            <PieChart>
+              <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} strokeWidth={0}>
+                {data.map(function(_, i) {
+                  return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
+                })}
+              </Pie>
+              <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div style={{ flex: 1 }}>
+            {data.map(function(d, i) {
+              return (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: DEFAULT_COLORS[i % DEFAULT_COLORS.length], flexShrink: 0 }} />
+                  <span style={{ color: "#9aaabb", fontSize: 12 }}>{d.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 function StoryCard({ issue, cardRef }) {
   const dec = issue.decoder || {};
@@ -192,6 +343,10 @@ export default function IssueCard({ issue }) {
         {issue.title}
       </div>
 
+      {/* Visual */}
+      {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
+        <IssueCardVisual config={issue.visual_config} />
+      ) : null}
       {/* Body */}
       <div style={{
         fontSize: 17,

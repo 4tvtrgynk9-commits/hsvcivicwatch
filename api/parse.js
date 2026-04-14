@@ -177,6 +177,107 @@ export default async function handler(req, res) {
         parsed.statBlocks = parsed.statBlocks.map(b => ({ ...b, module: normalizeModule(b.module) }));
       }
 
+
+      // === VISUAL SCORING + GENERATION ===
+      if (parsed.issueCards && parsed.issueCards.length > 0) {
+        const visualPrompt = parsed.issueCards.map((card, i) => {
+          return `CARD ${i}:
+Title: ${card.title}
+Summary: ${card.summary}
+Details: ${card.details || ""}
+What's Happening: ${card.decoder?.whatsHappening || ""}
+Connections: ${card.decoder?.connections || ""}
+Who Benefits: ${card.decoder?.whoBenefits || ""}
+Impact: ${card.decoder?.impact || ""}`;
+        }).join("\n\n---\n\n");
+
+        const visualSystem = `You are a data visualization advisor for HSV Civic Watch, a civic accountability platform.
+
+For each issue card, you must:
+1. Score it 1-10 for how much it would benefit from an inline data visualization (7+ = generate a visual)
+2. If score >= 7, generate a visual_config JSON object for that card
+
+Scoring criteria:
+- 9-10: Card has multiple specific numbers, percentages, dollar amounts, or comparative data that tell a stronger story visually than in text
+- 7-8: Card has clear data points that would benefit from visual context
+- 5-6: Some data but text is sufficient
+- 1-4: No meaningful data to visualize
+
+Visual config rules:
+- Pick the SIMPLEST format that best communicates the data
+- Available types: "bar", "trend", "comparison", "tiles", "pie"
+- "bar": best for comparing multiple named entities (e.g. salaries, budgets by department)
+- "trend": best for showing change over time (e.g. premium increases year by year)  
+- "comparison": best for two-value comparisons (e.g. north vs south, CEO vs worker pay)
+- "tiles": best for 2-4 standalone key numbers that hit harder visually
+- "pie": best for showing how a whole is divided (e.g. budget breakdown)
+- Data must come ONLY from the card content — never invent numbers
+- Title should be short and punchy (under 8 words)
+- All values must be extractable from the card text
+
+Return ONLY a JSON array with one object per card, in order:
+[
+  {
+    "cardIndex": 0,
+    "visual_score": 8,
+    "visual_config": {
+      "type": "comparison",
+      "title": "CEO Pay vs. CNA Starting Wage",
+      "data": [
+        { "label": "CEO David Spillers", "value": 4200000, "unit": "$", "color": "red" },
+        { "label": "CNA Starting Wage", "value": 30160, "unit": "$", "color": "blue" }
+      ]
+    }
+  },
+  {
+    "cardIndex": 1,
+    "visual_score": 4,
+    "visual_config": null
+  }
+]
+
+For "trend" type, data should be: [{ "label": "2022", "value": 310, "unit": "$" }, ...]
+For "bar" type, data should be: [{ "label": "name", "value": number, "unit": "$" or "%" }, ...]
+For "tiles" type, data should be: [{ "label": "LABEL", "value": "display value", "context": "short note", "color": "red|gold|blue|green|lavender" }, ...]
+For "pie" type, data should be: [{ "label": "slice name", "value": number }, ...]
+For "comparison" type, data should be exactly 2 items.
+
+Return ONLY valid JSON array. No markdown. No explanation.`;
+
+        try {
+          const visualResponse = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.ANTHROPIC_API_KEY,
+              "anthropic-version": "2023-06-01",
+            },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 4000,
+              system: visualSystem,
+              messages: [{ role: "user", content: visualPrompt }],
+            }),
+          });
+
+          const visualData = await visualResponse.json();
+          if (visualResponse.ok) {
+            const visualText = visualData.content.map(i => i.text || "").join("");
+            const visualClean = visualText.replace(/```json|```/g, "").trim();
+            const visualResults = JSON.parse(visualClean);
+            visualResults.forEach(result => {
+              if (parsed.issueCards[result.cardIndex]) {
+                parsed.issueCards[result.cardIndex].visual_score = result.visual_score || 0;
+                parsed.issueCards[result.cardIndex].visual_config = result.visual_config || null;
+              }
+            });
+          }
+        } catch(visualErr) {
+          console.error("Visual scoring failed:", visualErr);
+          // Non-fatal — cards still publish without visuals
+        }
+      }
+
       return res.status(200).json(parsed);
   
     } catch (error) {

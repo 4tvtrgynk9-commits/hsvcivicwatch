@@ -1284,6 +1284,8 @@ export default function AdminPanel() {
         title: confirmIssue.title, summary: confirmIssue.summary,
         details: confirmIssue.details, sources: confirmIssue.sources,
         decoder: confirmIssue.decoder, actions: confirmIssue.actions,
+        visual_score: confirmIssue.visual_score || 0,
+        visual_config: confirmIssue.visual_config || null,
         ref_number
       }).select();
       if (!error && data) {
@@ -1359,7 +1361,10 @@ export default function AdminPanel() {
         const { data } = await supabase.from('issue_cards').insert({
           module: card.module, label: card.label, title: card.title,
           summary: card.summary, details: card.details, sources: card.sources,
-          decoder: card.decoder, actions: card.actions, ref_number
+          decoder: card.decoder, actions: card.actions,
+          visual_score: card.visual_score || 0,
+          visual_config: card.visual_config || null,
+          ref_number
         }).select();
         if (data) newPubIssues.push(data[0]);
       }

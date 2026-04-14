@@ -52,6 +52,8 @@ function toIssueShape(row) {
     details: row.details || "",
     sources: row.sources || [],
     _fromSupabase: true,
+    visual_score: row.visual_score || 0,
+    visual_config: row.visual_config || null,
     decoder: {
       whatsHappening: dec.whatsHappening || "",
       connections:    dec.connections    || "",
