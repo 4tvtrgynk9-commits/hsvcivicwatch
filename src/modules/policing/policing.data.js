@@ -133,60 +133,7 @@ const data = {
         ['Phone Call Cost', '$15.00', 'Potential cost of a single 15-minute jail call', '#dd6b20']
       ],
       issues: [
-        {
-          id: 'securus_kickback',
-          label: 'The Jail Tax',
-          title: `Sheriff Turner's Securus Profit Machine`,
-          summary:
-            `Madison County Sheriff Kevin Turner maintains a monopoly contract with Securus Technologies, extracting money from families through jail phone commissions.`,
-          details:
-            `The Madison County Jail functions as a revenue center. Families, often already struggling financially, must pay inflated rates to speak with incarcerated loved ones. Under commission-based jail phone contracts, a large portion of that revenue flows back to the county through so-called site commissions. That means every phone call is not just communication. It is a money stream built on isolation, poverty, and captivity. These funds can then be routed into discretionary spending channels with far less public scrutiny than the normal budget process.`,
-          decoder: {
-            whatsHappening:
-              `The Sheriff's office benefits from a commission structure that turns family contact into a source of institutional revenue.`,
-            connections:
-              'Officials present themselves as public servants, but the contract model depends on extracting money from families with the fewest options. The people with the least power are forced to subsidize a system that claims to protect the public while profiting from confinement.',
-            benefits:
-              `The main beneficiaries are the Sheriff's office and **Securus Technologies**, which profit from a captive market with little meaningful competition or public control.`,
-            impact:
-              `This is a poverty extraction system. Money that could go to rent, groceries, childcare, or school supplies instead gets pulled into jail telecom fees and commission structures.`,
-            actions: {
-              intro: 'Demand an end to commission-based jail phone contracts in Madison County.',
-              contacts: [
-                {
-                  name: 'Madison County Commission',
-                  role: 'County Oversight',
-                  officialLink: 'https://www.madisoncountyal.gov/government/about-your-commission'
-                }
-              ],
-              meetings: [
-                {
-                  title: 'Commission Meeting',
-                  frequency: 'Bi-weekly',
-                  why: 'Demand an end to jail phone kickbacks and commission-based family contact.'
-                }
-              ],
-              paths: [
-                {
-                  destination: 'The Martha Wright-Reed Act',
-                  type: 'Federal Law',
-                  why: 'Federal reform efforts target predatory jail communication pricing.'
-                }
-              ],
-              actions: [
-                {
-                  label: 'Email Commission: End Kickbacks',
-                  kind: 'email',
-                  template: {
-                    subject: 'End Jail Phone Commissions',
-                    body:
-                      'I am calling for the immediate end of site commissions and profit-based jail phone contracts in Madison County. Families should not be taxed for staying in contact with incarcerated loved ones.'
-                  }
-                }
-              ]
-            }
-          }
-        },
+        ,
         {
           id: 'asset_forfeiture_atm',
           label: 'Forfeiture',
