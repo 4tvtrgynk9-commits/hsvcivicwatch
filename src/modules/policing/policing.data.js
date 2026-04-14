@@ -2,7 +2,7 @@ const data = {
   id: 'policing',
   title: 'Law Enforcement & Accountability',
   intro:
-    'Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city's financial priorities are engineered to protect the badge, not the resident.',
+    `Huntsville allocates over 50% of its $343M budget to "Public Safety," yet transparency remains locked behind state laws and closed-door settlements. From taxing baby formula to fund police cruisers to spending six figures defending a murder conviction, the city`s financial priorities are engineered to protect the badge, not the resident.',
   tabs: [
     {
       id: 'budget',

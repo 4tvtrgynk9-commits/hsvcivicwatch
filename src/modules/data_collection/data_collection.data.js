@@ -2,21 +2,21 @@ const data = {
   id: 'data_collection',
   title: 'Data Collection & Surveillance',
   intro:
-    'Huntsville markets itself as "The Smart Place" to attract tech investment, but underneath the branding is an unregulated digital dragnet. From retail profiling enabled by state loopholes to police license plate readers with zero civilian audit, the city is building a surveillance machine where the only ones protected are the corporations and politicians who benefit from it.',
+    `Huntsville markets itself as "The Smart Place" to attract tech investment, but underneath the branding is an unregulated digital dragnet. From retail profiling enabled by state loopholes to police license plate readers with zero civilian audit, the city is building a surveillance machine where the only ones protected are the corporations and politicians who benefit from it.`,
   tabs: [
     {
       id: 'retail',
       label: 'Retail Surveillance',
       stats: [
         ['Retail PAC Support', '$11,500&#43;', '2026 cycle donations to key local reps', '#e53e3e'],
-        ['Privacy Gap', 'Active', 'HB351 "Loyalty" carveout in effect', '#3182ce'],
+        ['Privacy Gap', 'Active', `HB351 "Loyalty" carveout in effect`, '#3182ce'],
         ['Dynamic Pricing', 'Risk', 'Digital labels create infrastructure for gouging', '#805ad5']
       ],
       issues: [
         {
           id: 'retail_pac_loophole',
           label: 'The Lobbyist Special',
-          title: 'HB351: The Retail PAC "Privacy" Purchase',
+          title: `HB351: The Retail PAC "Privacy" Purchase`,
           summary:
             'Alabama's 2026 data privacy bill was written with massive loopholes that protect the exact "loyalty" tracking tools used by Walmart and Kroger to profile residents.',
           details:
@@ -51,7 +51,7 @@ const data = {
                   destination: 'California Delete Act Model',
                   type: 'Policy',
                   why:
-                    'Compare Alabama's "Loyalty Loophole" to states that actually protect residents.'
+                    'Compare Alabama`s "Loyalty Loophole" to states that actually protect residents.`
                 }
               ],
               actions: [
@@ -71,7 +71,7 @@ const data = {
         {
           id: 'walmart_digital_risk',
           label: 'Dynamic Pricing',
-          title: 'The Walmart "Digital Shadow" & Algorithmic Gouging',
+          title: `The Walmart "Digital Shadow" & Algorithmic Gouging`,
           summary:
             'Walmart's rollout of digital shelf labels in Huntsville provides the technical infrastructure to hike prices instantly based on your personal data profile.',
           details:
@@ -158,9 +158,9 @@ const data = {
             whatsHappening:
               'Law enforcement has built a 24/7 digital tail for every resident with zero public-facing accountability.',
             connections:
-              'The contradiction: Mayor Battle calls Huntsville the "Smart Place," but he operates an "Accountability Black Hole." They claim the cameras are for "safety," but by blocking a civilian oversight board with audit power, they are actually protecting the ability of a rogue officer to abuse the system. They use "safety" rhetoric to secure endorsements from police unions while residents take 100% of the surveillance risk.',
+              `The contradiction: Mayor Battle calls Huntsville the "Smart Place," but he operates an "Accountability Black Hole." They claim the cameras are for "safety," but by blocking a civilian oversight board with audit power, they are actually protecting the ability of a rogue officer to abuse the system. They use "safety" rhetoric to secure endorsements from police unions while residents take 100% of the surveillance risk.`,
             benefits:
-              'Flock Safety, which collects recurring taxpayer revenue, and the political establishment that uses "high-tech policing" to maintain a "safe for business" image while avoiding actual transparency.',
+              `Flock Safety, which collects recurring taxpayer revenue, and the political establishment that uses "high-tech policing" to maintain a "safe for business" image while avoiding actual transparency.`,
             impact:
               'The Stalking Risk. Every time you drive to a church, a doctor, or a protest, the government logs it. Without oversight, that data is a weapon for personal or political vendettas.',
             actions: {
@@ -218,7 +218,7 @@ const data = {
         },
         {
           label: 'Huntsville City Budget 2026',
-          text: 'Line-item funding for Flock Safety and "Public Safety Tech" expansion.'
+          text: `Line-item funding for Flock Safety and "Public Safety Tech" expansion.`
         }
       ]
     }
