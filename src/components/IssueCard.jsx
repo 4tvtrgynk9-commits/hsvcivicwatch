@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell
 } from "recharts";
 
@@ -126,11 +126,12 @@ function IssueCardVisual({ config }) {
       <div style={containerStyle}>
         {title ? <div style={titleStyle}>{title}</div> : null}
         <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 24, right: 16, left: -20, bottom: 0 }} style={{ pointerEvents: "none" }}>
             <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 11 }} />
             <YAxis tick={{ fill: "#9aaabb", fontSize: 11 }} />
-            <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
-            <Line type="monotone" dataKey="value" stroke="#C6A34D" strokeWidth={2} dot={{ fill: "#C6A34D", r: 4 }} />
+            <Line type="monotone" dataKey="value" stroke="#C6A34D" strokeWidth={2} dot={{ fill: "#C6A34D", r: 4 }} isAnimationActive={false}>
+              <LabelList dataKey="value" position="top" style={{ fill: "#ddd5c4", fontSize: 11, fontWeight: 700 }} />
+            </Line>
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -143,14 +144,13 @@ function IssueCardVisual({ config }) {
         {title ? <div style={titleStyle}>{title}</div> : null}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <ResponsiveContainer width={140} height={140}>
-            <PieChart>
-              <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} strokeWidth={0}>
+            <PieChart style={{ pointerEvents: "none" }}>
+              <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} strokeWidth={0} isAnimationActive={false}>
                 {data.map(function(_, i) {
                   return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
                 })}
               </Pie>
-              <Tooltip contentStyle={{ background: "#193150", border: "none", color: "#ddd5c4" }} />
-            </PieChart>
+              </PieChart>
           </ResponsiveContainer>
           <div style={{ flex: 1 }}>
             {data.map(function(d, i) {

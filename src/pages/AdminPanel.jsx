@@ -1516,7 +1516,7 @@ export default function AdminPanel() {
                 {parsing ? "Processing..." : "Process & Organize"}
               </button>
               <span style={{ color:"#bbb", fontSize:14 }}>
-                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) &middot; "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
+                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) · "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
               </span>
             </div>
           </div>
@@ -1526,7 +1526,7 @@ export default function AdminPanel() {
           <div>
             <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
             <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>
-              {totalPending ? pendingIssues.length+" issue card(s) &middot; "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
+              {totalPending ? pendingIssues.length+" issue card(s) · "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
             </p>
             {totalPending === 0 && (
               <div style={{ textAlign:"center", padding:"80px 0", color:"#aaa" }}>
