@@ -13,17 +13,6 @@ const data = {
         ["Investigative Capacity", "Declining", "Alabama journalism cuts weaken accountability", "#ea580c"]
       ],
       issues: [],
-              meetings: [],
-              paths: [
-                { destination: "Media tip / public accountability route", type: "Media / oversight", why: "Push verified facts and request stronger scrutiny." }
-              ],
-              actions: [
-                { label: "Contact Media with a Tip", kind: "primary", template: { email: "", subject: "Request for coverage on misinformation and policy harm", body: "I am asking your newsroom to investigate misleading public claims that are being used to redirect attention away from the real policy and donor interests affecting Madison County residents." } }
-              ]
-            }
-          }
-        }
-      ],
       trail: [{ label: "Information warfare data", text: "Existing disinformation source data" }]
     }
   ]
