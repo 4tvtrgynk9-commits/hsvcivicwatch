@@ -20,7 +20,7 @@ function getActionBg(kind) {
 function ActionButton({ label, href, kind }) {
   if (!href) return null;
   return (
-    
+    <a
       href={href}
       target="_blank"
       rel="noreferrer"
