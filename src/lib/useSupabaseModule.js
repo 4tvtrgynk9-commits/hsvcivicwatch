@@ -122,12 +122,12 @@ export default function useSupabaseModule(pageId) {
           supabase
             .from("issue_cards")
             .select("*")
-            .eq("module", moduleName)
+            .ilike("module", moduleName)
             .order("created_at", { ascending: true }),
           supabase
             .from("stat_blocks")
             .select("*")
-            .eq("module", moduleName)
+            .ilike("module", moduleName)
             .order("strength_score", { ascending: false }),
         ]);
         setLiveIssues((issues || []).map(toIssueShape));
