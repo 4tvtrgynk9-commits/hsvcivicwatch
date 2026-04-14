@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
 
@@ -125,6 +125,23 @@ export default function IssueCard({ issue }) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
   const storyCardRef = useRef(null);
+  const cardRef = useRef(null);
+  const cardId = issue.id || issue.ref_number || issue.title;
+  const SCROLL_KEY = "hsv_last_card";
+  const SCROLL_TTL = 24 * 60 * 60 * 1000;
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
+      const age = Date.now() - (saved.ts || 0);
+      if (saved.id === cardId && age < SCROLL_TTL) {
+        setDecoded(true);
+        setTimeout(() => {
+          cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+      }
+    } catch(e) {}
+  }, [cardId]);
 
   const handleShare = async () => {
     setStoryOpen(true);
@@ -206,7 +223,15 @@ export default function IssueCard({ issue }) {
       {/* Decode + Share buttons */}
       <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button
-          onClick={() => setDecoded(!decoded)}
+          onClick={() => {
+            const next = !decoded;
+            setDecoded(next);
+            if (next) {
+              try {
+                localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() }));
+              } catch(e) {}
+            }
+          }}
           style={{
             background: COLORS.gold,
             color: COLORS.navyDark,
