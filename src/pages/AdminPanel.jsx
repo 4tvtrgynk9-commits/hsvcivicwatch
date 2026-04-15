@@ -157,6 +157,592 @@ CONTEXT: [one line]
 const COLOR_MAP = { red:"#c0392b", gold:"#b8860b", purple:"#6c3483", green:"#1e8449", blue:"#1a5276" };
 const COLOR_BG  = { red:"#2a0a0a", gold:"#2a1f00", purple:"#1a0a2a", green:"#0a1f0a", blue:"#0a1520" };
 
+const MODULE_OPTIONS = [
+  "equity",
+  "utilities",
+  "health",
+  "insurance_burdens",
+  "workers_childcare",
+  "taxation",
+  "housing_crisis",
+  "officials_elections",
+  "boards_oversight",
+  "voting_rights",
+  "criminal_justice",
+  "policing",
+  "data_collection",
+  "money",
+  "landuse",
+  "environment",
+  "information_warfare",
+  "proposals",
+  "action",
+];
+
+const TAB_OPTIONS = {
+  equity: ["overview", "schools", "infrastructure"],
+  utilities: ["overview"],
+  health: ["overview"],
+  insurance_burdens: ["health", "auto", "dental_vision", "homeowners"],
+  workers_childcare: ["worker_rights", "child_care"],
+  taxation: ["overview"],
+  housing_crisis: ["overview"],
+  officials_elections: ["overview"],
+  boards_oversight: ["overview"],
+  voting_rights: ["voter_registration", "polling_access", "your_reps"],
+  criminal_justice: ["bail_pretrial", "sentencing", "incarceration"],
+  policing: ["hpd", "sheriff"],
+  data_collection: ["surveillance", "data_collection"],
+  money: ["connections_map", "donor_profiles", "exec_vs_worker", "contracts_vendors"],
+  landuse: ["overview"],
+  environment: ["overview"],
+  information_warfare: ["narrative_control", "disinformation", "media_capture"],
+  proposals: ["economic_justice", "housing_infrastructure", "public_safety", "governance"],
+  action: ["overview"],
+};
+
+const STAT_TYPE_OPTIONS = [
+  "key-number",
+  "comparison-bar",
+  "pie-chart",
+  "trend-line",
+  "bar-chart",
+  "pay-clock",
+  "zone-map",
+];
+
+const STAT_COLOR_OPTIONS = ["red", "gold", "purple", "green", "blue"];
+
+function getTabsForModule(module) {
+  return TAB_OPTIONS[module] || ["overview"];
+}
+
+function pulseWiggleStyle() {
+  return `
+    @keyframes hsvAdminEditedPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(184,134,11,0); }
+      12% { transform: scale(1.01) rotate(-0.4deg); box-shadow: 0 0 0 4px rgba(184,134,11,0.28); }
+      24% { transform: scale(1.01) rotate(0.4deg); box-shadow: 0 0 0 8px rgba(184,134,11,0.18); }
+      36% { transform: scale(1.01) rotate(-0.3deg); box-shadow: 0 0 0 10px rgba(184,134,11,0.12); }
+      48% { transform: scale(1.01) rotate(0.3deg); box-shadow: 0 0 0 8px rgba(184,134,11,0.16); }
+      60% { transform: scale(1.005) rotate(-0.2deg); box-shadow: 0 0 0 6px rgba(184,134,11,0.12); }
+      72% { transform: scale(1.005) rotate(0.2deg); box-shadow: 0 0 0 4px rgba(184,134,11,0.10); }
+      100% { transform: scale(1); box-shadow: 0 0 0 rgba(184,134,11,0); }
+    }
+  `;
+}
+
+function FieldLabel({ children }) {
+  return (
+    <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
+      {children}
+    </div>
+  );
+}
+
+function TextInput(props) {
+  return (
+    <input
+      {...props}
+      style={{
+        width:"100%",
+        background:"#fff",
+        border:"1px solid #ddd8cf",
+        borderRadius:6,
+        padding:"11px 12px",
+        fontSize:14,
+        color:"#1a1a1a",
+        boxSizing:"border-box",
+        outline:"none",
+        ...(props.style || {})
+      }}
+    />
+  );
+}
+
+function TextArea(props) {
+  return (
+    <textarea
+      {...props}
+      style={{
+        width:"100%",
+        background:"#fff",
+        border:"1px solid #ddd8cf",
+        borderRadius:6,
+        padding:"11px 12px",
+        fontSize:14,
+        color:"#1a1a1a",
+        boxSizing:"border-box",
+        outline:"none",
+        resize:"vertical",
+        ...(props.style || {})
+      }}
+    />
+  );
+}
+
+function SelectInput({ children, ...props }) {
+  return (
+    <select
+      {...props}
+      style={{
+        width:"100%",
+        background:"#fff",
+        border:"1px solid #ddd8cf",
+        borderRadius:6,
+        padding:"11px 12px",
+        fontSize:14,
+        color:"#1a1a1a",
+        boxSizing:"border-box",
+        outline:"none",
+        ...(props.style || {})
+      }}
+    >
+      {children}
+    </select>
+  );
+}
+
+function AdminMetaRow({ label, value }) {
+  return (
+    <div style={{ marginBottom:8 }}>
+      <span style={{ color:"#777", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, display:"inline-block", minWidth:110 }}>
+        {label}:
+      </span>
+      <span style={{ color:"#333", fontSize:13, fontFamily:"monospace" }}>
+        {value || "—"}
+      </span>
+    </div>
+  );
+}
+
+function buildIssueEditState(item) {
+  return {
+    module: item.module || "equity",
+    tab: item.tab || getTabsForModule(item.module || "equity")[0] || "overview",
+    label: item.label || "",
+    title: item.title || "",
+    summary: item.summary || "",
+    details: item.details || "",
+    decoder: {
+      whatsHappening: item.decoder?.whatsHappening || "",
+      connections: item.decoder?.connections || "",
+      whoBenefits: item.decoder?.whoBenefits || "",
+      impact: item.decoder?.impact || "",
+    },
+  };
+}
+
+function buildStatEditState(item) {
+  const data = item.data || item;
+  return {
+    module: item.module || data.module || "equity",
+    tab: item.tab || data.tab || getTabsForModule(item.module || data.module || "equity")[0] || "overview",
+    type: item.type || data.type || "key-number",
+    color: item.color || data.color || "gold",
+    data: JSON.parse(JSON.stringify(data || {})),
+  };
+}
+
+function EditModal({ config, onClose, onSave, onDelete, saving }) {
+  const { itemType, item } = config;
+  const isIssue = itemType === "issue_card";
+  const [issueState, setIssueState] = useState(() => buildIssueEditState(item));
+  const [statState, setStatState] = useState(() => buildStatEditState(item));
+  const [savedFlash, setSavedFlash] = useState(false);
+
+  const activeModule = isIssue ? issueState.module : statState.module;
+  const activeTabs = getTabsForModule(activeModule);
+  const originalIssueState = JSON.stringify(buildIssueEditState(item));
+  const originalStatState = JSON.stringify(buildStatEditState(item));
+  const hasChanges = isIssue
+    ? JSON.stringify(issueState) !== originalIssueState
+    : JSON.stringify(statState) !== originalStatState;
+
+  useEffect(() => {
+    if (isIssue && !activeTabs.includes(issueState.tab)) {
+      setIssueState(prev => ({ ...prev, tab: activeTabs[0] || "overview" }));
+    }
+    if (!isIssue && !activeTabs.includes(statState.tab)) {
+      setStatState(prev => ({ ...prev, tab: activeTabs[0] || "overview" }));
+    }
+  }, [isIssue, activeModule]);
+
+  const updateStatData = (key, value) => {
+    setStatState(prev => ({ ...prev, data: { ...prev.data, [key]: value } }));
+  };
+
+  const renderStatFields = () => {
+    const data = statState.data || {};
+    const type = statState.type;
+
+    if (type === "key-number") {
+      return (
+        <>
+          <div>
+            <FieldLabel>Value</FieldLabel>
+            <TextInput value={data.value || ""} onChange={e => updateStatData("value", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Label</FieldLabel>
+            <TextInput value={data.label || ""} onChange={e => updateStatData("label", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "comparison-bar") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Title</FieldLabel>
+            <TextInput value={data.title || ""} onChange={e => updateStatData("title", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Left Label</FieldLabel>
+            <TextInput value={data.leftLabel || ""} onChange={e => updateStatData("leftLabel", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Left Value</FieldLabel>
+            <TextInput value={data.leftValue ?? ""} onChange={e => updateStatData("leftValue", Number(e.target.value || 0))} />
+          </div>
+          <div>
+            <FieldLabel>Right Label</FieldLabel>
+            <TextInput value={data.rightLabel || ""} onChange={e => updateStatData("rightLabel", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Right Value</FieldLabel>
+            <TextInput value={data.rightValue ?? ""} onChange={e => updateStatData("rightValue", Number(e.target.value || 0))} />
+          </div>
+          <div>
+            <FieldLabel>Unit</FieldLabel>
+            <TextInput value={data.unit || ""} onChange={e => updateStatData("unit", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "pie-chart") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Title</FieldLabel>
+            <TextInput value={data.title || ""} onChange={e => updateStatData("title", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Slices</FieldLabel>
+            <TextArea
+              rows={5}
+              value={(data.slices || []).map(s => `${s.name || s.label || ""}:${s.value ?? ""}`).join("\n")}
+              onChange={e => updateStatData("slices", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
+                const [name, value] = line.split(":");
+                return { name: (name || "").trim(), value: Number((value || "0").trim()) };
+              }))}
+            />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "trend-line") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Title</FieldLabel>
+            <TextInput value={data.title || ""} onChange={e => updateStatData("title", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Unit</FieldLabel>
+            <TextInput value={data.unit || ""} onChange={e => updateStatData("unit", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Points</FieldLabel>
+            <TextArea
+              rows={5}
+              value={(data.points || []).map(p => `${p.year}:${p.value}`).join("\n")}
+              onChange={e => updateStatData("points", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
+                const [year, value] = line.split(":");
+                return { year: (year || "").trim(), value: Number((value || "0").trim()) };
+              }))}
+            />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "bar-chart") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Title</FieldLabel>
+            <TextInput value={data.title || ""} onChange={e => updateStatData("title", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Unit</FieldLabel>
+            <TextInput value={data.unit || ""} onChange={e => updateStatData("unit", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Bars</FieldLabel>
+            <TextArea
+              rows={5}
+              value={(data.bars || []).map(b => `${b.name}:${b.value}`).join("\n")}
+              onChange={e => updateStatData("bars", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
+                const [name, value] = line.split(":");
+                return { name: (name || "").trim(), value: Number((value || "0").trim()) };
+              }))}
+            />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "pay-clock") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Label</FieldLabel>
+            <TextInput value={data.label || ""} onChange={e => updateStatData("label", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Annual Amount</FieldLabel>
+            <TextInput value={data.annualAmount ?? ""} onChange={e => updateStatData("annualAmount", Number(e.target.value || 0))} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+        </>
+      );
+    }
+
+    if (type === "zone-map") {
+      return (
+        <>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Title</FieldLabel>
+            <TextInput value={data.title || ""} onChange={e => updateStatData("title", e.target.value)} />
+          </div>
+          <div>
+            <FieldLabel>Unit</FieldLabel>
+            <TextInput value={data.unit || ""} onChange={e => updateStatData("unit", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Context</FieldLabel>
+            <TextArea rows={3} value={data.context || ""} onChange={e => updateStatData("context", e.target.value)} />
+          </div>
+          <div style={{ gridColumn:"1 / -1" }}>
+            <FieldLabel>Zones</FieldLabel>
+            <TextArea
+              rows={5}
+              value={(data.zones || []).map(z => `${z.name}:${z.value}:${z.status}`).join("\n")}
+              onChange={e => updateStatData("zones", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
+                const [name, value, status] = line.split(":");
+                return { name: (name || "").trim(), value: (value || "").trim(), status: (status || "").trim() };
+              }))}
+            />
+          </div>
+        </>
+      );
+    }
+
+    return null;
+  };
+
+  const handleSave = async () => {
+    const updates = isIssue
+      ? issueState
+      : {
+          module: statState.module,
+          tab: statState.tab,
+          type: statState.type,
+          color: statState.color,
+          data: {
+            ...statState.data,
+            module: statState.module,
+            tab: statState.tab,
+            type: statState.type,
+            color: statState.color,
+          },
+        };
+
+    setSavedFlash(true);
+    await onSave(config, updates);
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:4000, display:"flex", alignItems:"center", justifyContent:"center", padding:16, overflowY:"auto" }}>
+      <style>{pulseWiggleStyle()}</style>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, width:"100%", maxWidth:940, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
+        <div style={{ padding:"20px 24px", borderBottom:"1px solid #ddd8cf", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
+          <div style={{ minWidth:0 }}>
+            <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>
+              Edit {isIssue ? "Issue Card" : "Stat Block"}
+            </div>
+            <div style={{ color:"#1a1a1a", fontSize:20, fontWeight:700, lineHeight:1.3 }}>
+              {isIssue ? item.title : (item.label || item.title || item.ref_number)}
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:10, flexShrink:0 }}>
+            <button
+              onClick={() => {
+                if (window.confirm("Delete this item? This cannot be undone.")) onDelete(item);
+              }}
+              style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+            >
+              Delete
+            </button>
+            <button
+              onClick={onClose}
+              style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div style={{ padding:"22px 24px", overflowY:"auto", flex:"1 1 auto", minHeight:0 }}>
+          {isIssue ? (
+            <>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16, marginBottom:16 }}>
+                <div>
+                  <FieldLabel>Module</FieldLabel>
+                  <SelectInput value={issueState.module} onChange={e => setIssueState(prev => ({ ...prev, module: e.target.value, tab: getTabsForModule(e.target.value)[0] || "overview" }))}>
+                    {MODULE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+                <div>
+                  <FieldLabel>Tab</FieldLabel>
+                  <SelectInput value={issueState.tab} onChange={e => setIssueState(prev => ({ ...prev, tab: e.target.value }))}>
+                    {activeTabs.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Label</FieldLabel>
+                <TextInput value={issueState.label} onChange={e => setIssueState(prev => ({ ...prev, label: e.target.value }))} />
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Title</FieldLabel>
+                <TextArea rows={2} value={issueState.title} onChange={e => setIssueState(prev => ({ ...prev, title: e.target.value }))} />
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Summary</FieldLabel>
+                <TextArea rows={4} value={issueState.summary} onChange={e => setIssueState(prev => ({ ...prev, summary: e.target.value }))} />
+              </div>
+
+              <div style={{ marginBottom:20 }}>
+                <FieldLabel>Details</FieldLabel>
+                <TextArea rows={8} value={issueState.details} onChange={e => setIssueState(prev => ({ ...prev, details: e.target.value }))} />
+              </div>
+
+              <div style={{ display:"grid", gap:16 }}>
+                <div>
+                  <FieldLabel>What’s Happening</FieldLabel>
+                  <TextArea rows={4} value={issueState.decoder.whatsHappening} onChange={e => setIssueState(prev => ({ ...prev, decoder: { ...prev.decoder, whatsHappening: e.target.value } }))} />
+                </div>
+                <div>
+                  <FieldLabel>The Connections</FieldLabel>
+                  <TextArea rows={4} value={issueState.decoder.connections} onChange={e => setIssueState(prev => ({ ...prev, decoder: { ...prev.decoder, connections: e.target.value } }))} />
+                </div>
+                <div>
+                  <FieldLabel>Who Benefits</FieldLabel>
+                  <TextArea rows={4} value={issueState.decoder.whoBenefits} onChange={e => setIssueState(prev => ({ ...prev, decoder: { ...prev.decoder, whoBenefits: e.target.value } }))} />
+                </div>
+                <div>
+                  <FieldLabel>The Impact</FieldLabel>
+                  <TextArea rows={4} value={issueState.decoder.impact} onChange={e => setIssueState(prev => ({ ...prev, decoder: { ...prev.decoder, impact: e.target.value } }))} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16, marginBottom:16 }}>
+                <div>
+                  <FieldLabel>Module</FieldLabel>
+                  <SelectInput value={statState.module} onChange={e => setStatState(prev => ({ ...prev, module: e.target.value, tab: getTabsForModule(e.target.value)[0] || "overview" }))}>
+                    {MODULE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+                <div>
+                  <FieldLabel>Tab</FieldLabel>
+                  <SelectInput value={statState.tab} onChange={e => setStatState(prev => ({ ...prev, tab: e.target.value }))}>
+                    {activeTabs.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+                <div>
+                  <FieldLabel>Type</FieldLabel>
+                  <SelectInput value={statState.type} onChange={e => setStatState(prev => ({ ...prev, type: e.target.value }))}>
+                    {STAT_TYPE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+                <div>
+                  <FieldLabel>Color</FieldLabel>
+                  <SelectInput value={statState.color} onChange={e => setStatState(prev => ({ ...prev, color: e.target.value }))}>
+                    {STAT_COLOR_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+                  </SelectInput>
+                </div>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16 }}>
+                {renderStatFields()}
+              </div>
+            </>
+          )}
+
+          <div style={{ marginTop:24, paddingTop:16, borderTop:"1px solid #ddd8cf" }}>
+            <div style={{ color:"#777", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+              Admin Details
+            </div>
+            <AdminMetaRow label="ID" value={item.id} />
+            <AdminMetaRow label="Ref Number" value={item.ref_number} />
+            {!isIssue ? <AdminMetaRow label="Issue Card Ref" value={item.issue_card_ref} /> : null}
+          </div>
+        </div>
+
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+            style={{ background:(saving || !hasChanges) ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:(saving || !hasChanges) ? "not-allowed" : "pointer", minWidth:120, opacity:(saving || !hasChanges) ? 0.7 : 1 }}
+          >
+            {saving ? "Saving..." : (savedFlash ? "Saved" : "Save")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- Stat Block Renderers ----------------------------------------------------
 
 function KeyNumberBlock({ block }) {
@@ -496,10 +1082,20 @@ function StatRow({ block, selected, onToggle, onApprove, onReject }) {
 
 // --- Published Tab -----------------------------------------------------------
 
-function PublishedIssueCard({ card, onDelete }) {
+function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:12, overflow:"hidden" }}>
+    <div
+      id={`admin-item-${card.id}`}
+      style={{
+        background:"#f5f0e8",
+        border:"1px solid #ddd8cf",
+        borderRadius:10,
+        marginBottom:12,
+        overflow:"hidden",
+        animation: highlight ? "hsvAdminEditedPulse 2.2s ease-in-out 3" : "none",
+      }}
+    >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
         <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{card.ref_number}</span>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
@@ -507,6 +1103,7 @@ function PublishedIssueCard({ card, onDelete }) {
         </div>
         <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
         <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Details"}</button>
+        <button onClick={() => onEdit(card)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Edit</button>
         <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
       {expanded && (
@@ -518,11 +1115,21 @@ function PublishedIssueCard({ card, onDelete }) {
   );
 }
 
-function PublishedStatBlock({ block, onDelete }) {
+function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
   const [expanded, setExpanded] = useState(false);
   const scoreColor = block.strength_score >= 8 ? "#1a7a3a" : block.strength_score >= 5 ? "#b8860b" : "#888";
   return (
-    <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:12, overflow:"hidden" }}>
+    <div
+      id={`admin-item-${block.id}`}
+      style={{
+        background:"#f5f0e8",
+        border:"1px solid #ddd8cf",
+        borderRadius:10,
+        marginBottom:12,
+        overflow:"hidden",
+        animation: highlight ? "hsvAdminEditedPulse 2.2s ease-in-out 3" : "none",
+      }}
+    >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
         <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{block.ref_number}</span>
         <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
@@ -536,6 +1143,7 @@ function PublishedStatBlock({ block, onDelete }) {
         </div>
         <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
         <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Preview"}</button>
+        <button onClick={() => onEdit(block)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Edit</button>
         <button onClick={() => onDelete(block)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
       {expanded && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block.data || block} /></div>}
@@ -543,7 +1151,7 @@ function PublishedStatBlock({ block, onDelete }) {
   );
 }
 
-function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
+function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId }) {
   const [section, setSection] = useState("issues");
 
   const issuesByModule = {};
@@ -606,7 +1214,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
                 <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
                 <span style={{ color:"#aaa", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
-              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} />)}
+              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} />)}
             </div>
           ))}
         </div>
@@ -626,7 +1234,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat }) {
                 <span style={{ color:"#aaa", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
               </div>
               {[...blocks].sort((a,b) => (b.strength_score||0)-(a.strength_score||0)).map((block, i) => (
-                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} />
+                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} />
               ))}
             </div>
           ))}
@@ -1157,6 +1765,9 @@ export default function AdminPanel() {
   const [confirmBulk, setConfirmBulk] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [templateCopied, setTemplateCopied] = useState(false);
+  const [editConfig, setEditConfig] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [highlightId, setHighlightId] = useState(null);
 
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwErr(false); loadPublished(); }
@@ -1415,6 +2026,49 @@ export default function AdminPanel() {
     } catch(e) { console.error("deleteStat error:", e); }
   };
 
+  const openIssueEdit = (card) => setEditConfig({ itemType: "issue_card", item: card });
+  const openStatEdit = (block) => setEditConfig({ itemType: "stat_block", item: block });
+
+  const flashUpdatedItem = (id) => {
+    setHighlightId(id);
+    setTimeout(() => {
+      const el = document.getElementById(`admin-item-${id}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+    setTimeout(() => setHighlightId(null), 7200);
+  };
+
+  const handleSaveEdit = async (config, updates) => {
+    setEditSaving(true);
+    try {
+      const res = await fetch("/api/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itemType: config.itemType,
+          id: config.item.id,
+          updates
+        })
+      });
+
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Update failed");
+
+      if (config.itemType === "issue_card") {
+        setPubIssues(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
+      } else {
+        setPubStats(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
+      }
+
+      setEditConfig(null);
+      flashUpdatedItem(payload.item.id);
+    } catch (e) {
+      window.alert("Save failed: " + e.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const toggleIssue = (i) => setSelIssues(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i]);
   const toggleStat = (i) => setSelStats(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i]);
   const toggleAllIssues = () => setSelIssues(selIssues.length === pendingIssues.length ? [] : pendingIssues.map((_,i) => i));
@@ -1478,6 +2132,7 @@ export default function AdminPanel() {
       {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} />}
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
+      {editConfig && <EditModal config={editConfig} onClose={() => setEditConfig(null)} onSave={handleSaveEdit} onDelete={editConfig.itemType === "issue_card" ? handleDeleteIssue : handleDeleteStat} saving={editSaving} />}
 
       {/* Header */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"18px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", background:"#2e3440" }}>
@@ -1688,7 +2343,15 @@ export default function AdminPanel() {
         )}
 
         {activeTab === "published" && (
-          <PublishedTab pubIssues={pubIssues} pubStats={pubStats} onDeleteIssue={handleDeleteIssue} onDeleteStat={handleDeleteStat} />
+          <PublishedTab
+            pubIssues={pubIssues}
+            pubStats={pubStats}
+            onDeleteIssue={handleDeleteIssue}
+            onDeleteStat={handleDeleteStat}
+            onEditIssue={openIssueEdit}
+            onEditStat={openStatEdit}
+            highlightId={highlightId}
+          />
         )}
 
         {activeTab === "social" && (
