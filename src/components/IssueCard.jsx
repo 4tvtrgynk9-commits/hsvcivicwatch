@@ -3,18 +3,15 @@ import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
 import {
   BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell
+  LineChart, Line, PieChart, Pie, Cell, ReferenceLine
 } from "recharts";
 
 const PREVIEW_LIMIT = 300;
-
-
 const SIDEBAR_BG = "#193150";
 const GOLD = "#C6A34D";
 const LAVENDER = "#7A4FA3";
 const RED = "#B4473E";
 const GREEN = "#3E8B5B";
-
 
 const CHART_COLORS = {
   red: "#B4473E",
@@ -22,12 +19,37 @@ const CHART_COLORS = {
   blue: "#2F5D8A",
   green: "#3E8B5B",
   lavender: "#7A4FA3",
+  muted: "#6b778a",
+  redDark: "#7A1F1A",
+  orange: "#cf7b2f",
 };
-const DEFAULT_COLORS = ["#C6A34D", "#2F5D8A", "#B4473E", "#3E8B5B", "#7A4FA3"];
+const DEFAULT_COLORS = ["#C6A34D", "#2F5D8A", "#B4473E", "#3E8B5B", "#7A4FA3", "#cf7b2f", "#6b778a"];
+
+function getHeatColor(baselineVal, harmedVal) {
+  if (!baselineVal || !harmedVal) return "#B4473E";
+  const gap = Math.abs(baselineVal - harmedVal) / Math.max(baselineVal, harmedVal);
+  if (gap < 0.20) return "#3E8B5B";
+  if (gap < 0.40) return "#C6A34D";
+  if (gap < 0.65) return "#B4473E";
+  return "#7A1F1A";
+}
+
+function fmtVal(v, unit) {
+  if (v === null || v === undefined) return "";
+  if (unit === "$") {
+    return v >= 1000000
+      ? "$" + (v / 1000000).toFixed(1) + "M"
+      : v >= 1000
+      ? "$" + (v / 1000).toFixed(0) + "k"
+      : "$" + v;
+  }
+  if (unit === "%") return v + "%";
+  return v + (unit || "");
+}
 
 function IssueCardVisual({ config }) {
   if (!config || !config.type || !config.data) return null;
-  const { type, title, data } = config;
+  const { type, title, data, baselineLabel, referenceValue, referenceLabel, referenceUnit, stages } = config;
 
   const containerStyle = {
     background: "#193150",
@@ -44,19 +66,149 @@ function IssueCardVisual({ config }) {
     marginBottom: 12,
   };
 
-  if (type === "tiles") {
+  // ── horizontal-bars ──────────────────────────────────────
+  if (type === "horizontal-bars") {
+    const max = Math.max(...data.map(d => d.value));
     return (
       <div style={containerStyle}>
         {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {data.map(function(d, i) {
+          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+          const pct = Math.round((d.value / max) * 100);
+          const display = fmtVal(d.value, d.unit);
+          return (
+            <div key={i} style={{ marginBottom: i < data.length - 1 ? 12 : 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 600 }}>{d.label}</span>
+                <span style={{ color: color, fontSize: 14, fontWeight: 900 }}>{display}</span>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
+                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 8 }} />
+              </div>
+              {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 3 }}>{d.context}</div> : null}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── heatmap-comparison ───────────────────────────────────
+  // data: [{ metric, baselineValue, harmedValue, unit, context }]
+  if (type === "heatmap-comparison") {
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#6b778a" }} />
+            <span style={{ color: "#9aaabb", fontSize: 10 }}>{baselineLabel || "Baseline"}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 40, height: 10, borderRadius: 2, background: "linear-gradient(90deg,#3E8B5B,#C6A34D,#B4473E,#7A1F1A)" }} />
+            <span style={{ color: "#9aaabb", fontSize: 10 }}>Gap severity</span>
+          </div>
+        </div>
+        {data.map(function(d, i) {
+          const maxVal = Math.max(d.baselineValue, d.harmedValue);
+          const basePct = Math.round((d.baselineValue / maxVal) * 100);
+          const harmedPct = Math.round((d.harmedValue / maxVal) * 100);
+          const heatColor = getHeatColor(d.baselineValue, d.harmedValue);
+          return (
+            <div key={i} style={{ marginBottom: i < data.length - 1 ? 14 : 0 }}>
+              <div style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 700, marginBottom: 5 }}>{d.metric}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                <span style={{ color: heatColor, fontSize: 13, fontWeight: 900, minWidth: 52 }}>{fmtVal(d.harmedValue, d.unit)}</span>
+                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8, position: "relative" }}>
+                  <div style={{ width: harmedPct + "%", background: heatColor, borderRadius: 4, height: 8 }} />
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: "#6b778a", fontSize: 13, fontWeight: 900, minWidth: 52 }}>{fmtVal(d.baselineValue, d.unit)}</span>
+                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
+                  <div style={{ width: basePct + "%", background: "#6b778a", borderRadius: 4, height: 8 }} />
+                </div>
+              </div>
+              {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 4 }}>{d.context}</div> : null}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── wage-bars ─────────────────────────────────────────────
+  // Horizontal bars with a reference line threshold
+  // data: [{ label, value, unit }], referenceValue, referenceLabel, referenceUnit
+  if (type === "wage-bars") {
+    const max = Math.max(...data.map(d => d.value), referenceValue || 0);
+    const refPct = referenceValue ? Math.round((referenceValue / max) * 100) : null;
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        {refPct !== null ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <div style={{ width: refPct + "%", borderTop: "2px dashed #B4473E", position: "relative" }}>
+              <span style={{ position: "absolute", right: 0, top: -18, color: "#B4473E", fontSize: 10, fontWeight: 700, whiteSpace: "nowrap" }}>
+                {referenceLabel || "Threshold"}: {fmtVal(referenceValue, referenceUnit)}
+              </span>
+            </div>
+          </div>
+        ) : null}
+        {data.map(function(d, i) {
+          const color = CHART_COLORS[d.color] || (d.value < (referenceValue || 0) ? "#B4473E" : "#3E8B5B");
+          const pct = Math.round((d.value / max) * 100);
+          const belowRef = referenceValue && d.value < referenceValue;
+          return (
+            <div key={i} style={{ marginBottom: i < data.length - 1 ? 10 : 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                <span style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 600 }}>{d.label}</span>
+                <span style={{ color: color, fontSize: 13, fontWeight: 900 }}>{fmtVal(d.value, d.unit)}</span>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 7, position: "relative" }}>
+                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 7 }} />
+                {refPct !== null ? (
+                  <div style={{ position: "absolute", left: refPct + "%", top: -3, width: 2, height: 13, background: "#B4473E", borderRadius: 1 }} />
+                ) : null}
+              </div>
+              {belowRef && referenceValue ? (
+                <div style={{ color: "#B4473E", fontSize: 10, marginTop: 2 }}>
+                  Below threshold &mdash; {fmtVal(Math.round((referenceValue - d.value) * 100) / 100, d.unit)} gap
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+        {referenceValue ? (
+          <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 6, color: "#6b778a", fontSize: 11 }}>
+            Red line = {referenceLabel || "threshold"}: {fmtVal(referenceValue, referenceUnit)}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  // ── flow-chain ────────────────────────────────────────────
+  // Nodes connected by arrows, each with label, value, fact
+  // data: [{ label, value, fact, color }]
+  if (type === "flow-chain") {
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
           {data.map(function(d, i) {
             const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
             return (
-              <div key={i} style={{ flex: "1 1 120px", background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ color: color, fontSize: 22, fontWeight: 900, lineHeight: 1 }}>{d.value}</div>
-                <div style={{ color: "#9aaabb", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>{d.label}</div>
-                {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 3 }}>{d.context}</div> : null}
-              </div>
+              <React.Fragment key={i}>
+                <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid " + color, borderRadius: 8, padding: "8px 10px", minWidth: 80, maxWidth: 120 }}>
+                  <div style={{ color: color, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>{d.label}</div>
+                  {d.value ? <div style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1.2, marginBottom: 3 }}>{d.value}</div> : null}
+                  {d.fact ? <div style={{ color: "#9aaabb", fontSize: 10, lineHeight: 1.4 }}>{d.fact}</div> : null}
+                </div>
+                {i < data.length - 1 ? (
+                  <div style={{ color: "#9aaabb", fontSize: 16, flexShrink: 0 }}>&#8594;</div>
+                ) : null}
+              </React.Fragment>
             );
           })}
         </div>
@@ -64,25 +216,32 @@ function IssueCardVisual({ config }) {
     );
   }
 
-  if (type === "comparison" && data.length === 2) {
-    const max = Math.max(data[0].value, data[1].value);
+  // ── funnel ────────────────────────────────────────────────
+  // Stages with progressive narrowing
+  // data: [{ label, value, unit, color }]
+  if (type === "funnel") {
+    const max = data[0]?.value || 1;
     return (
       <div style={containerStyle}>
         {title ? <div style={titleStyle}>{title}</div> : null}
         {data.map(function(d, i) {
-          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i];
+          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
           const pct = Math.round((d.value / max) * 100);
-          const display = d.unit === "$"
-            ? "$" + (d.value >= 1000000 ? (d.value/1000000).toFixed(1)+"M" : d.value >= 1000 ? (d.value/1000).toFixed(0)+"k" : d.value)
-            : d.value + (d.unit || "");
+          const dropoff = i > 0 ? data[i - 1].value - d.value : null;
           return (
-            <div key={i} style={{ marginBottom: i === 0 ? 10 : 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: "#ddd5c4", fontSize: 13, fontWeight: 600 }}>{d.label}</span>
-                <span style={{ color: color, fontSize: 15, fontWeight: 900 }}>{display}</span>
-              </div>
-              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
-                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 8 }} />
+            <div key={i} style={{ marginBottom: 6 }}>
+              {dropoff !== null ? (
+                <div style={{ color: "#B4473E", fontSize: 10, marginBottom: 3, paddingLeft: 8 }}>
+                  &#8595; {dropoff.toLocaleString()} dropped ({Math.round((dropoff / data[i-1].value) * 100)}%)
+                </div>
+              ) : null}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: "#9aaabb", fontSize: 11, minWidth: 120 }}>{d.label}</span>
+                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 20, position: "relative" }}>
+                  <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 20, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 6 }}>
+                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 900 }}>{fmtVal(d.value, d.unit)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           );
@@ -91,15 +250,116 @@ function IssueCardVisual({ config }) {
     );
   }
 
+  // ── grouped-bars ──────────────────────────────────────────
+  // Side-by-side bars per category (e.g. budgeted vs actual)
+  // data: [{ category, values: [{ label, value, color, unit }] }]
+  if (type === "grouped-bars") {
+    const allVals = data.flatMap(d => d.values.map(v => v.value));
+    const max = Math.max(...allVals);
+    const groupColors = data[0]?.values.map((v, i) => CHART_COLORS[v.color] || DEFAULT_COLORS[i]) || [];
+    const legend = data[0]?.values.map((v, i) => ({ label: v.label, color: groupColors[i] })) || [];
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
+          {legend.map(function(l, i) {
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
+                <span style={{ color: "#9aaabb", fontSize: 10 }}>{l.label}</span>
+              </div>
+            );
+          })}
+        </div>
+        {data.map(function(d, i) {
+          return (
+            <div key={i} style={{ marginBottom: i < data.length - 1 ? 10 : 0 }}>
+              <div style={{ color: "#ddd5c4", fontSize: 11, marginBottom: 4 }}>{d.category}</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {d.values.map(function(v, j) {
+                  const color = CHART_COLORS[v.color] || DEFAULT_COLORS[j % DEFAULT_COLORS.length];
+                  const pct = Math.round((v.value / max) * 100);
+                  return (
+                    <div key={j} style={{ flex: 1 }}>
+                      <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 24, position: "relative" }}>
+                        <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 24 }} />
+                      </div>
+                      <div style={{ color: color, fontSize: 11, fontWeight: 700, marginTop: 2 }}>{fmtVal(v.value, v.unit)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── escalation ────────────────────────────────────────────
+  // Severity ladder - rows escalate in color
+  // data: [{ trigger, outcome, color }]
+  if (type === "escalation") {
+    const escColors = ["#3E8B5B", "#C6A34D", "#cf7b2f", "#B4473E", "#7A1F1A"];
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {data.map(function(d, i) {
+            const color = CHART_COLORS[d.color] || escColors[Math.min(i, escColors.length - 1)];
+            return (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
+                <div style={{ background: color + "22", border: "1px solid " + color, borderRadius: 6, padding: "8px 10px", minWidth: 100, flexShrink: 0 }}>
+                  <div style={{ color: color, fontSize: 11, fontWeight: 700 }}>{d.trigger}</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", color: "#9aaabb", fontSize: 14 }}>&#8594;</div>
+                <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, padding: "8px 10px", flex: 1 }}>
+                  <div style={{ color: "#ddd5c4", fontSize: 12, lineHeight: 1.4 }}>{d.outcome}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── scorecard-grid ────────────────────────────────────────
+  // Multiple entity cards with same fields
+  // data: [{ entity, fields: [{ label, value, color }] }]
+  if (type === "scorecard-grid") {
+    return (
+      <div style={containerStyle}>
+        {title ? <div style={titleStyle}>{title}</div> : null}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {data.map(function(d, i) {
+            return (
+              <div key={i} style={{ flex: "1 1 140px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 700, marginBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: 6 }}>{d.entity}</div>
+                {(d.fields || []).map(function(f, j) {
+                  const color = CHART_COLORS[f.color] || "#9aaabb";
+                  return (
+                    <div key={j} style={{ marginBottom: 5 }}>
+                      <div style={{ color: "#6b778a", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>{f.label}</div>
+                      <div style={{ color: color, fontSize: 13, fontWeight: 700 }}>{f.value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── bar (vertical) ────────────────────────────────────────
   if (type === "bar") {
     const unit = data[0]?.unit || "";
     const chartData = data.map(d => ({ name: d.label, value: d.value, color: CHART_COLORS[d.color] || null }));
-    const formatVal = (v) => unit === "$"
-      ? (v >= 1000000 ? "$" + (v/1000000).toFixed(1) + "M" : v >= 1000 ? "$" + (v/1000).toFixed(0) + "k" : "$" + v)
-      : v + (unit || "");
     function BarLabel(props) {
       const { x, y, width, value } = props;
-      return <text x={x + width/2} y={y - 5} fill="#ddd5c4" textAnchor="middle" fontSize={11} fontWeight={700}>{formatVal(value)}</text>;
+      return <text x={x + width/2} y={y - 5} fill="#ddd5c4" textAnchor="middle" fontSize={11} fontWeight={700}>{fmtVal(value, unit)}</text>;
     }
     return (
       <div style={containerStyle}>
@@ -119,6 +379,7 @@ function IssueCardVisual({ config }) {
     );
   }
 
+  // ── trend ─────────────────────────────────────────────────
   if (type === "trend") {
     const chartData = data.map(d => ({ name: d.label, value: d.value }));
     return (
@@ -137,6 +398,7 @@ function IssueCardVisual({ config }) {
     );
   }
 
+  // ── pie ───────────────────────────────────────────────────
   if (type === "pie") {
     return (
       <div style={containerStyle}>
@@ -149,14 +411,14 @@ function IssueCardVisual({ config }) {
                   return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
                 })}
               </Pie>
-              </PieChart>
+            </PieChart>
           </ResponsiveContainer>
           <div style={{ flex: 1 }}>
             {data.map(function(d, i) {
               return (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: DEFAULT_COLORS[i % DEFAULT_COLORS.length], flexShrink: 0 }} />
-                  <span style={{ color: "#9aaabb", fontSize: 12 }}>{d.label}</span>
+                  <span style={{ color: "#9aaabb", fontSize: 12 }}>{d.label}{d.value ? " — " + d.value + "%" : ""}</span>
                 </div>
               );
             })}
@@ -171,7 +433,7 @@ function IssueCardVisual({ config }) {
 
 function StoryCard({ issue, cardRef }) {
   const dec = issue.decoder || {};
-  const truncate = (str, n) => str && str.length > n ? str.slice(0, n).trim() + "…" : str || "";
+  const truncate = (str, n) => str && str.length > n ? str.slice(0, n).trim() + "\u2026" : str || "";
   return (
     <div ref={cardRef} style={{
       width: 400, height: 711,
@@ -182,10 +444,7 @@ function StoryCard({ issue, cardRef }) {
       overflow: "hidden",
       flexShrink: 0,
     }}>
-      {/* Top bar */}
       <div style={{ height: 4, background: GOLD, flexShrink: 0 }} />
-
-      {/* Header */}
       <div style={{ padding: "14px 20px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ color: GOLD, fontSize: 9, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>HSV Civic Watch</div>
@@ -197,38 +456,30 @@ function StoryCard({ issue, cardRef }) {
           </div>
         )}
       </div>
-
-      {/* Title */}
       <div style={{ padding: "16px 20px 10px", flexShrink: 0 }}>
         <div style={{ color: "#ffffff", fontSize: 18, fontWeight: 700, lineHeight: 1.25 }}>
           {truncate(issue.title, 100)}
         </div>
       </div>
-
-      {/* Decoder sections */}
       <div style={{ flex: 1, padding: "0 20px 14px", display: "flex", flexDirection: "column", gap: 10, overflow: "hidden" }}>
-
         {dec.whatsHappening && (
           <div style={{ borderLeft: "3px solid " + GOLD, paddingLeft: 10 }}>
-            <div style={{ color: GOLD, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>What&#39;s Happening</div>
+            <div style={{ color: GOLD, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>What&apos;s Happening</div>
             <div style={{ color: GOLD, fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.whatsHappening, 180)}</div>
           </div>
         )}
-
         {dec.connections && (
           <div style={{ borderLeft: "3px solid #89C4E8", paddingLeft: 10 }}>
             <div style={{ color: "#89C4E8", fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>The Connections</div>
             <div style={{ color: "#89C4E8", fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.connections, 180)}</div>
           </div>
         )}
-
         {dec.whoBenefits && (
           <div style={{ borderLeft: "3px solid " + LAVENDER, paddingLeft: 10 }}>
             <div style={{ color: LAVENDER, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>Who Benefits</div>
             <div style={{ color: LAVENDER, fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.whoBenefits, 160)}</div>
           </div>
         )}
-
         {dec.impact && (
           <div style={{ borderLeft: "3px solid " + RED, paddingLeft: 10 }}>
             <div style={{ color: RED, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>The Impact</div>
@@ -236,14 +487,10 @@ function StoryCard({ issue, cardRef }) {
           </div>
         )}
       </div>
-
-      {/* CTA */}
       <div style={{ padding: "12px 20px", background: "rgba(62,139,91,0.15)", borderTop: "1px solid rgba(62,139,91,0.3)", flexShrink: 0 }}>
         <div style={{ color: GREEN, fontSize: 10, fontWeight: 700, letterSpacing: 1 }}>Full investigation + action steps at</div>
         <div style={{ color: GREEN, fontSize: 13, fontWeight: 700, marginTop: 2 }}>hsvcivicwatch.org</div>
       </div>
-
-      {/* Bottom bar */}
       <div style={{ height: 4, background: GREEN, flexShrink: 0 }} />
     </div>
   );
@@ -317,111 +564,62 @@ export default function IssueCard({ issue }) {
   const body = expanded || !long ? fullText : fullText.slice(0, PREVIEW_LIMIT) + "...";
 
   return (
-    <div style={{
+    <div ref={cardRef} style={{
       background: COLORS.panel,
-      border: `1px solid ${COLORS.border}`,
+      border: "1px solid " + COLORS.border,
       borderRadius: 14,
       padding: "18px 20px",
       marginBottom: 14,
       boxShadow: "0 1px 0 rgba(25,49,80,0.03)",
     }}>
-      {/* Label */}
       {issue.label ? (
         <div style={{
-          fontSize: 12,
-          fontWeight: 900,
+          fontSize: 12, fontWeight: 900,
           color: issue.labelColor || COLORS.navy,
-          letterSpacing: 1.2,
-          marginBottom: 10,
-          textTransform: "uppercase",
+          letterSpacing: 1.2, marginBottom: 10, textTransform: "uppercase",
         }}>
           {issue.label}
         </div>
       ) : null}
-
-      {/* Title */}
-      <div style={{
-        fontSize: 22,
-        fontWeight: 900,
-        color: COLORS.text,
-        marginBottom: 10,
-        lineHeight: 1.2,
-      }}>
+      <div style={{ fontSize: 22, fontWeight: 900, color: COLORS.text, marginBottom: 10, lineHeight: 1.2 }}>
         {issue.title}
       </div>
-
-      {/* Visual */}
       {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
         <IssueCardVisual config={issue.visual_config} />
       ) : null}
-      {/* Body */}
-      <div style={{
-        fontSize: 17,
-        color: COLORS.text,
-        lineHeight: 1.65,
-      }}>
+      <div style={{ fontSize: 17, color: COLORS.text, lineHeight: 1.65 }}>
         {body}
       </div>
-
-      {/* Read more / Show less */}
       {long ? (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            color: COLORS.gold,
-            fontSize: 15,
-            fontWeight: 800,
-            marginTop: 10,
-          }}
-        >
+        <button onClick={() => setExpanded(!expanded)} style={{
+          background: "transparent", border: "none", padding: 0,
+          cursor: "pointer", color: COLORS.gold, fontSize: 15, fontWeight: 800, marginTop: 10,
+        }}>
           {expanded ? "Show less \u25b2" : "Read more \u25bc"}
         </button>
       ) : null}
-
-      {/* Decode + Share buttons */}
       <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button
           onClick={() => {
             const next = !decoded;
             setDecoded(next);
             if (next) {
-              try {
-                localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() }));
-              } catch(e) {}
+              try { localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() })); } catch(e) {}
             }
           }}
           style={{
-            background: COLORS.gold,
-            color: COLORS.navyDark,
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 16px",
-            cursor: "pointer",
-            fontSize: 15,
-            fontWeight: 900,
+            background: COLORS.gold, color: COLORS.navyDark, border: "none",
+            borderRadius: 10, padding: "10px 16px", cursor: "pointer", fontSize: 15, fontWeight: 900,
           }}
         >
           {decoded ? "Hide Decoder \u25b2" : "Decode This \uD83D\uDD0E"}
         </button>
-        <button
-          onClick={handleShare}
-          disabled={sharing}
-          style={{
-            background: sharing ? COLORS.muted : COLORS.green,
-            color: "#fff",
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 16px",
-            cursor: sharing ? "not-allowed" : "pointer",
-            fontSize: 15,
-            fontWeight: 900,
-          }}
-        >
-          {sharing ? "Preparing..." : <span>Share <span style={{fontSize:"11px",fontFamily:"system-ui",verticalAlign:"middle"}}>↗</span></span>}
+        <button onClick={handleShare} disabled={sharing} style={{
+          background: sharing ? COLORS.muted : COLORS.green,
+          color: "#fff", border: "none", borderRadius: 10,
+          padding: "10px 16px", cursor: sharing ? "not-allowed" : "pointer", fontSize: 15, fontWeight: 900,
+        }}>
+          {sharing ? "Preparing..." : "Share \u2197"}
         </button>
       </div>
       {storyOpen && (
@@ -429,7 +627,6 @@ export default function IssueCard({ issue }) {
           <StoryCard issue={issue} cardRef={storyCardRef} />
         </div>
       )}
-
       {decoded ? (
         <CivicDecoderPanel analysis={issue.decoder} onHide={() => setDecoded(false)} />
       ) : null}

@@ -1,13 +1,9 @@
 export const COLORS = {
   bg: "#fbf7f0",
-
-  /* core surfaces */
   panel: "#f1e8db",
   panelAlt: "#ede3d3",
   panelSoft: "#f4ecdf",
   panelWarm: "#e8ddcb",
-
-  /* text + navigation */
   navy: "#193150",
   navyDark: "#20395d",
   sidebarBg: "#193150",
@@ -16,49 +12,34 @@ export const COLORS = {
   text: "#193150",
   textSoft: "#5e6d80",
   muted: "#6b778a",
-
-  /* borders */
   border: "#d8cfbf",
   borderStrong: "rgba(198,163,77,0.78)",
-
-  /* locked hierarchy colors */
   gold: "#C6A34D",
   goldSoft: "#f3ead1",
-
   blue: "#2F5D8A",
   blueSoft: "#dfeaf5",
-
   lavender: "#7A4FA3",
   lavenderSoft: "#ebe1f4",
-
   red: "#B4473E",
+  redDark: "#7A1F1A",
   redSoft: "#f4dfdb",
-
+  redDark: "#7A1F1A",
   green: "#3E8B5B",
   greenSoft: "#dfeee5",
-
   orange: "#cf7b2f",
   purple: "#7A4FA3",
   white: "#ffffff",
-
-  /* utility */
   tickerBg: "#102542",
-
-  /* added for better separation / contrast */
   card: "#f5ede1",
   cardAlt: "#eadfce",
   cardBorder: "#d2c3ab",
-
-  /* blueprint emphasis */
   blueprintBg: "rgba(62,139,91,0.10)",
   blueprintBorder: "rgba(62,139,91,0.34)",
 };
-
 export const SPACING = {
   pageMax: "1240px",
   radius: "14px",
 };
-
 export const TYPE = {
   body: 17,
   analysis: 17,
