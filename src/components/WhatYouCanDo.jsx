@@ -91,6 +91,23 @@ function CompactAction({ label, href, kind = "primary" }) {
   );
 }
 
+const v = (val) => (!val || String(val).trim().toUpperCase() === "UNKNOWN") ? null : val;
+
+const PATH_TYPE_LABELS = {
+  records_request: "Request Records",
+  investigation_request: "Request Investigation",
+  complaint: "File a Complaint",
+  misconduct_report: "Report Misconduct",
+  elections: "Election Path",
+  media_outreach: "Media Outreach",
+};
+
+const getPathTypeLabel = (type) => {
+  const cleanType = v(type);
+  if (!cleanType) return null;
+  return PATH_TYPE_LABELS[cleanType] || cleanType;
+};
+
 export default function WhatYouCanDo({ data }) {
   if (!data) return null;
 
@@ -149,12 +166,12 @@ export default function WhatYouCanDo({ data }) {
             >
               {contacts.map((contact, i) => (
                 <MiniCard key={i} title={contact.name}>
-                  {contact.role ? <div style={{ color: COLORS.textSoft, marginBottom: 6 }}>{contact.role}</div> : null}
-                  {contact.phone ? <div>Phone: {contact.phone}</div> : null}
-                  {contact.email ? <div>Email: {contact.email}</div> : null}
-                  {contact.officialLink ? (
+                  {v(contact.role) ? <div style={{ color: COLORS.textSoft, marginBottom: 6 }}>{v(contact.role)}</div> : null}
+                  {v(contact.phone) ? <div>Phone: {v(contact.phone)}</div> : null}
+                  {v(contact.email) ? <div>Email: {v(contact.email)}</div> : null}
+                  {v(contact.officialLink) ? (
                     <div style={{ marginTop: 6 }}>
-                      <a href={contact.officialLink} target="_blank" rel="noreferrer">
+                      <a href={v(contact.officialLink)} target="_blank" rel="noreferrer">
                         Official link
                       </a>
                     </div>
@@ -170,22 +187,22 @@ export default function WhatYouCanDo({ data }) {
             <div style={{ display: "grid", gap: 8 }}>
               {meetings.map((meeting, i) => (
                 <MiniCard key={i} title={meeting.title}>
-                  {meeting.dateTime ? (
+                  {v(meeting.dateTime) ? (
                     <div>
-                      <strong>When:</strong> {meeting.dateTime}
+                      <strong>When:</strong> {v(meeting.dateTime)}
                     </div>
                   ) : null}
-                  {meeting.location ? (
+                  {v(meeting.location) ? (
                     <div>
-                      <strong>Where:</strong> {meeting.location}
+                      <strong>Where:</strong> {v(meeting.location)}
                     </div>
                   ) : null}
-                  {meeting.frequency ? (
+                  {v(meeting.frequency) ? (
                     <div>
-                      <strong>Frequency:</strong> {meeting.frequency}
+                      <strong>Frequency:</strong> {v(meeting.frequency)}
                     </div>
                   ) : null}
-                  {meeting.why ? <div style={{ marginTop: 5 }}>{meeting.why}</div> : null}
+                  {v(meeting.why) ? <div style={{ marginTop: 5 }}>{v(meeting.why)}</div> : null}
                 </MiniCard>
               ))}
             </div>
@@ -197,15 +214,15 @@ export default function WhatYouCanDo({ data }) {
             <div style={{ display: "grid", gap: 8 }}>
               {paths.map((path, i) => (
                 <MiniCard key={i} title={path.destination}>
-                  {path.type ? (
+                  {getPathTypeLabel(path.type) ? (
                     <div>
-                      <strong>Type:</strong> {path.type}
+                      <strong>Type:</strong> {getPathTypeLabel(path.type)}
                     </div>
                   ) : null}
-                  {path.why ? <div style={{ marginTop: 4 }}>{path.why}</div> : null}
-                  {path.link ? (
+                  {v(path.why) ? <div style={{ marginTop: 4 }}>{v(path.why)}</div> : null}
+                  {v(path.link) ? (
                     <div style={{ marginTop: 6 }}>
-                      <a href={path.link} target="_blank" rel="noreferrer">
+                      <a href={v(path.link)} target="_blank" rel="noreferrer">
                         Open filing path
                       </a>
                     </div>

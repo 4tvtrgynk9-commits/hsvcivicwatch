@@ -18,9 +18,9 @@ function isUrl(str) {
 function linkLabel(type) {
   if (!type) return "Open link";
   var t = type.toLowerCase();
-  if (t.includes("records") || t.includes("request")) return "Request records";
+  if (t.includes("investigation")) return "Request investigation";
+  if (t.includes("records")) return "Request records";
   if (t.includes("complaint")) return "File complaint";
-  if (t.includes("investigation")) return "Open investigation request";
   if (t.includes("misconduct")) return "Submit misconduct report";
   if (t.includes("election") || t.includes("vote") || t.includes("register")) return "Register to vote";
   if (t.includes("organiz")) return "Connect with organizers";
