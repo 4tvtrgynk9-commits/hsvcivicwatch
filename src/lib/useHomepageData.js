@@ -133,13 +133,8 @@ export default function useHomepageData() {
   }, []);
 
   const activeInvestigations = useMemo(() => {
-    const filtered = issueCards
-      .filter(card =>
-        (card.show_on_overview || !card.tab || card.tab === "overview") &&
-        card.module &&
-        card.title &&
-        card.ref_number
-      )
+    const ranked = issueCards
+      .filter(card => card.module && card.title && card.ref_number)
       .sort((a, b) => {
         const aHomepage = Number(a.homepage_score || a.shock_score || a.visual_score || 0);
         const bHomepage = Number(b.homepage_score || b.shock_score || b.visual_score || 0);
@@ -152,14 +147,18 @@ export default function useHomepageData() {
         return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
       });
 
+    const preferred = ranked.filter(card => card.show_on_overview || !card.tab || card.tab === "overview");
+    const source = preferred.length ? preferred : ranked;
+
     const perModuleCap = {};
     const selected = [];
-    for (const card of filtered) {
+    for (const card of source) {
       const module = card.module || "unknown";
       const count = perModuleCap[module] || 0;
       if (count >= 2) continue;
       perModuleCap[module] = count + 1;
       selected.push(card);
+      if (selected.length >= 4) break;
     }
 
     return selected.map(toActiveInvestigation);
@@ -171,7 +170,6 @@ export default function useHomepageData() {
       .filter(block => {
         const d = block.data || block;
         return (
-          Number(block.strength_score || 0) >= 5 &&
           allowedTypes.has(d.type || block.type) &&
           statLabelText(block) &&
           statValueText(block)
@@ -181,13 +179,13 @@ export default function useHomepageData() {
         if ((b.strength_score || 0) !== (a.strength_score || 0)) {
           return (b.strength_score || 0) - (a.strength_score || 0);
         }
-        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        return new Date(b.created_at || 0) - new Date(a.created_at || a.created_at || 0);
       })
       .map(toKeyNumber);
 
     if (rankedStats.length) return rankedStats;
 
-    return issueCards
+    const visualFallback = issueCards
       .filter(card => card.visual_config && Array.isArray(card.visual_config.data) && card.visual_config.data.length)
       .sort((a, b) => {
         const aScore = Number(a.shock_score || a.visual_score || 0);
@@ -197,6 +195,22 @@ export default function useHomepageData() {
       })
       .map(visualConfigToKeyNumber)
       .filter(Boolean);
+
+    if (visualFallback.length) return visualFallback;
+
+    return issueCards
+      .filter(card => card.module && card.title)
+      .sort((a, b) => new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0))
+      .slice(0, 6)
+      .map(card => ({
+        id: card.ref_number || card.id,
+        label: card.label || "Investigation",
+        value: card.shock_score ? `${card.shock_score}/10` : "LIVE",
+        sub: card.title || "",
+        color: COLOR_MAP.gold,
+        target: card.module,
+        ref_number: card.ref_number || "",
+      }));
   }, [statBlocks, issueCards]);
 
   const moduleCounts = useMemo(() => {
