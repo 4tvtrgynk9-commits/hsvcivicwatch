@@ -75,6 +75,7 @@ export default function App() {
     const currentRoute = previousRoute.current;
     scrollPositions.current[currentRoute] = window.scrollY;
     previousRoute.current = nextRoute;
+    try { sessionStorage.removeItem("hsv_decoder_state"); } catch (e) {}
     if (pushHistory) {
       window.history.pushState({ route: nextRoute }, "", `#${nextRoute}`);
     }

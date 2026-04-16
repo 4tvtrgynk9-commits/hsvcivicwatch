@@ -53,6 +53,24 @@ function toKeyNumber(block) {
   };
 }
 
+function visualConfigToKeyNumber(card) {
+  const visual = card.visual_config || {};
+  const data = Array.isArray(visual.data) ? visual.data : [];
+  const first = data.find(item => item && (item.value !== undefined && item.value !== null));
+  if (!first) return null;
+
+  return {
+    id: card.ref_number || card.id,
+    label: first.label || card.label || "Key number",
+    value: typeof first.value === "number" ? String(first.value) : (first.value || ""),
+    sub: first.context || card.summary || "",
+    color: COLOR_MAP[first.color] || COLOR_MAP.gold,
+    target: card.module,
+    strength_score: card.shock_score || card.visual_score || 0,
+    ref_number: card.ref_number || "",
+  };
+}
+
 function toActiveInvestigation(card) {
   const score = Number(card.homepage_score || 0);
   const shock = Number(card.shock_score || 0);
@@ -117,19 +135,20 @@ export default function useHomepageData() {
   const activeInvestigations = useMemo(() => {
     const filtered = issueCards
       .filter(card =>
-        card.show_on_overview &&
-        Number(card.homepage_score || 0) >= 5 &&
+        (card.show_on_overview || !card.tab || card.tab === "overview") &&
         card.module &&
         card.title &&
         card.ref_number
       )
       .sort((a, b) => {
-        if ((b.homepage_score || 0) !== (a.homepage_score || 0)) {
-          return (b.homepage_score || 0) - (a.homepage_score || 0);
-        }
-        if ((b.shock_score || 0) !== (a.shock_score || 0)) {
-          return (b.shock_score || 0) - (a.shock_score || 0);
-        }
+        const aHomepage = Number(a.homepage_score || a.shock_score || a.visual_score || 0);
+        const bHomepage = Number(b.homepage_score || b.shock_score || b.visual_score || 0);
+        if (bHomepage !== aHomepage) return bHomepage - aHomepage;
+
+        const aShock = Number(a.shock_score || a.visual_score || 0);
+        const bShock = Number(b.shock_score || b.visual_score || 0);
+        if (bShock !== aShock) return bShock - aShock;
+
         return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
       });
 
@@ -148,7 +167,7 @@ export default function useHomepageData() {
 
   const keyNumbers = useMemo(() => {
     const allowedTypes = new Set(["key-number", "comparison-bar", "pay-clock", "trend-line", "bar-chart"]);
-    return statBlocks
+    const rankedStats = statBlocks
       .filter(block => {
         const d = block.data || block;
         return (
@@ -165,7 +184,20 @@ export default function useHomepageData() {
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
       })
       .map(toKeyNumber);
-  }, [statBlocks]);
+
+    if (rankedStats.length) return rankedStats;
+
+    return issueCards
+      .filter(card => card.visual_config && Array.isArray(card.visual_config.data) && card.visual_config.data.length)
+      .sort((a, b) => {
+        const aScore = Number(a.shock_score || a.visual_score || 0);
+        const bScore = Number(b.shock_score || b.visual_score || 0);
+        if (bScore !== aScore) return bScore - aScore;
+        return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
+      })
+      .map(visualConfigToKeyNumber)
+      .filter(Boolean);
+  }, [statBlocks, issueCards]);
 
   const moduleCounts = useMemo(() => {
     const counts = {};

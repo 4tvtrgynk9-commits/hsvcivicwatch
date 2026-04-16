@@ -533,6 +533,7 @@ export default function IssueCard({ issue }) {
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
   const SCROLL_KEY = "hsv_last_card";
+  const DECODER_KEY = "hsv_decoder_state";
   const SCROLL_TTL = 24 * 60 * 60 * 1000;
 
   useEffect(() => {
@@ -540,10 +541,21 @@ export default function IssueCard({ issue }) {
       const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
       const age = Date.now() - (saved.ts || 0);
       if (saved.id === cardId && age < SCROLL_TTL) {
-        setDecoded(true);
         setTimeout(() => {
           cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 200);
+      }
+    } catch(e) {}
+  }, [cardId]);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(DECODER_KEY) || "{}");
+      const currentRoute = window.location.hash.replace("#", "") || "dashboard";
+      if (saved.id === cardId && saved.route === currentRoute) {
+        setDecoded(true);
+      } else {
+        setDecoded(false);
       }
     } catch(e) {}
   }, [cardId]);
@@ -603,9 +615,18 @@ export default function IssueCard({ issue }) {
           onClick={() => {
             const next = !decoded;
             setDecoded(next);
-            if (next) {
-              try { localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() })); } catch(e) {}
-            }
+            try {
+              localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() }));
+              if (next) {
+                sessionStorage.setItem(DECODER_KEY, JSON.stringify({
+                  id: cardId,
+                  route: window.location.hash.replace("#", "") || "dashboard",
+                  ts: Date.now()
+                }));
+              } else {
+                sessionStorage.removeItem(DECODER_KEY);
+              }
+            } catch(e) {}
           }}
           style={{
             background: COLORS.gold, color: COLORS.navyDark, border: "none",
@@ -628,7 +649,13 @@ export default function IssueCard({ issue }) {
         </div>
       )}
       {decoded ? (
-        <CivicDecoderPanel analysis={issue.decoder} onHide={() => setDecoded(false)} />
+        <CivicDecoderPanel
+          analysis={issue.decoder}
+          onHide={() => {
+            setDecoded(false);
+            try { sessionStorage.removeItem(DECODER_KEY); } catch(e) {}
+          }}
+        />
       ) : null}
     </div>
   );
