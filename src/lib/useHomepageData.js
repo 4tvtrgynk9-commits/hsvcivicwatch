@@ -54,15 +54,24 @@ function toKeyNumber(block) {
 }
 
 function toActiveInvestigation(card) {
+  const score = Number(card.homepage_score || 0);
+  const shock = Number(card.shock_score || 0);
+  const color =
+    shock >= 9 ? COLOR_MAP.red :
+    shock >= 7 ? COLOR_MAP.gold :
+    shock >= 5 ? COLOR_MAP.blue :
+    COLOR_MAP.lavender;
+
   return {
     id: card.ref_number || card.id,
     module: card.module,
     tag: card.label || card.module,
-    color: COLOR_MAP.gold,
+    color,
     title: card.title || "",
     summary: card.summary || "",
-    homepage_score: card.homepage_score || 0,
+    homepage_score: score,
     ref_number: card.ref_number || "",
+    published_at: card.published_at || card.created_at || null,
   };
 }
 
@@ -106,20 +115,49 @@ export default function useHomepageData() {
   }, []);
 
   const activeInvestigations = useMemo(() => {
-    return issueCards
-      .filter(card => card.show_on_overview)
+    const filtered = issueCards
+      .filter(card =>
+        card.show_on_overview &&
+        Number(card.homepage_score || 0) >= 5 &&
+        card.module &&
+        card.title &&
+        card.ref_number
+      )
       .sort((a, b) => {
         if ((b.homepage_score || 0) !== (a.homepage_score || 0)) {
           return (b.homepage_score || 0) - (a.homepage_score || 0);
         }
+        if ((b.shock_score || 0) !== (a.shock_score || 0)) {
+          return (b.shock_score || 0) - (a.shock_score || 0);
+        }
         return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
-      })
-      .map(toActiveInvestigation);
+      });
+
+    const perModuleCap = {};
+    const selected = [];
+    for (const card of filtered) {
+      const module = card.module || "unknown";
+      const count = perModuleCap[module] || 0;
+      if (count >= 2) continue;
+      perModuleCap[module] = count + 1;
+      selected.push(card);
+    }
+
+    return selected.map(toActiveInvestigation);
   }, [issueCards]);
 
   const keyNumbers = useMemo(() => {
+    const allowedTypes = new Set(["key-number", "comparison-bar", "pay-clock", "trend-line", "bar-chart"]);
     return statBlocks
-      .filter(block => (block.strength_score || 0) >= 1)
+      .filter(block => {
+        const d = block.data || block;
+        return (
+          Number(block.strength_score || 0) >= 5 &&
+          allowedTypes.has(d.type || block.type) &&
+          statLabelText(block) &&
+          statValueText(block)
+        );
+      })
       .sort((a, b) => {
         if ((b.strength_score || 0) !== (a.strength_score || 0)) {
           return (b.strength_score || 0) - (a.strength_score || 0);
