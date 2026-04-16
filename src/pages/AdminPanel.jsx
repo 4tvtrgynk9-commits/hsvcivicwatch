@@ -1206,23 +1206,16 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
     <div
       id={`admin-item-${card.id}`}
       style={{
-        background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
-        border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
+        background:"#f5f0e8",
+        border:"1px solid #ddd8cf",
         borderRadius:10,
         marginBottom:18,
-        overflow:"visible",
-        animation: animate ? "hsvAdminEditedPulse 3.2s ease-in-out 1" : "none",
-        transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+        overflow:"hidden",
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
           <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{card.ref_number}</span>
-          {highlight ? (
-            <span style={{ background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", fontSize:11, fontWeight:700, padding:"4px 9px", borderRadius:999, textTransform:"uppercase", letterSpacing:1 }}>
-              Updated
-            </span>
-          ) : null}
         </div>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
           <span style={{ background:"#b8860b", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
@@ -1248,23 +1241,16 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
     <div
       id={`admin-item-${block.id}`}
       style={{
-        background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
-        border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
+        background:"#f5f0e8",
+        border:"1px solid #ddd8cf",
         borderRadius:10,
         marginBottom:18,
-        overflow:"visible",
-        animation: animate ? "hsvAdminEditedPulse 3.2s ease-in-out 1" : "none",
-        transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+        overflow:"hidden",
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
           <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{block.ref_number}</span>
-          {highlight ? (
-            <span style={{ background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", fontSize:11, fontWeight:700, padding:"4px 9px", borderRadius:999, textTransform:"uppercase", letterSpacing:1 }}>
-              Updated
-            </span>
-          ) : null}
         </div>
         <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
           <span style={{ background:"#1a5276", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
