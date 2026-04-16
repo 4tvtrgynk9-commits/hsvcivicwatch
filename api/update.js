@@ -22,6 +22,7 @@ const ISSUE_CARD_FIELDS = [
   "label",
   "title",
   "summary",
+  "homepage_teaser",
   "details",
   "decoder",
 ];
@@ -67,6 +68,9 @@ function sanitizeIssueCardPayload(payload) {
   }
   if (cleaned.summary !== undefined && typeof cleaned.summary === "string") {
     cleaned.summary = cleaned.summary.trim();
+  }
+  if (cleaned.homepage_teaser !== undefined && typeof cleaned.homepage_teaser === "string") {
+    cleaned.homepage_teaser = cleaned.homepage_teaser.trim();
   }
   if (cleaned.details !== undefined && typeof cleaned.details === "string") {
     cleaned.details = cleaned.details.trim();

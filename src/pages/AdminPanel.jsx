@@ -355,6 +355,7 @@ function buildIssueEditState(item) {
     label: item.label || "",
     title: item.title || "",
     summary: item.summary || "",
+    homepage_teaser: item.homepage_teaser || "",
     details: item.details || "",
     decoder: {
       whatsHappening: item.decoder?.whatsHappening || "",
@@ -689,6 +690,16 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
               <div style={{ marginBottom:16 }}>
                 <FieldLabel>Summary</FieldLabel>
                 <TextArea rows={4} value={issueState.summary} onChange={e => setIssueState(prev => ({ ...prev, summary: e.target.value }))} />
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Homepage Teaser</FieldLabel>
+                <TextArea
+                  rows={3}
+                  placeholder={"1-2 punchy exposé-style sentences for the homepage mini issue card."}
+                  value={issueState.homepage_teaser}
+                  onChange={e => setIssueState(prev => ({ ...prev, homepage_teaser: e.target.value }))}
+                />
               </div>
 
               <div style={{ marginBottom:20 }}>
