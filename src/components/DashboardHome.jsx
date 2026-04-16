@@ -59,31 +59,57 @@ function FeedRow({ item, onClick }) {
         width: "100%",
         background: COLORS.card,
         border: `1px solid ${COLORS.cardBorder}`,
+        borderTop: `4px solid ${item.color || COLORS.gold}`,
         borderRadius: 14,
-        padding: "13px 15px",
+        padding: "14px 16px",
         cursor: "pointer",
-        display: "flex",
-        gap: 12,
-        alignItems: "center",
+        display: "block",
         textAlign: "left",
         color: COLORS.text,
       }}
-      title={item.ref_number || item.title}
+      title={item.title}
     >
-      <span
+      <div
         style={{
-          fontSize: 11.5,
+          fontSize: 11,
           fontWeight: 900,
           textTransform: "uppercase",
-          letterSpacing: 1.2,
-          color: item.color,
-          minWidth: 132,
+          letterSpacing: 1.4,
+          color: item.color || COLORS.gold,
+          marginBottom: 8,
         }}
       >
         {item.tag}
-      </span>
-      <span style={{ flex: 1, fontSize: 15.5, lineHeight: 1.32 }}>{item.title}</span>
-      <span style={{ color: COLORS.textSoft, fontWeight: 800, fontSize: 12.5 }}>View →</span>
+      </div>
+
+      <div
+        style={{
+          fontSize: 16,
+          fontWeight: 900,
+          lineHeight: 1.28,
+          color: COLORS.text,
+          marginBottom: item.summary ? 8 : 10,
+        }}
+      >
+        {item.title}
+      </div>
+
+      {item.summary ? (
+        <div
+          style={{
+            color: COLORS.textSoft,
+            fontSize: 13.5,
+            lineHeight: 1.42,
+            marginBottom: 10,
+          }}
+        >
+          {item.summary}
+        </div>
+      ) : null}
+
+      <div style={{ color: COLORS.textSoft, fontWeight: 800, fontSize: 12.5 }}>
+        Open investigation →
+      </div>
     </button>
   );
 }
@@ -601,30 +627,34 @@ export default function DashboardHome({ onOpenModule }) {
 
         <PayPanel elapsed={elapsed} onOpenModule={onOpenModule} />
 
-        <section style={{ marginBottom: 18 }}>
-          {sectionTitle("Active investigations")}
-          <div style={{ display: "grid", gap: 10 }}>
-            {visibleInvestigations.map((item) => (
-              <FeedRow key={item.ref_number || item.title} item={item} onClick={() => openSpecificInvestigation(item)} />
-            ))}
-          </div>
-        </section>
+        {visibleInvestigations.length > 0 ? (
+          <section style={{ marginBottom: 18 }}>
+            {sectionTitle("Active investigations")}
+            <div style={{ display: "grid", gap: 10 }}>
+              {visibleInvestigations.map((item) => (
+                <FeedRow key={item.ref_number || item.title} item={item} onClick={() => openSpecificInvestigation(item)} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-        <section style={{ marginBottom: 18 }}>
-          {sectionTitle("Key numbers — Huntsville 2026")}
-          <div
-            className="hci-home-keys"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: 12,
-            }}
-          >
-            {visibleKeyNumbers.map((item) => (
-              <KeyCard key={item.ref_number || item.label} item={item} onClick={() => onOpenModule(item.target)} />
-            ))}
-          </div>
-        </section>
+        {visibleKeyNumbers.length > 0 ? (
+          <section style={{ marginBottom: 18 }}>
+            {sectionTitle("Key numbers — Huntsville 2026")}
+            <div
+              className="hci-home-keys"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 12,
+              }}
+            >
+              {visibleKeyNumbers.map((item) => (
+                <KeyCard key={item.ref_number || item.label} item={item} onClick={() => onOpenModule(item.target)} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section style={{ marginBottom: 16 }}>
           {sectionTitle("Investigations")}

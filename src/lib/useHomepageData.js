@@ -11,115 +11,6 @@ const COLOR_MAP = {
   orange: "#cf7b2f",
 };
 
-const FALLBACK_ACTIVE_INVESTIGATIONS = [
-  {
-    id: "utilities-fallback",
-    module: "utilities",
-    tag: "Utilities",
-    color: COLOR_MAP.blue,
-    title: "The risk is in Alabama. The control is not.",
-    summary: "",
-    homepage_score: 10,
-    ref_number: "",
-    published_at: null,
-  },
-  {
-    id: "health-fallback",
-    module: "health",
-    tag: "Health System",
-    color: COLOR_MAP.red,
-    title: "Nonprofit on paper. Monopoly in practice.",
-    summary: "",
-    homepage_score: 9,
-    ref_number: "",
-    published_at: null,
-  },
-  {
-    id: "equity-fallback",
-    module: "equity",
-    tag: "Equity",
-    color: COLOR_MAP.gold,
-    title: "One growth story. Two very different cities.",
-    summary: "",
-    homepage_score: 8,
-    ref_number: "",
-    published_at: null,
-  },
-  {
-    id: "money-fallback",
-    module: "money",
-    tag: "Follow the Money",
-    color: COLOR_MAP.lavender,
-    title: "The same names keep showing up.",
-    summary: "",
-    homepage_score: 8,
-    ref_number: "",
-    published_at: null,
-  },
-];
-
-const FALLBACK_KEY_NUMBERS = [
-  {
-    id: "tva-debt-fallback",
-    label: "TVA Debt",
-    value: "$20B+",
-    sub: "Debt tied to the monopoly power system residents still fund.",
-    color: COLOR_MAP.red,
-    target: "utilities",
-    strength_score: 10,
-    ref_number: "",
-  },
-  {
-    id: "hospital-buyout-fallback",
-    label: "Hospital Buyout",
-    value: "$450M",
-    sub: "Crestwood acquisition accelerated monopoly concerns.",
-    color: COLOR_MAP.lavender,
-    target: "health",
-    strength_score: 9,
-    ref_number: "",
-  },
-  {
-    id: "pretrial-fallback",
-    label: "Pretrial Detention",
-    value: "61%",
-    sub: "People jailed before conviction, punished by poverty first.",
-    color: COLOR_MAP.green,
-    target: "criminal_justice",
-    strength_score: 8,
-    ref_number: "",
-  },
-  {
-    id: "covid-prisons-fallback",
-    label: "COVID Funds to Prisons",
-    value: "$400M",
-    sub: "Pandemic relief redirected into prison construction.",
-    color: COLOR_MAP.gold,
-    target: "criminal_justice",
-    strength_score: 8,
-    ref_number: "",
-  },
-  {
-    id: "subsidy-fallback",
-    label: "Front Row Subsidy",
-    value: "$16M",
-    sub: "City investment helping underwrite luxury downtown development.",
-    color: COLOR_MAP.orange,
-    target: "housing_crisis",
-    strength_score: 7,
-    ref_number: "",
-  },
-  {
-    id: "grocery-tax-fallback",
-    label: "Grocery Tax",
-    value: "7%",
-    sub: "A tax on food that hits working households first.",
-    color: COLOR_MAP.blue,
-    target: "taxation",
-    strength_score: 7,
-    ref_number: "",
-  },
-];
 
 function statValueText(block) {
   const d = block.data || block;
@@ -271,8 +162,7 @@ export default function useHomepageData() {
       if (selected.length >= 12) break;
     }
 
-    const mapped = selected.map(toActiveInvestigation);
-    return mapped.length ? mapped : FALLBACK_ACTIVE_INVESTIGATIONS;
+    return selected.map(toActiveInvestigation);
   }, [issueCards]);
 
   const keyNumbers = useMemo(() => {
@@ -309,21 +199,7 @@ export default function useHomepageData() {
 
     if (visualFallback.length) return visualFallback;
 
-    const recentIssueFallback = issueCards
-      .filter(card => card.module && card.title)
-      .sort((a, b) => new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0))
-      .slice(0, 6)
-      .map(card => ({
-        id: card.ref_number || card.id,
-        label: card.label || "Investigation",
-        value: card.shock_score ? `${card.shock_score}/10` : "LIVE",
-        sub: card.title || "",
-        color: COLOR_MAP.gold,
-        target: card.module,
-        ref_number: card.ref_number || "",
-      }));
-
-    return recentIssueFallback.length ? recentIssueFallback : FALLBACK_KEY_NUMBERS;
+    return [];
   }, [statBlocks, issueCards]);
 
   const moduleCounts = useMemo(() => {
