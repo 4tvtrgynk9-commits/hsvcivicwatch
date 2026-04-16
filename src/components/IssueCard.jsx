@@ -542,27 +542,25 @@ export default function IssueCard({ issue }) {
       const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
       const age = Date.now() - (saved.ts || 0);
       if (saved.id === cardId && age < SCROLL_TTL) {
-        const scrollToCard = () => {
+        const scrollToCard = (behavior = "smooth") => {
           if (!cardRef.current) return;
           const isMobile = window.innerWidth < 960;
-          const headerOffset = isMobile ? 96 : 24;
-          const rect = cardRef.current.getBoundingClientRect();
-          const absoluteTop = window.scrollY + rect.top - headerOffset;
+          const headerOffset = isMobile ? 84 : 20;
+          const absoluteTop = cardRef.current.offsetTop - headerOffset;
 
           window.scrollTo({
             top: Math.max(absoluteTop, 0),
-            behavior: "smooth",
+            behavior,
           });
         };
 
-        setTimeout(scrollToCard, 180);
-        setTimeout(scrollToCard, 520);
-        setTimeout(scrollToCard, 950);
+        setTimeout(() => scrollToCard("auto"), 160);
+        setTimeout(() => scrollToCard("smooth"), 420);
 
         setTimeout(() => {
           setArrivalHighlight(true);
           setTimeout(() => setArrivalHighlight(false), 3200);
-        }, 1050);
+        }, 700);
       }
     } catch(e) {}
   }, [cardId]);
