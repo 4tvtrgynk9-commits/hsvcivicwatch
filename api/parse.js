@@ -652,21 +652,28 @@ For each card return:
 - cardIndex
 - shock_score (1-10)
 - module_relevance_score (1-10)
+- homepage_teaser
 
 Rules:
 - Shock score is the primary score. It measures how alarming, urgent, or stop-scrolling this card is for a general Huntsville resident with no prior context.
 - Module relevance score measures whether the card represents a truth about the whole module, not just a narrow side issue.
+- homepage_teaser must be 1-2 short punchy newsy expose-style sentences.
+- homepage_teaser should say what happened and why it matters.
+- homepage_teaser should make the resident want to open the full issue card.
+- homepage_teaser must be shorter and tighter than the summary.
+- No bullet points. No labels. No quotation marks unless necessary.
 - 8-10 shock: extreme disparity, direct contradiction, named official/company, large harms or money, monopoly/power abuse, strong public urgency.
 - 5-7 shock: meaningful, real, relevant, but not an immediate gut punch.
 - 1-4 shock: background or administrative context.
-- Return integers only.
+- Return integers only for scores.
 
 Format:
 [
   {
     "cardIndex": 0,
     "shock_score": 8,
-    "module_relevance_score": 7
+    "module_relevance_score": 7,
+    "homepage_teaser": "..."
   }
 ]`;
 
@@ -707,6 +714,7 @@ Format:
               parsed.issueCards[result.cardIndex].inline_visual_score = inlineVisual;
               parsed.issueCards[result.cardIndex].visual_score = inlineVisual;
               parsed.issueCards[result.cardIndex].homepage_score = computeHomepageScore(shock, moduleRelevance);
+              parsed.issueCards[result.cardIndex].homepage_teaser = String(result.homepage_teaser || "").trim();
             }
           });
         }
@@ -726,6 +734,7 @@ Format:
           inline_visual_score: inlineVisual,
           visual_score: inlineVisual,
           homepage_score: computeHomepageScore(shock, moduleRelevance),
+          homepage_teaser: String(card.homepage_teaser || "").trim(),
         };
       });
     }

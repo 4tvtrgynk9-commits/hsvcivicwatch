@@ -87,7 +87,7 @@ function toActiveInvestigation(card) {
     tag: card.label || card.module,
     color,
     title: card.title || "",
-    summary: card.summary || "",
+    summary: card.homepage_teaser || card.summary || "",
     homepage_score: score,
     ref_number: card.ref_number || "",
     published_at: card.published_at || card.created_at || null,

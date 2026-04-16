@@ -1969,6 +1969,7 @@ export default function AdminPanel() {
         module_relevance_score: confirmIssue.module_relevance_score || null,
         inline_visual_score: confirmIssue.inline_visual_score || confirmIssue.visual_score || null,
         homepage_score: confirmIssue.homepage_score || null,
+        homepage_teaser: confirmIssue.homepage_teaser || "",
         published_at: new Date().toISOString(),
         ref_number
       }).select();
@@ -2056,6 +2057,7 @@ export default function AdminPanel() {
           module_relevance_score: card.module_relevance_score || null,
           inline_visual_score: card.inline_visual_score || card.visual_score || null,
           homepage_score: card.homepage_score || null,
+          homepage_teaser: card.homepage_teaser || "",
           published_at: new Date().toISOString(),
           ref_number
         }).select();
