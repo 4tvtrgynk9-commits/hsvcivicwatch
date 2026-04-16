@@ -225,36 +225,36 @@ function pulseWiggleStyle() {
         box-shadow: 0 0 0 rgba(62,139,91,0);
       }
       8% {
-        transform: translateX(-8px);
+        transform: translateX(-12px);
         box-shadow:
-          0 0 0 4px rgba(62,139,91,0.30),
-          0 0 0 10px rgba(62,139,91,0.14),
-          0 0 28px rgba(62,139,91,0.22);
+          0 0 0 5px rgba(62,139,91,0.34),
+          0 0 0 13px rgba(62,139,91,0.16),
+          0 0 34px rgba(62,139,91,0.26);
       }
-      16% { transform: translateX(8px); }
-      24% { transform: translateX(-8px); }
+      16% { transform: translateX(12px); }
+      24% { transform: translateX(-12px); }
       32% { transform: translateX(0); }
 
       40% {
-        transform: translateX(-8px);
+        transform: translateX(-12px);
         box-shadow:
           0 0 0 4px rgba(62,139,91,0.24),
           0 0 0 8px rgba(62,139,91,0.10),
           0 0 22px rgba(62,139,91,0.18);
       }
-      48% { transform: translateX(8px); }
-      56% { transform: translateX(-8px); }
+      48% { transform: translateX(12px); }
+      56% { transform: translateX(-12px); }
       64% { transform: translateX(0); }
 
       72% {
-        transform: translateX(-8px);
+        transform: translateX(-12px);
         box-shadow:
           0 0 0 3px rgba(62,139,91,0.18),
           0 0 0 6px rgba(62,139,91,0.08),
           0 0 14px rgba(62,139,91,0.14);
       }
-      80% { transform: translateX(8px); }
-      88% { transform: translateX(-8px); }
+      80% { transform: translateX(12px); }
+      88% { transform: translateX(-12px); }
       100% {
         transform: translateX(0);
         box-shadow: 0 0 0 rgba(62,139,91,0);
@@ -1209,13 +1209,13 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
         background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
         border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
         borderRadius:10,
-        marginBottom:12,
+        marginBottom:18,
         overflow:"visible",
-        animation: animate ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        animation: animate ? "hsvAdminEditedPulse 3.2s ease-in-out 1" : "none",
         transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
           <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{card.ref_number}</span>
           {highlight ? (
@@ -1251,13 +1251,13 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
         background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
         border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
         borderRadius:10,
-        marginBottom:12,
+        marginBottom:18,
         overflow:"visible",
-        animation: animate ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        animation: animate ? "hsvAdminEditedPulse 3.2s ease-in-out 1" : "none",
         transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
           <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{block.ref_number}</span>
           {highlight ? (
