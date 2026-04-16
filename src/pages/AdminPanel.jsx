@@ -220,14 +220,46 @@ function getTabsForModule(module) {
 function pulseWiggleStyle() {
   return `
     @keyframes hsvAdminEditedPulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 rgba(184,134,11,0); }
-      12% { transform: scale(1.01) rotate(-0.4deg); box-shadow: 0 0 0 4px rgba(184,134,11,0.28); }
-      24% { transform: scale(1.01) rotate(0.4deg); box-shadow: 0 0 0 8px rgba(184,134,11,0.18); }
-      36% { transform: scale(1.01) rotate(-0.3deg); box-shadow: 0 0 0 10px rgba(184,134,11,0.12); }
-      48% { transform: scale(1.01) rotate(0.3deg); box-shadow: 0 0 0 8px rgba(184,134,11,0.16); }
-      60% { transform: scale(1.005) rotate(-0.2deg); box-shadow: 0 0 0 6px rgba(184,134,11,0.12); }
-      72% { transform: scale(1.005) rotate(0.2deg); box-shadow: 0 0 0 4px rgba(184,134,11,0.10); }
-      100% { transform: scale(1); box-shadow: 0 0 0 rgba(184,134,11,0); }
+      0% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 0 rgba(62,139,91,0), 0 0 0 rgba(184,134,11,0);
+        border-color: #ddd8cf;
+      }
+      10% {
+        transform: scale(1.01) rotate(-0.45deg);
+        box-shadow: 0 0 0 3px rgba(62,139,91,0.20), 0 0 18px rgba(62,139,91,0.22);
+        border-color: rgba(62,139,91,0.60);
+      }
+      20% {
+        transform: scale(1.012) rotate(0.45deg);
+        box-shadow: 0 0 0 6px rgba(62,139,91,0.16), 0 0 26px rgba(62,139,91,0.26);
+        border-color: rgba(62,139,91,0.72);
+      }
+      35% {
+        transform: scale(1.01) rotate(-0.35deg);
+        box-shadow: 0 0 0 8px rgba(62,139,91,0.12), 0 0 32px rgba(62,139,91,0.28);
+        border-color: rgba(62,139,91,0.78);
+      }
+      50% {
+        transform: scale(1.012) rotate(0.35deg);
+        box-shadow: 0 0 0 6px rgba(62,139,91,0.14), 0 0 28px rgba(62,139,91,0.24), 0 0 0 2px rgba(198,163,77,0.18) inset;
+        border-color: rgba(62,139,91,0.68);
+      }
+      65% {
+        transform: scale(1.008) rotate(-0.2deg);
+        box-shadow: 0 0 0 4px rgba(62,139,91,0.10), 0 0 18px rgba(62,139,91,0.18);
+        border-color: rgba(62,139,91,0.50);
+      }
+      80% {
+        transform: scale(1.004) rotate(0.2deg);
+        box-shadow: 0 0 0 2px rgba(62,139,91,0.08), 0 0 12px rgba(62,139,91,0.12);
+        border-color: rgba(62,139,91,0.34);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 0 rgba(62,139,91,0), 0 0 0 rgba(184,134,11,0);
+        border-color: #ddd8cf;
+      }
     }
   `;
 }
