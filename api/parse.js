@@ -220,8 +220,239 @@ Stat block shape:
       }));
     }
     if (parsed.statBlocks) {
-      parsed.statBlocks = parsed.statBlocks.map(b => ({ ...b, module: normalizeModule(b.module) }));
+      parsed.statBlocks = parsed.statBlocks.map(b => ({
+        ...b,
+        module: normalizeModule(b.module),
+        tab: normalizeTab(normalizeModule(b.module), b.tab)
+      }));
     }
+
+    const clampScore = (value) => {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return 1;
+      return Math.max(1, Math.min(10, Math.round(num)));
+    };
+
+    const RECENCY_BOOST_AT_PUBLISH = 10;
+
+    const computeHomepageScore = (shock, moduleRelevance, recencyBoost = RECENCY_BOOST_AT_PUBLISH) => {
+      const raw =
+        (clampScore(shock) * 0.70) +
+        (clampScore(recencyBoost) * 0.20) +
+        (clampScore(moduleRelevance) * 0.10);
+      return clampScore(raw);
+    };
+
+    const sentenceSplit = (text) =>
+      String(text || "")
+        .replace(/\s+/g, " ")
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    const numberRegex = /(\$\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:million|billion|thousand|m|b|k))?|\d[\d,]*(?:\.\d+)?\s?%|\d[\d,]*(?:\.\d+)?x|\d[\d,]*(?:\.\d+)?)/ig;
+
+    const compactWords = (text, limit = 7) =>
+      String(text || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, limit)
+        .join(" ");
+
+    const labelFromSentence = (sentence, value, fallbackTitle) => {
+      const stripped = String(sentence || "")
+        .replace(String(value || ""), " ")
+        .replace(/[()]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const label = compactWords(stripped, 6);
+      return label || compactWords(fallbackTitle || "Key number", 6) || "Key number";
+    };
+
+    const buildGeneratedStatCandidates = (issueCards) => {
+      const generated = [];
+
+      (issueCards || []).forEach((card, cardIndex) => {
+        const textPool = [
+          card.title,
+          card.summary,
+          card.details,
+          card.decoder?.whatsHappening,
+          card.decoder?.connections,
+          card.decoder?.whoBenefits,
+          card.decoder?.impact,
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        const sentences = sentenceSplit(textPool);
+        const seenValues = new Set();
+        let localCount = 0;
+
+        for (const sentence of sentences) {
+          const matches = sentence.match(numberRegex) || [];
+          for (const match of matches) {
+            const value = String(match || "").trim();
+            if (!value || seenValues.has(value.toLowerCase())) continue;
+
+            seenValues.add(value.toLowerCase());
+
+            const lowerSentence = sentence.toLowerCase();
+            const color = value.includes("$")
+              ? "gold"
+              : lowerSentence.includes("pay") || lowerSentence.includes("heat") || lowerSentence.includes("poverty") || lowerSentence.includes("jail")
+                ? "red"
+                : lowerSentence.includes("board") || lowerSentence.includes("vote") || lowerSentence.includes("approved")
+                  ? "blue"
+                  : "red";
+
+            generated.push({
+              module: card.module,
+              tab: card.tab || "overview",
+              type: "key-number",
+              color,
+              value,
+              label: labelFromSentence(sentence, value, card.title),
+              context: sentence.trim(),
+              title: card.title,
+              source_pool: "generated",
+              generated_from_card_index: cardIndex,
+            });
+
+            localCount += 1;
+            if (localCount >= 3) break;
+          }
+          if (localCount >= 3) break;
+        }
+      });
+
+      return generated;
+    };
+
+    const rankCombinedStatBlocks = async (providedBlocks, generatedBlocks) => {
+      const combined = [
+        ...(providedBlocks || []).map((block, idx) => ({
+          ...block,
+          source_pool: "provided",
+          candidate_index: idx,
+        })),
+        ...(generatedBlocks || []).map((block, idx) => ({
+          ...block,
+          source_pool: "generated",
+          candidate_index: (providedBlocks || []).length + idx,
+        })),
+      ];
+
+      if (!combined.length) return [];
+
+      const rankingPrompt = combined.map((block, idx) => {
+        const data = block.data || block;
+        return `CANDIDATE ${idx}
+Source Pool: ${block.source_pool}
+Module: ${block.module}
+Tab: ${block.tab || "overview"}
+Type: ${block.type || data.type || "unknown"}
+Label: ${block.label || data.label || ""}
+Title: ${block.title || data.title || ""}
+Value: ${block.value || data.value || data.annualAmount || ""}
+Context: ${block.context || data.context || ""}
+Issue Card Index: ${block.generated_from_card_index ?? "n/a"}`;
+      }).join("\n\n---\n\n");
+
+      const rankingSystem = `You score HSV Civic Watch stat block candidates.
+
+Return ONLY valid JSON array.
+For each candidate return:
+- candidate_index
+- shock_score (1-10)
+- module_relevance_score (1-10)
+
+Rules:
+- Shock score: how alarming or jaw-dropping this would be to a general Huntsville resident with no prior context.
+- Module relevance score: how strongly this represents a truth about the whole module, not just one isolated card.
+- Higher scores go to direct contradictions, named officials or institutions, large dollar amounts, major disparities, harms, or monopoly/power patterns.
+- Lower scores go to setup facts, administrative context, or narrow details that need lots of explanation.
+
+Return format:
+[
+  {
+    "candidate_index": 0,
+    "shock_score": 8,
+    "module_relevance_score": 7
+  }
+]`;
+
+      try {
+        const rankingResponse = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 3000,
+            system: rankingSystem,
+            messages: [{ role: "user", content: rankingPrompt }],
+          }),
+        });
+
+        const rankingData = await rankingResponse.json();
+        if (rankingResponse.ok) {
+          const rankingText = rankingData.content.map(i => i.text || "").join("");
+          const rankingClean = rankingText.replace(/```json|```/g, "").trim();
+          const ranked = JSON.parse(rankingClean);
+
+          combined.forEach((candidate, idx) => {
+            const match = ranked.find(item => item.candidate_index === idx) || {};
+            candidate.strength_score = clampScore(match.shock_score || 1);
+            candidate.module_relevance_score = clampScore(match.module_relevance_score || 1);
+          });
+        } else {
+          combined.forEach(candidate => {
+            candidate.strength_score = 1;
+            candidate.module_relevance_score = 1;
+          });
+        }
+      } catch (err) {
+        combined.forEach(candidate => {
+          candidate.strength_score = 1;
+          candidate.module_relevance_score = 1;
+        });
+      }
+
+      const grouped = {};
+      combined.forEach(candidate => {
+        const key = `${candidate.module || "unknown"}::${candidate.tab || "overview"}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(candidate);
+      });
+
+      const selected = [];
+      Object.values(grouped).forEach(group => {
+        group
+          .sort((a, b) => {
+            const aScore = (a.module_relevance_score * 0.55) + (a.strength_score * 0.45);
+            const bScore = (b.module_relevance_score * 0.55) + (b.strength_score * 0.45);
+            if (bScore !== aScore) return bScore - aScore;
+            if (b.module_relevance_score !== a.module_relevance_score) return b.module_relevance_score - a.module_relevance_score;
+            if (b.strength_score !== a.strength_score) return b.strength_score - a.strength_score;
+            if (a.source_pool !== b.source_pool) return a.source_pool === "provided" ? -1 : 1;
+            return 0;
+          })
+          .slice(0, 5)
+          .forEach(candidate => {
+            const { source_pool, candidate_index, generated_from_card_index, ...rest } = candidate;
+            selected.push(rest);
+          });
+      });
+
+      return selected;
+    };
 
     // === VISUAL SCORING + GENERATION ===
     if (parsed.issueCards && parsed.issueCards.length > 0) {
@@ -387,8 +618,10 @@ Return ONLY valid JSON array. No markdown. No explanation.`;
           const visualResults = JSON.parse(visualClean);
           visualResults.forEach(result => {
             if (parsed.issueCards[result.cardIndex]) {
-              parsed.issueCards[result.cardIndex].visual_score = result.visual_score || 0;
-              parsed.issueCards[result.cardIndex].visual_config = result.visual_config || null;
+              const inlineVisualScore = clampScore(result.visual_score || 1);
+              parsed.issueCards[result.cardIndex].inline_visual_score = inlineVisualScore;
+              parsed.issueCards[result.cardIndex].visual_score = inlineVisualScore;
+              parsed.issueCards[result.cardIndex].visual_config = inlineVisualScore >= 7 ? (result.visual_config || null) : null;
               parsed.issueCards[result.cardIndex].show_on_overview = result.show_on_overview || false;
             }
           });
@@ -397,6 +630,108 @@ Return ONLY valid JSON array. No markdown. No explanation.`;
         console.error("Visual scoring failed:", visualErr);
       }
     }
+
+    if (parsed.issueCards && parsed.issueCards.length > 0) {
+      const issueScorePrompt = parsed.issueCards.map((card, i) => {
+        return `CARD ${i}
+Module: ${card.module}
+Tab: ${card.tab || "overview"}
+Title: ${card.title}
+Summary: ${card.summary}
+Details: ${card.details || ""}
+What's Happening: ${card.decoder?.whatsHappening || ""}
+Connections: ${card.decoder?.connections || ""}
+Who Benefits: ${card.decoder?.whoBenefits || ""}
+Impact: ${card.decoder?.impact || ""}`;
+      }).join("\n\n---\n\n");
+
+      const issueScoreSystem = `You score HSV Civic Watch issue cards.
+
+Return ONLY valid JSON array.
+For each card return:
+- cardIndex
+- shock_score (1-10)
+- module_relevance_score (1-10)
+
+Rules:
+- Shock score is the primary score. It measures how alarming, urgent, or stop-scrolling this card is for a general Huntsville resident with no prior context.
+- Module relevance score measures whether the card represents a truth about the whole module, not just a narrow side issue.
+- 8-10 shock: extreme disparity, direct contradiction, named official/company, large harms or money, monopoly/power abuse, strong public urgency.
+- 5-7 shock: meaningful, real, relevant, but not an immediate gut punch.
+- 1-4 shock: background or administrative context.
+- Return integers only.
+
+Format:
+[
+  {
+    "cardIndex": 0,
+    "shock_score": 8,
+    "module_relevance_score": 7
+  }
+]`;
+
+      try {
+        const issueScoreResponse = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 2000,
+            system: issueScoreSystem,
+            messages: [{ role: "user", content: issueScorePrompt }],
+          }),
+        });
+
+        const issueScoreData = await issueScoreResponse.json();
+        if (issueScoreResponse.ok) {
+          const issueScoreText = issueScoreData.content.map(i => i.text || "").join("");
+          const issueScoreClean = issueScoreText.replace(/```json|```/g, "").trim();
+          const issueScores = JSON.parse(issueScoreClean);
+
+          issueScores.forEach(result => {
+            if (parsed.issueCards[result.cardIndex]) {
+              const shock = clampScore(result.shock_score || 1);
+              const moduleRelevance = clampScore(result.module_relevance_score || 1);
+              const inlineVisual = clampScore(
+                parsed.issueCards[result.cardIndex].inline_visual_score ||
+                parsed.issueCards[result.cardIndex].visual_score ||
+                1
+              );
+
+              parsed.issueCards[result.cardIndex].shock_score = shock;
+              parsed.issueCards[result.cardIndex].module_relevance_score = moduleRelevance;
+              parsed.issueCards[result.cardIndex].inline_visual_score = inlineVisual;
+              parsed.issueCards[result.cardIndex].visual_score = inlineVisual;
+              parsed.issueCards[result.cardIndex].homepage_score = computeHomepageScore(shock, moduleRelevance);
+            }
+          });
+        }
+      } catch (issueScoreErr) {
+        console.error("Issue card scoring failed:", issueScoreErr);
+      }
+
+      parsed.issueCards = parsed.issueCards.map(card => {
+        const shock = clampScore(card.shock_score || 1);
+        const moduleRelevance = clampScore(card.module_relevance_score || 1);
+        const inlineVisual = clampScore(card.inline_visual_score || card.visual_score || 1);
+
+        return {
+          ...card,
+          shock_score: shock,
+          module_relevance_score: moduleRelevance,
+          inline_visual_score: inlineVisual,
+          visual_score: inlineVisual,
+          homepage_score: computeHomepageScore(shock, moduleRelevance),
+        };
+      });
+    }
+
+    const generatedStatCandidates = buildGeneratedStatCandidates(parsed.issueCards || []);
+    parsed.statBlocks = await rankCombinedStatBlocks(parsed.statBlocks || [], generatedStatCandidates);
 
     return res.status(200).json(parsed);
 

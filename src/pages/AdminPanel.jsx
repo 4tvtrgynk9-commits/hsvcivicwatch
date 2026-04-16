@@ -1961,10 +1961,15 @@ export default function AdminPanel() {
         title: confirmIssue.title, summary: confirmIssue.summary,
         details: confirmIssue.details, sources: confirmIssue.sources,
         decoder: confirmIssue.decoder, actions: confirmIssue.actions,
-        visual_score: confirmIssue.visual_score || 0,
+        visual_score: confirmIssue.visual_score || confirmIssue.inline_visual_score || 0,
         visual_config: confirmIssue.visual_config || null,
         tab: confirmIssue.tab || null,
         show_on_overview: confirmIssue.show_on_overview || false,
+        shock_score: confirmIssue.shock_score || null,
+        module_relevance_score: confirmIssue.module_relevance_score || null,
+        inline_visual_score: confirmIssue.inline_visual_score || confirmIssue.visual_score || null,
+        homepage_score: confirmIssue.homepage_score || null,
+        published_at: new Date().toISOString(),
         ref_number
       }).select();
       if (!error && data) {
@@ -1991,8 +1996,10 @@ export default function AdminPanel() {
     setPublishing(true);
     try {
       const ref_number = await generateRefNumber(confirmStat.module, "stat");
-      const scores = await scoreStatBlocks([{ ...confirmStat, ref_number }], confirmStat.module);
-      const score = scores.find(s => s.ref_number === ref_number)?.score || null;
+      const scores = confirmStat.strength_score
+        ? []
+        : await scoreStatBlocks([{ ...confirmStat, ref_number }], confirmStat.module);
+      const score = confirmStat.strength_score || scores.find(s => s.ref_number === ref_number)?.score || null;
       const { error, data } = await supabase.from('stat_blocks').insert({
         module: confirmStat.module, tab: confirmStat.tab,
         type: confirmStat.type, color: confirmStat.color,
@@ -2041,18 +2048,25 @@ export default function AdminPanel() {
           module: card.module, label: card.label, title: card.title,
           summary: card.summary, details: card.details, sources: card.sources,
           decoder: card.decoder, actions: card.actions,
-          visual_score: card.visual_score || 0,
+          visual_score: card.visual_score || card.inline_visual_score || 0,
           visual_config: card.visual_config || null,
           tab: card.tab || null,
           show_on_overview: card.show_on_overview || false,
+          shock_score: card.shock_score || null,
+          module_relevance_score: card.module_relevance_score || null,
+          inline_visual_score: card.inline_visual_score || card.visual_score || null,
+          homepage_score: card.homepage_score || null,
+          published_at: new Date().toISOString(),
           ref_number
         }).select();
         if (data) newPubIssues.push(data[0]);
       }
       for (const block of statsToPub) {
         const ref_number = await generateRefNumber(block.module, "stat");
-        const scores = await scoreStatBlocks([{ ...block, ref_number }], block.module);
-        const score = scores[0]?.score || null;
+        const scores = block.strength_score
+          ? []
+          : await scoreStatBlocks([{ ...block, ref_number }], block.module);
+        const score = block.strength_score || scores[0]?.score || null;
         const sameModuleIssue = newPubIssues.find(ic => ic.module === block.module) ||
           pubIssues.find(ic => ic.module === block.module);
         const { data } = await supabase.from('stat_blocks').insert({
