@@ -225,36 +225,36 @@ function pulseWiggleStyle() {
         box-shadow: 0 0 0 rgba(62,139,91,0);
       }
       8% {
-        transform: translateX(-6px);
+        transform: translateX(-8px);
         box-shadow:
           0 0 0 4px rgba(62,139,91,0.30),
           0 0 0 10px rgba(62,139,91,0.14),
           0 0 28px rgba(62,139,91,0.22);
       }
-      16% { transform: translateX(6px); }
-      24% { transform: translateX(-6px); }
+      16% { transform: translateX(8px); }
+      24% { transform: translateX(-8px); }
       32% { transform: translateX(0); }
 
       40% {
-        transform: translateX(-6px);
+        transform: translateX(-8px);
         box-shadow:
           0 0 0 4px rgba(62,139,91,0.24),
           0 0 0 8px rgba(62,139,91,0.10),
           0 0 22px rgba(62,139,91,0.18);
       }
-      48% { transform: translateX(6px); }
-      56% { transform: translateX(-6px); }
+      48% { transform: translateX(8px); }
+      56% { transform: translateX(-8px); }
       64% { transform: translateX(0); }
 
       72% {
-        transform: translateX(-6px);
+        transform: translateX(-8px);
         box-shadow:
           0 0 0 3px rgba(62,139,91,0.18),
           0 0 0 6px rgba(62,139,91,0.08),
           0 0 14px rgba(62,139,91,0.14);
       }
-      80% { transform: translateX(6px); }
-      88% { transform: translateX(-6px); }
+      80% { transform: translateX(8px); }
+      88% { transform: translateX(-8px); }
       100% {
         transform: translateX(0);
         box-shadow: 0 0 0 rgba(62,139,91,0);
@@ -1200,7 +1200,7 @@ function StatRow({ block, selected, onToggle, onApprove, onReject }) {
 
 // --- Published Tab -----------------------------------------------------------
 
-function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
+function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div
@@ -1211,7 +1211,7 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
         borderRadius:10,
         marginBottom:12,
         overflow:"visible",
-        animation: highlight ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        animation: animate ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
         transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
@@ -1241,7 +1241,7 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
   );
 }
 
-function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
+function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
   const [expanded, setExpanded] = useState(false);
   const scoreColor = block.strength_score >= 8 ? "#1a7a3a" : block.strength_score >= 5 ? "#b8860b" : "#888";
   return (
@@ -1253,7 +1253,7 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
         borderRadius:10,
         marginBottom:12,
         overflow:"visible",
-        animation: highlight ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        animation: animate ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
         transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
@@ -1285,7 +1285,7 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
   );
 }
 
-function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId }) {
+function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId }) {
   const [section, setSection] = useState("issues");
 
   const issuesByModule = {};
@@ -1348,7 +1348,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
                 <span style={{ color:"#aaa", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
-              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} />)}
+              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} animate={animateId === card.id} />)}
             </div>
           ))}
         </div>
@@ -1368,7 +1368,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 <span style={{ color:"#aaa", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
               </div>
               {[...blocks].sort((a,b) => (b.strength_score||0)-(a.strength_score||0)).map((block, i) => (
-                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} />
+                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} animate={animateId === block.id} />
               ))}
             </div>
           ))}
@@ -1902,6 +1902,7 @@ export default function AdminPanel() {
   const [editConfig, setEditConfig] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
+  const [animateId, setAnimateId] = useState(null);
   const [savedToast, setSavedToast] = useState("");
 
   const login = () => {
@@ -2184,10 +2185,18 @@ export default function AdminPanel() {
 
   const flashUpdatedItem = (id) => {
     setHighlightId(id);
+    setAnimateId(null);
+
     setTimeout(() => {
       const el = document.getElementById(`admin-item-${id}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 80);
+    }, 40);
+
+    setTimeout(() => {
+      setAnimateId(id);
+    }, 420);
+
+    setTimeout(() => setAnimateId(null), 3400);
     setTimeout(() => setHighlightId(null), 7200);
   };
 
@@ -2511,6 +2520,7 @@ export default function AdminPanel() {
             onEditIssue={openIssueEdit}
             onEditStat={openStatEdit}
             highlightId={highlightId}
+            animateId={animateId}
           />
         )}
 
