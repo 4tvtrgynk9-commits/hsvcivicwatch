@@ -529,6 +529,7 @@ export default function IssueCard({ issue }) {
   const [decoded, setDecoded] = useState(false);
   const [storyOpen, setStoryOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [arrivalHighlight, setArrivalHighlight] = useState(false);
   const storyCardRef = useRef(null);
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
@@ -543,6 +544,8 @@ export default function IssueCard({ issue }) {
       if (saved.id === cardId && age < SCROLL_TTL) {
         setTimeout(() => {
           cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          setArrivalHighlight(true);
+          setTimeout(() => setArrivalHighlight(false), 3200);
         }, 200);
       }
     } catch(e) {}
@@ -576,6 +579,22 @@ export default function IssueCard({ issue }) {
   const body = expanded || !long ? fullText : fullText.slice(0, PREVIEW_LIMIT) + "...";
 
   return (
+    <>
+      <style>{`
+        @keyframes hsvArrivalGlow {
+          0% { box-shadow: 0 1px 0 rgba(25,49,80,0.03); transform: translateX(0); }
+          10% { box-shadow: 0 0 0 3px rgba(198,163,77,0.18), 0 0 18px rgba(198,163,77,0.16); transform: translateX(-2px); }
+          20% { transform: translateX(2px); }
+          30% { transform: translateX(-2px); }
+          40% { transform: translateX(2px); }
+          50% { transform: translateX(0); }
+          60% { box-shadow: 0 0 0 3px rgba(198,163,77,0.16), 0 0 16px rgba(198,163,77,0.14); transform: translateX(-2px); }
+          70% { transform: translateX(2px); }
+          80% { transform: translateX(-2px); }
+          90% { transform: translateX(2px); }
+          100% { box-shadow: 0 1px 0 rgba(25,49,80,0.03); transform: translateX(0); }
+        }
+      `}</style>
     <div ref={cardRef} style={{
       background: COLORS.panel,
       border: "1px solid " + COLORS.border,
@@ -583,6 +602,8 @@ export default function IssueCard({ issue }) {
       padding: "18px 20px",
       marginBottom: 14,
       boxShadow: "0 1px 0 rgba(25,49,80,0.03)",
+      animation: arrivalHighlight ? "hsvArrivalGlow 2.4s ease" : "none",
+      transition: "box-shadow 0.25s ease, transform 0.25s ease",
     }}>
       {issue.label ? (
         <div style={{
@@ -658,5 +679,6 @@ export default function IssueCard({ issue }) {
         />
       ) : null}
     </div>
+    </>
   );
 }
