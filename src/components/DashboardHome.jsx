@@ -1,58 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
+import useHomepageData from "../lib/useHomepageData";
 
-const keyNumbers = [
-  {
-    label: "TVA Debt",
-    value: "$20B+",
-    sub: "Debt tied to the monopoly power system residents still fund.",
-    color: COLORS.red,
-    target: "utilities",
-  },
-  {
-    label: "Hospital Buyout",
-    value: "$450M",
-    sub: "Crestwood acquisition accelerating regional healthcare monopoly concerns.",
-    color: COLORS.lavender,
-    target: "health",
-  },
-  {
-    label: "Pretrial Detention",
-    value: "61%",
-    sub: "People jailed before conviction, punished by poverty first.",
-    color: COLORS.green,
-    target: "criminal_justice",
-  },
-  {
-    label: "COVID Funds to Prisons",
-    value: "$400M",
-    sub: "Pandemic relief redirected into prison construction instead of community needs.",
-    color: COLORS.gold,
-    target: "criminal_justice",
-  },
-  {
-    label: "Front Row Subsidy",
-    value: "$16M",
-    sub: "City investment helping underwrite a luxury downtown development.",
-    color: COLORS.orange,
-    target: "housing_crisis",
-  },
-  {
-    label: "7% Grocery Tax",
-    value: "7%",
-    sub: "≈ $420/year (1 person) · ≈ $1,680/year (household of 4)",
-    color: COLORS.blue,
-    target: "taxation",
-  },
-];
-
-const activeInvestigations = [
-  { id: "utilities", tag: "Utilities", color: COLORS.blue, title: "The risk is in Alabama. The control isn’t." },
-  { id: "health", tag: "Healthcare", color: COLORS.red, title: "Nonprofit on paper. Monopoly in practice." },
-  { id: "equity", tag: "The Two Huntsvilles", color: COLORS.gold, title: "One growth story. Two very different cities." },
-  { id: "money", tag: "Follow the Money", color: COLORS.lavender, title: "The same names keep showing up." },
-];
+function rotateWindow(items, startIndex, count) {
+  if (!items.length) return [];
+  const output = [];
+  for (let i = 0; i < Math.min(count, items.length); i += 1) {
+    output.push(items[(startIndex + i) % items.length]);
+  }
+  return output;
+}
 
 function useElapsedSeconds() {
   const [elapsed, setElapsed] = useState(0);
@@ -176,7 +134,7 @@ function KeyCard({ item, onClick }) {
   );
 }
 
-function ModuleCard({ item, onClick }) {
+function ModuleCard({ item, onClick, count, latestTitle }) {
   const isBlueprint = item.id === "proposals";
 
   return (
@@ -208,7 +166,19 @@ function ModuleCard({ item, onClick }) {
         }}
       >
         <span>{item.emoji}</span>
-        <span>{item.label}</span>
+        <span style={{ flex: 1 }}>
+          <span>{item.label}</span>
+          {typeof count === "number" ? (
+            <span style={{ display: "block", marginTop: 6, color: COLORS.textSoft, fontSize: 11.5, fontWeight: 700 }}>
+              {count} live card{count !== 1 ? "s" : ""}
+            </span>
+          ) : null}
+          {latestTitle ? (
+            <span style={{ display: "block", marginTop: 4, color: COLORS.textSoft, fontSize: 11.5, lineHeight: 1.3, fontWeight: 500 }}>
+              {latestTitle}
+            </span>
+          ) : null}
+        </span>
       </div>
     </button>
   );
@@ -477,6 +447,35 @@ function PayPanel({ elapsed, onOpenModule }) {
 export default function DashboardHome({ onOpenModule }) {
   const elapsed = useElapsedSeconds();
   const allGroups = useMemo(() => [...NAV, { group: BOTTOM_NAV.group, items: [BOTTOM_NAV] }], []);
+  const { activeInvestigations, keyNumbers, moduleCounts, latestByModule } = useHomepageData();
+  const [investigationStart, setInvestigationStart] = useState(0);
+  const [keyNumberStart, setKeyNumberStart] = useState(0);
+
+  useEffect(() => {
+    if (activeInvestigations.length <= 4) return;
+    const id = setInterval(() => {
+      setInvestigationStart(prev => (prev + 1) % activeInvestigations.length);
+    }, 9000);
+    return () => clearInterval(id);
+  }, [activeInvestigations.length]);
+
+  useEffect(() => {
+    if (keyNumbers.length <= 6) return;
+    const id = setInterval(() => {
+      setKeyNumberStart(prev => (prev + 1) % keyNumbers.length);
+    }, 8000);
+    return () => clearInterval(id);
+  }, [keyNumbers.length]);
+
+  const visibleInvestigations = rotateWindow(activeInvestigations, investigationStart, 4);
+  const visibleKeyNumbers = rotateWindow(keyNumbers, keyNumberStart, 6);
+
+  const openSpecificInvestigation = (item) => {
+    try {
+      localStorage.setItem("hsv_last_card", JSON.stringify({ id: item.ref_number || item.id, ts: Date.now() }));
+    } catch (e) {}
+    onOpenModule(item.module || item.id);
+  };
 
   return (
     <div>
@@ -600,8 +599,8 @@ export default function DashboardHome({ onOpenModule }) {
         <section style={{ marginBottom: 18 }}>
           {sectionTitle("Active investigations")}
           <div style={{ display: "grid", gap: 10 }}>
-            {activeInvestigations.map((item) => (
-              <FeedRow key={item.title} item={item} onClick={() => onOpenModule(item.id)} />
+            {visibleInvestigations.map((item) => (
+              <FeedRow key={item.ref_number || item.title} item={item} onClick={() => openSpecificInvestigation(item)} />
             ))}
           </div>
         </section>
@@ -616,8 +615,8 @@ export default function DashboardHome({ onOpenModule }) {
               gap: 12,
             }}
           >
-            {keyNumbers.map((item) => (
-              <KeyCard key={item.label} item={item} onClick={() => onOpenModule(item.target)} />
+            {visibleKeyNumbers.map((item) => (
+              <KeyCard key={item.ref_number || item.label} item={item} onClick={() => onOpenModule(item.target)} />
             ))}
           </div>
         </section>
@@ -655,7 +654,13 @@ export default function DashboardHome({ onOpenModule }) {
                 }}
               >
                 {group.items.map((item) => (
-                  <ModuleCard key={item.id} item={item} onClick={() => onOpenModule(item.id)} />
+                  <ModuleCard
+                    key={item.id}
+                    item={item}
+                    onClick={() => onOpenModule(item.id)}
+                    count={moduleCounts[item.id]}
+                    latestTitle={latestByModule[item.id]?.title || ""}
+                  />
                 ))}
               </div>
             </div>
