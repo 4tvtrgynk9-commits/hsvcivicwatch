@@ -268,7 +268,7 @@ export default function useHomepageData() {
       if (count >= 2) continue;
       perModuleCap[module] = count + 1;
       selected.push(card);
-      if (selected.length >= 4) break;
+      if (selected.length >= 12) break;
     }
 
     const mapped = selected.map(toActiveInvestigation);

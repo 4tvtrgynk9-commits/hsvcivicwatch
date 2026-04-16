@@ -453,7 +453,7 @@ export default function DashboardHome({ onOpenModule }) {
   const [keyNumberStart, setKeyNumberStart] = useState(0);
 
   useEffect(() => {
-    if (activeInvestigations.length <= 4) return;
+    if (activeInvestigations.length <= 12) return;
     const id = setInterval(() => {
       setInvestigationStart(prev => (prev + 1) % activeInvestigations.length);
     }, 9000);
@@ -468,7 +468,7 @@ export default function DashboardHome({ onOpenModule }) {
     return () => clearInterval(id);
   }, [keyNumbers.length]);
 
-  const visibleInvestigations = rotateWindow(activeInvestigations, investigationStart, 4);
+  const visibleInvestigations = rotateWindow(activeInvestigations, investigationStart, 12);
   const visibleKeyNumbers = rotateWindow(keyNumbers, keyNumberStart, 6);
 
   const openSpecificInvestigation = (item) => {
