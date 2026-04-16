@@ -390,6 +390,8 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   const hasChanges = isIssue
     ? JSON.stringify(issueState) !== originalIssueState
     : JSON.stringify(statState) !== originalStatState;
+  const isCompact = typeof window !== "undefined" ? window.innerWidth < 760 : false;
+  const twoColGrid = isCompact ? "1fr" : "repeat(2, minmax(0, 1fr))";
 
   useEffect(() => {
     if (isIssue && !activeTabs.includes(issueState.tab)) {
@@ -477,6 +479,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
             <FieldLabel>Slices</FieldLabel>
             <TextArea
               rows={5}
+              placeholder={"Schools:62\nPolice:28\nDebt Service:10"}
               value={(data.slices || []).map(s => `${s.name || s.label || ""}:${s.value ?? ""}`).join("\n")}
               onChange={e => updateStatData("slices", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
                 const [name, value] = line.split(":");
@@ -507,6 +510,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
             <FieldLabel>Points</FieldLabel>
             <TextArea
               rows={5}
+              placeholder={"2022:14\n2023:18\n2024:22"}
               value={(data.points || []).map(p => `${p.year}:${p.value}`).join("\n")}
               onChange={e => updateStatData("points", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
                 const [year, value] = line.split(":");
@@ -537,6 +541,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
             <FieldLabel>Bars</FieldLabel>
             <TextArea
               rows={5}
+              placeholder={"North Huntsville:38\nSouth Huntsville:14"}
               value={(data.bars || []).map(b => `${b.name}:${b.value}`).join("\n")}
               onChange={e => updateStatData("bars", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
                 const [name, value] = line.split(":");
@@ -586,6 +591,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
             <FieldLabel>Zones</FieldLabel>
             <TextArea
               rows={5}
+              placeholder={"North Huntsville:82:CRITICAL\nDowntown:41:FAIR"}
               value={(data.zones || []).map(z => `${z.name}:${z.value}:${z.status}`).join("\n")}
               onChange={e => updateStatData("zones", e.target.value.split("\n").map(line => line.trim()).filter(Boolean).map(line => {
                 const [name, value, status] = line.split(":");
@@ -624,7 +630,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:4000, display:"flex", alignItems:"center", justifyContent:"center", padding:16, overflowY:"auto" }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, width:"100%", maxWidth:940, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, width:"100%", maxWidth:1040, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
         <div style={{ padding:"20px 24px", borderBottom:"1px solid #ddd8cf", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
           <div style={{ minWidth:0 }}>
             <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>
@@ -655,7 +661,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
         <div style={{ padding:"22px 24px", overflowY:"auto", flex:"1 1 auto", minHeight:0 }}>
           {isIssue ? (
             <>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16, marginBottom:16 }}>
+              <div style={{ display:"grid", gridTemplateColumns:twoColGrid, gap:16, marginBottom:16 }}>
                 <div>
                   <FieldLabel>Module</FieldLabel>
                   <SelectInput value={issueState.module} onChange={e => setIssueState(prev => ({ ...prev, module: e.target.value, tab: getTabsForModule(e.target.value)[0] || "overview" }))}>
@@ -711,7 +717,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
             </>
           ) : (
             <>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16, marginBottom:16 }}>
+              <div style={{ display:"grid", gridTemplateColumns:twoColGrid, gap:16, marginBottom:16 }}>
                 <div>
                   <FieldLabel>Module</FieldLabel>
                   <SelectInput value={statState.module} onChange={e => setStatState(prev => ({ ...prev, module: e.target.value, tab: getTabsForModule(e.target.value)[0] || "overview" }))}>
@@ -738,8 +744,20 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
                 </div>
               </div>
 
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:16 }}>
-                {renderStatFields()}
+              <div style={{ background:"#efe7da", border:"1px solid #ddd8cf", borderRadius:10, padding:16, marginBottom:18 }}>
+                <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+                  Stat Block Setup
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:twoColGrid, gap:16 }}>
+                  {renderStatFields()}
+                </div>
+              </div>
+
+              <div style={{ background:"#efe7da", border:"1px solid #ddd8cf", borderRadius:10, padding:16 }}>
+                <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:12 }}>
+                  Live Preview
+                </div>
+                <StatBlockPreview block={{ ...statState.data, module: statState.module, tab: statState.tab, type: statState.type, color: statState.color }} />
               </div>
             </>
           )}
