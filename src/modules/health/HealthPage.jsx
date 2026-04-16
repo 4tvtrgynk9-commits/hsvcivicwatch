@@ -6,12 +6,13 @@ import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././health.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
+import useRotatingStats from "../../lib/useRotatingStats";
 
 export default function HealthPage() {
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
-  const { liveIssues, liveStats, loading } = useSupabaseModule("health");
+  const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("health");
 
   const activeTabIssues = activeTab?.issues || [];
   const tabLiveIssues = liveIssues.filter((li) => {
@@ -25,14 +26,17 @@ export default function HealthPage() {
     ...activeTabIssues,
   ];
 
-  const stats = liveStats.length > 0
-    ? liveStats
-    : (activeTab?.stats || data.stats || []);
+  const rotatingStats = useRotatingStats({
+    liveStatBlocks,
+    fallbackStats: activeTab?.stats || data.stats || [],
+    activeTabId: tabId,
+    maxItems: 3,
+  });
 
   return (
     <div>
       <PageHeader title={data.title} intro={data.intro} />
-      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={stats} />
+      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       {loading && (
         <div style={{ padding:"32px 0", textAlign:"center", color:"#b8860b", fontSize:14, fontStyle:"italic" }}>

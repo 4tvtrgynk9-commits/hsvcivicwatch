@@ -6,10 +6,11 @@ import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././money.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
+import useRotatingStats from "../../lib/useRotatingStats";
 import ConnectionsMap from "../../components/ConnectionsMap";
 
 export default function MoneyPage() {
-  const { liveIssues, liveStats, loading } = useSupabaseModule("money");
+  const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("money");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
@@ -25,10 +26,17 @@ export default function MoneyPage() {
     ...activeTabIssues,
   ];
 
+  const rotatingStats = useRotatingStats({
+    liveStatBlocks,
+    fallbackStats: activeTab?.stats || data.stats || [],
+    activeTabId: tabId,
+    maxItems: 3,
+  });
+
   return (
     <div>
       <PageHeader title={data.title} intro={data.intro} />
-      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={activeTab?.stats || data.stats} />
+      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       {activeTab?.isConnectionsMap ? (
         <ConnectionsMap />

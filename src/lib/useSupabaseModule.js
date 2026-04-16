@@ -93,7 +93,7 @@ function toIssueShape(row) {
 
 // Convert a Supabase stat_block row into the [label, value, context, color] tuple
 // your VisualSwitcher stats array expects
-function toStatTuple(row) {
+export function toStatTuple(row) {
   const d = row.data || row;
   const colorMap = {
     red:    "#dc2626",
@@ -110,9 +110,10 @@ function toStatTuple(row) {
 }
 
 export default function useSupabaseModule(pageId) {
-  const [liveIssues, setLiveIssues]   = useState([]);
-  const [liveStats,  setLiveStats]    = useState([]);
-  const [loading,    setLoading]      = useState(true);
+  const [liveIssues, setLiveIssues]       = useState([]);
+  const [liveStats, setLiveStats]         = useState([]);
+  const [liveStatBlocks, setLiveStatBlocks] = useState([]);
+  const [loading, setLoading]             = useState(true);
 
   useEffect(() => {
     if (!supabase || !pageId) { setLoading(false); return; }
@@ -135,7 +136,8 @@ export default function useSupabaseModule(pageId) {
             .order("strength_score", { ascending: false }),
         ]);
         setLiveIssues((issues || []).map(toIssueShape));
-        setLiveStats((stats  || []).map(toStatTuple));
+        setLiveStatBlocks(stats || []);
+        setLiveStats((stats || []).map(toStatTuple));
       } catch (e) {
         console.error("useSupabaseModule fetch error:", e);
       } finally {
@@ -146,5 +148,5 @@ export default function useSupabaseModule(pageId) {
     fetch();
   }, [pageId]);
 
-  return { liveIssues, liveStats, loading };
+  return { liveIssues, liveStats, liveStatBlocks, loading };
 }

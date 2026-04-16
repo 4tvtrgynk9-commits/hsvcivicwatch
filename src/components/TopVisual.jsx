@@ -72,7 +72,7 @@ function StatCard({ label, value, sublabel, color }) {
   );
 }
 
-export default function TopVisual({ visual, stats = [] }) {
+export default function TopVisual({ visual, stats = [], rotationKey = 0 }) {
   if (visual && visual.type === "placeholder") {
     return (
       <section style={{
@@ -95,12 +95,23 @@ export default function TopVisual({ visual, stats = [] }) {
   if (!stats || !stats.length) return null;
 
   return (
-    <section style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-      gap: 12,
-      marginBottom: 20,
-    }}>
+    <>
+      <style>{`
+        @keyframes hsvStatFadeIn {
+          0% { opacity: 0; transform: translateY(6px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <section
+        key={rotationKey}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 12,
+          marginBottom: 20,
+          animation: "hsvStatFadeIn 0.45s ease",
+        }}
+      >
       {stats.map((s, i) => (
         <StatCard
           key={i}
@@ -110,6 +121,7 @@ export default function TopVisual({ visual, stats = [] }) {
           color={Array.isArray(s) ? s[3] : s.color}
         />
       ))}
-    </section>
+      </section>
+    </>
   );
 }
