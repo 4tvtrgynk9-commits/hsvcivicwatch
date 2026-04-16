@@ -16,14 +16,14 @@ const GREEN = "#3E8B5B";
 const CHART_COLORS = {
   red: "#B4473E",
   gold: "#C6A34D",
-  blue: "#2F5D8A",
+  blue: "#89C4E8",
   green: "#3E8B5B",
   lavender: "#7A4FA3",
   muted: "#6b778a",
   redDark: "#7A1F1A",
   orange: "#cf7b2f",
 };
-const DEFAULT_COLORS = ["#C6A34D", "#2F5D8A", "#B4473E", "#3E8B5B", "#7A4FA3", "#cf7b2f", "#6b778a"];
+const DEFAULT_COLORS = ["#C6A34D", "#89C4E8", "#B4473E", "#3E8B5B", "#7A4FA3", "#cf7b2f", "#6b778a"];
 
 function getHeatColor(baselineVal, harmedVal) {
   if (!baselineVal || !harmedVal) return "#B4473E";
