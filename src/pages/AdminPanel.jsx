@@ -223,51 +223,41 @@ function pulseWiggleStyle() {
       0% {
         transform: translateX(0);
         box-shadow: 0 0 0 rgba(62,139,91,0);
-        border-color: #ddd8cf;
-        background-color: #f5f0e8;
       }
       8% {
-        transform: translateX(-4px);
+        transform: translateX(-6px);
         box-shadow:
-          0 0 0 4px rgba(62,139,91,0.24),
-          0 0 0 10px rgba(62,139,91,0.10),
-          0 0 26px rgba(62,139,91,0.20);
-        border-color: rgba(62,139,91,0.60);
-        background-color: rgba(93,191,133,0.10);
+          0 0 0 4px rgba(62,139,91,0.30),
+          0 0 0 10px rgba(62,139,91,0.14),
+          0 0 28px rgba(62,139,91,0.22);
       }
-      16% { transform: translateX(4px); }
-      24% { transform: translateX(-4px); }
+      16% { transform: translateX(6px); }
+      24% { transform: translateX(-6px); }
       32% { transform: translateX(0); }
 
       40% {
-        transform: translateX(-4px);
+        transform: translateX(-6px);
         box-shadow:
-          0 0 0 4px rgba(62,139,91,0.20),
-          0 0 0 8px rgba(62,139,91,0.08),
-          0 0 20px rgba(62,139,91,0.16);
-        border-color: rgba(62,139,91,0.52);
-        background-color: rgba(93,191,133,0.08);
+          0 0 0 4px rgba(62,139,91,0.24),
+          0 0 0 8px rgba(62,139,91,0.10),
+          0 0 22px rgba(62,139,91,0.18);
       }
-      48% { transform: translateX(4px); }
-      56% { transform: translateX(-4px); }
+      48% { transform: translateX(6px); }
+      56% { transform: translateX(-6px); }
       64% { transform: translateX(0); }
 
       72% {
-        transform: translateX(-4px);
+        transform: translateX(-6px);
         box-shadow:
-          0 0 0 3px rgba(62,139,91,0.16),
-          0 0 0 6px rgba(62,139,91,0.06),
-          0 0 14px rgba(62,139,91,0.12);
-        border-color: rgba(62,139,91,0.42);
-        background-color: rgba(93,191,133,0.06);
+          0 0 0 3px rgba(62,139,91,0.18),
+          0 0 0 6px rgba(62,139,91,0.08),
+          0 0 14px rgba(62,139,91,0.14);
       }
-      80% { transform: translateX(4px); }
-      88% { transform: translateX(-4px); }
+      80% { transform: translateX(6px); }
+      88% { transform: translateX(-6px); }
       100% {
         transform: translateX(0);
         box-shadow: 0 0 0 rgba(62,139,91,0);
-        border-color: #ddd8cf;
-        background-color: #f5f0e8;
       }
     }
   `;
@@ -1216,12 +1206,13 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
     <div
       id={`admin-item-${card.id}`}
       style={{
-        background:"#f5f0e8",
-        border:"1px solid #ddd8cf",
+        background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
+        border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
         borderRadius:10,
         marginBottom:12,
-        overflow:"hidden",
-        animation: highlight ? "hsvAdminEditedPulse 2.2s ease-in-out 3" : "none",
+        overflow:"visible",
+        animation: highlight ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
@@ -1257,12 +1248,13 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
     <div
       id={`admin-item-${block.id}`}
       style={{
-        background:"#f5f0e8",
-        border:"1px solid #ddd8cf",
+        background: highlight ? "rgba(93,191,133,0.14)" : "#f5f0e8",
+        border: highlight ? "2px solid rgba(62,139,91,0.65)" : "1px solid #ddd8cf",
         borderRadius:10,
         marginBottom:12,
-        overflow:"hidden",
-        animation: highlight ? "hsvAdminEditedPulse 2.2s ease-in-out 3" : "none",
+        overflow:"visible",
+        animation: highlight ? "hsvAdminEditedPulse 2.4s ease-in-out 1" : "none",
+        transition: "background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
