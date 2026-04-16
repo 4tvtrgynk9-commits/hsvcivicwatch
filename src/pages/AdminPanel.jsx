@@ -1129,7 +1129,14 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight }) {
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
-        <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{card.ref_number}</span>
+        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+          <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{card.ref_number}</span>
+          {highlight ? (
+            <span style={{ background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", fontSize:11, fontWeight:700, padding:"4px 9px", borderRadius:999, textTransform:"uppercase", letterSpacing:1 }}>
+              Updated
+            </span>
+          ) : null}
+        </div>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
           <span style={{ background:"#b8860b", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
         </div>
@@ -1163,7 +1170,14 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight }) {
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 22px" }}>
-        <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace", flexShrink:0 }}>{block.ref_number}</span>
+        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+          <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{block.ref_number}</span>
+          {highlight ? (
+            <span style={{ background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", fontSize:11, fontWeight:700, padding:"4px 9px", borderRadius:999, textTransform:"uppercase", letterSpacing:1 }}>
+              Updated
+            </span>
+          ) : null}
+        </div>
         <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
           <span style={{ background:"#1a5276", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
           {block.issue_card_ref && (
@@ -1800,6 +1814,7 @@ export default function AdminPanel() {
   const [editConfig, setEditConfig] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
+  const [savedToast, setSavedToast] = useState("");
 
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwErr(false); loadPublished(); }
@@ -2092,6 +2107,8 @@ export default function AdminPanel() {
         setPubStats(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
       }
 
+      setSavedToast("Saved successfully");
+      setTimeout(() => setSavedToast(""), 3000);
       setEditConfig(null);
       flashUpdatedItem(payload.item.id);
     } catch (e) {
@@ -2161,6 +2178,11 @@ export default function AdminPanel() {
   return (
     <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#1a1a1a" }}>
       {QueueNoticeModal}
+      {savedToast ? (
+        <div style={{ position:"fixed", top:18, right:18, zIndex:5000, background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", borderRadius:8, padding:"12px 16px", fontSize:14, fontWeight:700, boxShadow:"0 10px 28px rgba(0,0,0,0.18)" }}>
+          {savedToast}
+        </div>
+      ) : null}
       {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} />}
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
