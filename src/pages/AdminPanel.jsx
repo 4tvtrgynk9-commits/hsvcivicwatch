@@ -2204,6 +2204,13 @@ export default function AdminPanel() {
 
       if (config.itemType === "issue_card") {
         setPubIssues(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
+        if (Array.isArray(payload.cascaded_stats) && payload.cascaded_stats.length) {
+          setPubStats(prev => {
+            const ids = new Set(payload.cascaded_stats.map(s => s.id));
+            const kept = prev.filter(item => !ids.has(item.id));
+            return [...payload.cascaded_stats, ...kept];
+          });
+        }
       } else {
         setPubStats(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
       }
