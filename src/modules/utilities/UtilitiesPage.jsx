@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
@@ -12,6 +12,19 @@ export default function UtilitiesPage() {
   const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("utilities");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
+
+  const SCROLL_KEY = "hsv_last_card";
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
+      const age = Date.now() - (saved.ts || 0);
+      const moduleMatch = saved.module === "utilities";
+      if (moduleMatch && age < 24 * 60 * 60 * 1000 && saved.tab && saved.tab !== tabId) {
+        setTabId(saved.tab);
+      }
+    } catch (e) {}
+  }, [tabId]);
 
   const activeTabIssues = activeTab?.issues || [];
   const tabLiveIssues = liveIssues.filter((li) => {

@@ -502,6 +502,7 @@ export default function DashboardHome({ onOpenModule }) {
       localStorage.setItem("hsv_last_card", JSON.stringify({
         id: item.ref_number || item.id,
         module: item.module || item.id,
+        tab: item.tab || "overview",
         ts: Date.now()
       }));
     } catch (e) {}

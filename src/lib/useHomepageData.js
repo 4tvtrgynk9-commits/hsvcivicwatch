@@ -84,6 +84,7 @@ function toActiveInvestigation(card) {
   return {
     id: card.ref_number || card.id,
     module: card.module,
+    tab: card.tab || "overview",
     tag: card.label || card.module,
     color,
     title: card.title || "",
