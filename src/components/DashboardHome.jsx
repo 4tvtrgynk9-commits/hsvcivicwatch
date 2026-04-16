@@ -82,14 +82,7 @@ function FeedRow({ item, onClick }) {
       >
         {item.tag}
       </span>
-      <span style={{ flex: 1 }}>
-        <span style={{ display: "block", fontSize: 15.5, lineHeight: 1.32 }}>{item.title}</span>
-        {item.ref_number ? (
-          <span style={{ display: "block", marginTop: 4, color: COLORS.textSoft, fontSize: 11.5, fontWeight: 700 }}>
-            {item.ref_number}
-          </span>
-        ) : null}
-      </span>
+      <span style={{ flex: 1, fontSize: 15.5, lineHeight: 1.32 }}>{item.title}</span>
       <span style={{ color: COLORS.textSoft, fontWeight: 800, fontSize: 12.5 }}>View →</span>
     </button>
   );
