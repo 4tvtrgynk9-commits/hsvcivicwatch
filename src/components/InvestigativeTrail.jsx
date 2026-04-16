@@ -26,7 +26,7 @@ export default function InvestigativeTrail({ issues = [], entries = [] }) {
         onClick={() => setOpen(!open)}
         style={{ background: open ? COLORS.goldSoft : "transparent", border: `1px solid ${open ? COLORS.borderStrong : COLORS.border}`, borderRadius: 999, padding: "6px 10px", cursor: "pointer", fontSize: 11.5, fontWeight: 900, color: open ? COLORS.gold : COLORS.textSoft }}
       >
-        Sources {open ? "▲" : "▼"}
+        Investigative Trail {open ? "▲" : "▼"}
       </button>
       {open && (
         <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
