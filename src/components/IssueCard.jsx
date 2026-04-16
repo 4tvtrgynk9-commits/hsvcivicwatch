@@ -582,17 +582,50 @@ export default function IssueCard({ issue }) {
     <>
       <style>{`
         @keyframes hsvArrivalGlow {
-          0% { box-shadow: 0 1px 0 rgba(25,49,80,0.03); transform: translateX(0); }
-          10% { box-shadow: 0 0 0 3px rgba(198,163,77,0.18), 0 0 18px rgba(198,163,77,0.16); transform: translateX(-2px); }
-          20% { transform: translateX(2px); }
-          30% { transform: translateX(-2px); }
-          40% { transform: translateX(2px); }
-          50% { transform: translateX(0); }
-          60% { box-shadow: 0 0 0 3px rgba(198,163,77,0.16), 0 0 16px rgba(198,163,77,0.14); transform: translateX(-2px); }
-          70% { transform: translateX(2px); }
-          80% { transform: translateX(-2px); }
-          90% { transform: translateX(2px); }
-          100% { box-shadow: 0 1px 0 rgba(25,49,80,0.03); transform: translateX(0); }
+          0% {
+            box-shadow: 0 1px 0 rgba(25,49,80,0.03);
+            border-color: ${COLORS.border};
+            transform: translateX(0);
+          }
+          8% {
+            box-shadow:
+              0 0 0 4px rgba(47,93,138,0.30),
+              0 0 0 11px rgba(47,93,138,0.16),
+              0 0 30px rgba(47,93,138,0.24);
+            border-color: rgba(47,93,138,0.65);
+            transform: translateX(-2px);
+          }
+          16% { transform: translateX(2px); }
+          24% { transform: translateX(-2px); }
+          32% { transform: translateX(0); }
+
+          40% {
+            box-shadow:
+              0 0 0 4px rgba(47,93,138,0.28),
+              0 0 0 11px rgba(47,93,138,0.14),
+              0 0 26px rgba(47,93,138,0.20);
+            border-color: rgba(47,93,138,0.58);
+            transform: translateX(-2px);
+          }
+          48% { transform: translateX(2px); }
+          56% { transform: translateX(-2px); }
+          64% { transform: translateX(0); }
+
+          72% {
+            box-shadow:
+              0 0 0 4px rgba(47,93,138,0.24),
+              0 0 0 10px rgba(47,93,138,0.12),
+              0 0 22px rgba(47,93,138,0.18);
+            border-color: rgba(47,93,138,0.50);
+            transform: translateX(-2px);
+          }
+          80% { transform: translateX(2px); }
+          88% { transform: translateX(-2px); }
+          100% {
+            box-shadow: 0 1px 0 rgba(25,49,80,0.03);
+            border-color: ${COLORS.border};
+            transform: translateX(0);
+          }
         }
       `}</style>
     <div ref={cardRef} style={{
