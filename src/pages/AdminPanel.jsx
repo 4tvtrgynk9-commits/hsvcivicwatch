@@ -349,9 +349,13 @@ function AdminMetaRow({ label, value }) {
 }
 
 function buildIssueEditState(item) {
+  const fallbackTab = item.tab || getTabsForModule(item.module || "equity")[0] || "overview";
+  const tabs = Array.isArray(item.tabs) && item.tabs.length ? item.tabs : [fallbackTab];
+
   return {
     module: item.module || "equity",
-    tab: item.tab || getTabsForModule(item.module || "equity")[0] || "overview",
+    tab: fallbackTab,
+    tabs,
     label: item.label || "",
     title: item.title || "",
     summary: item.summary || "",
@@ -665,15 +669,69 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
               <div style={{ display:"grid", gridTemplateColumns:twoColGrid, gap:16, marginBottom:16 }}>
                 <div>
                   <FieldLabel>Module</FieldLabel>
-                  <SelectInput value={issueState.module} onChange={e => setIssueState(prev => ({ ...prev, module: e.target.value, tab: getTabsForModule(e.target.value)[0] || "overview" }))}>
+                  <SelectInput value={issueState.module} onChange={e => {
+                    const firstTab = getTabsForModule(e.target.value)[0] || "overview";
+                    setIssueState(prev => ({
+                      ...prev,
+                      module: e.target.value,
+                      tab: firstTab,
+                      tabs: [firstTab]
+                    }));
+                  }}>
                     {MODULE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
                   </SelectInput>
                 </div>
                 <div>
-                  <FieldLabel>Tab</FieldLabel>
+                  <FieldLabel>Primary Tab</FieldLabel>
                   <SelectInput value={issueState.tab} onChange={e => setIssueState(prev => ({ ...prev, tab: e.target.value }))}>
                     {activeTabs.map(option => <option key={option} value={option}>{option}</option>)}
                   </SelectInput>
+                </div>
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Show In Tabs</FieldLabel>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:10, marginTop:6 }}>
+                  {activeTabs.map(option => {
+                    const checked = (issueState.tabs || []).includes(option);
+                    return (
+                      <label
+                        key={option}
+                        style={{
+                          display:"flex",
+                          alignItems:"center",
+                          gap:8,
+                          background:"#fff",
+                          border:"1px solid #ddd8cf",
+                          borderRadius:8,
+                          padding:"8px 10px",
+                          fontSize:13,
+                          cursor:"pointer"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={e => {
+                            const currentTabs = issueState.tabs || [];
+                            const nextTabs = e.target.checked
+                              ? Array.from(new Set([...currentTabs, option]))
+                              : currentTabs.filter(t => t !== option);
+
+                            const safeTabs = nextTabs.length ? nextTabs : [activeTabs[0] || "overview"];
+
+                            setIssueState(prev => ({
+                              ...prev,
+                              tabs: safeTabs,
+                              tab: safeTabs.includes(prev.tab) ? prev.tab : safeTabs[0]
+                            }));
+                          }}
+                          style={{ accentColor:"#b8860b" }}
+                        />
+                        <span>{option}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -1975,6 +2033,7 @@ export default function AdminPanel() {
         visual_score: confirmIssue.visual_score || confirmIssue.inline_visual_score || 0,
         visual_config: confirmIssue.visual_config || null,
         tab: confirmIssue.tab || null,
+        tabs: Array.isArray(confirmIssue.tabs) ? confirmIssue.tabs : (confirmIssue.tab ? [confirmIssue.tab] : ["overview"]),
         show_on_overview: confirmIssue.show_on_overview || false,
         shock_score: confirmIssue.shock_score || null,
         module_relevance_score: confirmIssue.module_relevance_score || null,
@@ -2063,6 +2122,7 @@ export default function AdminPanel() {
           visual_score: card.visual_score || card.inline_visual_score || 0,
           visual_config: card.visual_config || null,
           tab: card.tab || null,
+          tabs: Array.isArray(card.tabs) ? card.tabs : (card.tab ? [card.tab] : ["overview"]),
           show_on_overview: card.show_on_overview || false,
           shock_score: card.shock_score || null,
           module_relevance_score: card.module_relevance_score || null,

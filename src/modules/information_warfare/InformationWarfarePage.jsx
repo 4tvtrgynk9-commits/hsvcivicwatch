@@ -28,10 +28,11 @@ export default function InformationWarfarePage() {
 
   const activeTabIssues = activeTab?.issues || [];
   const tabLiveIssues = liveIssues.filter((li) => {
+    const liTabs = Array.isArray(li.tabs) && li.tabs.length ? li.tabs : (li.tab ? [li.tab] : []);
     if (tabId === "overview") {
-      return li.show_on_overview || !li.tab;
+      return li.show_on_overview || liTabs.includes("overview") || (!li.tab && liTabs.length === 0);
     }
-    return li.tab === tabId;
+    return liTabs.includes(tabId) || li.tab === tabId;
   });
   const mergedIssues = [
     ...tabLiveIssues.filter((li) => !activeTabIssues.find((hi) => hi.id === li.id)),

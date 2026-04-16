@@ -19,6 +19,7 @@ const TABLES = {
 const ISSUE_CARD_FIELDS = [
   "module",
   "tab",
+  "tabs",
   "label",
   "title",
   "summary",
@@ -59,6 +60,11 @@ function sanitizeIssueCardPayload(payload) {
   }
   if (cleaned.tab !== undefined) {
     cleaned.tab = cleaned.tab ? String(cleaned.tab).trim() : null;
+  }
+  if (cleaned.tabs !== undefined) {
+    cleaned.tabs = Array.isArray(cleaned.tabs)
+      ? cleaned.tabs.map(v => String(v).trim()).filter(Boolean)
+      : [];
   }
   if (cleaned.label !== undefined && typeof cleaned.label === "string") {
     cleaned.label = cleaned.label.trim();
@@ -112,6 +118,53 @@ function sanitizeStatBlockPayload(payload) {
   return cleaned;
 }
 
+
+function getPrefix(moduleName) {
+  const key = String(moduleName || "").trim().toLowerCase();
+  const MAP = {
+    equity: "EQ",
+    education: "ED",
+    health: "HS",
+    utilities: "UT",
+    housing_crisis: "HC",
+    criminal_justice: "CJ",
+    workers_childcare: "WK",
+    taxation: "TX",
+    officials_elections: "OF",
+    boards_oversight: "BD",
+    voting_rights: "VR",
+    policing: "PL",
+    data_collection: "DC",
+    insurance_burdens: "IN",
+    money: "FM",
+    landuse: "LU",
+    environment: "EN",
+    information_warfare: "IW",
+    proposals: "PR",
+    action: "AC",
+  };
+  return MAP[key] || "XX";
+}
+
+async function generateRefNumber(supabase, moduleName, type) {
+  const prefix = getPrefix(moduleName);
+  const table = type === "issue" ? "issue_cards" : "stat_blocks";
+  const suffix = type === "issue" ? "IC" : "SB";
+  const { data, error } = await supabase
+    .from(table)
+    .select("ref_number")
+    .like("ref_number", `${prefix}-${suffix}-%`);
+
+  if (error) throw new Error(error.message);
+
+  let maxNum = 0;
+  for (const row of data || []) {
+    const m = String(row.ref_number || "").match(new RegExp(`^${prefix}-${suffix}-(\\d+)$`));
+    if (m) maxNum = Math.max(maxNum, Number(m[1]));
+  }
+  return `${prefix}-${suffix}-${maxNum + 1}`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return json(res, 405, { error: "Method not allowed" });
@@ -147,6 +200,101 @@ export default async function handler(req, res) {
 
     if (!Object.keys(cleaned).length) {
       return json(res, 400, { error: "No editable fields provided" });
+    }
+
+    if (itemType === "issue_card") {
+      const { data: existing, error: existingError } = await supabase
+        .from("issue_cards")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (existingError || !existing) {
+        return json(res, 500, { error: existingError?.message || "Issue card not found" });
+      }
+
+      const nextModule = cleaned.module || existing.module;
+      const nextTabs = Array.isArray(cleaned.tabs)
+        ? cleaned.tabs
+        : (Array.isArray(existing.tabs) && existing.tabs.length
+            ? existing.tabs
+            : (existing.tab ? [existing.tab] : ["overview"]));
+      const nextPrimaryTab = cleaned.tab || nextTabs[0] || existing.tab || "overview";
+      const moduleChanged = nextModule !== existing.module;
+
+      cleaned.tab = nextPrimaryTab;
+      cleaned.tabs = nextTabs.length ? nextTabs : ["overview"];
+
+      if (moduleChanged) {
+        cleaned.ref_number = await generateRefNumber(supabase, nextModule, "issue");
+      }
+
+      const { data: updatedIssue, error: issueError } = await supabase
+        .from("issue_cards")
+        .update(cleaned)
+        .eq("id", id)
+        .select("*")
+        .single();
+
+      if (issueError) {
+        return json(res, 500, { error: issueError.message });
+      }
+
+      const oldIssueRef = existing.ref_number;
+      const newIssueRef = updatedIssue.ref_number;
+
+      const { data: linkedStats, error: linkedStatsError } = await supabase
+        .from("stat_blocks")
+        .select("*")
+        .eq("issue_card_ref", oldIssueRef);
+
+      if (linkedStatsError) {
+        return json(res, 500, { error: linkedStatsError.message });
+      }
+
+      for (const stat of linkedStats || []) {
+        const statPatch = {
+          module: nextModule,
+          tab: nextPrimaryTab,
+          issue_card_ref: newIssueRef,
+        };
+
+        const nextData = {
+          ...(stat.data || {}),
+          module: nextModule,
+          tab: nextPrimaryTab,
+          tabs: cleaned.tabs,
+          issue_card_ref: newIssueRef,
+        };
+
+        statPatch.data = nextData;
+
+        if (moduleChanged) {
+          statPatch.ref_number = await generateRefNumber(supabase, nextModule, "stat");
+        }
+
+        const { error: statUpdateError } = await supabase
+          .from("stat_blocks")
+          .update(statPatch)
+          .eq("id", stat.id);
+
+        if (statUpdateError) {
+          return json(res, 500, { error: statUpdateError.message });
+        }
+      }
+
+      const { data: refreshedStats } = await supabase
+        .from("stat_blocks")
+        .select("*")
+        .eq("issue_card_ref", newIssueRef)
+        .order("strength_score", { ascending: false });
+
+      return json(res, 200, {
+        success: true,
+        itemType,
+        item: updatedIssue,
+        cascaded_stats: refreshedStats || [],
+      });
     }
 
     const { data, error } = await supabase
