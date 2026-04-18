@@ -46,10 +46,13 @@ function buildRouteUrl(routeId) {
   const url = new URL(window.location.href);
 
   if (routeId === ROUTE_ADMIN_RESET) {
-    return "/admin-reset-password";
+    url.pathname = "/admin-reset-password";
+    url.searchParams.delete("admin-reset");
+    return `${url.pathname}${url.search}${url.hash}`;
   }
 
   url.searchParams.delete("admin-reset");
+  url.searchParams.delete("code");
   url.hash = `#${routeId || ROUTE_DASHBOARD}`;
   return `${url.pathname}${url.search}${url.hash}`;
 }
