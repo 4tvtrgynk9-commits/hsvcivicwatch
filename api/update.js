@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "./_adminAuth";
 
 const supabaseUrl =
   process.env.REACT_APP_SUPABASE_URL ||
@@ -63,7 +64,7 @@ function sanitizeIssueCardPayload(payload) {
   }
   if (cleaned.tabs !== undefined) {
     cleaned.tabs = Array.isArray(cleaned.tabs)
-      ? cleaned.tabs.map(v => String(v).trim()).filter(Boolean)
+      ? Array.from(new Set(cleaned.tabs.map(v => String(v).trim()).filter(Boolean)))
       : [];
   }
   if (cleaned.label !== undefined && typeof cleaned.label === "string") {
@@ -123,21 +124,20 @@ function getPrefix(moduleName) {
   const key = String(moduleName || "").trim().toLowerCase();
   const MAP = {
     equity: "EQ",
-    education: "ED",
     health: "HS",
     utilities: "UT",
-    housing_crisis: "HC",
+    housing_crisis: "HO",
     criminal_justice: "CJ",
     workers_childcare: "WK",
     taxation: "TX",
     officials_elections: "OF",
-    boards_oversight: "BD",
-    voting_rights: "VR",
-    policing: "PL",
-    data_collection: "DC",
+    boards_oversight: "BO",
+    voting_rights: "VT",
+    policing: "PO",
+    data_collection: "DA",
     insurance_burdens: "IN",
-    money: "FM",
-    landuse: "LU",
+    money: "MO",
+    landuse: "LA",
     environment: "EN",
     information_warfare: "IW",
     proposals: "PR",
@@ -169,6 +169,8 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return json(res, 405, { error: "Method not allowed" });
   }
+
+  if (!(await requireAdmin(req, res))) return;
 
   const supabase = getClient();
   if (!supabase) {
@@ -214,12 +216,13 @@ export default async function handler(req, res) {
       }
 
       const nextModule = cleaned.module || existing.module;
-      const nextTabs = Array.isArray(cleaned.tabs)
+      const baseTabs = Array.isArray(cleaned.tabs)
         ? cleaned.tabs
         : (Array.isArray(existing.tabs) && existing.tabs.length
             ? existing.tabs
             : (existing.tab ? [existing.tab] : ["overview"]));
-      const nextPrimaryTab = cleaned.tab || nextTabs[0] || existing.tab || "overview";
+      const nextPrimaryTab = cleaned.tab || baseTabs[0] || existing.tab || "overview";
+      const nextTabs = Array.from(new Set([...(baseTabs || []), nextPrimaryTab])).filter(Boolean);
       const moduleChanged = nextModule !== existing.module;
 
       cleaned.tab = nextPrimaryTab;

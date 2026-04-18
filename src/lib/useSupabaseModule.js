@@ -24,10 +24,27 @@ const MODULE_NAME_MAP = {
   action:             "action",
 };
 
+function uniqueTabs(values = []) {
+  return Array.from(new Set(values.map(v => String(v || "").trim()).filter(Boolean)));
+}
+
+function extractTabs(source) {
+  if (!source || typeof source !== "object") return [];
+  const data = source.data && typeof source.data === "object" ? source.data : {};
+  const rawTabs = [
+    ...(Array.isArray(source.tabs) ? source.tabs : []),
+    ...(Array.isArray(data.tabs) ? data.tabs : []),
+    source.tab,
+    data.tab,
+  ];
+  return uniqueTabs(rawTabs);
+}
+
 // Convert a Supabase issue_card row into the shape IssueCard expects
 function toIssueShape(row) {
   const dec = row.decoder || {};
   const act = dec.actions || row.actions || {};
+  const tabs = extractTabs(row);
 
   // Build media outreach contacts from outlets
   const mediaContacts = act.mediaOutreach?.applies && act.mediaOutreach?.outlets
@@ -52,8 +69,8 @@ function toIssueShape(row) {
     details: row.details || "",
     sources: row.sources || [],
     _fromSupabase: true,
-    tab: row.tab || null,
-    tabs: Array.isArray(row.tabs) ? row.tabs : (row.tab ? [row.tab] : []),
+    tab: tabs[0] || row.tab || null,
+    tabs,
     show_on_overview: row.show_on_overview || false,
     visual_score: row.visual_score || 0,
     visual_config: row.visual_config || null,
@@ -136,9 +153,40 @@ export default function useSupabaseModule(pageId) {
             .ilike("module", moduleName)
             .order("strength_score", { ascending: false }),
         ]);
-        setLiveIssues((issues || []).map(toIssueShape));
-        setLiveStatBlocks(stats || []);
-        setLiveStats((stats || []).map(toStatTuple));
+        const issueRows = issues || [];
+        const issueByRef = new Map(
+          issueRows
+            .filter(row => row?.ref_number)
+            .map(row => [row.ref_number, row])
+        );
+
+        const normalizedStats = (stats || []).map((row) => {
+          const linkedIssue = row.issue_card_ref ? issueByRef.get(row.issue_card_ref) : null;
+          const parentTabs = extractTabs(linkedIssue);
+          const ownTabs = extractTabs(row);
+          const effectiveTabs = parentTabs.length ? parentTabs : ownTabs;
+          const effectiveTab = effectiveTabs[0] || row.tab || row.data?.tab || "overview";
+          const nextData = {
+            ...(row.data || {}),
+            module: row.module || row.data?.module || moduleName,
+            type: row.type || row.data?.type,
+            color: row.color || row.data?.color,
+            tab: effectiveTab,
+            tabs: effectiveTabs,
+          };
+
+          return {
+            ...row,
+            tab: effectiveTab,
+            effectiveTab,
+            effectiveTabs,
+            data: nextData,
+          };
+        });
+
+        setLiveIssues(issueRows.map(toIssueShape));
+        setLiveStatBlocks(normalizedStats);
+        setLiveStats(normalizedStats.map(toStatTuple));
       } catch (e) {
         console.error("useSupabaseModule fetch error:", e);
       } finally {

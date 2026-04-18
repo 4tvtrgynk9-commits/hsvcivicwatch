@@ -1,6 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { toStatTuple } from "./useSupabaseModule";
 
+function getBlockTabs(block) {
+  const data = block?.data || {};
+  const tabs = [
+    ...(Array.isArray(block?.effectiveTabs) ? block.effectiveTabs : []),
+    ...(Array.isArray(data.tabs) ? data.tabs : []),
+    block?.effectiveTab,
+    block?.tab,
+    data.tab,
+  ];
+  return Array.from(new Set(tabs.map(v => String(v || "").trim()).filter(Boolean)));
+}
+
 function weightedPickWithoutReplacement(items, count) {
   const pool = [...items];
   const picked = [];
@@ -38,11 +50,11 @@ export default function useRotatingStats({
 
   const filteredLiveStats = useMemo(() => {
     const relevant = (liveStatBlocks || []).filter(block => {
-      const blockTab = block.tab || "";
+      const blockTabs = getBlockTabs(block);
       if (activeTabId === "overview") {
-        return !blockTab || blockTab === "overview";
+        return !blockTabs.length || blockTabs.includes("overview");
       }
-      return blockTab === activeTabId;
+      return blockTabs.includes(activeTabId);
     });
 
     return relevant.sort((a, b) => {

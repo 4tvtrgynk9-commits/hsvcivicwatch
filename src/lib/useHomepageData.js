@@ -11,6 +11,18 @@ const COLOR_MAP = {
   orange: "#cf7b2f",
 };
 
+function getCardTabs(card) {
+  return Array.from(new Set([
+    ...(Array.isArray(card?.tabs) ? card.tabs : []),
+    card?.tab,
+  ].map(v => String(v || "").trim()).filter(Boolean)));
+}
+
+function getHomepageTargetTab(card) {
+  const tabs = getCardTabs(card);
+  if (tabs.includes("overview")) return "overview";
+  return tabs[0] || card?.tab || "overview";
+}
 
 function statValueText(block) {
   const d = block.data || block;
@@ -84,7 +96,7 @@ function toActiveInvestigation(card) {
   return {
     id: card.ref_number || card.id,
     module: card.module,
-    tab: card.tab || "overview",
+    tab: getHomepageTargetTab(card),
     tag: card.label || card.module,
     color,
     title: card.title || "",
@@ -149,8 +161,11 @@ export default function useHomepageData() {
         return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
       });
 
-    const preferred = ranked.filter(card => card.show_on_overview || !card.tab || card.tab === "overview");
-    const source = preferred.length ? preferred : ranked;
+    const preferredWithTabs = ranked.filter(card => {
+      const tabs = getCardTabs(card);
+      return card.show_on_overview || !tabs.length || tabs.includes("overview");
+    });
+    const source = preferredWithTabs.length ? preferredWithTabs : ranked;
 
     const perModuleCap = {};
     const selected = [];

@@ -7,12 +7,6 @@ import {
 } from "recharts";
 
 const PREVIEW_LIMIT = 300;
-const SIDEBAR_BG = "#193150";
-const GOLD = "#C6A34D";
-const LAVENDER = "#7A4FA3";
-const RED = "#B4473E";
-const GREEN = "#3E8B5B";
-
 const CHART_COLORS = {
   red: "#B4473E",
   gold: "#C6A34D",
@@ -431,67 +425,80 @@ function IssueCardVisual({ config }) {
   return null;
 }
 
-function StoryCard({ issue, cardRef }) {
-  const dec = issue.decoder || {};
-  const truncate = (str, n) => str && str.length > n ? str.slice(0, n).trim() + "\u2026" : str || "";
+function truncateText(str, n) {
+  return str && str.length > n ? str.slice(0, n).trim() + "\u2026" : str || "";
+}
+
+function buildShareText(issue) {
+  if (!issue?.title) {
+    return "HSV Civic Watch issue card from hsvcivicwatch.org";
+  }
+  return `HSV Civic Watch issue card: ${issue.title}\nRead the full investigation at hsvcivicwatch.org`;
+}
+
+function slugifyFilePart(value) {
+  return String(value || "issue-card")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "issue-card";
+}
+
+function ShareIssueCard({ issue, cardRef }) {
+  const fullText = issue?.details || issue?.summary || "";
+  const body = truncateText(fullText, 520);
   return (
     <div ref={cardRef} style={{
-      width: 400, height: 711,
-      background: SIDEBAR_BG,
-      display: "flex", flexDirection: "column",
+      width: 700,
+      background: "#e8e1d0",
+      padding: 28,
+      boxSizing: "border-box",
       fontFamily: "Georgia, serif",
-      position: "relative",
-      overflow: "hidden",
-      flexShrink: 0,
     }}>
-      <div style={{ height: 4, background: GOLD, flexShrink: 0 }} />
-      <div style={{ padding: "14px 20px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ color: GOLD, fontSize: 9, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>HSV Civic Watch</div>
-          <div style={{ color: "#6b778a", fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Huntsville, AL</div>
+      <div style={{
+        background: COLORS.panel,
+        border: "1px solid " + COLORS.border,
+        borderRadius: 20,
+        padding: "24px 24px 20px",
+        boxShadow: "0 12px 30px rgba(25,49,80,0.12)",
+        display: "flex", flexDirection: "column",
+        overflow: "hidden",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+          <div style={{ color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase" }}>HSV Civic Watch</div>
+          <div style={{ color: COLORS.muted, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase" }}>Issue Card</div>
         </div>
         {issue.label && (
-          <div style={{ marginTop: 6, display: "inline-block", background: "rgba(198,163,77,0.18)", color: GOLD, fontSize: 9, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", padding: "2px 8px", borderRadius: 3 }}>
+          <div style={{ display: "inline-block", background: "rgba(198,163,77,0.18)", color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", padding: "4px 10px", borderRadius: 6, marginBottom: 14 }}>
             {issue.label}
           </div>
         )}
-      </div>
-      <div style={{ padding: "16px 20px 10px", flexShrink: 0 }}>
-        <div style={{ color: "#ffffff", fontSize: 18, fontWeight: 700, lineHeight: 1.25 }}>
-          {truncate(issue.title, 100)}
+        <div style={{ color: COLORS.text, fontSize: 34, fontWeight: 900, lineHeight: 1.16, marginBottom: 16 }}>
+          {truncateText(issue.title, 140)}
+        </div>
+        {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
+          <div style={{ marginBottom: 16 }}>
+            <IssueCardVisual config={issue.visual_config} />
+          </div>
+        ) : null}
+        <div style={{ color: COLORS.text, fontSize: 21, lineHeight: 1.7 }}>
+          {body}
+        </div>
+        <div style={{
+          marginTop: 20,
+          background: "rgba(62,139,91,0.12)",
+          borderTop: "1px solid rgba(62,139,91,0.26)",
+          borderRadius: 12,
+          padding: "16px 18px",
+        }}>
+          <div style={{ color: COLORS.green, fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: "uppercase" }}>
+            From HSV Civic Watch
+          </div>
+          <div style={{ color: COLORS.green, fontSize: 19, fontWeight: 900, marginTop: 4 }}>
+            hsvcivicwatch.org
+          </div>
         </div>
       </div>
-      <div style={{ flex: 1, padding: "0 20px 14px", display: "flex", flexDirection: "column", gap: 10, overflow: "hidden" }}>
-        {dec.whatsHappening && (
-          <div style={{ borderLeft: "3px solid " + GOLD, paddingLeft: 10 }}>
-            <div style={{ color: GOLD, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>What&apos;s Happening</div>
-            <div style={{ color: GOLD, fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.whatsHappening, 180)}</div>
-          </div>
-        )}
-        {dec.connections && (
-          <div style={{ borderLeft: "3px solid #89C4E8", paddingLeft: 10 }}>
-            <div style={{ color: "#89C4E8", fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>The Connections</div>
-            <div style={{ color: "#89C4E8", fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.connections, 180)}</div>
-          </div>
-        )}
-        {dec.whoBenefits && (
-          <div style={{ borderLeft: "3px solid " + LAVENDER, paddingLeft: 10 }}>
-            <div style={{ color: LAVENDER, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>Who Benefits</div>
-            <div style={{ color: LAVENDER, fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.whoBenefits, 160)}</div>
-          </div>
-        )}
-        {dec.impact && (
-          <div style={{ borderLeft: "3px solid " + RED, paddingLeft: 10 }}>
-            <div style={{ color: RED, fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>The Impact</div>
-            <div style={{ color: RED, fontSize: 11, lineHeight: 1.55 }}>{truncate(dec.impact, 160)}</div>
-          </div>
-        )}
-      </div>
-      <div style={{ padding: "12px 20px", background: "rgba(62,139,91,0.15)", borderTop: "1px solid rgba(62,139,91,0.3)", flexShrink: 0 }}>
-        <div style={{ color: GREEN, fontSize: 10, fontWeight: 700, letterSpacing: 1 }}>Full investigation + action steps at</div>
-        <div style={{ color: GREEN, fontSize: 13, fontWeight: 700, marginTop: 2 }}>hsvcivicwatch.org</div>
-      </div>
-      <div style={{ height: 4, background: GREEN, flexShrink: 0 }} />
     </div>
   );
 }
@@ -506,20 +513,25 @@ async function loadHtml2Canvas() {
   });
 }
 
-async function shareStoryCard(cardEl, title) {
+async function shareStoryCard(cardEl, issue) {
+  if (!cardEl) return;
   await loadHtml2Canvas();
   const canvas = await window.html2canvas(cardEl, {
-    scale: 3, useCORS: true, allowTaint: true,
-    backgroundColor: "#193150", width: 400, height: 711,
+    scale: 2, useCORS: true, allowTaint: true,
+    backgroundColor: "#e8e1d0",
   });
   const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
-  const file = new File([blob], "hsvcivicwatch-story.png", { type: "image/png" });
+  if (!blob) return;
+  const file = new File([blob], `hsvcivicwatch-${slugifyFilePart(issue?.title)}.png`, { type: "image/png" });
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-    await navigator.share({ files: [file], title: title || "HSV Civic Watch" });
+    await navigator.share({
+      files: [file],
+      text: buildShareText(issue),
+    });
   } else {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "hsvcivicwatch-story.png"; a.click();
+    a.href = url; a.download = file.name; a.click();
     URL.revokeObjectURL(url);
   }
 }
@@ -542,6 +554,10 @@ export default function IssueCard({ issue }) {
       const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
       const age = Date.now() - (saved.ts || 0);
       if (saved.id === cardId && age < SCROLL_TTL) {
+        try {
+          localStorage.removeItem(SCROLL_KEY);
+        } catch (e) {}
+
         const scrollToCard = (behavior = "smooth") => {
           if (!cardRef.current) return;
           const isMobile = window.innerWidth < 960;
@@ -582,7 +598,7 @@ export default function IssueCard({ issue }) {
     setSharing(true);
     await new Promise(r => setTimeout(r, 120));
     try {
-      await shareStoryCard(storyCardRef.current, issue.title);
+      await shareStoryCard(storyCardRef.current, issue);
     } catch(e) { console.error("Share failed:", e); }
     setSharing(false);
     setStoryOpen(false);
@@ -684,7 +700,6 @@ export default function IssueCard({ issue }) {
             const next = !decoded;
             setDecoded(next);
             try {
-              localStorage.setItem(SCROLL_KEY, JSON.stringify({ id: cardId, ts: Date.now() }));
               if (next) {
                 sessionStorage.setItem(DECODER_KEY, JSON.stringify({
                   id: cardId,
@@ -713,7 +728,7 @@ export default function IssueCard({ issue }) {
       </div>
       {storyOpen && (
         <div style={{ position: "fixed", left: -9999, top: 0, zIndex: -1 }}>
-          <StoryCard issue={issue} cardRef={storyCardRef} />
+          <ShareIssueCard issue={issue} cardRef={storyCardRef} />
         </div>
       )}
       {decoded ? (

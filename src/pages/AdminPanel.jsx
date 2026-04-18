@@ -6,21 +6,34 @@ import {
   LineChart, Line, CartesianGrid
 } from "recharts";
 
-const ADMIN_PASSWORD = "hsv2026";
+const ADMIN_PASSKEY_NAME = "HSV Civic Watch Admin Passkey";
+const ADMIN_TOTP_NAME = "HSV Civic Watch Admin Authenticator";
 
 const MODULE_PREFIX = {
-  "Health System": "HS", "Housing": "HO", "Criminal Justice": "CJ",
-  "Utilities": "UT", "Workers": "WK", "Taxes": "TX", "Officials": "OF",
-  "Environment": "EN", "Unhoused": "UH", "Annexation": "AN",
-  "Transit": "TR", "Education": "ED", "Insurance": "IN", "Policing": "PO",
-  "Boards": "BO", "Voting": "VT", "Data": "DA", "Money": "MO",
-  "Land": "LA", "Information": "IW", "Proposals": "PR", "Action": "AC"
+  equity: "EQ",
+  utilities: "UT",
+  health: "HS",
+  insurance_burdens: "IN",
+  workers_childcare: "WK",
+  taxation: "TX",
+  housing_crisis: "HO",
+  officials_elections: "OF",
+  boards_oversight: "BO",
+  voting_rights: "VT",
+  criminal_justice: "CJ",
+  policing: "PO",
+  data_collection: "DA",
+  money: "MO",
+  landuse: "LA",
+  environment: "EN",
+  information_warfare: "IW",
+  proposals: "PR",
+  action: "AC",
 };
 
 function getPrefix(module) {
   if (!module) return "XX";
-  const key = Object.keys(MODULE_PREFIX).find(k => module.toLowerCase().includes(k.toLowerCase()));
-  return key ? MODULE_PREFIX[key] : module.substring(0, 2).toUpperCase();
+  return MODULE_PREFIX[String(module).trim().toLowerCase()] || String(module).substring(0, 2).toUpperCase();
 }
 
 const RESEARCH_TEMPLATE = `Now take everything we just researched and format it using the template below.
@@ -349,7 +362,9 @@ function AdminMetaRow({ label, value }) {
 
 function buildIssueEditState(item) {
   const fallbackTab = item.tab || getTabsForModule(item.module || "equity")[0] || "overview";
-  const tabs = Array.isArray(item.tabs) && item.tabs.length ? item.tabs : [fallbackTab];
+  const tabs = Array.from(new Set(
+    (Array.isArray(item.tabs) && item.tabs.length ? item.tabs : [fallbackTab]).concat(fallbackTab)
+  ));
 
   return {
     module: item.module || "equity",
@@ -682,7 +697,14 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
                 </div>
                 <div>
                   <FieldLabel>Primary Tab</FieldLabel>
-                  <SelectInput value={issueState.tab} onChange={e => setIssueState(prev => ({ ...prev, tab: e.target.value }))}>
+                  <SelectInput value={issueState.tab} onChange={e => setIssueState(prev => {
+                    const nextTab = e.target.value;
+                    return {
+                      ...prev,
+                      tab: nextTab,
+                      tabs: Array.from(new Set([...(prev.tabs || []), nextTab]))
+                    };
+                  })}>
                     {activeTabs.map(option => <option key={option} value={option}>{option}</option>)}
                   </SelectInput>
                 </div>
@@ -1522,6 +1544,19 @@ function SocialCardsTab({ pubIssues, pubStats }) {
     ? new Date(queueState.lastPostedAt + 3*24*60*60*1000).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})
     : "Ready now";
 
+  const adminSocialFetch = async (body) => {
+    const { data } = await supabase.auth.getSession();
+    const headers = { "Content-Type": "application/json" };
+    if (data.session?.access_token) {
+      headers.Authorization = `Bearer ${data.session.access_token}`;
+    }
+    return fetch("/api/admin-social", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+  };
+
   const generateSlides = async () => {
     if (!selectedCard) return;
     setGenerating(true);
@@ -1608,23 +1643,15 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 {"slides":[{"slideNum":1,"label":"Hook","headline":"...","stat":"...","statLabel":"...","body":"...","imageQuery":"..."},{"slideNum":2,"label":"Problem","headline":"...","stat":"","statLabel":"","body":"...","imageQuery":"..."},{"slideNum":3,"label":"Evidence","headline":"...","stat":"","statLabel":"","body":"...","source":"...","imageQuery":"..."},{"slideNum":4,"label":"Link","headline":"","stat":"","statLabel":"","body":"..."}]}`;
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
-          max_tokens:1000,
-          messages:[{ role:"user", content:prompt }]
-        })
+      const res = await adminSocialFetch({
+        action: "slides",
+        prompt,
       });
       const data = await res.json();
-      const textBlock = data.content?.find(b => b.type === "text");
-      if (!textBlock) throw new Error("No text response from AI");
-      const clean = textBlock.text.replace(/```json|```/g,"").trim();
-      const parsed = JSON.parse(clean);
-      setSlides(parsed.slides);
+      if (!res.ok) throw new Error(data.error || "No text response from AI");
+      setSlides(data.slides || []);
       const urls = await Promise.all(
-        parsed.slides.slice(0,3).map(s => s.imageQuery ? fetchImage(s.imageQuery) : Promise.resolve(null))
+        (data.slides || []).slice(0,3).map(s => s.imageQuery ? fetchImage(s.imageQuery) : Promise.resolve(null))
       );
       setImageUrls(urls);
     } catch(e) {
@@ -1636,22 +1663,10 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
   const fetchImage = async (query) => {
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
-          max_tokens:1000,
-          tools:[{ type:"web_search_20250305", name:"web_search" }],
-          messages:[{ role:"user", content:"Search for a real publicly accessible photo of: " + query + " Huntsville Alabama. Return ONLY this JSON with no other text: {\"imageUrl\":\"URL\"} or {\"imageUrl\":null} if not found." }]
-        })
-      });
+      const res = await adminSocialFetch({ action: "image", query });
       const data = await res.json();
-      const textBlock = data.content?.find(b => b.type === "text");
-      if (!textBlock) return null;
-      const clean = textBlock.text.replace(/```json|```/g,"").trim();
-      const parsed = JSON.parse(clean);
-      return parsed.imageUrl || null;
+      if (!res.ok) return null;
+      return data.imageUrl || null;
     } catch { return null; }
   };
 
@@ -1865,7 +1880,15 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 export default function AdminPanel() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
-  const [pwErr, setPwErr] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authView, setAuthView] = useState("password");
+  const [authError, setAuthError] = useState("");
+  const [authMessage, setAuthMessage] = useState("");
+  const [passkeyFactorId, setPasskeyFactorId] = useState("");
+  const [totpFactorId, setTotpFactorId] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
+  const [totpSetup, setTotpSetup] = useState(null);
   const [activeTab, setActiveTab] = useState("paste");
   const [rawPaste, setRawPaste] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -1891,11 +1914,6 @@ export default function AdminPanel() {
   const [animateId, setAnimateId] = useState(null);
   const [savedToast, setSavedToast] = useState("");
 
-  const login = () => {
-    if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwErr(false); loadPublished(); }
-    else setPwErr(true);
-  };
-
   const loadPublished = async () => {
     if (!supabase) return;
     try {
@@ -1905,6 +1923,319 @@ export default function AdminPanel() {
       if (stats) setPubStats(stats);
     } catch (e) { console.error("loadPublished error:", e); }
   };
+
+  const getAdminAuthHeaders = async (baseHeaders = {}) => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token
+      ? { ...baseHeaders, Authorization: `Bearer ${token}` }
+      : { ...baseHeaders };
+  };
+
+  const adminJsonFetch = async (url, { body, headers, ...options } = {}) => {
+    const nextHeaders = await getAdminAuthHeaders({
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+      ...(headers || {}),
+    });
+
+    return fetch(url, {
+      ...options,
+      headers: nextHeaders,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  };
+
+  function resetAuthUi(nextError = "", nextMessage = "") {
+    setAuthView("password");
+    setAuthError(nextError);
+    setAuthMessage(nextMessage);
+    setPasskeyFactorId("");
+    setTotpFactorId("");
+    setTotpSetup(null);
+    setMfaCode("");
+    setPw("");
+  }
+
+  async function grantAdminAccess() {
+    setAuthed(true);
+    setAuthLoading(false);
+    setAuthBusy(false);
+    setAuthView("password");
+    setAuthError("");
+    setAuthMessage("");
+    setPasskeyFactorId("");
+    setTotpFactorId("");
+    setTotpSetup(null);
+    setMfaCode("");
+    await loadPublished();
+    return true;
+  }
+
+  async function handlePasskeyChallenge(factorId = passkeyFactorId) {
+    if (!factorId) {
+      setAuthError("No passkey factor is available for this admin account.");
+      return false;
+    }
+
+    setAuthBusy(true);
+    setAuthError("");
+    const { error } = await supabase.auth.mfa.webauthn.authenticate({ factorId });
+    if (error) {
+      setAuthBusy(false);
+      setAuthError(error.message || "Passkey verification did not complete.");
+      return false;
+    }
+
+    return syncAdminSession({ preferPasskeyPrompt: false });
+  }
+
+  async function beginSecondFactor({ preferPasskeyPrompt = false } = {}) {
+    const { data, error } = await supabase.auth.mfa.listFactors();
+    if (error) {
+      setAuthBusy(false);
+      setAuthView("password");
+      setAuthError(error.message || "Could not load your second-factor options.");
+      return false;
+    }
+
+    const passkeyFactor = data?.webauthn?.[0] || null;
+    const totpFactor = data?.totp?.[0] || null;
+
+    setPasskeyFactorId(passkeyFactor?.id || "");
+    setTotpFactorId(totpFactor?.id || "");
+    setTotpSetup(null);
+    setMfaCode("");
+
+    if (passkeyFactor && preferPasskeyPrompt) {
+      const completed = await handlePasskeyChallenge(passkeyFactor.id);
+      if (completed) return true;
+    }
+
+    setAuthBusy(false);
+    setAuthError("");
+
+    if (passkeyFactor && totpFactor) {
+      setAuthView("mfa-choice");
+      setAuthMessage("Approve with your passkey or enter your authenticator code to continue.");
+      return false;
+    }
+
+    if (passkeyFactor) {
+      setAuthView("mfa-passkey");
+      setAuthMessage("Approve the sign-in with your iPhone or saved passkey before entering the admin panel.");
+      return false;
+    }
+
+    if (totpFactor) {
+      setAuthView("mfa-totp");
+      setAuthMessage("Enter the 6-digit code from your authenticator app.");
+      return false;
+    }
+
+    setAuthView("setup-choice");
+    setAuthMessage("Set up a second factor before the admin panel will open.");
+    return false;
+  }
+
+  async function syncAdminSession({ preferPasskeyPrompt = false } = {}) {
+    if (!supabase) {
+      setAuthLoading(false);
+      setAuthBusy(false);
+      return false;
+    }
+
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      setAuthed(false);
+      setAuthLoading(false);
+      setAuthBusy(false);
+      resetAuthUi();
+      return false;
+    }
+
+    const res = await adminJsonFetch("/api/admin-session", { method: "GET" });
+    const payload = await res.json();
+
+    if (!payload.authenticated) {
+      await supabase.auth.signOut();
+      setAuthed(false);
+      setAuthLoading(false);
+      setAuthBusy(false);
+      resetAuthUi(payload.error || "Admin access was denied for this session.");
+      return false;
+    }
+
+    if (payload.aal === "aal2") {
+      return grantAdminAccess();
+    }
+
+    setAuthed(false);
+    setAuthLoading(false);
+    return beginSecondFactor({ preferPasskeyPrompt });
+  }
+
+  async function handleLogin() {
+    if (!pw.trim()) {
+      setAuthError("Enter your admin password.");
+      return;
+    }
+
+    setAuthBusy(true);
+    setAuthError("");
+    setAuthMessage("");
+
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw }),
+      });
+
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Could not sign in.");
+
+      const { error } = await supabase.auth.setSession(payload.session);
+      if (error) throw error;
+
+      setPw("");
+      await syncAdminSession({ preferPasskeyPrompt: true });
+    } catch (error) {
+      setAuthBusy(false);
+      setAuthError(error.message || "Incorrect password.");
+    }
+  }
+
+  async function handleForgotPassword() {
+    setAuthBusy(true);
+    setAuthError("");
+    setAuthMessage("");
+
+    try {
+      const res = await fetch("/api/admin-reset", { method: "POST" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Could not send a reset link.");
+
+      setAuthMessage("Reset link sent to your admin recovery inbox.");
+    } catch (error) {
+      setAuthError(error.message || "Could not send a reset link.");
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+
+  async function handleTotpChallenge() {
+    const factorId = totpSetup?.id || totpFactorId;
+    if (!factorId) {
+      setAuthError("No authenticator factor is ready yet.");
+      return;
+    }
+    if (!mfaCode.trim()) {
+      setAuthError("Enter the 6-digit code from your authenticator app.");
+      return;
+    }
+
+    setAuthBusy(true);
+    setAuthError("");
+
+    const { error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId,
+      code: mfaCode.trim(),
+    });
+
+    if (error) {
+      setAuthBusy(false);
+      setAuthError(error.message || "That code could not be verified.");
+      return;
+    }
+
+    setMfaCode("");
+    setTotpSetup(null);
+    await syncAdminSession({ preferPasskeyPrompt: false });
+  }
+
+  async function handleStartPasskeySetup() {
+    setAuthBusy(true);
+    setAuthError("");
+
+    const { error } = await supabase.auth.mfa.webauthn.register({
+      friendlyName: ADMIN_PASSKEY_NAME,
+    });
+
+    if (error) {
+      setAuthBusy(false);
+      setAuthError(error.message || "Could not register the passkey second factor.");
+      return;
+    }
+
+    await syncAdminSession({ preferPasskeyPrompt: false });
+  }
+
+  async function handleStartTotpSetup() {
+    setAuthBusy(true);
+    setAuthError("");
+    setAuthMessage("");
+
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: "totp",
+      issuer: "HSV Civic Watch",
+      friendlyName: ADMIN_TOTP_NAME,
+    });
+
+    if (error) {
+      setAuthBusy(false);
+      setAuthError(error.message || "Could not start authenticator setup.");
+      return;
+    }
+
+    setTotpSetup({
+      id: data.id,
+      qrCode: data.totp.qr_code,
+      secret: data.totp.secret,
+    });
+    setAuthBusy(false);
+    setAuthView("setup-totp");
+    setAuthMessage("Scan the QR code or enter the secret on your phone, then confirm with the 6-digit code.");
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setAuthed(false);
+    setPubIssues([]);
+    setPubStats([]);
+    resetAuthUi();
+  }
+
+  useEffect(() => {
+    let active = true;
+
+    const boot = async () => {
+      if (!active) return;
+      await syncAdminSession({ preferPasskeyPrompt: false });
+    };
+
+    boot();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (!active) return;
+
+      if (event === "SIGNED_OUT") {
+        setAuthed(false);
+        setAuthLoading(false);
+        setAuthBusy(false);
+        resetAuthUi();
+        return;
+      }
+
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+        syncAdminSession({ preferPasskeyPrompt: false });
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const generateRefNumber = async (module, type) => {
     if (!supabase) return `XX-${type === "issue" ? "IC" : "SB"}-1`;
@@ -1918,10 +2249,9 @@ export default function AdminPanel() {
 
   const scoreStatBlocks = async (blocks, module) => {
     try {
-      const res = await fetch("/api/score", {
+      const res = await adminJsonFetch("/api/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ statBlocks: blocks, module })
+        body: { statBlocks: blocks, module }
       });
       const data = await res.json();
       return data.scores || [];
@@ -1950,10 +2280,9 @@ export default function AdminPanel() {
     setPendingIssues([]); setPendingStats([]);
     setSelIssues([]); setSelStats([]);
     try {
-      const res = await fetch("/api/parse", {
+      const res = await adminJsonFetch("/api/parse", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawPaste: firstBatchPaste })
+        body: { rawPaste: firstBatchPaste }
       });
       const parsed = await res.json();
       if (!res.ok) throw new Error(parsed.error || "Parse failed");
@@ -1977,10 +2306,9 @@ export default function AdminPanel() {
 
     setParsing(true); setParseError("");
     try {
-      const res = await fetch("/api/parse", {
+      const res = await adminJsonFetch("/api/parse", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawPaste: batchPaste })
+        body: { rawPaste: batchPaste }
       });
       const parsed = await res.json();
       if (!res.ok) throw new Error(parsed.error || "Parse failed");
@@ -2189,14 +2517,13 @@ export default function AdminPanel() {
   const handleSaveEdit = async (config, updates) => {
     setEditSaving(true);
     try {
-      const res = await fetch("/api/update", {
+      const res = await adminJsonFetch("/api/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: {
           itemType: config.itemType,
           id: config.item.id,
           updates
-        })
+        }
       });
 
       const payload = await res.json();
@@ -2265,6 +2592,221 @@ export default function AdminPanel() {
     </div>
   ) : null;
 
+  const renderAuthContent = () => {
+    const inputStyle = {
+      width:"100%",
+      background:"#2e3440",
+      border:"1px solid #4a5268",
+      borderRadius:6,
+      padding:"15px 16px",
+      color:"#fff",
+      fontSize:16,
+      boxSizing:"border-box",
+      outline:"none",
+      marginBottom:12,
+    };
+
+    const primaryButtonStyle = {
+      width:"100%",
+      background:authBusy ? "#6b7280" : "#b8860b",
+      color:"#fff",
+      border:"none",
+      borderRadius:6,
+      padding:15,
+      fontSize:15,
+      fontWeight:700,
+      cursor:authBusy ? "not-allowed" : "pointer",
+      textTransform:"uppercase",
+      letterSpacing:1.5,
+    };
+
+    const secondaryButtonStyle = {
+      width:"100%",
+      background:"#2e3440",
+      color:"#d8c08a",
+      border:"1px solid #6c5a2d",
+      borderRadius:6,
+      padding:14,
+      fontSize:14,
+      fontWeight:700,
+      cursor:authBusy ? "not-allowed" : "pointer",
+      textTransform:"uppercase",
+      letterSpacing:1.2,
+    };
+
+    return (
+      <>
+        {authLoading ? (
+          <div style={{ color:"#ccc", fontSize:15, textAlign:"center", lineHeight:1.7 }}>
+            Checking the current admin session...
+          </div>
+        ) : null}
+
+        {!authLoading && authView === "password" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              Enter your password first. A second factor is required every time before the admin panel opens.
+            </div>
+            <input
+              type="password"
+              placeholder="Password"
+              value={pw}
+              onChange={e => setPw(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && !authBusy && handleLogin()}
+              style={{ ...inputStyle, border:`1px solid ${authError ? "#e53e3e" : "#4a5268"}` }}
+            />
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={handleLogin} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Checking..." : "Enter"}
+            </button>
+            <button
+              onClick={handleForgotPassword}
+              disabled={authBusy}
+              style={{ ...secondaryButtonStyle, marginTop:12 }}
+            >
+              {authBusy ? "Sending..." : "Reset Password Link"}
+            </button>
+          </>
+        ) : null}
+
+        {!authLoading && authView === "mfa-passkey" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              Approve this sign-in with your saved passkey. On Apple devices this can trigger the iPhone or iCloud Keychain approval prompt.
+            </div>
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={() => handlePasskeyChallenge()} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Waiting For Approval..." : "Approve With Passkey"}
+            </button>
+            <button
+              onClick={() => resetAuthUi()}
+              disabled={authBusy}
+              style={{ ...secondaryButtonStyle, marginTop:12 }}
+            >
+              Back To Password
+            </button>
+          </>
+        ) : null}
+
+        {!authLoading && authView === "mfa-choice" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              Finish the second step before entering the admin panel.
+            </div>
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={() => handlePasskeyChallenge()} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Waiting For Approval..." : "Approve With Passkey"}
+            </button>
+            <button
+              onClick={() => { setAuthError(""); setAuthView("mfa-totp"); }}
+              disabled={authBusy}
+              style={{ ...secondaryButtonStyle, marginTop:12 }}
+            >
+              Use Authenticator Code Instead
+            </button>
+          </>
+        ) : null}
+
+        {!authLoading && authView === "mfa-totp" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              Enter the 6-digit code from your authenticator app to finish signing in.
+            </div>
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="6-digit code"
+              value={mfaCode}
+              onChange={e => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onKeyDown={e => e.key === "Enter" && !authBusy && handleTotpChallenge()}
+              style={{ ...inputStyle, textAlign:"center", letterSpacing:8 }}
+            />
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={handleTotpChallenge} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Verifying..." : "Verify Code"}
+            </button>
+            {passkeyFactorId ? (
+              <button
+                onClick={() => { setAuthError(""); setAuthView("mfa-passkey"); }}
+                disabled={authBusy}
+                style={{ ...secondaryButtonStyle, marginTop:12 }}
+              >
+                Use Passkey Instead
+              </button>
+            ) : null}
+          </>
+        ) : null}
+
+        {!authLoading && authView === "setup-choice" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              This admin account needs a second factor before it can be used. The passkey option is the closest match to the iPhone approval flow you asked for.
+            </div>
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={handleStartPasskeySetup} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Starting..." : "Set Up iPhone / Passkey MFA"}
+            </button>
+            <button
+              onClick={handleStartTotpSetup}
+              disabled={authBusy}
+              style={{ ...secondaryButtonStyle, marginTop:12 }}
+            >
+              Use Authenticator App Instead
+            </button>
+          </>
+        ) : null}
+
+        {!authLoading && authView === "setup-totp" ? (
+          <>
+            <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+              Scan this QR code with your authenticator app, then confirm the 6-digit code below.
+            </div>
+            {totpSetup?.qrCode ? (
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:16 }}>
+                <img
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(totpSetup.qrCode)}`}
+                  alt="Admin MFA QR code"
+                  style={{ width:180, height:180, background:"#fff", padding:12, borderRadius:10 }}
+                />
+              </div>
+            ) : null}
+            {totpSetup?.secret ? (
+              <div style={{ background:"#2e3440", border:"1px solid #4a5268", borderRadius:8, padding:"12px 14px", color:"#eee", fontFamily:"monospace", fontSize:13, lineHeight:1.6, marginBottom:14, wordBreak:"break-all" }}>
+                Secret: {totpSetup.secret}
+              </div>
+            ) : null}
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="6-digit code"
+              value={mfaCode}
+              onChange={e => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onKeyDown={e => e.key === "Enter" && !authBusy && handleTotpChallenge()}
+              style={{ ...inputStyle, textAlign:"center", letterSpacing:8 }}
+            />
+            {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
+            {authMessage ? <div style={{ color:"#d8c08a", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authMessage}</div> : null}
+            <button onClick={handleTotpChallenge} disabled={authBusy} style={primaryButtonStyle}>
+              {authBusy ? "Verifying..." : "Enable Authenticator MFA"}
+            </button>
+            <button
+              onClick={() => { setAuthError(""); setAuthView("setup-choice"); }}
+              disabled={authBusy}
+              style={{ ...secondaryButtonStyle, marginTop:12 }}
+            >
+              Back
+            </button>
+          </>
+        ) : null}
+      </>
+    );
+  };
+
   if (!authed) {
     return (
       <div style={{ minHeight:"100vh", background:"#2e3440", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Georgia,serif" }}>
@@ -2274,10 +2816,7 @@ export default function AdminPanel() {
             <div style={{ color:"#fff", fontSize:28, fontWeight:700, marginBottom:14 }}>Content Admin</div>
             <div style={{ color:"#e53e3e", fontSize:18, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>&#9888; Restricted Access</div>
           </div>
-          <input type="password" placeholder="Password" value={pw} onChange={e => setPw(e.target.value)} onKeyDown={e => e.key==="Enter" && login()}
-            style={{ width:"100%", background:"#2e3440", border:"1px solid "+(pwErr?"#e53e3e":"#4a5268"), borderRadius:4, padding:"16px 18px", color:"#fff", fontSize:16, boxSizing:"border-box", outline:"none", marginBottom:12 }} />
-          {pwErr && <div style={{ color:"#e53e3e", fontSize:14, marginBottom:12, fontWeight:600 }}>Incorrect password.</div>}
-          <button onClick={login} style={{ width:"100%", background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:16, fontSize:16, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:2 }}>Enter</button>
+          {renderAuthContent()}
         </div>
       </div>
     );
@@ -2302,7 +2841,7 @@ export default function AdminPanel() {
           <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
           <div style={{ color:"#fff", fontSize:20, fontWeight:700, marginTop:2 }}>Content Admin</div>
         </div>
-        <button onClick={() => setAuthed(false)} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+        <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
           Sign Out
         </button>
       </div>

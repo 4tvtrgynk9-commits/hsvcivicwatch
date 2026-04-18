@@ -22,8 +22,31 @@ import InformationWarfarePage from "./modules/information_warfare/InformationWar
 import ProposalsPage from "./modules/proposals/ProposalsPage";
 import ActionPage from "./modules/action/ActionPage";
 import AdminPanel from "./pages/AdminPanel";
+import AdminResetPassword from "./pages/AdminResetPassword";
 
 const ROUTE_DASHBOARD = "dashboard";
+const ROUTE_ADMIN_RESET = "admin-reset";
+
+function getRouteFromLocation() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("admin-reset") === "1") {
+    return ROUTE_ADMIN_RESET;
+  }
+
+  const hash = url.hash.replace("#", "").trim();
+  return hash || ROUTE_DASHBOARD;
+}
+
+function buildRouteUrl(routeId) {
+  const url = new URL(window.location.href);
+  if (routeId === ROUTE_ADMIN_RESET) {
+    url.searchParams.set("admin-reset", "1");
+  } else {
+    url.searchParams.delete("admin-reset");
+  }
+  url.hash = `#${routeId || ROUTE_DASHBOARD}`;
+  return `${url.pathname}${url.search}${url.hash}`;
+}
 
 function ActivePage({ activeId, onBack }) {
   switch (activeId) {
@@ -48,16 +71,14 @@ function ActivePage({ activeId, onBack }) {
     case "information_warfare": return <InformationWarfarePage />;
     case "proposals": return <ProposalsPage />;
     case "action": return <ActionPage />;
+    case ROUTE_ADMIN_RESET: return <AdminResetPassword />;
     case "admin": return <AdminPanel />;
     default: return <DashboardHome onOpenModule={onBack} />;
   }
 }
 
 export default function App() {
-  const initialRoute = useMemo(() => {
-    const hash = window.location.hash.replace("#", "").trim();
-    return hash || ROUTE_DASHBOARD;
-  }, []);
+  const initialRoute = useMemo(() => getRouteFromLocation(), []);
 
   const [activeId, setActiveId] = useState(initialRoute);
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
@@ -77,7 +98,7 @@ export default function App() {
     previousRoute.current = nextRoute;
     try { sessionStorage.removeItem("hsv_decoder_state"); } catch (e) {}
     if (pushHistory) {
-      window.history.pushState({ route: nextRoute }, "", `#${nextRoute}`);
+      window.history.pushState({ route: nextRoute }, "", buildRouteUrl(nextRoute));
     }
     pendingRestore.current = nextRoute;
     setActiveId(nextRoute);
@@ -85,9 +106,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    window.history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
+    window.history.replaceState({ route: initialRoute }, "", buildRouteUrl(initialRoute));
     const onPopState = (event) => {
-      const nextRoute = event.state?.route || window.location.hash.replace("#", "") || ROUTE_DASHBOARD;
+      const nextRoute = event.state?.route || getRouteFromLocation();
       scrollPositions.current[previousRoute.current] = window.scrollY;
       previousRoute.current = nextRoute;
       pendingRestore.current = nextRoute;
@@ -130,6 +151,7 @@ export default function App() {
     information_warfare: "Information Warfare",
     proposals: "A Better Huntsville: The Blueprint",
     action: "Take Action",
+    [ROUTE_ADMIN_RESET]: "Reset Admin Password",
     admin: "Admin Panel",
   };
 
@@ -138,7 +160,7 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
 
-      {!isMobile && activeId !== "admin" && (
+      {!isMobile && activeId !== "admin" && activeId !== ROUTE_ADMIN_RESET && (
         <Sidebar
           activeId={activeId}
           onNavigate={(id) => navigate(id)}
@@ -147,7 +169,7 @@ export default function App() {
         />
       )}
 
-      {isMobile && activeId !== "admin" && (
+      {isMobile && activeId !== "admin" && activeId !== ROUTE_ADMIN_RESET && (
         <>
           <div
             style={{
