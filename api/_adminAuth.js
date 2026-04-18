@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const DEFAULT_ADMIN_EMAIL = "howardjt1234@gmail.com";
+const DEFAULT_ADMIN_RESET_REDIRECT_URL = "https://www.hsvcivicwatch.org/?admin-reset=1";
 
 function getSupabaseUrl() {
   return (
@@ -35,6 +36,7 @@ function getExplicitResetRedirectUrl() {
   return (
     process.env.ADMIN_PASSWORD_RESET_REDIRECT_URL ||
     process.env.ADMIN_RESET_REDIRECT_URL ||
+    DEFAULT_ADMIN_RESET_REDIRECT_URL ||
     ""
   ).trim();
 }
