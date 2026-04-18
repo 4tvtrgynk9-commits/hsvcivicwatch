@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
+const DEFAULT_ADMIN_EMAIL = "howardjt1234@gmail.com";
+
 function getSupabaseUrl() {
   return (
     process.env.SUPABASE_URL ||
@@ -23,6 +25,8 @@ function getAdminEmail() {
     process.env.ADMIN_AUTH_EMAIL ||
     process.env.ADMIN_EMAIL ||
     process.env.REACT_APP_ADMIN_AUTH_EMAIL ||
+    process.env.REACT_APP_ADMIN_EMAIL ||
+    DEFAULT_ADMIN_EMAIL ||
     ""
   ).trim();
 }

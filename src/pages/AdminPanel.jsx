@@ -2101,7 +2101,7 @@ export default function AdminPanel() {
       await syncAdminSession({ preferPasskeyPrompt: true });
     } catch (error) {
       setAuthBusy(false);
-      setAuthError(error.message || "Incorrect password.");
+      setAuthError(String(error?.message || "Could not sign in."));
     }
   }
 
@@ -2115,9 +2115,9 @@ export default function AdminPanel() {
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Could not send a reset link.");
 
-      setAuthMessage("Reset link sent to your admin recovery inbox.");
+      setAuthMessage(payload.message || "Reset link sent to your admin recovery inbox.");
     } catch (error) {
-      setAuthError(error.message || "Could not send a reset link.");
+      setAuthError(String(error?.message || "Could not send a reset link."));
     } finally {
       setAuthBusy(false);
     }

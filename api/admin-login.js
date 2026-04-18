@@ -1,5 +1,31 @@
 import { loginAdmin } from "./_adminAuth";
 
+function normalizeLoginError(error) {
+  const message = String(error?.message || "Could not sign in.");
+
+  if (/invalid login credentials|invalid credentials|invalid password/i.test(message)) {
+    return { status: 401, error: "Incorrect password for the admin account. Use Reset Password Link if you need to set a new one." };
+  }
+
+  if (/email not confirmed/i.test(message)) {
+    return { status: 403, error: "The admin account email is not confirmed in Supabase Auth." };
+  }
+
+  if (/not allowed to access the admin panel/i.test(message)) {
+    return { status: 403, error: "This account is not allowed to access the admin panel." };
+  }
+
+  if (/missing admin auth email configuration/i.test(message)) {
+    return { status: 500, error: "Admin login is not configured on this deployment." };
+  }
+
+  if (/missing supabase url configuration|missing supabase anon key configuration/i.test(message)) {
+    return { status: 500, error: "Supabase auth is not configured on this deployment." };
+  }
+
+  return { status: 500, error: message };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -17,8 +43,7 @@ export default async function handler(req, res) {
       user: data.user,
     });
   } catch (error) {
-    const message = String(error?.message || "Invalid password");
-    const status = /invalid|credentials/i.test(message) ? 401 : 500;
-    return res.status(status).json({ error: message });
+    const normalized = normalizeLoginError(error);
+    return res.status(normalized.status).json({ error: normalized.error });
   }
 }
