@@ -29,6 +29,11 @@ const ROUTE_ADMIN_RESET = "admin-reset";
 
 function getRouteFromLocation() {
   const url = new URL(window.location.href);
+
+  if (url.pathname === "/admin-reset-password") {
+    return ROUTE_ADMIN_RESET;
+  }
+
   if (url.searchParams.get("admin-reset") === "1") {
     return ROUTE_ADMIN_RESET;
   }
@@ -39,11 +44,12 @@ function getRouteFromLocation() {
 
 function buildRouteUrl(routeId) {
   const url = new URL(window.location.href);
+
   if (routeId === ROUTE_ADMIN_RESET) {
-    url.searchParams.set("admin-reset", "1");
-  } else {
-    url.searchParams.delete("admin-reset");
+    return "/admin-reset-password";
   }
+
+  url.searchParams.delete("admin-reset");
   url.hash = `#${routeId || ROUTE_DASHBOARD}`;
   return `${url.pathname}${url.search}${url.hash}`;
 }
