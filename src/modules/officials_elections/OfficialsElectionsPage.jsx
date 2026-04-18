@@ -5,6 +5,7 @@ import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././officials_elections.data";
+import OfficialsProfileDirectory from "./OfficialsProfileDirectory";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
 
@@ -51,6 +52,7 @@ export default function OfficialsElectionsPage() {
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
+      <OfficialsProfileDirectory activeScope={tabId} />
       <div>
         {(mergedIssues).map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />

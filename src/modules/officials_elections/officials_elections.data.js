@@ -1,34 +1,55 @@
 const data = {
   id: "officials_elections",
   title: "Officials & Elections",
-  intro: "Track who holds power, which offices matter, and where the next oversight opportunities are.",
+  intro: "Track the elected officials, judges, and candidate fields that shape Huntsville and Madison County through budgets, enforcement, schools, courts, taxes, and federal funding.",
   tabs: [
     {
       id: "overview",
       label: "Overview",
-      visual: { type: "placeholder", title: "In-progress visual", description: "This section is being expanded now. The shell is in place so the page loads cleanly while content is rebuilt." },
-      issues: [
-        {
-          id: "in_progress",
-          label: "In Progress",
-          title: "Officials & Elections is being rebuilt",
-          summary: "This section is being expanded now using the approved module structure.",
-          details: "The page shell, routing, and component system are in place. This module is visible so the site feels complete, but the full issue set and action tooling are still being populated.",
-          decoder: {
-            whatsHappening: "This module is being rebuilt into the new structure.",
-            connections: "The old mixed page/data system is being replaced with a cleaner module-based architecture.",
-            benefits: "The benefit is a more stable, maintainable site that is easier to expand and update.",
-            impact: "Right now, the impact is limited because this section is still being populated.",
-            actions: {
-              intro: "This section is still being built out. Check back as more issue cards and action paths are added.",
-              contacts: [],
-              meetings: [],
-              paths: [],
-              actions: []
-            }
-          }
-        }
-      ],
+      visual: { type: "placeholder", title: "Officials directory", description: "Profile cards now sit at the top of this module, with issue cards still available below." },
+      issues: [],
+      trail: []
+    },
+    {
+      id: "local",
+      label: "Local",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "county",
+      label: "County",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "state",
+      label: "State",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "federal",
+      label: "Federal",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "judicial",
+      label: "Judicial",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "candidates",
+      label: "Candidates",
+      stats: [],
+      issues: [],
       trail: []
     }
   ]
