@@ -8,10 +8,12 @@ import data from "././officials_elections.data";
 import OfficialsProfileDirectory from "./OfficialsProfileDirectory";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
+import useOfficialProfiles from "./useOfficialProfiles";
 
 export default function OfficialsElectionsPage() {
-  const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("officials_elections");
+  const { liveIssues, liveStatBlocks } = useSupabaseModule("officials_elections");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
+  const { profiles, loading: profilesLoading, error: profilesError } = useOfficialProfiles(tabId);
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
   const SCROLL_KEY = "hsv_last_card";
@@ -52,7 +54,12 @@ export default function OfficialsElectionsPage() {
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
-      <OfficialsProfileDirectory activeScope={tabId} />
+      <OfficialsProfileDirectory
+        activeScope={tabId}
+        profiles={profiles}
+        loading={profilesLoading}
+        error={profilesError}
+      />
       <div>
         {(mergedIssues).map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
