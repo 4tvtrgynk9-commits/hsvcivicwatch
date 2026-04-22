@@ -167,6 +167,70 @@ UNIT: [what values represent]
 CONTEXT: [one line]
 --- STAT BLOCK END ---`;
 
+const PROFILE_RESEARCH_TEMPLATE = `You are an investigative researcher building a prosecutorial dossier on a public official for HSV Civic Watch, a civic accountability platform covering the Huntsville, Alabama metro area (Madison County, Limestone County, Morgan County, Marshall County — principal cities include Huntsville, Madison, Athens, Decatur, New Hope). This is not a biography. This is not a press release. You are following the money, naming the names, and connecting every dot. Use only verifiable public records — ethics filings, campaign finance reports, court documents, property records, voting records, corporate filings, news archives, social media. If a figure is estimated, label it Est. and show your sourcing logic. If something is unknown, write NOT DISCLOSED — never leave a field blank. Every field must be answered. Expand every acronym on first use. Gender-neutral they/them pronouns for any unnamed individual. Named individuals only in The Beneficiaries — never organizations, never categories. Every claim must be traceable to a public record, filing, vote, court document, or on-record statement.
+
+NAME:
+OFFICE / ROLE:
+KIND: [elected / appointed / candidate / board_member / judge / sheriff / tax_official / superintendent / asst_superintendent / principal / vice_principal / resource_officer / director / authority_member / district_staff]
+JURISDICTION:
+GEOGRAPHY:
+APPOINTED BY / ELECTED BY:
+TERM START:
+TERM END / NEXT ELECTION DATE:
+PARTY REGISTRATION:
+SALARY:
+ESTIMATED NET WORTH:
+STATUS: [active / candidate / former / deceased]
+DATE OF BIRTH:
+RESIDENCY:
+CRIMINAL RECORD:
+ETHICS COMPLAINTS:
+EDUCATION:
+MILITARY SERVICE:
+BORN INTO / MARRIED INTO:
+ELITE INSTITUTIONAL CONNECTIONS:
+PROFESSIONAL NETWORK:
+BOARD SEATS AND ORGANIZATIONAL TIES:
+NAMED INDIVIDUALS IN THEIR ORBIT:
+CAMPAIGN FINANCE TOTAL:
+TOP DONORS:
+PAC SUPPORT:
+DONATIONS MADE:
+DARK MONEY:
+FINANCE FILING LINKS:
+SPOUSE:
+HAS CHILDREN:
+CHILDREN COUNT:
+PARENTS AND SIBLINGS:
+FAMILY BUSINESS TIES:
+PUBLIC STATEMENTS:
+SOCIAL MEDIA:
+INTERVIEWS:
+SWORN TESTIMONY:
+PUBLIC MEETING COMMENTS:
+NEWSLETTERS AND MAILERS:
+NOTABLE CONTRADICTIONS:
+VOTES:
+RULINGS:
+CONTRACTS AWARDED:
+POLICIES ENACTED OR BLOCKED:
+APPOINTMENTS MADE:
+REVERSALS:
+NOTABLE ACTIONS TAKEN:
+NOTABLE ACTIONS BLOCKED OR AVOIDED:
+OFFICE PHONE:
+OFFICE EMAIL:
+OFFICE ADDRESS:
+OFFICE HOURS:
+OFFICIAL WEBSITE:
+CAMPAIGN WEBSITE:
+CAMPAIGN FINANCE URL:
+SOCIAL MEDIA HANDLES:
+THE RISE: How they got power. Not a biography — a power map. Name every patron, every org that backed them, every pivotal appointment and who made it. Trace how each career step connected to the next and what they traded or who they served to advance. End on where they sit now and what that position gives them access to. Chronological but contemptuous. Every advancement framed as handed not earned unless the record proves otherwise. No hedging. No softening. No benefit of the doubt.
+THE AFFILIATIONS: Every organizational financial and personal tie creating obligation or loyalty outside their public role. Named boards. Named PACs. Named donors. Named law firms lobbying shops industries. Named clubs fraternal orgs civic orgs military networks alumni networks. Named individuals they vacation with do business with appear at events with. No categories — only names and amounts. The question: who does this person actually serve.
+THE BENEFICIARIES: Named individuals only. Never organizations. Never industries. Never vague categories. Who specifically got richer got the contract got the appointment got the zoning variance got the case dismissed got the regulatory pass. One named individual per sentence. Dollar amount or specific benefit stated. Relationship to official stated explicitly. No softening.
+THE TRACK RECORD: Receipts only. Specific votes. Specific rulings. Specific contracts. Specific statements contradicted by actions. Dates on everything. Dollar amounts on everything. Who was harmed named explicitly. Every reversal documented with before and after. Ethics complaints with outcomes. Criminal record if any. Order by impact unless chronology hits harder.`;
+
 const COLOR_MAP = { red:"#c0392b", gold:"#b8860b", purple:"#6c3483", green:"#1e8449", blue:"#1a5276" };
 const COLOR_BG  = { red:"#2a0a0a", gold:"#2a1f00", purple:"#1a0a2a", green:"#0a1f0a", blue:"#0a1520" };
 
@@ -1875,6 +1939,23 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
   );
 }
 
+function AdminPreviewBadge({ children }) {
+  return (
+    <span style={{ display:"inline-flex", alignItems:"center", background:"#efe7da", color:"#193150", borderRadius:999, padding:"5px 10px", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginRight:8 }}>
+      {children}
+    </span>
+  );
+}
+
+function AdminPreviewBlock({ borderColor, children }) {
+  if (!children) return null;
+  return (
+    <div style={{ borderLeft:`4px solid ${borderColor}`, paddingLeft:12, marginBottom:10, fontSize:14, color:"#193150", lineHeight:1.7 }}>
+      {children}
+    </div>
+  );
+}
+
 // --- Main Admin Panel --------------------------------------------------------
 
 export default function AdminPanel() {
@@ -1889,6 +1970,7 @@ export default function AdminPanel() {
   const [totpFactorId, setTotpFactorId] = useState("");
   const [mfaCode, setMfaCode] = useState("");
   const [totpSetup, setTotpSetup] = useState(null);
+  const [adminTab, setAdminTab] = useState("issue_cards");
   const [activeTab, setActiveTab] = useState("paste");
   const [rawPaste, setRawPaste] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -1913,6 +1995,21 @@ export default function AdminPanel() {
   const [highlightId, setHighlightId] = useState(null);
   const [animateId, setAnimateId] = useState(null);
   const [savedToast, setSavedToast] = useState("");
+  const [profileRawPaste, setProfileRawPaste] = useState("");
+  const [profileParsing, setProfileParsing] = useState(false);
+  const [profileParseError, setProfileParseError] = useState("");
+  const [parsedProfile, setParsedProfile] = useState(null);
+  const [profilePublishSuccess, setProfilePublishSuccess] = useState("");
+  const [profileTemplateCopied, setProfileTemplateCopied] = useState(false);
+  const [blueprintMode, setBlueprintMode] = useState("brief");
+  const [blueprintInput, setBlueprintInput] = useState("");
+  const [blueprintParsing, setBlueprintParsing] = useState(false);
+  const [blueprintError, setBlueprintError] = useState("");
+  const [parsedBlueprint, setParsedBlueprint] = useState(null);
+  const [blueprintPublishSuccess, setBlueprintPublishSuccess] = useState("");
+  const [weeklyRunning, setWeeklyRunning] = useState(false);
+  const [weeklyResult, setWeeklyResult] = useState(null);
+  const [weeklyError, setWeeklyError] = useState("");
 
   const loadPublished = async () => {
     if (!supabase) return;
@@ -2558,6 +2655,83 @@ export default function AdminPanel() {
   const toggleAllIssues = () => setSelIssues(selIssues.length === pendingIssues.length ? [] : pendingIssues.map((_,i) => i));
   const toggleAllStats = () => setSelStats(selStats.length === pendingStats.length ? [] : pendingStats.map((_,i) => i));
   const copyTemplate = () => { navigator.clipboard.writeText(RESEARCH_TEMPLATE); setTemplateCopied(true); setTimeout(() => setTemplateCopied(false), 2500); };
+  const copyProfileTemplate = async () => {
+    await navigator.clipboard.writeText(PROFILE_RESEARCH_TEMPLATE);
+    setProfileTemplateCopied(true);
+    setTimeout(() => setProfileTemplateCopied(false), 2000);
+  };
+
+  const handleParseProfile = async (mode) => {
+    if (!profileRawPaste.trim()) return;
+    setProfileParsing(true);
+    setProfileParseError("");
+    setProfilePublishSuccess("");
+
+    try {
+      const res = await adminJsonFetch("/api/parse-profile", {
+        method: "POST",
+        body: { rawPaste: profileRawPaste, mode, profileId: null }
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Profile parse failed");
+      setParsedProfile(payload.profile || null);
+      if (mode === "publish") {
+        setProfilePublishSuccess("Published successfully");
+      }
+    } catch (error) {
+      setProfileParseError(String(error?.message || "Profile parse failed"));
+    } finally {
+      setProfileParsing(false);
+    }
+  };
+
+  const handleParseBlueprint = async (mode) => {
+    if (!blueprintInput.trim()) return;
+    setBlueprintParsing(true);
+    setBlueprintError("");
+    setBlueprintPublishSuccess("");
+
+    try {
+      const res = await adminJsonFetch("/api/parse-blueprint", {
+        method: "POST",
+        body: {
+          input: blueprintInput,
+          inputMode: blueprintMode === "brief" ? "brief" : "template",
+          mode,
+          blueprintId: null
+        }
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Blueprint parse failed");
+      setParsedBlueprint(payload.blueprint || null);
+      if (mode === "publish") {
+        setBlueprintPublishSuccess("Published successfully");
+      }
+    } catch (error) {
+      setBlueprintError(String(error?.message || "Blueprint parse failed"));
+    } finally {
+      setBlueprintParsing(false);
+    }
+  };
+
+  const handleRunWeeklyJob = async () => {
+    setWeeklyRunning(true);
+    setWeeklyError("");
+    setWeeklyResult(null);
+
+    try {
+      const res = await adminJsonFetch("/api/cron-weekly", {
+        method: "POST"
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Weekly job failed");
+      setWeeklyResult(payload);
+    } catch (error) {
+      setWeeklyError(String(error?.message || "Weekly job failed"));
+    } finally {
+      setWeeklyRunning(false);
+    }
+  };
 
   const totalPending = pendingIssues.length + pendingStats.length;
   const totalSel = selIssues.length + selStats.length;
@@ -2569,6 +2743,18 @@ export default function AdminPanel() {
     color: activeTab===id ? "#b8860b" : "#aaa",
     padding: "16px 20px", fontSize: 13, fontWeight: 700,
     cursor: "pointer", textTransform: "uppercase", letterSpacing: 1
+  });
+  const adminTabStyle = (id) => ({
+    background:"transparent",
+    border:"none",
+    borderBottom: adminTab === id ? "3px solid #193150" : "3px solid transparent",
+    marginBottom:-2,
+    padding:"12px 20px",
+    fontSize:14,
+    fontWeight:900,
+    cursor:"pointer",
+    color: adminTab === id ? "#193150" : "#6b778a",
+    transition:"color 0.15s"
   });
 
   const issueCardsForStatModule = confirmStat
@@ -2846,6 +3032,15 @@ export default function AdminPanel() {
         </button>
       </div>
 
+      <div style={{ display:"flex", gap:0, borderBottom:"2px solid #e0d8cc", marginBottom:24, background:"#fff", padding:"0 36px" }}>
+        <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Issue Cards</button>
+        <button onClick={() => setAdminTab("profiles")} style={adminTabStyle("profiles")}>Profiles</button>
+        <button onClick={() => setAdminTab("blueprints")} style={adminTabStyle("blueprints")}>Blueprints</button>
+        <button onClick={() => setAdminTab("weekly_report")} style={adminTabStyle("weekly_report")}>Weekly Report</button>
+      </div>
+
+      {adminTab === "issue_cards" ? (
+        <>
       {/* Nav tabs */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
         <button onClick={() => setActiveTab("paste")} style={tabStyle("paste")}>1. Paste Research</button>
@@ -3078,6 +3273,185 @@ export default function AdminPanel() {
         )}
 
       </div>
+        </>
+      ) : null}
+
+      {adminTab === "profiles" ? (
+        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
+          <div style={{ background:"#193150", borderRadius:14, padding:20, marginBottom:20 }}>
+            <div style={{ color:"#C6A34D", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>
+              UNIVERSAL PROFILE RESEARCH TEMPLATE
+            </div>
+            <div style={{ color:"rgba(247,243,234,0.74)", fontSize:14, lineHeight:1.6, marginBottom:16 }}>
+              Copy this template and paste it into Claude, ChatGPT, or Gemini with the official&apos;s name and role. The AI will research every field and return a completed profile ready to paste into the parser below.
+            </div>
+            <button
+              onClick={copyProfileTemplate}
+              style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"10px 18px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+            >
+              {profileTemplateCopied ? "Copied!" : "Copy Template"}
+            </button>
+          </div>
+
+          <textarea
+            value={profileRawPaste}
+            onChange={(e) => setProfileRawPaste(e.target.value)}
+            style={{ width:"100%", minHeight:"280px", fontFamily:"monospace", fontSize:13, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
+          />
+
+          <div style={{ display:"flex", gap:10 }}>
+            <button
+              onClick={() => handleParseProfile("parse")}
+              disabled={profileParsing || !profileRawPaste.trim()}
+              style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+            >
+              Parse Profile
+            </button>
+            {parsedProfile ? (
+              <button
+                onClick={() => handleParseProfile("publish")}
+                disabled={profileParsing}
+                style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+              >
+                Publish Profile
+              </button>
+            ) : null}
+          </div>
+
+          {profileParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
+          {profileParseError ? (
+            <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
+              {profileParseError}
+            </div>
+          ) : null}
+          {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
+
+          {parsedProfile ? (
+            <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
+              <div style={{ color:"#193150", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
+              <div style={{ color:"#6b778a", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
+              <div style={{ marginBottom:12 }}>
+                <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
+                <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
+              </div>
+              <AdminPreviewBlock borderColor="#C6A34D">{parsedProfile.decoder?.rise}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#2F5D8A">{parsedProfile.decoder?.affiliations}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#7A4FA3">{parsedProfile.decoder?.beneficiaries}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#B4473E">{parsedProfile.decoder?.track_record}</AdminPreviewBlock>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {adminTab === "blueprints" ? (
+        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
+          <div style={{ display:"flex", gap:10, marginBottom:14 }}>
+            <button
+              onClick={() => setBlueprintMode("brief")}
+              style={{ background: blueprintMode === "brief" ? "#193150" : "#f0ebe2", color: blueprintMode === "brief" ? "white" : "#6b778a", borderRadius:10, padding:"9px 18px", fontSize:14, fontWeight:900, border:"none" }}
+            >
+              Research Brief
+            </button>
+            <button
+              onClick={() => setBlueprintMode("template")}
+              style={{ background: blueprintMode === "template" ? "#193150" : "#f0ebe2", color: blueprintMode === "template" ? "white" : "#6b778a", borderRadius:10, padding:"9px 18px", fontSize:14, fontWeight:900, border:"none" }}
+            >
+              Paste Template
+            </button>
+          </div>
+
+          <textarea
+            value={blueprintInput}
+            onChange={(e) => setBlueprintInput(e.target.value)}
+            placeholder={blueprintMode === "brief" ? "Describe the specific policy idea in detail — include the target population, proposed funding mechanism, and the specific ask..." : "Paste your completed Blueprint research template here..."}
+            style={{ width:"100%", minHeight: blueprintMode === "brief" ? "160px" : "260px", fontSize:14, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
+          />
+
+          <div style={{ display:"flex", gap:10 }}>
+            <button
+              onClick={() => handleParseBlueprint("parse")}
+              disabled={blueprintParsing || !blueprintInput.trim()}
+              style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+            >
+              Parse Blueprint
+            </button>
+            {parsedBlueprint ? (
+              <button
+                onClick={() => handleParseBlueprint("publish")}
+                disabled={blueprintParsing}
+                style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+              >
+                Publish Blueprint
+              </button>
+            ) : null}
+          </div>
+
+          {blueprintParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing blueprint...</div> : null}
+          {blueprintError ? (
+            <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
+              {blueprintError}
+            </div>
+          ) : null}
+          {blueprintPublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{blueprintPublishSuccess}</div> : null}
+
+          {parsedBlueprint ? (
+            <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
+              <div style={{ fontSize:22, fontWeight:900, color:"#193150", marginBottom:8 }}>{parsedBlueprint.title}</div>
+              <AdminPreviewBlock borderColor="#B4473E">{parsedBlueprint.the_problem}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#C6A34D">{parsedBlueprint.the_ask}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#2F5D8A">{parsedBlueprint.who_decides}</AdminPreviewBlock>
+              <AdminPreviewBlock borderColor="#3E8B5B">{parsedBlueprint.other_cities}</AdminPreviewBlock>
+              <div style={{ display:"grid", gap:8, marginTop:12 }}>
+                <div style={{ color:"#6b778a", fontSize:13 }}><strong>Estimated Cost:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.estimated_cost || "—"}</span></div>
+                <div style={{ color:"#6b778a", fontSize:13 }}><strong>ROI:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.roi || "—"}</span></div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {adminTab === "weekly_report" ? (
+        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
+          <div style={{ color:"#6b778a", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
+            Run the weekly maintenance job manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
+          </div>
+          <button
+            onClick={handleRunWeeklyJob}
+            disabled={weeklyRunning}
+            style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"12px 24px", fontSize:15, fontWeight:900, cursor:"pointer" }}
+          >
+            {weeklyRunning ? "Running..." : "Run Weekly Job"}
+          </button>
+          {weeklyError ? (
+            <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
+              {weeklyError}
+            </div>
+          ) : null}
+          {weeklyResult ? (
+            <div style={{ background:"#f0fdf4", border:"1px solid rgba(62,139,91,0.3)", borderRadius:12, padding:18, marginTop:16 }}>
+              <div style={{ display:"grid", gap:14 }}>
+                <div>
+                  <div style={{ color:"#6b778a", fontSize:13 }}>Candidates flagged for review</div>
+                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.graduated}</div>
+                </div>
+                <div>
+                  <div style={{ color:"#6b778a", fontSize:13 }}>Stale profiles flagged</div>
+                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.stale_flagged}</div>
+                </div>
+                <div>
+                  <div style={{ color:"#6b778a", fontSize:13 }}>Issue cards rescored</div>
+                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.rescored}</div>
+                </div>
+              </div>
+              {Array.isArray(weeklyResult.errors) && weeklyResult.errors.length ? (
+                <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
+                  {weeklyResult.errors.join("\n")}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
