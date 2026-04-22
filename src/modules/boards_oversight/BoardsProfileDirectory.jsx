@@ -640,24 +640,6 @@ export default function BoardsProfileDirectory({ activeScope, profiles, loading,
 
   return (
     <section style={{ marginBottom: 28 }}>
-      <div
-        style={{
-          background: "linear-gradient(145deg, #18304f, #10243d)",
-          color: "#f7f3ea",
-          borderRadius: 18,
-          padding: "18px 20px",
-          marginBottom: 18,
-          boxShadow: "0 18px 36px rgba(16,36,61,0.14)",
-        }}
-      >
-        <div style={{ color: "#4A90C4", fontSize: 11, fontWeight: 900, letterSpacing: "0.10em", textTransform: "uppercase", marginBottom: 8 }}>
-          Boards, Directors & Appointees
-        </div>
-        <div style={{ fontSize: 16, lineHeight: 1.75, maxWidth: 980 }}>
-          Unelected officials who control public funds, set policy, and shape daily life in the Huntsville metro — without facing a ballot.
-        </div>
-      </div>
-
       {loading ? <EmptyState title="Loading profiles" body="Requesting board profile rows from Supabase." /> : null}
       {!loading && error ? <EmptyState tone="warning" title="Profile directory not connected" body={error} /> : null}
       {!loading && !error && !visibleProfiles.length ? (
