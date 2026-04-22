@@ -7,10 +7,13 @@ import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././boards_oversight.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
+import BoardsProfileDirectory from "./BoardsProfileDirectory";
+import useBoardProfiles from "./useBoardProfiles";
 
 export default function BoardsOversightPage() {
   const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("boards_oversight");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
+  const { profiles, loading: profilesLoading, error: profilesError } = useBoardProfiles(tabId);
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
   const SCROLL_KEY = "hsv_last_card";
@@ -51,6 +54,7 @@ export default function BoardsOversightPage() {
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
+      <BoardsProfileDirectory activeScope={tabId} profiles={profiles} loading={profilesLoading} error={profilesError} />
       <div>
         {(mergedIssues).map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
