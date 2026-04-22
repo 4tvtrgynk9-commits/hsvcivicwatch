@@ -4,13 +4,6 @@ const data = {
   intro: "Track the elected officials, judges, and candidate fields that shape Huntsville and Madison County through budgets, enforcement, schools, courts, taxes, and federal funding.",
   tabs: [
     {
-      id: "overview",
-      label: "Overview",
-      visual: { type: "placeholder", title: "Officials directory", description: "Profile cards now sit at the top of this module, with issue cards still available below." },
-      issues: [],
-      trail: []
-    },
-    {
       id: "local",
       label: "Local",
       stats: [],

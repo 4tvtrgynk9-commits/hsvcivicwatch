@@ -9,11 +9,13 @@ import OfficialsProfileDirectory from "./OfficialsProfileDirectory";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
 import useOfficialProfiles from "./useOfficialProfiles";
+import useOfficialStats from "./useOfficialStats";
 
 export default function OfficialsElectionsPage() {
   const { liveIssues, liveStatBlocks } = useSupabaseModule("officials_elections");
-  const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
+  const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "local");
   const { profiles, loading: profilesLoading, error: profilesError } = useOfficialProfiles(tabId);
+  const officialStats = useOfficialStats(profiles, tabId);
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
 
   const SCROLL_KEY = "hsv_last_card";
@@ -52,7 +54,7 @@ export default function OfficialsElectionsPage() {
   return (
     <div>
       <PageHeader title={data.title} intro={data.intro} />
-      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
+      <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={officialStats.length ? officialStats : rotatingStats.stats} rotationKey={tabId} />
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       <OfficialsProfileDirectory
         activeScope={tabId}
