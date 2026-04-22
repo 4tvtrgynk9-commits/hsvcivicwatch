@@ -32,13 +32,6 @@ const data = {
       trail: []
     },
     {
-      id: "judicial",
-      label: "Judicial",
-      stats: [],
-      issues: [],
-      trail: []
-    },
-    {
       id: "candidates",
       label: "Candidates",
       stats: [],

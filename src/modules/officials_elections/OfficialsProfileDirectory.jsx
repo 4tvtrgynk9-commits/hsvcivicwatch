@@ -683,24 +683,6 @@ export default function OfficialsProfileDirectory({ activeScope = "overview", pr
 
   return (
     <section style={{ marginBottom: 28 }}>
-      <div
-        style={{
-          background: "linear-gradient(145deg,#18304f,#10243d)",
-          color: "#f7f3ea",
-          borderRadius: 18,
-          padding: "18px 20px",
-          marginBottom: 18,
-          boxShadow: "0 18px 36px rgba(16,36,61,0.14)",
-        }}
-      >
-        <div style={{ color: "#e8c35a", fontSize: 11, fontWeight: 900, letterSpacing: "0.10em", textTransform: "uppercase", marginBottom: 8 }}>
-          Officials and Candidate Profiles
-        </div>
-        <div style={{ fontSize: 16, lineHeight: 1.75, maxWidth: 980 }}>
-          This directory is powered by Supabase. Publish rows to the <code style={{ color: "#fff" }}>official_profiles</code> table and each card will render the same profile modal, tabs, decoder, and party styling automatically.
-        </div>
-      </div>
-
       {loading ? (
         <EmptyState title="Loading profiles" body="The directory is requesting official profile rows from Supabase." />
       ) : null}
