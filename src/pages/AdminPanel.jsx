@@ -1359,6 +1359,57 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
 
 function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId }) {
   const [section, setSection] = useState("issues");
+  const [exportStatus, setExportStatus] = useState("idle"); // idle | success | fallback
+  const [fallbackText, setFallbackText] = useState("");
+  const fallbackRef = React.useRef(null);
+
+  const EXPORT_TS_KEY = "hsv_notebook_export_ts";
+
+  const getLastExportLabel = () => {
+    try {
+      const ts = localStorage.getItem(EXPORT_TS_KEY);
+      if (!ts) return null;
+      const d = new Date(parseInt(ts, 10));
+      return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+    } catch { return null; }
+  };
+
+  const buildExportText = () => {
+    const lines = [];
+    const allIssues = [...pubIssues].sort((a, b) => (a.module || "").localeCompare(b.module || ""));
+    allIssues.forEach((card, i) => {
+      lines.push("════════════════════════════════════════");
+      lines.push(`REF: ${card.ref_number || "—"}  |  MODULE: ${card.module || "—"}  |  TAB: ${card.tab || "—"}`);
+      lines.push(`TITLE: ${card.title || "—"}`);
+      lines.push("");
+      if (card.summary) { lines.push("SUMMARY:"); lines.push(card.summary); lines.push(""); }
+      const statMatches = pubStats.filter(s => s.module === card.module && s.ref_number === card.ref_number);
+      if (statMatches.length) {
+        lines.push("LINKED STAT BLOCKS:");
+        statMatches.forEach(s => {
+          lines.push(`  • ${s.label || s.stat_label || "—"}: ${s.value || s.stat_value || "—"}${s.context ? " — " + s.context : ""}`);
+        });
+        lines.push("");
+      }
+    });
+    lines.push("════════════════════════════════════════");
+    lines.push(`Exported from HSV Civic Watch Admin · ${new Date().toLocaleString("en-US")}`);
+    return lines.join("\n");
+  };
+
+  const handleExport = async () => {
+    const text = buildExportText();
+    try {
+      await navigator.clipboard.writeText(text);
+      localStorage.setItem(EXPORT_TS_KEY, Date.now().toString());
+      setExportStatus("success");
+      setTimeout(() => setExportStatus("idle"), 2500);
+    } catch {
+      setFallbackText(text);
+      setExportStatus("fallback");
+      setTimeout(() => { if (fallbackRef.current) fallbackRef.current.select(); }, 80);
+    }
+  };
 
   const issuesByModule = {};
   pubIssues.forEach(c => {
@@ -1386,8 +1437,53 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
         <div>
-          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
-          <p style={{ color:"#aaa", fontSize:15, margin:"0 0 24px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+          <h2 style={{ c8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
+          <p style={{ color:"#aaa", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+          <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12 }}>
+            <button
+              onClick={handleExport}
+              disabled={exportStatus === "success"}
+              style={{
+                background: exportStatus === "success" ? "#3E8B5B" : "#1a5276",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                padding: "9px 18px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: exportStatus === "success" ? "default" : "pointer",
+                letterSpacing: 0.5,
+                transition: "background 0.2s",
+              }}
+            >
+              {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "Export for NotebookLM"}
+            </button>
+            {getLastExportLabel() && exportStatus !== "success" && (
+              <span style={{ color:"#666", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
+            )}
+          </div>
+          {exportStatus === "fallback" && (
+            <div style={{ marginBottom:12 }}>
+              <p style={{ color:"#f5a623", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
+              <textarea
+                ref={fallbackRef}
+                readOnly
+                value={fallbackText}
+                style={{
+                  width: "100%",
+                  minHeight: 120,
+                  background: "#1a1f2e",
+                  color: "#ddd",
+                  border: "1px solid #444",
+                  borderRadius: 4,
+                  padding: 8,
+                  fontSize: 11,
+                  fontFamily: "monospace",
+                  resize: "vertical",
+                }}
+              />
+            </div>
+          )}
         </div>
         <button
           onClick={async () => {
