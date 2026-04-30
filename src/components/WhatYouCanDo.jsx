@@ -223,7 +223,12 @@ export default function WhatYouCanDo({ data }) {
                   {v(path.link) ? (
                     <div style={{ marginTop: 6 }}>
                       <a href={v(path.link)} target="_blank" rel="noreferrer">
-                        Open filing path
+                        {path.type === "investigation_request" ? "Request investigation" :
+                         path.type === "records_request" ? "Request records" :
+                         path.type === "complaint" ? "File a complaint" :
+                         path.type === "misconduct_report" ? "Report misconduct" :
+                         path.type === "media_outreach" ? "Contact media" :
+                         "Open filing path"}
                       </a>
                     </div>
                   ) : null}
