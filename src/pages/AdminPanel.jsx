@@ -256,6 +256,8 @@ const MODULE_OPTIONS = [
   "action",
 ];
 
+const PROFILE_LEVEL_OPTIONS = ["local", "state", "federal", "judge"];
+
 const TAB_OPTIONS = {
   equity: ["overview", "schools", "infrastructure"],
   utilities: ["overview"],
@@ -947,6 +949,140 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   );
 }
 
+function ProfileEditModal({ profile, onClose, onSave, saving }) {
+  const [form, setForm] = useState(() => ({
+    name: profile?.name || "",
+    office: profile?.office || "",
+    level: profile?.level || "local",
+    kind: profile?.kind || "",
+    geography: profile?.geography || "",
+    party: profile?.party || "",
+    status_line: profile?.status_line || "",
+    decoder: {
+      rise: profile?.decoder?.rise || "",
+      affiliations: profile?.decoder?.affiliations || "",
+      beneficiaries: profile?.decoder?.beneficiaries || "",
+      track_record: profile?.decoder?.track_record || "",
+    },
+  }));
+
+  useEffect(() => {
+    setForm({
+      name: profile?.name || "",
+      office: profile?.office || "",
+      level: profile?.level || "local",
+      kind: profile?.kind || "",
+      geography: profile?.geography || "",
+      party: profile?.party || "",
+      status_line: profile?.status_line || "",
+      decoder: {
+        rise: profile?.decoder?.rise || "",
+        affiliations: profile?.decoder?.affiliations || "",
+        beneficiaries: profile?.decoder?.beneficiaries || "",
+        track_record: profile?.decoder?.track_record || "",
+      },
+    });
+  }, [profile]);
+
+  const darkInputStyle = {
+    background:"#2e3440",
+    border:"1px solid #4a5268",
+    color:"#f5f0e8",
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", zIndex:4100, display:"flex", alignItems:"center", justifyContent:"center", padding:16, overflowY:"auto" }}>
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, width:"100%", maxWidth:980, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.45)", display:"flex", flexDirection:"column" }}>
+        <div style={{ padding:"20px 24px", borderBottom:"1px solid #4a5268", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
+          <div>
+            <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Edit Profile</div>
+            <div style={{ color:"#fff", fontSize:22, fontWeight:900, lineHeight:1.3 }}>{profile?.name || "Profile"}</div>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            style={{ background:"#2e3440", color:"#aaa", border:"1px solid #4a5268", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
+          >
+            ×
+          </button>
+        </div>
+
+        <div style={{ padding:"22px 24px", overflowY:"auto", flex:"1 1 auto", minHeight:0 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:16, marginBottom:18 }}>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Name</div>
+              <TextInput value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Office</div>
+              <TextInput value={form.office} onChange={e => setForm(prev => ({ ...prev, office: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Level</div>
+              <SelectInput value={form.level} onChange={e => setForm(prev => ({ ...prev, level: e.target.value }))} style={darkInputStyle}>
+                {PROFILE_LEVEL_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+              </SelectInput>
+            </div>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Kind</div>
+              <TextInput value={form.kind} onChange={e => setForm(prev => ({ ...prev, kind: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Geography</div>
+              <TextInput value={form.geography} onChange={e => setForm(prev => ({ ...prev, geography: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
+              <TextInput value={form.party} onChange={e => setForm(prev => ({ ...prev, party: e.target.value }))} style={darkInputStyle} />
+            </div>
+          </div>
+
+          <div style={{ marginBottom:18 }}>
+            <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Status Line</div>
+            <TextArea rows={3} value={form.status_line} onChange={e => setForm(prev => ({ ...prev, status_line: e.target.value }))} style={darkInputStyle} />
+          </div>
+
+          <div style={{ display:"grid", gap:16 }}>
+            <div style={{ background:"#2e3440", border:"1px solid #C6A34D", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#C6A34D", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Rise</div>
+              <TextArea rows={5} value={form.decoder.rise} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, rise: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #C6A34D" }} />
+            </div>
+            <div style={{ background:"#2e3440", border:"1px solid #2F5D8A", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#7ab", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Affiliations</div>
+              <TextArea rows={5} value={form.decoder.affiliations} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, affiliations: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #2F5D8A" }} />
+            </div>
+            <div style={{ background:"#2e3440", border:"1px solid #7A4FA3", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#c7a7e8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Beneficiaries</div>
+              <TextArea rows={5} value={form.decoder.beneficiaries} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, beneficiaries: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #7A4FA3" }} />
+            </div>
+            <div style={{ background:"#2e3440", border:"1px solid #B4473E", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#e59d97", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Track Record</div>
+              <TextArea rows={6} value={form.decoder.track_record} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, track_record: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #B4473E" }} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #4a5268", display:"flex", justifyContent:"flex-end", gap:12, background:"#353b48", flexShrink:0 }}>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            style={{ background:"#2e3440", color:"#aaa", border:"1px solid #4a5268", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSave(form)}
+            disabled={saving}
+            style={{ background:saving ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:saving ? "not-allowed" : "pointer", minWidth:120, opacity:saving ? 0.7 : 1 }}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- Stat Block Renderers ----------------------------------------------------
 
 function KeyNumberBlock({ block }) {
@@ -1437,7 +1573,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
         <div>
-          <h2 style={{ c8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
+          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
           <p style={{ color:"#aaa", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
           <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12 }}>
             <button
@@ -2067,6 +2203,7 @@ export default function AdminPanel() {
   const [mfaCode, setMfaCode] = useState("");
   const [totpSetup, setTotpSetup] = useState(null);
   const [adminTab, setAdminTab] = useState("issue_cards");
+  const [profileAdminTab, setProfileAdminTab] = useState("paste");
   const [activeTab, setActiveTab] = useState("paste");
   const [rawPaste, setRawPaste] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -2097,6 +2234,11 @@ export default function AdminPanel() {
   const [parsedProfile, setParsedProfile] = useState(null);
   const [profilePublishSuccess, setProfilePublishSuccess] = useState("");
   const [profileTemplateCopied, setProfileTemplateCopied] = useState(false);
+  const [pubProfiles, setPubProfiles] = useState([]);
+  const [pubProfilesLoading, setPubProfilesLoading] = useState(false);
+  const [pubProfilesError, setPubProfilesError] = useState("");
+  const [profileEditConfig, setProfileEditConfig] = useState(null);
+  const [profileEditSaving, setProfileEditSaving] = useState(false);
   const [blueprintMode, setBlueprintMode] = useState("brief");
   const [blueprintInput, setBlueprintInput] = useState("");
   const [blueprintParsing, setBlueprintParsing] = useState(false);
@@ -2115,6 +2257,27 @@ export default function AdminPanel() {
       if (issues) setPubIssues(issues);
       if (stats) setPubStats(stats);
     } catch (e) { console.error("loadPublished error:", e); }
+  };
+
+  const loadPublishedProfiles = async () => {
+    if (!supabase) return;
+    setPubProfilesLoading(true);
+    setPubProfilesError("");
+    try {
+      const { data, error } = await supabase
+        .from("official_profiles")
+        .select("id, name, office, level, kind, geography, party, status_line, headshot_url, decoder, created_at")
+        .order("level", { ascending: true })
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+      setPubProfiles(data || []);
+    } catch (e) {
+      console.error("loadPublishedProfiles error:", e);
+      setPubProfilesError(e?.message || "Could not load published profiles.");
+    } finally {
+      setPubProfilesLoading(false);
+    }
   };
 
   const getAdminAuthHeaders = async (baseHeaders = {}) => {
@@ -2429,6 +2592,12 @@ export default function AdminPanel() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (adminTab === "profiles" && profileAdminTab === "published") {
+      loadPublishedProfiles();
+    }
+  }, [adminTab, profileAdminTab]);
 
   const generateRefNumber = async (module, type) => {
     if (!supabase) return `XX-${type === "issue" ? "IC" : "SB"}-1`;
@@ -2781,6 +2950,44 @@ export default function AdminPanel() {
     }
   };
 
+  const handleSaveProfileEdit = async (fields) => {
+    if (!profileEditConfig) return;
+    setProfileEditSaving(true);
+    try {
+      const res = await adminJsonFetch("/api/update.js", {
+        method: "POST",
+        body: {
+          table: "official_profiles",
+          id: profileEditConfig.id,
+          fields
+        }
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Update failed");
+
+      setPubProfiles(prev => prev.map(item => item.id === payload.item.id ? payload.item : item));
+      setSavedToast("Saved successfully");
+      setTimeout(() => setSavedToast(""), 3000);
+      setProfileEditConfig(null);
+    } catch (e) {
+      window.alert("Save failed: " + e.message);
+    } finally {
+      setProfileEditSaving(false);
+    }
+  };
+
+  const handleDeleteProfile = async (profile) => {
+    if (!supabase) return;
+    if (!window.confirm(`Delete "${profile.name}"? This cannot be undone.`)) return;
+    try {
+      const { error } = await supabase.from("official_profiles").delete().eq("id", profile.id);
+      if (error) throw error;
+      setPubProfiles(prev => prev.filter(item => item.id !== profile.id));
+    } catch (e) {
+      window.alert("Delete failed: " + (e?.message || "Unknown error"));
+    }
+  };
+
   const handleParseBlueprint = async (mode) => {
     if (!blueprintInput.trim()) return;
     setBlueprintParsing(true);
@@ -3116,6 +3323,7 @@ export default function AdminPanel() {
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
       {editConfig && <EditModal config={editConfig} onClose={() => setEditConfig(null)} onSave={handleSaveEdit} onDelete={editConfig.itemType === "issue_card" ? handleDeleteIssue : handleDeleteStat} saving={editSaving} />}
+      {profileEditConfig ? <ProfileEditModal profile={profileEditConfig} onClose={() => setProfileEditConfig(null)} onSave={handleSaveProfileEdit} saving={profileEditSaving} /> : null}
 
       {/* Header */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"18px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", background:"#2e3440" }}>
@@ -3370,69 +3578,211 @@ export default function AdminPanel() {
       ) : null}
 
       {adminTab === "profiles" ? (
-        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
-          <div style={{ background:"#193150", borderRadius:14, padding:20, marginBottom:20 }}>
-            <div style={{ color:"#C6A34D", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>
-              UNIVERSAL PROFILE RESEARCH TEMPLATE
-            </div>
-            <div style={{ color:"rgba(247,243,234,0.74)", fontSize:14, lineHeight:1.6, marginBottom:16 }}>
-              Copy this template and paste it into Claude, ChatGPT, or Gemini with the official&apos;s name and role. The AI will research every field and return a completed profile ready to paste into the parser below.
-            </div>
+        <div>
+          <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
             <button
-              onClick={copyProfileTemplate}
-              style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"10px 18px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+              onClick={() => setProfileAdminTab("paste")}
+              style={{ padding:"14px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer" }}
             >
-              {profileTemplateCopied ? "Copied!" : "Copy Template"}
+              Paste Profile
+            </button>
+            <button
+              onClick={() => setProfileAdminTab("published")}
+              style={{ padding:"14px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer" }}
+            >
+              Published Profiles
             </button>
           </div>
 
-          <textarea
-            value={profileRawPaste}
-            onChange={(e) => setProfileRawPaste(e.target.value)}
-            style={{ width:"100%", minHeight:"280px", fontFamily:"monospace", fontSize:13, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
-          />
+          <div style={{ maxWidth:1060, margin:"0 auto", padding:"36px 36px" }}>
+            {profileAdminTab === "paste" ? (
+              <div>
+                <div style={{ background:"#193150", borderRadius:14, padding:20, marginBottom:20 }}>
+                  <div style={{ color:"#C6A34D", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>
+                    UNIVERSAL PROFILE RESEARCH TEMPLATE
+                  </div>
+                  <div style={{ color:"rgba(247,243,234,0.74)", fontSize:14, lineHeight:1.6, marginBottom:16 }}>
+                    Copy this template and paste it into Claude, ChatGPT, or Gemini with the official&apos;s name and role. The AI will research every field and return a completed profile ready to paste into the parser below.
+                  </div>
+                  <button
+                    onClick={copyProfileTemplate}
+                    style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"10px 18px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                  >
+                    {profileTemplateCopied ? "Copied!" : "Copy Template"}
+                  </button>
+                </div>
 
-          <div style={{ display:"flex", gap:10 }}>
-            <button
-              onClick={() => handleParseProfile("parse")}
-              disabled={profileParsing || !profileRawPaste.trim()}
-              style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
-            >
-              Parse Profile
-            </button>
-            {parsedProfile ? (
-              <button
-                onClick={() => handleParseProfile("publish")}
-                disabled={profileParsing}
-                style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
-              >
-                Publish Profile
-              </button>
-            ) : null}
-          </div>
+                <textarea
+                  value={profileRawPaste}
+                  onChange={(e) => setProfileRawPaste(e.target.value)}
+                  style={{ width:"100%", minHeight:"280px", fontFamily:"monospace", fontSize:13, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
+                />
 
-          {profileParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
-          {profileParseError ? (
-            <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
-              {profileParseError}
-            </div>
-          ) : null}
-          {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
+                <div style={{ display:"flex", gap:10 }}>
+                  <button
+                    onClick={() => handleParseProfile("parse")}
+                    disabled={profileParsing || !profileRawPaste.trim()}
+                    style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                  >
+                    Parse Profile
+                  </button>
+                  {parsedProfile ? (
+                    <button
+                      onClick={() => handleParseProfile("publish")}
+                      disabled={profileParsing}
+                      style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                    >
+                      Publish Profile
+                    </button>
+                  ) : null}
+                </div>
 
-          {parsedProfile ? (
-            <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
-              <div style={{ color:"#193150", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
-              <div style={{ color:"#6b778a", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
-              <div style={{ marginBottom:12 }}>
-                <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
-                <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
+                {profileParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
+                {profileParseError ? (
+                  <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
+                    {profileParseError}
+                  </div>
+                ) : null}
+                {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
+
+                {parsedProfile ? (
+                  <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
+                    <div style={{ color:"#193150", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
+                    <div style={{ color:"#6b778a", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
+                    <div style={{ marginBottom:12 }}>
+                      <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
+                      <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
+                    </div>
+                    <AdminPreviewBlock borderColor="#C6A34D">{parsedProfile.decoder?.rise}</AdminPreviewBlock>
+                    <AdminPreviewBlock borderColor="#2F5D8A">{parsedProfile.decoder?.affiliations}</AdminPreviewBlock>
+                    <AdminPreviewBlock borderColor="#7A4FA3">{parsedProfile.decoder?.beneficiaries}</AdminPreviewBlock>
+                    <AdminPreviewBlock borderColor="#B4473E">{parsedProfile.decoder?.track_record}</AdminPreviewBlock>
+                  </div>
+                ) : null}
               </div>
-              <AdminPreviewBlock borderColor="#C6A34D">{parsedProfile.decoder?.rise}</AdminPreviewBlock>
-              <AdminPreviewBlock borderColor="#2F5D8A">{parsedProfile.decoder?.affiliations}</AdminPreviewBlock>
-              <AdminPreviewBlock borderColor="#7A4FA3">{parsedProfile.decoder?.beneficiaries}</AdminPreviewBlock>
-              <AdminPreviewBlock borderColor="#B4473E">{parsedProfile.decoder?.track_record}</AdminPreviewBlock>
-            </div>
-          ) : null}
+            ) : null}
+
+            {profileAdminTab === "published" ? (() => {
+              const grouped = {
+                local: [],
+                state: [],
+                federal: [],
+                judge: [],
+                uncategorized: [],
+              };
+
+              for (const profile of pubProfiles) {
+                const key = String(profile?.level || "").trim().toLowerCase();
+                if (key === "local" || key === "state" || key === "federal" || key === "judge") grouped[key].push(profile);
+                else grouped.uncategorized.push(profile);
+              }
+
+              const lowerIncludes = (value, needle) => String(value || "").toLowerCase().includes(needle);
+              const stateJudges = grouped.judge.filter(profile => lowerIncludes(profile.kind, "state") || lowerIncludes(profile.geography, "state"));
+              const federalJudges = grouped.judge.filter(profile => lowerIncludes(profile.kind, "federal") || lowerIncludes(profile.geography, "federal"));
+              const otherJudges = grouped.judge.filter(profile => !stateJudges.includes(profile) && !federalJudges.includes(profile));
+
+              const badgeStyle = { background:"#b8860b", color:"#fff", textTransform:"uppercase", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, display:"inline-block" };
+              const pillStyle = { background:"#2e3440", border:"1px solid #4a5268", color:"#ddd5c4", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
+
+              const renderProfileCard = (profile, options = {}) => (
+                <div key={profile.id} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
+                  <div style={{ minWidth:0 }}>
+                    <div style={{ color:"#fff", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
+                    {options.showDistrict && profile.geography ? <div style={{ color:"#8f97aa", fontSize:12, marginBottom:4 }}>{profile.geography}</div> : null}
+                    <div style={{ color:"#aaa", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+                      <span style={pillStyle}>{profile.level || "uncategorized"}</span>
+                      {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", gap:10, flexShrink:0 }}>
+                    <button
+                      onClick={() => setProfileEditConfig(profile)}
+                      style={{ background:"#2e3440", color:"#ddd5c4", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProfile(profile)}
+                      style={{ background:"#4a1f25", color:"#f3b0b0", border:"1px solid #8a3a44", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
+
+              const renderStandardGroup = (label, profiles) => (
+                <div style={{ marginBottom:28 }}>
+                  <div style={badgeStyle}>{label}</div>
+                  <div style={{ display:"grid", gap:12, marginTop:14 }}>
+                    {profiles.length ? profiles.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No profiles in this section yet.</div>}
+                  </div>
+                </div>
+              );
+
+              return (
+                <div>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:16, marginBottom:22 }}>
+                    <div>
+                      <div style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, marginBottom:6 }}>Published Profiles</div>
+                      <div style={{ color:"#aaa", fontSize:14 }}>Manage published official profiles by level, edit decoder copy, and remove stale rows.</div>
+                    </div>
+                    <button
+                      onClick={loadPublishedProfiles}
+                      disabled={pubProfilesLoading}
+                      style={{ background:"#2e3440", color:"#ddd5c4", border:"1px solid #4a5268", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:pubProfilesLoading ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1 }}
+                    >
+                      {pubProfilesLoading ? "Refreshing..." : "Refresh"}
+                    </button>
+                  </div>
+
+                  {pubProfilesError ? (
+                    <div style={{ background:"#4a1f25", border:"1px solid #8a3a44", borderRadius:10, padding:14, marginBottom:18, color:"#f3b0b0", fontSize:14 }}>
+                      {pubProfilesError}
+                    </div>
+                  ) : null}
+
+                  {pubProfilesLoading && !pubProfiles.length ? <div style={{ color:"#aaa", fontSize:14, marginBottom:18 }}>Loading published profiles...</div> : null}
+
+                  {renderStandardGroup("LOCAL", grouped.local)}
+                  {renderStandardGroup("STATE", grouped.state)}
+                  {renderStandardGroup("FEDERAL", grouped.federal)}
+
+                  <div style={{ marginBottom:28 }}>
+                    <div style={badgeStyle}>JUDGES</div>
+
+                    <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>State Judges</div>
+                    <div style={{ display:"grid", gap:12 }}>
+                      {stateJudges.length ? stateJudges.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No state judges in this section yet.</div>}
+                    </div>
+
+                    <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>Federal Judges</div>
+                    <div style={{ display:"grid", gap:12 }}>
+                      {federalJudges.length ? federalJudges.map(profile => renderProfileCard(profile, { showDistrict: true })) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No federal judges in this section yet.</div>}
+                    </div>
+
+                    {otherJudges.length ? (
+                      <>
+                        <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>Other Judges</div>
+                        <div style={{ display:"grid", gap:12 }}>
+                          {otherJudges.map(profile => renderProfileCard(profile))}
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+
+                  <div style={{ marginBottom:8 }}>
+                    <div style={badgeStyle}>UNCATEGORIZED</div>
+                    <div style={{ display:"grid", gap:12, marginTop:14 }}>
+                      {grouped.uncategorized.length ? grouped.uncategorized.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No uncategorized profiles.</div>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })() : null}
+          </div>
         </div>
       ) : null}
 
