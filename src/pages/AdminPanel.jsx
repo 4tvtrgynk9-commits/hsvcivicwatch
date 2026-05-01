@@ -1675,7 +1675,7 @@ function SocialSlide({ slide, index, imageUrl, slideRef }) {
 
 // --- Social Cards Tab ---
 
-function SocialCardsTab({ pubIssues, pubStats }) {
+function SocialCardsQueue({ pubIssues, pubStats }) {
   const rotationList = buildRotationList(pubIssues);
   const [selectedIndex, setSelectedIndex] = useState(() => getCurrentQueueIndex(rotationList));
   const [slides, setSlides] = useState(null);
@@ -2843,13 +2843,13 @@ export default function AdminPanel() {
   const adminTabStyle = (id) => ({
     background:"transparent",
     border:"none",
-    borderBottom: adminTab === id ? "3px solid #193150" : "3px solid transparent",
+    borderBottom: adminTab === id ? "3px solid #b8860b" : "3px solid transparent",
     marginBottom:-2,
     padding:"12px 20px",
     fontSize:14,
     fontWeight:900,
     cursor:"pointer",
-    color: adminTab === id ? "#193150" : "#6b778a",
+    color: adminTab === id ? "#b8860b" : "#aaa",
     transition:"color 0.15s"
   });
 
@@ -3128,25 +3128,22 @@ export default function AdminPanel() {
         </button>
       </div>
 
-      <div style={{ display:"flex", gap:0, borderBottom:"2px solid #e0d8cc", marginBottom:24, background:"#fff", padding:"0 36px" }}>
-        <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Issue Cards</button>
+      <div style={{ display:"flex", gap:0, borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:"0 36px" }}>
+        <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Content</button>
         <button onClick={() => setAdminTab("profiles")} style={adminTabStyle("profiles")}>Profiles</button>
         <button onClick={() => setAdminTab("blueprints")} style={adminTabStyle("blueprints")}>Blueprints</button>
-        <button onClick={() => setAdminTab("weekly_report")} style={adminTabStyle("weekly_report")}>Weekly Report</button>
+        <button onClick={() => setAdminTab("tools")} style={adminTabStyle("tools")}>Tools</button>
       </div>
 
       {adminTab === "issue_cards" ? (
         <>
       {/* Nav tabs */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
-        <button onClick={() => setActiveTab("paste")} style={tabStyle("paste")}>1. Paste Research</button>
-        <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>2. Review{totalPending ? " ("+totalPending+")" : ""}</button>
+        <button onClick={() => setActiveTab("paste")} style={tabStyle("paste")}>Paste Research</button>
+        <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
         <button onClick={() => setActiveTab("drafts")} style={tabStyle("drafts")}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
         <button onClick={() => setActiveTab("published")} style={tabStyle("published")}>Published ({pubIssues.length + pubStats.length})</button>
-        <button onClick={() => setActiveTab("social")} style={{ ...tabStyle("social"), color: activeTab==="social" ? "#b8860b" : "#f5a623" }}>
-          &#128247; Social Cards
-        </button>
-        <button onClick={() => setActiveTab("template")} style={{ ...tabStyle("template"), color: activeTab==="template" ? "#b8860b" : "#7ab" }}>Research Template</button>
+
       </div>
 
       <div style={{ maxWidth:1060, margin:"0 auto", padding:36 }}>
@@ -3348,7 +3345,7 @@ export default function AdminPanel() {
         )}
 
         {activeTab === "social" && (
-          <SocialCardsTab pubIssues={pubIssues} pubStats={pubStats} />
+          <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
         )}
 
         {activeTab === "template" && (
@@ -3506,46 +3503,126 @@ export default function AdminPanel() {
         </div>
       ) : null}
 
-      {adminTab === "weekly_report" ? (
+      {adminTab === "tools" ? (
         <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
-          <div style={{ color:"#6b778a", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
-            Run the weekly maintenance job manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
-          </div>
-          <button
-            onClick={handleRunWeeklyJob}
-            disabled={weeklyRunning}
-            style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"12px 24px", fontSize:15, fontWeight:900, cursor:"pointer" }}
-          >
-            {weeklyRunning ? "Running..." : "Run Weekly Job"}
-          </button>
-          {weeklyError ? (
-            <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
-              {weeklyError}
-            </div>
-          ) : null}
-          {weeklyResult ? (
-            <div style={{ background:"#f0fdf4", border:"1px solid rgba(62,139,91,0.3)", borderRadius:12, padding:18, marginTop:16 }}>
-              <div style={{ display:"grid", gap:14 }}>
-                <div>
-                  <div style={{ color:"#6b778a", fontSize:13 }}>Candidates flagged for review</div>
-                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.graduated}</div>
-                </div>
-                <div>
-                  <div style={{ color:"#6b778a", fontSize:13 }}>Stale profiles flagged</div>
-                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.stale_flagged}</div>
-                </div>
-                <div>
-                  <div style={{ color:"#6b778a", fontSize:13 }}>Issue cards rescored</div>
-                  <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.rescored}</div>
-                </div>
+          <div style={{ background:"#2e3440", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
+            <div>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>RESEARCH TEMPLATE</div>
+              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:16 }}>
+                Copy the research formatting prompt below after you finish gathering source material. It converts raw findings into the admin-ready issue card and stat block structure.
               </div>
-              {Array.isArray(weeklyResult.errors) && weeklyResult.errors.length ? (
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:18, marginBottom:18 }}>
+                <div style={{ flex:1, background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:320, overflowY:"auto" }}>
+                  <pre style={{ color:"#ddd5c4", fontSize:13, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{RESEARCH_TEMPLATE}</pre>
+                </div>
+                <button
+                  onClick={copyTemplate}
+                  style={{ background:templateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"12px 18px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, transition:"background 0.3s" }}
+                >
+                  {templateCopied ? "Copied!" : "Copy Template"}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>EXPORT FOR NOTEBOOKLM</div>
+              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:16 }}>
+                Copy the published cards and supporting context into NotebookLM using the existing export flow, with a manual fallback if clipboard access is blocked.
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12, flexWrap:"wrap" }}>
+                <button
+                  onClick={handleExport}
+                  disabled={exportStatus === "success"}
+                  style={{
+                    background: exportStatus === "success" ? "#3E8B5B" : "#1a5276",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "9px 18px",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: exportStatus === "success" ? "default" : "pointer",
+                    letterSpacing: 0.5,
+                    transition: "background 0.2s",
+                  }}
+                >
+                  {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "Export for NotebookLM"}
+                </button>
+                {getLastExportLabel() && exportStatus !== "success" && (
+                  <span style={{ color:"#aaa", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
+                )}
+              </div>
+              {exportStatus === "fallback" && (
+                <div style={{ marginBottom:12 }}>
+                  <p style={{ color:"#f5a623", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
+                  <textarea
+                    ref={fallbackRef}
+                    readOnly
+                    value={fallbackText}
+                    style={{
+                      width: "100%",
+                      minHeight: 120,
+                      background: "#2a2f3e",
+                      color: "#ddd5c4",
+                      border: "1px solid #4a5268",
+                      borderRadius: 4,
+                      padding: 8,
+                      fontSize: 11,
+                      fontFamily: "monospace",
+                      resize: "vertical",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📷 SOCIAL CARDS</div>
+              <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
+            </div>
+
+            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>WEEKLY MAINTENANCE JOB</div>
+              <div style={{ color:"#6b778a", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
+                Run the weekly maintenance job manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
+              </div>
+              <button
+                onClick={handleRunWeeklyJob}
+                disabled={weeklyRunning}
+                style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"12px 24px", fontSize:15, fontWeight:900, cursor:"pointer" }}
+              >
+                {weeklyRunning ? "Running..." : "Run Weekly Job"}
+              </button>
+              {weeklyError ? (
                 <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
-                  {weeklyResult.errors.join("\n")}
+                  {weeklyError}
+                </div>
+              ) : null}
+              {weeklyResult ? (
+                <div style={{ background:"#f0fdf4", border:"1px solid rgba(62,139,91,0.3)", borderRadius:12, padding:18, marginTop:16 }}>
+                  <div style={{ display:"grid", gap:14 }}>
+                    <div>
+                      <div style={{ color:"#6b778a", fontSize:13 }}>Candidates flagged for review</div>
+                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.graduated}</div>
+                    </div>
+                    <div>
+                      <div style={{ color:"#6b778a", fontSize:13 }}>Stale profiles flagged</div>
+                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.stale_flagged}</div>
+                    </div>
+                    <div>
+                      <div style={{ color:"#6b778a", fontSize:13 }}>Issue cards rescored</div>
+                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.rescored}</div>
+                    </div>
+                  </div>
+                  {Array.isArray(weeklyResult.errors) && weeklyResult.errors.length ? (
+                    <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
+                      {weeklyResult.errors.join("\n")}
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
             </div>
-          ) : null}
+          </div>
         </div>
       ) : null}
     </div>
