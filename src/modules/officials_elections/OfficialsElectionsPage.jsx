@@ -15,16 +15,53 @@ function initials(name) {
 
 function partyBadge(party) {
   const p = String(party || "").toLowerCase();
-  if (p.includes("republican")) return { label: "R 🐘", color: "#B4473E", bg: "#f4dfdb" };
-  if (p.includes("democrat")) return { label: "D 🫏", color: "#2F5D8A", bg: "#dfeaf5" };
-  if (p.includes("libertarian")) return { label: "L 🦅", color: "#C6A34D", bg: "#f3ead1" };
-  if (p.includes("independent")) return { label: "I", color: "#7A4FA3", bg: "#ebe1f4" };
-  if (!party) return null;
-  return { label: party.slice(0, 1).toUpperCase(), color: "#7A4FA3", bg: "#ebe1f4" };
+  if (p.includes("republican")) return { label: "Republican", heroBg: "#8B2020", tagBg: "#8B2020", tagColor: "#fff" };
+  if (p.includes("democrat")) return { label: "Democrat", heroBg: "#2B4F8A", tagBg: "#2B4F8A", tagColor: "#fff" };
+  if (p.includes("libertarian")) return { label: "Libertarian", heroBg: "#7a5c00", tagBg: "#7a5c00", tagColor: "#fff" };
+  if (p.includes("independent")) return { label: "Independent", heroBg: "#5a3a7a", tagBg: "#5a3a7a", tagColor: "#fff" };
+  if (!party) return { label: null, heroBg: "#193150", tagBg: "#193150", tagColor: "#fff" };
+  return { label: party, heroBg: "#193150", tagBg: "#193150", tagColor: "#fff" };
 }
 
+function heroBackground(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  if (s === "former" || s === "deceased") return "#9da3a8";
+  const pb = partyBadge(profile.party);
+  return pb.heroBg;
+}
+
+function photoBorderColor(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  if (s === "deceased") return "#111";
+  if (s === "candidate") return "#C6A34D";
+  return "#193150";
+}
+
+function statusTags(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  const pb = partyBadge(profile.party);
+  const partyTag = pb.label ? { label: pb.label, bg: pb.tagBg, color: pb.tagColor, border: "1px solid rgba(255,255,255,0.35)" } : null;
+  const currentTag = { label: "Current", bg: "transparent", color: "#fff", border: "1.5px solid #C6A34D" };
+  const candidateTag = { label: "Candidate", bg: "#C6A34D", color: "#3a2600", border: "none" };
+  const formerTag = { label: "Former", bg: "#e8e8e8", color: "#4b5563", border: "none" };
+  const deceasedTag = { label: "Deceased", bg: "#111", color: "#e8e8e8", border: "none" };
+  if (s === "deceased") return [deceasedTag, formerTag, partyTag].filter(Boolean);
+  if (s === "former") return [partyTag, formerTag].filter(Boolean);
+  if (s === "candidate") return [partyTag, candidateTag].filter(Boolean);
+  return [partyTag, currentTag].filter(Boolean);
+}
+
+function StatusTagPill({ tag }) {
+  return (
+    <span style={{ background: tag.bg, color: tag.color, border: tag.border || "none", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+      {tag.label}
+    </span>
+  );
+}
+
+
 function statusColor(s) {
-  return s === "active" ? GREEN : s === "candidate" ? GOLD : s === "former" ? COLORS.muted : "#888";
+  return s === "active" || s === "current" ? GREEN : s === "candidate" ? GOLD : "#888";
 }
 
 function statusLabel(s) {
@@ -157,8 +194,9 @@ function DecoderSummary({ profile }) {
 
 function ProfileCard({ profile, onClick, variant = "current" }) {
   const [hovered, setHovered] = useState(false);
-  const sc = statusColor(profile.status);
-  const pb = partyBadge(profile.party);
+  const heroBg = heroBackground(profile);
+  const photoB = photoBorderColor(profile);
+  const tags = statusTags(profile);
   const criminalClean = !profile.criminal_record || profile.criminal_record === "NONE" || profile.criminal_record === "None" || profile.criminal_record === "No criminal record";
   const isCandidateTab = variant === "candidate";
   const candidateRoles = getCandidateRoles(profile);
@@ -172,30 +210,36 @@ function ProfileCard({ profile, onClick, variant = "current" }) {
       onClick={() => onClick(profile)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ width: "100%", background: hovered ? COLORS.panelSoft : COLORS.panel, border: `1px solid ${hovered ? COLORS.borderStrong : COLORS.border}`, borderLeft: `4px solid ${isCandidateTab ? GOLD : sc}`, borderRadius: 12, padding: "16px 18px", cursor: "pointer", textAlign: "left", transition: "all 140ms ease", display: "flex", alignItems: "flex-start", gap: 14 }}
+      style={{ width: "100%", border: "3px solid #193150", borderRadius: 12, padding: 0, overflow: "hidden", background: "transparent", cursor: "pointer", textAlign: "left", transition: "all 140ms ease" }}
     >
-      {profile.headshot_url
-        ? <img src={profile.headshot_url} alt={profile.name} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `2px solid ${GOLD}` }} />
-        : <div style={{ width: 52, height: 52, borderRadius: "50%", flexShrink: 0, background: NAVY, color: GOLD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900, border: `2px solid ${GOLD}` }}>{initials(profile.name)}</div>
-      }
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 3 }}>
-          <span style={{ fontSize: 16, fontWeight: 900, color: COLORS.text }}>{profile.name}</span>
-          {pb ? <span style={{ background: pb.bg, color: pb.color, border: `1px solid ${pb.color}44`, fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999 }}>{pb.label}</span> : null}
-          <span style={{ background: sc + "22", color: sc, border: `1px solid ${sc}44`, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 999, textTransform: "uppercase", letterSpacing: 0.8 }}>{statusLabel(profile.status)}</span>
-        </div>
-        {isCandidateTab ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 4 }}>
-            {candidateRoles.length ? candidateRoles.map((role, index) => (
-              <div key={`${role.title}-${index}`} style={{ fontSize: 13, color: COLORS.textSoft }}>
-                {role.title} {role.election_date ? `· ${role.election_date}` : ""}
-              </div>
-            )) : <div style={{ fontSize: 13, color: COLORS.textSoft }}>{primaryRole}</div>}
+      <div style={{ background: heroBg, padding: "14px 16px", display: "flex", gap: 12 }}>
+        {profile.headshot_url
+          ? <img src={profile.headshot_url} alt={profile.name} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.55 : 1 }} />
+          : <div style={{ width: 52, height: 52, borderRadius: "50%", flexShrink: 0, background: NAVY, color: GOLD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900, border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.55 : 1 }}>{initials(profile.name)}</div>
+        }
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 16, fontWeight: 900, color: profile.status === "deceased" ? "rgba(255,255,255,0.72)" : "#fff", marginBottom: 3 }}>{profile.name}</div>
+          {isCandidateTab ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 6 }}>
+              {candidateRoles.length ? candidateRoles.map((role, index) => (
+                <div key={`${role.title}-${index}`} style={{ fontSize: 12, color: "#fff", opacity: profile.status === "deceased" ? 0.6 : 0.88 }}>
+                  {role.title} {role.election_date ? `· ${role.election_date}` : ""}
+                </div>
+              )) : <div style={{ fontSize: 12, color: "#fff", opacity: profile.status === "deceased" ? 0.6 : 0.88 }}>{primaryRole}</div>}
+            </div>
+          ) : (
+            <div style={{ fontSize: 12, color: "#fff", opacity: profile.status === "deceased" ? 0.6 : 0.88, marginBottom: 6 }}>
+              {[primaryRole, profile.geography].filter(Boolean).join(" · ")}
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {tags.map((tag, i) => <StatusTagPill key={i} tag={tag} />)}
           </div>
-        ) : (
-          <div style={{ fontSize: 13, color: COLORS.textSoft, marginBottom: 4 }}>{primaryRole}</div>
-        )}
-        {profile.geography ? <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>{profile.geography}</div> : null}
+        </div>
+      </div>
+      <div style={{ padding: "12px 16px", background: hovered ? COLORS.panelSoft : COLORS.panel, display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {profile.geography ? <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>{profile.geography}</div> : null}
         {isCandidateTab && currentNonCandidateRoles.length ? (
           <div style={{ display: "grid", gap: 6, marginTop: 8, marginBottom: 8 }}>
             {currentNonCandidateRoles.map((role, index) => (
@@ -213,8 +257,9 @@ function ProfileCard({ profile, onClick, variant = "current" }) {
         </div>
         <DecoderSummary profile={profile} />
         {showFormerOffices ? <FormerOffices offices={profile.former_offices} /> : null}
+        </div>
+        <span style={{ fontSize: 20, color: COLORS.muted, flexShrink: 0, alignSelf: "center" }}>›</span>
       </div>
-      <span style={{ fontSize: 20, color: COLORS.muted, flexShrink: 0, alignSelf: "center" }}>›</span>
     </button>
   );
 }
@@ -272,6 +317,9 @@ function PredecessorsTab({ seatId, currentProfileId }) {
 }
 
 function ProfileModal({ profile, onClose }) {
+  const heroBg = heroBackground(profile);
+  const photoB = photoBorderColor(profile);
+  const tags = statusTags(profile);
   const [activeTab, setActiveTab] = useState("profile");
   const [decoderOpen, setDecoderOpen] = useState(false);
   const [complaintsOpen, setComplaintsOpen] = useState(false);
@@ -289,7 +337,6 @@ function ProfileModal({ profile, onClose }) {
   if (!profile) return null;
 
   const pb = partyBadge(profile.party);
-  const sc = statusColor(profile.status);
   const complaintsCount = countComplaintsAndInvestigations(profile);
   const hasDecoder = profile.decoder && (profile.decoder.rise || profile.decoder.affiliations || profile.decoder.beneficiaries || profile.decoder.track_record);
 
@@ -328,12 +375,13 @@ function ProfileModal({ profile, onClose }) {
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,16,28,0.65)", backdropFilter: "blur(4px)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "24px 16px", overflowY: "auto" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 18, width: "100%", maxWidth: 820, boxShadow: "0 24px 80px rgba(0,0,0,0.35)", overflow: "hidden", marginBottom: 40 }}>
-        <div style={{ background: NAVY, padding: "22px 26px", display: "flex", alignItems: "flex-start", gap: 18 }}>
+        <div style={{ background: heroBg, padding: "22px 26px", display: "flex", alignItems: "flex-start", gap: 18 }}>
           {profile.headshot_url
-            ? <img src={profile.headshot_url} alt={profile.name} style={{ width: 76, height: 76, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `3px solid ${GOLD}` }} />
-            : <div style={{ width: 76, height: 76, borderRadius: "50%", flexShrink: 0, background: "#0d1e30", color: GOLD, border: `3px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 900 }}>{initials(profile.name)}</div>
+            ? <img src={profile.headshot_url} alt={profile.name} style={{ width: 76, height: 76, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.6 : 1 }} />
+            : <div style={{ width: 76, height: 76, borderRadius: "50%", flexShrink: 0, background: "#0d1e30", color: GOLD, border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 900 }}>{initials(profile.name)}</div>
           }
           <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>{tags.map((tag, i) => <StatusTagPill key={i} tag={tag} />)}</div>
             <div style={{ color: GOLD, fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>
               {profile.level ? (LEVEL_LABELS[profile.level] || profile.level) : ""} Official
             </div>
@@ -342,7 +390,6 @@ function ProfileModal({ profile, onClose }) {
             {profile.geography ? <div style={{ color: "rgba(247,243,234,0.50)", fontSize: 12, marginBottom: 10 }}>{profile.geography}</div> : null}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
               {pb ? <span style={{ background: pb.bg, color: pb.color, border: `1px solid ${pb.color}55`, fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 999 }}>{pb.label}</span> : null}
-              {profile.status ? <span style={{ background: sc + "33", color: sc, border: `1px solid ${sc}55`, fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 999, textTransform: "uppercase", letterSpacing: 1 }}>{statusLabel(profile.status)}</span> : null}
               {socialLinks.map(({ key, label, icon }) =>
                 profile.contact?.[key] ? (
                   <a

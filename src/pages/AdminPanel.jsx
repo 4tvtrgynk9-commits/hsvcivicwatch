@@ -976,6 +976,8 @@ function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }
     kind: profile?.kind || "",
     geography: profile?.geography || "",
     party: profile?.party || "",
+    pronouns: profile?.pronouns || "",
+    gender_identity: profile?.gender_identity || "",
     status_line: profile?.status_line || "",
     decoder: {
       rise: profile?.decoder?.rise || "",
@@ -993,6 +995,8 @@ function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }
       kind: profile?.kind || "",
       geography: profile?.geography || "",
       party: profile?.party || "",
+      pronouns: profile?.pronouns || "",
+      gender_identity: profile?.gender_identity || "",
       status_line: profile?.status_line || "",
       decoder: {
         rise: profile?.decoder?.rise || "",
@@ -1053,6 +1057,14 @@ function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }
             <div>
               <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
               <TextInput value={form.party} onChange={e => setForm(prev => ({ ...prev, party: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Pronouns</div>
+              <TextInput value={form.pronouns} onChange={e => setForm(prev => ({ ...prev, pronouns: e.target.value }))} style={darkInputStyle} />
+            </div>
+            <div>
+              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Gender Identity</div>
+              <TextInput value={form.gender_identity} onChange={e => setForm(prev => ({ ...prev, gender_identity: e.target.value }))} style={darkInputStyle} />
             </div>
           </div>
 
@@ -2158,10 +2170,6 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
           ))}
         </div>
       </div>
-      </div>
-
-
-
       {genError && (
         <div style={{ background:"#2a0a0a", border:"1px solid #c0392b", borderRadius:6, padding:"14px 18px", marginBottom:20, color:"#e57373", fontSize:14 }}>
           {genError}
@@ -3126,12 +3134,17 @@ export default function AdminPanel() {
     if (!profileEditConfig) return;
     setProfileEditSaving(true);
     try {
+      const profileFields = {
+        ...fields,
+        pronouns: fields.pronouns,
+        gender_identity: fields.gender_identity,
+      };
       const res = await adminJsonFetch("/api/update.js", {
         method: "POST",
         body: {
           table: "official_profiles",
           id: profileEditConfig.id,
-          fields
+          fields: profileFields
         }
       });
       const payload = await res.json();
@@ -3539,6 +3552,21 @@ export default function AdminPanel() {
     );
   }
 
+  const primaryParseButtonStyle = {
+    background:"#b8860b",
+    color:"#fff",
+    border:"none",
+    borderRadius:4,
+    padding:"14px 32px",
+    fontSize:15,
+    fontWeight:700,
+    cursor:"pointer",
+    textTransform:"uppercase",
+    letterSpacing:1,
+    width:isMobile ? "100%" : "auto",
+  };
+  const pasteStatusStyle = { color:"#bbb", fontSize:14 };
+
   return (
     <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#193150" }}>
       {QueueNoticeModal}
@@ -3655,7 +3683,6 @@ export default function AdminPanel() {
       </div>
 
       <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
-
         {activeTab === "import" && (
           <div>
             <h2 style={{ color:"#193150", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
@@ -3668,10 +3695,10 @@ export default function AdminPanel() {
             {parseError && <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:6, padding:"14px 18px", marginBottom:18, color:"#b91c1c", fontSize:14, fontWeight:600 }}>{parseError}</div>}
             <div style={{ display:"flex", gap:14, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
               <button onClick={handleParse} disabled={parsing || !rawPaste.trim()}
-                style={{ background:parsing?"#888":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:parsing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+                style={{ ...primaryParseButtonStyle, background:parsing ? "#888" : "#b8860b", cursor:parsing ? "not-allowed" : "pointer" }}>
                 {parsing ? "Processing..." : "Process & Organize"}
               </button>
-              <span style={{ color:"#bbb", fontSize:14 }}>
+              <span style={pasteStatusStyle}>
                 {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) · "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
               </span>
             </div>
@@ -3893,22 +3920,25 @@ export default function AdminPanel() {
                 <textarea
                   value={profileRawPaste}
                   onChange={(e) => setProfileRawPaste(e.target.value)}
-                  style={{ width:"100%", minHeight:"280px", fontFamily:"Georgia, serif", fontSize:14, color:"#333", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical" }}
+                  placeholder={"Paste your formatted profile research here...\n\nInclude the full profile template output from Tools → Templates.\nOne profile per paste. Parser will extract all fields automatically."}
+                  style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontFamily:"Georgia, serif", fontSize:isMobile ? 13 : 14, color:"#333", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
                 />
+                {profileRawPaste.trim() ? <div style={{ ...pasteStatusStyle, marginBottom:14 }}>Profile detected — ready to parse</div> : null}
 
-                <div style={{ display:"flex", gap:10 }}>
+                <div style={{ display:"flex", gap:10, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
                   <button
                     onClick={() => handleParseProfile("parse")}
                     disabled={profileParsing || !profileRawPaste.trim()}
-                    style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
+                    style={{ ...primaryParseButtonStyle, cursor:profileParsing || !profileRawPaste.trim() ? "not-allowed" : "pointer" }}
                   >
                     Parse Profile
                   </button>
+                  {!profileRawPaste.trim() ? <span style={pasteStatusStyle}>No profile pasted</span> : null}
                   {parsedProfile ? (
                     <button
                       onClick={() => handleParseProfile("publish")}
                       disabled={profileParsing}
-                      style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
+                      style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}
                     >
                       Publish Profile
                     </button>
@@ -3991,9 +4021,23 @@ export default function AdminPanel() {
                 judge: [],
                 uncategorized: [],
               };
+              const resolveProfileLevel = (profile) => {
+                const level = String(profile?.level || "").trim().toLowerCase();
+                if (level === "local" || level === "state" || level === "federal" || level === "judge") return level;
+                const kind = String(profile?.kind || "").trim().toLowerCase();
+                if (kind === "judge" || kind === "magistrate") return "judge";
+                if (kind === "elected" || kind === "appointed" || kind === "sheriff" || kind === "tax_official" || kind === "superintendent" || kind === "board_member") return "local";
+                return "";
+              };
+              const formatAddedDate = (value) => {
+                if (!value) return "";
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return "";
+                return date.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
+              };
 
               for (const profile of pubProfiles) {
-                const key = String(profile?.level || "").trim().toLowerCase();
+                const key = resolveProfileLevel(profile);
                 if (key === "local" || key === "state" || key === "federal" || key === "judge") grouped[key].push(profile);
                 else grouped.uncategorized.push(profile);
               }
@@ -4012,8 +4056,9 @@ export default function AdminPanel() {
                     <div style={{ color:"#193150", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
                     {options.showDistrict && profile.geography ? <div style={{ color:"#4a5a6e", fontSize:12, marginBottom:4 }}>{profile.geography}</div> : null}
                     <div style={{ color:"#4a5a6e", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
+                    {profile.created_at ? <div style={{ color:"#7a8a9a", fontSize:12, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
                     <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-                      <span style={pillStyle}>{profile.level || "uncategorized"}</span>
+                      <span style={pillStyle}>{resolveProfileLevel(profile) || "uncategorized"}</span>
                       {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
                     </div>
                   </div>
@@ -4129,23 +4174,25 @@ export default function AdminPanel() {
           <textarea
             value={blueprintInput}
             onChange={(e) => setBlueprintInput(e.target.value)}
-            placeholder={blueprintMode === "brief" ? "Describe the specific policy idea in detail — include the target population, proposed funding mechanism, and the specific ask..." : "Paste your completed Blueprint research template here..."}
-            style={{ width:"100%", minHeight: blueprintMode === "brief" ? "160px" : "260px", fontSize:14, color:"#333", fontFamily:"Georgia, serif", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical" }}
+            placeholder={blueprintMode === "brief" ? "Describe the specific policy idea in detail — include the target population, proposed funding mechanism, and the specific ask..." : "Paste your formatted blueprint research here...\n\nInclude the full Blueprint Template output from Tools → Templates.\nOne blueprint per paste. Parser will extract all fields automatically."}
+            style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontSize:isMobile ? 13 : 14, color:"#333", fontFamily:"Georgia, serif", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
           />
+          {blueprintInput.trim() ? <div style={{ ...pasteStatusStyle, marginBottom:14 }}>Blueprint detected — ready to parse</div> : null}
 
-          <div style={{ display:"flex", gap:10 }}>
+          <div style={{ display:"flex", gap:10, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
             <button
               onClick={() => handleParseBlueprint("parse")}
               disabled={blueprintParsing || !blueprintInput.trim()}
-              style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
+              style={{ ...primaryParseButtonStyle, cursor:blueprintParsing || !blueprintInput.trim() ? "not-allowed" : "pointer" }}
             >
               Parse Blueprint
             </button>
+            {!blueprintInput.trim() ? <span style={pasteStatusStyle}>No blueprint pasted</span> : null}
             {parsedBlueprint ? (
               <button
                 onClick={() => handleParseBlueprint("publish")}
                 disabled={blueprintParsing}
-                style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
+                style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}
               >
                 Publish Blueprint
               </button>
