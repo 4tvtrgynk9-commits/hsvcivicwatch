@@ -435,7 +435,7 @@ function SelectInput({ children, ...props }) {
 function AdminMetaRow({ label, value }) {
   return (
     <div style={{ marginBottom:8 }}>
-      <span style={{ color:"#777", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, display:"inline-block", minWidth:110 }}>
+      <span style={{ color:"#b0bec5", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, display:"inline-block", minWidth:110 }}>
         {label}:
       </span>
       <span style={{ color:"#333", fontSize:13, fontFamily:"monospace" }}>
@@ -942,7 +942,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
           )}
 
           <div style={{ marginTop:24, paddingTop:16, borderTop:"1px solid #ddd8cf" }}>
-            <div style={{ color:"#777", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+            <div style={{ color:"#b0bec5", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
               Admin Details
             </div>
             <AdminMetaRow label="ID" value={item.id} />
@@ -1321,7 +1321,7 @@ function ConfirmIssueModal({ card, onConfirm, onCancel, publishing, isMobile = f
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
           <div style={{ color:"#193150", fontSize:18, fontWeight:700 }}>This issue will go live on HSV Civic Watch</div>
-          <div style={{ color:"#888", fontSize:13, marginTop:4 }}>Review before confirming.</div>
+          <div style={{ color:"#b0bec5", fontSize:13, marginTop:4 }}>Review before confirming.</div>
         </div>
         <div style={{ padding:22 }}><IssueCardMini card={card} /></div>
         <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
@@ -1344,7 +1344,7 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
           <div style={{ color:"#193150", fontSize:18, fontWeight:700 }}>This visual will go live on HSV Civic Watch</div>
-          <div style={{ color:"#888", fontSize:13, marginTop:4 }}>{block.module} -- {block.tab} -- {block.type}</div>
+          <div style={{ color:"#b0bec5", fontSize:13, marginTop:4 }}>{block.module} -- {block.tab} -- {block.type}</div>
           {issueCardsForModule?.length > 0 && (
             <div style={{ marginTop:14 }}>
               <div style={{ color:"#4a5a6e", fontSize:13, fontWeight:600, marginBottom:6 }}>Link to Issue Card:</div>
@@ -1387,7 +1387,7 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
               <div>
                 <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Issue Card</div>
                 <div style={{ color:"#193150", fontSize:15, fontWeight:700 }}>{c.title}</div>
-                <div style={{ color:"#888", fontSize:13 }}>{c.module}</div>
+                <div style={{ color:"#b0bec5", fontSize:13 }}>{c.module}</div>
               </div>
             </div>
           ))}
@@ -1397,7 +1397,7 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
               <div>
                 <div style={{ color:"#1a5276", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Stat Block -- {b.type}</div>
                 <div style={{ color:"#193150", fontSize:15, fontWeight:700 }}>{b.label || b.title}</div>
-                <div style={{ color:"#888", fontSize:13 }}>{b.module} -- {b.tab}</div>
+                <div style={{ color:"#b0bec5", fontSize:13 }}>{b.module} -- {b.tab}</div>
               </div>
             </div>
           ))}
@@ -1467,7 +1467,7 @@ function StatRow({ block, selected, onToggle, onApprove, onReject, onEdit, isMob
           <button onClick={onReject} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10005;</button>
         </div>
       </div>
-      <div style={{ padding:isMobile ? "0 22px 12px" : "0 22px 12px 64px", color:"#777", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
+      <div style={{ padding:isMobile ? "0 22px 12px" : "0 22px 12px 64px", color:"#b0bec5", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
       {showPreview && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block} /></div>}
     </div>
   );
@@ -3586,7 +3586,7 @@ export default function AdminPanel() {
   const pasteStatusStyle = { color:"#bbb", fontSize:14 };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f5f0e8", fontFamily:"Georgia,serif", color:"#193150" }}>
+    <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#193150" }}>
       <style>{`
         .admin-scroll-tabs {
           scrollbar-width: none;
@@ -3641,7 +3641,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      <div style={{ borderBottom:"2px solid #d8cfbf", marginBottom:0, background:"#193150", padding:isMobile ? "0 12px" : "0 36px" }}>
+      <div style={{ borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:isMobile ? "0 12px" : "0 36px" }}>
         <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
           <div style={{ display:"flex", alignItems:"center", gap:0, flexWrap:"nowrap" }}>
             <button onClick={() => setAdminTab("issue_cards")} style={{ ...adminTabStyle("issue_cards"), padding:isMobile ? "10px 14px" : adminTabStyle("issue_cards").padding, fontSize:isMobile ? 12 : adminTabStyle("issue_cards").fontSize, flexShrink:isMobile ? 0 : undefined }}>Content</button>
@@ -3688,7 +3688,7 @@ export default function AdminPanel() {
         ) : null}
       </div>
       {adminTab === "tools" && exportStatus === "fallback" ? (
-        <div style={{ padding:isMobile ? "12px" : "12px 36px", background:"#f5f0e8" }}>
+        <div style={{ padding:isMobile ? "12px" : "12px 36px", background:"#2e3440" }}>
           <textarea
             ref={fallbackRef}
             readOnly
@@ -3701,7 +3701,7 @@ export default function AdminPanel() {
       {adminTab === "issue_cards" ? (
         <>
       {/* Nav tabs */}
-      <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"2px solid #d8cfbf", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#ede8df", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
+      <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
         <button onClick={() => setActiveTab("import")} style={{ ...tabStyle("import"), fontSize:isMobile ? 11 : tabStyle("import").fontSize, padding:isMobile ? "10px 12px" : tabStyle("import").padding, flexShrink:isMobile ? 0 : undefined }}>Import</button>
         <button onClick={() => setActiveTab("review")} style={{ ...tabStyle("review"), fontSize:isMobile ? 11 : tabStyle("review").fontSize, padding:isMobile ? "10px 12px" : tabStyle("review").padding, flexShrink:isMobile ? 0 : undefined }}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
         <button onClick={() => setActiveTab("drafts")} style={{ ...tabStyle("drafts"), fontSize:isMobile ? 11 : tabStyle("drafts").fontSize, padding:isMobile ? "10px 12px" : tabStyle("drafts").padding, flexShrink:isMobile ? 0 : undefined }}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
@@ -3877,7 +3877,7 @@ export default function AdminPanel() {
                           </div>
                           <div style={{ padding:"18px 22px" }}>
                             <div style={{ color:"#193150", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
-                            <div style={{ color:"#888", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
+                            <div style={{ color:"#b0bec5", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
                             <div style={{ display:"flex", gap:12 }}>
                               <button onClick={() => { setPendingStats(p => [...p, block]); setDraftStats(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
                                 style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
@@ -3926,7 +3926,7 @@ export default function AdminPanel() {
 
       {adminTab === "profiles" ? (
         <div>
-          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"2px solid #d8cfbf", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#ede8df", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
+          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setProfileAdminTab("paste")}
               style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
@@ -4195,7 +4195,7 @@ export default function AdminPanel() {
 
       {adminTab === "blueprints" ? (
         <div>
-          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"2px solid #d8cfbf", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#ede8df", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
+          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setBlueprintMode("brief")}
               style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "brief" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "brief" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
