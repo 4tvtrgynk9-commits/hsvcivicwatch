@@ -443,7 +443,8 @@ function cleanTruncate(text, maxLen) {
 
 function buildShareText(issue, mode) {
   const ref = issue.ref_number || issue.id || "";
-  const shortUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
+  const module = issue.module || "";
+  const shortUrl = ref && module ? "https://hsvcivicwatch.org/#" + module + "?card=" + encodeURIComponent(ref) : "https://hsvcivicwatch.org";
   const teaser = issue.homepage_teaser || issue.summary || "";
   
   if (mode === "sms") {

@@ -1,9 +1,18 @@
 {
   "crons": [
-    { "path": "/api/cron-weekly", "schedule": "0 6 * * 1" }
+    {
+      "path": "/api/cron-weekly",
+      "schedule": "0 6 * * 1"
+    }
   ],
   "rewrites": [
-    { "source": "/api/claude", "destination": "/api/claude.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/claude",
+      "destination": "/api/claude.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

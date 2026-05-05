@@ -2521,7 +2521,7 @@ export default function AdminPanel() {
       return false;
     }
 
-    const res = await adminJsonFetch("/api/admin-session", { method: "GET" });
+    const res = await adminJsonFetch("/api/admin-auth?action=session", { method: "GET" });
     const payload = await res.json();
 
     if (!payload.authenticated) {
@@ -2553,7 +2553,7 @@ export default function AdminPanel() {
     setAuthMessage("");
 
     try {
-      const res = await fetch("/api/admin-login", {
+      const res = await fetch("/api/admin-auth?action=login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: pw }),
@@ -2579,7 +2579,7 @@ export default function AdminPanel() {
     setAuthMessage("");
 
     try {
-      const res = await fetch("/api/admin-reset", { method: "POST" });
+      const res = await fetch("/api/admin-auth?action=reset", { method: "POST" });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Could not send a reset link.");
 
