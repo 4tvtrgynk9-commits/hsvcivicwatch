@@ -218,14 +218,20 @@ APPOINTMENTS MADE:
 REVERSALS:
 NOTABLE ACTIONS TAKEN:
 NOTABLE ACTIONS BLOCKED OR AVOIDED:
-OFFICE PHONE:
-OFFICE EMAIL:
-OFFICE ADDRESS:
-OFFICE HOURS:
-OFFICIAL WEBSITE:
-CAMPAIGN WEBSITE:
-CAMPAIGN FINANCE URL:
 SOCIAL MEDIA HANDLES:
+- Twitter/X: [url or UNKNOWN]
+- Facebook: [url or UNKNOWN]
+- Instagram: [url or UNKNOWN]
+- LinkedIn: [url or UNKNOWN]
+
+CONTACT:
+- Office Phone: [number or UNKNOWN]
+- Office Email: [email or UNKNOWN]
+- Office Address: [address or UNKNOWN]
+- Office Hours: [hours or UNKNOWN]
+- Official Website: [url or UNKNOWN]
+- Campaign Website: [url or UNKNOWN]
+- Campaign Finance URL: [url or UNKNOWN]
 THE RISE: How they got power. Not a biography — a power map. Name every patron, every org that backed them, every pivotal appointment and who made it. Trace how each career step connected to the next and what they traded or who they served to advance. End on where they sit now and what that position gives them access to. Chronological but contemptuous. Every advancement framed as handed not earned unless the record proves otherwise. No hedging. No softening. No benefit of the doubt.
 THE AFFILIATIONS: Every organizational financial and personal tie creating obligation or loyalty outside their public role. Named boards. Named PACs. Named donors. Named law firms lobbying shops industries. Named clubs fraternal orgs civic orgs military networks alumni networks. Named individuals they vacation with do business with appear at events with. No categories — only names and amounts. The question: who does this person actually serve.
 THE BENEFICIARIES: Named individuals only. Never organizations. Never industries. Never vague categories. Who specifically got richer got the contract got the appointment got the zoning variance got the case dismissed got the regulatory pass. One named individual per sentence. Dollar amount or specific benefit stated. Relationship to official stated explicitly. No softening.
