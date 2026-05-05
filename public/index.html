@@ -8,6 +8,48 @@
     <title>Huntsville Civic Investigator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      (function () {
+        var match = window.location.pathname.match(/^\/c\/([^/]+)$/);
+        if (!match) return;
+
+        var ref = decodeURIComponent(match[1] || "").trim();
+        if (!ref) return;
+
+        var redirectTo = function (moduleName) {
+          var hash = moduleName ? "#" + moduleName : "#dashboard";
+          var target = "/?card=" + encodeURIComponent(ref) + hash;
+          if (window.location.search + window.location.hash !== target.replace("/", "")) {
+            window.location.replace(target);
+          }
+        };
+
+        var supabaseUrl = "%REACT_APP_SUPABASE_URL%";
+        var anonKey = "%REACT_APP_SUPABASE_ANON_KEY%";
+        if (!supabaseUrl || supabaseUrl.indexOf("%REACT_APP_") === 0 || !anonKey || anonKey.indexOf("%REACT_APP_") === 0) {
+          redirectTo("");
+          return;
+        }
+
+        fetch(
+          supabaseUrl + "/rest/v1/issue_cards?select=module&ref_number=eq." + encodeURIComponent(ref) + "&limit=1",
+          {
+            headers: {
+              apikey: anonKey,
+              Authorization: "Bearer " + anonKey,
+            },
+          }
+        )
+          .then(function (res) { return res.ok ? res.json() : []; })
+          .then(function (rows) {
+            var moduleName = Array.isArray(rows) && rows[0] && rows[0].module ? rows[0].module : "";
+            redirectTo(moduleName);
+          })
+          .catch(function () {
+            redirectTo("");
+          });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { toStatTuple } from "./useSupabaseModule";
 
 function getBlockTabs(block) {
   const data = block?.data || {};
@@ -72,7 +71,7 @@ export default function useRotatingStats({
       return;
     }
 
-    const initial = filteredLiveStats.slice(0, maxItems).map(toStatTuple);
+    const initial = filteredLiveStats.slice(0, maxItems);
     setDisplayStats(initial);
     setRotationKey(prev => prev + 1);
 
@@ -80,8 +79,7 @@ export default function useRotatingStats({
 
     const id = setInterval(() => {
       const next = weightedPickWithoutReplacement(filteredLiveStats, maxItems)
-        .sort((a, b) => (b.strength_score || 0) - (a.strength_score || 0))
-        .map(toStatTuple);
+        .sort((a, b) => (b.strength_score || 0) - (a.strength_score || 0));
 
       setDisplayStats(next);
       setRotationKey(prev => prev + 1);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { COLORS } from "../../config/theme";
 import CivicDecoderPanel from "../../components/CivicDecoderPanel";
 
-function getKindStyle(profile) {
+function getKindBadgeLabel(profile) {
   const kind = String(profile?.kind || "").trim().toLowerCase();
   let badgeLabel = "Board Member";
 
@@ -12,12 +12,53 @@ function getKindStyle(profile) {
   else if (kind === "director") badgeLabel = "Director";
   else if (kind === "authority_member") badgeLabel = "Authority Member";
 
-  return {
-    accent: "#4A90C4",
-    accentDark: "#2d6a96",
-    soft: "rgba(74,144,196,0.10)",
-    badgeLabel,
-  };
+  return badgeLabel;
+}
+
+function partyBadge(party) {
+  const p = String(party || "").toLowerCase();
+  if (p.includes("republican")) return { label: "Republican", heroBg: "#8B2020", tagBg: "#8B2020", tagColor: "#fff" };
+  if (p.includes("democrat")) return { label: "Democrat", heroBg: "#2B4F8A", tagBg: "#2B4F8A", tagColor: "#fff" };
+  if (p.includes("libertarian")) return { label: "Libertarian", heroBg: "#7a5c00", tagBg: "#7a5c00", tagColor: "#fff" };
+  if (p.includes("independent")) return { label: "Independent", heroBg: "#5a3a7a", tagBg: "#5a3a7a", tagColor: "#fff" };
+  if (!party) return { label: null, heroBg: "#193150", tagBg: "#193150", tagColor: "#fff" };
+  return { label: party, heroBg: "#193150", tagBg: "#193150", tagColor: "#fff" };
+}
+
+function heroBackground(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  if (s === "former" || s === "deceased") return "#9da3a8";
+  const pb = partyBadge(profile.party);
+  return pb.heroBg;
+}
+
+function photoBorderColor(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  if (s === "deceased") return "#111";
+  if (s === "candidate") return "#C6A34D";
+  return "#193150";
+}
+
+function statusTags(profile) {
+  const s = String(profile.status || "").toLowerCase();
+  const pb = partyBadge(profile.party);
+  const partyTag = pb.label ? { label: pb.label, bg: pb.tagBg, color: pb.tagColor, border: "1px solid rgba(255,255,255,0.35)" } : null;
+  const currentTag = { label: "Current", bg: "transparent", color: "#fff", border: "1.5px solid #C6A34D" };
+  const candidateTag = { label: "Candidate", bg: "#C6A34D", color: "#3a2600", border: "none" };
+  const formerTag = { label: "Former", bg: "#e8e8e8", color: "#4b5563", border: "none" };
+  const deceasedTag = { label: "Deceased", bg: "#111", color: "#e8e8e8", border: "none" };
+  if (s === "deceased") return [deceasedTag, formerTag, partyTag].filter(Boolean);
+  if (s === "former") return [partyTag, formerTag].filter(Boolean);
+  if (s === "candidate") return [partyTag, candidateTag].filter(Boolean);
+  return [partyTag, currentTag].filter(Boolean);
+}
+
+function StatusTagPill({ tag }) {
+  return (
+    <span style={{ background: tag.bg, color: tag.color, border: tag.border || "none", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+      {tag.label}
+    </span>
+  );
 }
 
 function getInitials(name) {
@@ -48,7 +89,7 @@ function EmptyState({ title, body, tone = "default" }) {
 
 function Headshot({ profile, size }) {
   const [hasError, setHasError] = useState(false);
-  const { soft, accentDark } = getKindStyle(profile);
+  const photoB = photoBorderColor(profile);
 
   useEffect(() => {
     setHasError(false);
@@ -62,16 +103,17 @@ function Headshot({ profile, size }) {
           width: size,
           height: size,
           borderRadius: "50%",
-          border: "3px solid rgba(255,255,255,0.75)",
+          border: `3px solid ${photoB}`,
           boxShadow: "0 10px 24px rgba(0,0,0,0.22)",
           flexShrink: 0,
-          background: soft,
-          color: accentDark,
+          background: "#193150",
+          color: "#C6A34D",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: size / 2.8,
           fontWeight: 900,
+          opacity: profile?.status === "deceased" ? 0.55 : 1,
         }}
       >
         {getInitials(profile?.name)}
@@ -88,10 +130,11 @@ function Headshot({ profile, size }) {
         width: size,
         height: size,
         borderRadius: "50%",
-        border: "3px solid rgba(255,255,255,0.75)",
+        border: `3px solid ${photoB}`,
         boxShadow: "0 10px 24px rgba(0,0,0,0.22)",
         flexShrink: 0,
         objectFit: "cover",
+        opacity: profile?.status === "deceased" ? 0.55 : 1,
       }}
     />
   );
@@ -99,84 +142,80 @@ function Headshot({ profile, size }) {
 
 function ProfileTile({ profile, onOpen }) {
   const metrics = Array.isArray(profile.metrics) ? profile.metrics.slice(0, 2) : [];
-  const kindStyle = getKindStyle(profile);
+  const heroBg = heroBackground(profile);
+  const tags = statusTags(profile);
+  const kindLabel = getKindBadgeLabel(profile);
 
   return (
     <button
       onClick={() => onOpen(profile)}
       style={{
         textAlign: "left",
-        border: `1px solid ${COLORS.border}`,
-        borderTop: "5px solid #4A90C4",
+        border: "3px solid #193150",
         borderRadius: 16,
-        background: "#fff",
-        padding: 18,
+        background: "transparent",
+        padding: 0,
         cursor: "pointer",
         boxShadow: "0 14px 30px rgba(25,49,80,0.08)",
         width: "100%",
+        overflow: "hidden",
       }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 16 }}>
-        <Headshot profile={profile} size={64} />
-        <div style={{ minWidth: 0 }}>
-          <div style={{ color: COLORS.text, fontSize: 20, fontWeight: 1000, lineHeight: 1.1 }}>{profile.name}</div>
+      <div style={{ background: heroBg, padding: "14px 16px", display: "flex", gap: 12 }}>
+        <Headshot profile={profile} size={56} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 18, fontWeight: 900, color: profile.status === "deceased" ? "rgba(255,255,255,0.72)" : "#fff", marginBottom: 3 }}>{profile.name}</div>
           {(profile.office || profile.role) ? (
-            <div style={{ color: COLORS.muted, fontSize: 14, marginTop: 6 }}>{profile.office || profile.role}</div>
+            <div style={{ fontSize: 12, color: "#fff", opacity: profile.status === "deceased" ? 0.6 : 0.88, marginBottom: 6 }}>
+              {[profile.office || profile.role, profile.geography].filter(Boolean).join(" · ")}
+            </div>
           ) : null}
-          <div
-            style={{
-              display: "inline-flex",
-              marginTop: 10,
-              background: "rgba(74,144,196,0.12)",
-              color: "#4A90C4",
-              borderRadius: 999,
-              padding: "4px 10px",
-              fontSize: 11,
-              fontWeight: 900,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            {kindStyle.badgeLabel}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {tags.map((tag, i) => <StatusTagPill key={i} tag={tag} />)}
           </div>
         </div>
       </div>
 
-      {profile.statusLine ? (
-        <div style={{ color: COLORS.text, fontSize: 14, fontWeight: 700, lineHeight: 1.6, marginBottom: 14 }}>
-          {profile.statusLine}
+      <div style={{ padding: "14px 16px", background: COLORS.panel }}>
+        <div style={{ display: "inline-flex", marginBottom: 10, background: COLORS.goldSoft || "rgba(198,163,77,0.18)", color: COLORS.navy, borderRadius: 999, padding: "4px 10px", fontSize: 11, fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          {kindLabel}
         </div>
-      ) : null}
+        {profile.statusLine ? (
+          <div style={{ color: COLORS.text, fontSize: 14, fontWeight: 700, lineHeight: 1.6, marginBottom: metrics.length ? 14 : 0 }}>
+            {profile.statusLine}
+          </div>
+        ) : null}
 
-      {metrics.length > 0 ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-          {metrics.map((metric, index) => (
-            <div
-              key={`${metric.label}-${index}`}
-              style={{
-                background: "#fcfaf5",
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 12,
-                padding: 12,
-              }}
-            >
+        {metrics.length > 0 ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+            {metrics.map((metric, index) => (
               <div
+                key={`${metric.label}-${index}`}
                 style={{
-                  color: COLORS.muted,
-                  fontSize: 10,
-                  fontWeight: 900,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  marginBottom: 6,
+                  background: "#fcfaf5",
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 12,
+                  padding: 12,
                 }}
               >
-                {metric.label}
+                <div
+                  style={{
+                    color: COLORS.muted,
+                    fontSize: 10,
+                    fontWeight: 900,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    marginBottom: 6,
+                  }}
+                >
+                  {metric.label}
+                </div>
+                <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{metric.value}</div>
               </div>
-              <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{metric.value}</div>
-            </div>
-          ))}
-        </div>
-      ) : null}
+            ))}
+          </div>
+        ) : null}
+      </div>
     </button>
   );
 }
@@ -417,7 +456,13 @@ function DecoderPane({ profile, accent, accentDark, soft }) {
 }
 
 function ProfileModal({ profile, onClose }) {
-  const { accent, accentDark, soft } = getKindStyle(profile);
+  const heroBg = heroBackground(profile);
+  const photoB = photoBorderColor(profile);
+  const tags = statusTags(profile);
+  const kindLabel = getKindBadgeLabel(profile);
+  const accent = COLORS.gold;
+  const accentDark = COLORS.navy;
+  const soft = "rgba(198,163,77,0.12)";
   const tabs = [
     { id: "profile", label: "Profile" },
     ...(Array.isArray(profile?.votes) && profile.votes.length ? [{ id: "decisions", label: "Decisions and Votes" }] : []),
@@ -457,14 +502,14 @@ function ProfileModal({ profile, onClose }) {
         style={{
           width: "min(1080px, 100%)",
           margin: "0 auto",
-          border: "2px solid #4A90C4",
+          border: `1px solid ${COLORS.border}`,
           borderRadius: 18,
           overflow: "hidden",
           background: "#f8f3eb",
           boxShadow: "0 28px 80px rgba(0,0,0,0.35)",
         }}
       >
-        <div style={{ position: "relative", background: "linear-gradient(145deg, #1a2f4a, #0f1f33)", color: "#fff", padding: 18 }}>
+        <div style={{ position: "relative", background: heroBg, color: "#fff", padding: 18 }}>
           <button
             onClick={onClose}
             aria-label="Close profile"
@@ -485,28 +530,25 @@ function ProfileModal({ profile, onClose }) {
             ×
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 16, paddingRight: 56 }}>
-            <Headshot profile={profile} size={84} />
+            {profile.headshotUrl ? (
+              <img src={profile.headshotUrl} alt={`${profile.name} headshot`} style={{ width: 84, height: 84, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.6 : 1 }} />
+            ) : (
+              <div style={{ width: 84, height: 84, borderRadius: "50%", flexShrink: 0, background: "#0d1e30", color: "#C6A34D", border: `3px solid ${photoB}`, opacity: profile.status === "deceased" ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900 }}>
+                {getInitials(profile.name)}
+              </div>
+            )}
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 34, fontWeight: 1000, lineHeight: 1.05 }}>{profile.name}</div>
               <div style={{ color: "rgba(255,255,255,0.86)", fontSize: 15, fontWeight: 700, marginTop: 6 }}>
                 {[profile.office, profile.geography].filter(Boolean).join(" · ")}
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
-                {[profile.roleLabel, profile.statusLine].filter(Boolean).map((label) => (
-                  <div
-                    key={label}
-                    style={{
-                      background: "rgba(255,255,255,0.16)",
-                      borderRadius: 999,
-                      padding: "5px 10px",
-                      fontSize: 11,
-                      fontWeight: 900,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {label}
+                {tags.map((tag, i) => <StatusTagPill key={i} tag={tag} />)}
+                {kindLabel ? (
+                  <div style={{ background: "rgba(255,255,255,0.16)", borderRadius: 999, padding: "5px 10px", fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>
+                    {kindLabel}
                   </div>
-                ))}
+                ) : null}
               </div>
             </div>
           </div>
@@ -560,7 +602,7 @@ function ProfileModal({ profile, onClose }) {
           </div>
         ) : null}
 
-        <SectionTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} accent={accent} />
+        <SectionTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} accent={COLORS.gold} />
 
         <div style={{ padding: 18 }}>
           {activeTab === "profile" ? (
@@ -573,14 +615,14 @@ function ProfileModal({ profile, onClose }) {
                   {profile.profile.timeline.map((item, index) => (
                     <div key={`${item.date}-${item.title}-${index}`} style={{ display: "flex", gap: 14 }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#4A90C4", marginTop: 4 }} />
+                        <div style={{ width: 12, height: 12, borderRadius: "50%", background: COLORS.gold, marginTop: 4 }} />
                         {index < profile.profile.timeline.length - 1 ? (
                           <div style={{ width: 2, flex: 1, background: COLORS.border, marginTop: 4 }} />
                         ) : null}
                       </div>
                       <div>
                         {item.date ? (
-                          <div style={{ color: "#4A90C4", fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>{item.date}</div>
+                          <div style={{ color: COLORS.gold, fontSize: 11, fontWeight: 900, textTransform: "uppercase" }}>{item.date}</div>
                         ) : null}
                         {item.title ? <div style={{ color: COLORS.text, fontSize: 16, fontWeight: 900, marginTop: 4 }}>{item.title}</div> : null}
                         {item.detail ? <div style={{ color: COLORS.muted, fontSize: 14, lineHeight: 1.7, marginTop: 4 }}>{item.detail}</div> : null}

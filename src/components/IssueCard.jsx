@@ -1,429 +1,9 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { COLORS } from "../config/theme";
 import CivicDecoderPanel from "./CivicDecoderPanel";
-import {
-  BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell, ReferenceLine
-} from "recharts";
+import IssueCardVisual from "./IssueCardVisual";
 
 const PREVIEW_LIMIT = 300;
-const CHART_COLORS = {
-  red: "#B4473E",
-  gold: "#C6A34D",
-  blue: "#89C4E8",
-  green: "#3E8B5B",
-  lavender: "#7A4FA3",
-  muted: "#6b778a",
-  redDark: "#7A1F1A",
-  orange: "#cf7b2f",
-};
-const DEFAULT_COLORS = ["#C6A34D", "#89C4E8", "#B4473E", "#3E8B5B", "#7A4FA3", "#cf7b2f", "#6b778a"];
-
-function getHeatColor(baselineVal, harmedVal) {
-  if (!baselineVal || !harmedVal) return "#B4473E";
-  const gap = Math.abs(baselineVal - harmedVal) / Math.max(baselineVal, harmedVal);
-  if (gap < 0.20) return "#3E8B5B";
-  if (gap < 0.40) return "#C6A34D";
-  if (gap < 0.65) return "#B4473E";
-  return "#7A1F1A";
-}
-
-function fmtVal(v, unit) {
-  if (v === null || v === undefined) return "";
-  if (unit === "$") {
-    return v >= 1000000
-      ? "$" + (v / 1000000).toFixed(1) + "M"
-      : v >= 1000
-      ? "$" + (v / 1000).toFixed(0) + "k"
-      : "$" + v;
-  }
-  if (unit === "%") return v + "%";
-  return v + (unit || "");
-}
-
-function IssueCardVisual({ config }) {
-  if (!config || !config.type || !config.data) return null;
-  const { type, title, data, baselineLabel, referenceValue, referenceLabel, referenceUnit, stages } = config;
-
-  const containerStyle = {
-    background: "#193150",
-    borderRadius: 10,
-    padding: "14px 16px",
-    marginBottom: 14,
-  };
-  const titleStyle = {
-    color: "#9aaabb",
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    marginBottom: 12,
-  };
-
-  // ── horizontal-bars ──────────────────────────────────────
-  if (type === "horizontal-bars") {
-    const max = Math.max(...data.map(d => d.value));
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        {data.map(function(d, i) {
-          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-          const pct = Math.round((d.value / max) * 100);
-          const display = fmtVal(d.value, d.unit);
-          return (
-            <div key={i} style={{ marginBottom: i < data.length - 1 ? 12 : 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 600 }}>{d.label}</span>
-                <span style={{ color: color, fontSize: 14, fontWeight: 900 }}>{display}</span>
-              </div>
-              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
-                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 8 }} />
-              </div>
-              {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 3 }}>{d.context}</div> : null}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // ── heatmap-comparison ───────────────────────────────────
-  // data: [{ metric, baselineValue, harmedValue, unit, context }]
-  if (type === "heatmap-comparison") {
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#6b778a" }} />
-            <span style={{ color: "#9aaabb", fontSize: 10 }}>{baselineLabel || "Baseline"}</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 40, height: 10, borderRadius: 2, background: "linear-gradient(90deg,#3E8B5B,#C6A34D,#B4473E,#7A1F1A)" }} />
-            <span style={{ color: "#9aaabb", fontSize: 10 }}>Gap severity</span>
-          </div>
-        </div>
-        {data.map(function(d, i) {
-          const maxVal = Math.max(d.baselineValue, d.harmedValue);
-          const basePct = Math.round((d.baselineValue / maxVal) * 100);
-          const harmedPct = Math.round((d.harmedValue / maxVal) * 100);
-          const heatColor = getHeatColor(d.baselineValue, d.harmedValue);
-          return (
-            <div key={i} style={{ marginBottom: i < data.length - 1 ? 14 : 0 }}>
-              <div style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 700, marginBottom: 5 }}>{d.metric}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                <span style={{ color: heatColor, fontSize: 13, fontWeight: 900, minWidth: 52 }}>{fmtVal(d.harmedValue, d.unit)}</span>
-                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8, position: "relative" }}>
-                  <div style={{ width: harmedPct + "%", background: heatColor, borderRadius: 4, height: 8 }} />
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ color: "#6b778a", fontSize: 13, fontWeight: 900, minWidth: 52 }}>{fmtVal(d.baselineValue, d.unit)}</span>
-                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 8 }}>
-                  <div style={{ width: basePct + "%", background: "#6b778a", borderRadius: 4, height: 8 }} />
-                </div>
-              </div>
-              {d.context ? <div style={{ color: "#6b778a", fontSize: 11, marginTop: 4 }}>{d.context}</div> : null}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // ── wage-bars ─────────────────────────────────────────────
-  // Horizontal bars with a reference line threshold
-  // data: [{ label, value, unit }], referenceValue, referenceLabel, referenceUnit
-  if (type === "wage-bars") {
-    const max = Math.max(...data.map(d => d.value), referenceValue || 0);
-    const refPct = referenceValue ? Math.round((referenceValue / max) * 100) : null;
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        {refPct !== null ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-            <div style={{ width: refPct + "%", borderTop: "2px dashed #B4473E", position: "relative" }}>
-              <span style={{ position: "absolute", right: 0, top: -18, color: "#B4473E", fontSize: 10, fontWeight: 700, whiteSpace: "nowrap" }}>
-                {referenceLabel || "Threshold"}: {fmtVal(referenceValue, referenceUnit)}
-              </span>
-            </div>
-          </div>
-        ) : null}
-        {data.map(function(d, i) {
-          const color = CHART_COLORS[d.color] || (d.value < (referenceValue || 0) ? "#B4473E" : "#3E8B5B");
-          const pct = Math.round((d.value / max) * 100);
-          const belowRef = referenceValue && d.value < referenceValue;
-          return (
-            <div key={i} style={{ marginBottom: i < data.length - 1 ? 10 : 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                <span style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 600 }}>{d.label}</span>
-                <span style={{ color: color, fontSize: 13, fontWeight: 900 }}>{fmtVal(d.value, d.unit)}</span>
-              </div>
-              <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 7, position: "relative" }}>
-                <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 7 }} />
-                {refPct !== null ? (
-                  <div style={{ position: "absolute", left: refPct + "%", top: -3, width: 2, height: 13, background: "#B4473E", borderRadius: 1 }} />
-                ) : null}
-              </div>
-              {belowRef && referenceValue ? (
-                <div style={{ color: "#B4473E", fontSize: 10, marginTop: 2 }}>
-                  Below threshold &mdash; {fmtVal(Math.round((referenceValue - d.value) * 100) / 100, d.unit)} gap
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-        {referenceValue ? (
-          <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 6, color: "#6b778a", fontSize: 11 }}>
-            Red line = {referenceLabel || "threshold"}: {fmtVal(referenceValue, referenceUnit)}
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
-  // ── flow-chain ────────────────────────────────────────────
-  // Nodes connected by arrows, each with label, value, fact
-  // data: [{ label, value, fact, color }]
-  if (type === "flow-chain") {
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-          {data.map(function(d, i) {
-            const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-            return (
-              <React.Fragment key={i}>
-                <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid " + color, borderRadius: 8, padding: "8px 10px", minWidth: 80, maxWidth: 120 }}>
-                  <div style={{ color: color, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>{d.label}</div>
-                  {d.value ? <div style={{ color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1.2, marginBottom: 3 }}>{d.value}</div> : null}
-                  {d.fact ? <div style={{ color: "#9aaabb", fontSize: 10, lineHeight: 1.4 }}>{d.fact}</div> : null}
-                </div>
-                {i < data.length - 1 ? (
-                  <div style={{ color: "#9aaabb", fontSize: 16, flexShrink: 0 }}>&#8594;</div>
-                ) : null}
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // ── funnel ────────────────────────────────────────────────
-  // Stages with progressive narrowing
-  // data: [{ label, value, unit, color }]
-  if (type === "funnel") {
-    const max = data[0]?.value || 1;
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        {data.map(function(d, i) {
-          const color = CHART_COLORS[d.color] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-          const pct = Math.round((d.value / max) * 100);
-          const dropoff = i > 0 ? data[i - 1].value - d.value : null;
-          return (
-            <div key={i} style={{ marginBottom: 6 }}>
-              {dropoff !== null ? (
-                <div style={{ color: "#B4473E", fontSize: 10, marginBottom: 3, paddingLeft: 8 }}>
-                  &#8595; {dropoff.toLocaleString()} dropped ({Math.round((dropoff / data[i-1].value) * 100)}%)
-                </div>
-              ) : null}
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ color: "#9aaabb", fontSize: 11, minWidth: 120 }}>{d.label}</span>
-                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 20, position: "relative" }}>
-                  <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 20, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 6 }}>
-                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 900 }}>{fmtVal(d.value, d.unit)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // ── grouped-bars ──────────────────────────────────────────
-  // Side-by-side bars per category (e.g. budgeted vs actual)
-  // data: [{ category, values: [{ label, value, color, unit }] }]
-  if (type === "grouped-bars") {
-    const allVals = data.flatMap(d => d.values.map(v => v.value));
-    const max = Math.max(...allVals);
-    const groupColors = data[0]?.values.map((v, i) => CHART_COLORS[v.color] || DEFAULT_COLORS[i]) || [];
-    const legend = data[0]?.values.map((v, i) => ({ label: v.label, color: groupColors[i] })) || [];
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
-          {legend.map(function(l, i) {
-            return (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
-                <span style={{ color: "#9aaabb", fontSize: 10 }}>{l.label}</span>
-              </div>
-            );
-          })}
-        </div>
-        {data.map(function(d, i) {
-          return (
-            <div key={i} style={{ marginBottom: i < data.length - 1 ? 10 : 0 }}>
-              <div style={{ color: "#ddd5c4", fontSize: 11, marginBottom: 4 }}>{d.category}</div>
-              <div style={{ display: "flex", gap: 4 }}>
-                {d.values.map(function(v, j) {
-                  const color = CHART_COLORS[v.color] || DEFAULT_COLORS[j % DEFAULT_COLORS.length];
-                  const pct = Math.round((v.value / max) * 100);
-                  return (
-                    <div key={j} style={{ flex: 1 }}>
-                      <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 4, height: 24, position: "relative" }}>
-                        <div style={{ width: pct + "%", background: color, borderRadius: 4, height: 24 }} />
-                      </div>
-                      <div style={{ color: color, fontSize: 11, fontWeight: 700, marginTop: 2 }}>{fmtVal(v.value, v.unit)}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // ── escalation ────────────────────────────────────────────
-  // Severity ladder - rows escalate in color
-  // data: [{ trigger, outcome, color }]
-  if (type === "escalation") {
-    const escColors = ["#3E8B5B", "#C6A34D", "#cf7b2f", "#B4473E", "#7A1F1A"];
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {data.map(function(d, i) {
-            const color = CHART_COLORS[d.color] || escColors[Math.min(i, escColors.length - 1)];
-            return (
-              <div key={i} style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
-                <div style={{ background: color + "22", border: "1px solid " + color, borderRadius: 6, padding: "8px 10px", minWidth: 100, flexShrink: 0 }}>
-                  <div style={{ color: color, fontSize: 11, fontWeight: 700 }}>{d.trigger}</div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", color: "#9aaabb", fontSize: 14 }}>&#8594;</div>
-                <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, padding: "8px 10px", flex: 1 }}>
-                  <div style={{ color: "#ddd5c4", fontSize: 12, lineHeight: 1.4 }}>{d.outcome}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // ── scorecard-grid ────────────────────────────────────────
-  // Multiple entity cards with same fields
-  // data: [{ entity, fields: [{ label, value, color }] }]
-  if (type === "scorecard-grid") {
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {data.map(function(d, i) {
-            return (
-              <div key={i} style={{ flex: "1 1 140px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ color: "#ddd5c4", fontSize: 12, fontWeight: 700, marginBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: 6 }}>{d.entity}</div>
-                {(d.fields || []).map(function(f, j) {
-                  const color = CHART_COLORS[f.color] || "#9aaabb";
-                  return (
-                    <div key={j} style={{ marginBottom: 5 }}>
-                      <div style={{ color: "#6b778a", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>{f.label}</div>
-                      <div style={{ color: color, fontSize: 13, fontWeight: 700 }}>{f.value}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // ── bar (vertical) ────────────────────────────────────────
-  if (type === "bar") {
-    const unit = data[0]?.unit || "";
-    const chartData = data.map(d => ({ name: d.label, value: d.value, color: CHART_COLORS[d.color] || null }));
-    function BarLabel(props) {
-      const { x, y, width, value } = props;
-      return <text x={x + width/2} y={y - 5} fill="#ddd5c4" textAnchor="middle" fontSize={11} fontWeight={700}>{fmtVal(value, unit)}</text>;
-    }
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={chartData} margin={{ top: 20, right: 8, left: -20, bottom: 40 }}>
-            <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
-            <YAxis tick={{ fill: "#9aaabb", fontSize: 10 }} />
-            <Bar dataKey="value" radius={[4,4,0,0]} label={<BarLabel />}>
-              {chartData.map(function(d, i) {
-                return <Cell key={i} fill={d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-
-  // ── trend ─────────────────────────────────────────────────
-  if (type === "trend") {
-    const chartData = data.map(d => ({ name: d.label, value: d.value }));
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={chartData} margin={{ top: 24, right: 16, left: -20, bottom: 0 }} style={{ pointerEvents: "none" }}>
-            <XAxis dataKey="name" tick={{ fill: "#9aaabb", fontSize: 11 }} />
-            <YAxis tick={{ fill: "#9aaabb", fontSize: 11 }} />
-            <Line type="monotone" dataKey="value" stroke="#C6A34D" strokeWidth={2} dot={{ fill: "#C6A34D", r: 4 }} isAnimationActive={false}>
-              <LabelList dataKey="value" position="top" style={{ fill: "#ddd5c4", fontSize: 11, fontWeight: 700 }} />
-            </Line>
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-
-  // ── pie ───────────────────────────────────────────────────
-  if (type === "pie") {
-    return (
-      <div style={containerStyle}>
-        {title ? <div style={titleStyle}>{title}</div> : null}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <ResponsiveContainer width={140} height={140}>
-            <PieChart style={{ pointerEvents: "none" }}>
-              <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} strokeWidth={0} isAnimationActive={false}>
-                {data.map(function(_, i) {
-                  return <Cell key={i} fill={DEFAULT_COLORS[i % DEFAULT_COLORS.length]} />;
-                })}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div style={{ flex: 1 }}>
-            {data.map(function(d, i) {
-              return (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: DEFAULT_COLORS[i % DEFAULT_COLORS.length], flexShrink: 0 }} />
-                  <span style={{ color: "#9aaabb", fontSize: 12 }}>{d.label}{d.value ? " — " + d.value + "%" : ""}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-}
 
 function truncateText(str, n) {
   return str && str.length > n ? str.slice(0, n).trim() + "\u2026" : str || "";
@@ -441,28 +21,60 @@ function cleanTruncate(text, maxLen) {
   return chunk.trimEnd();
 }
 
+function splitSentences(text) {
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .match(/[^.!?]+[.!?]?/g) || [];
+}
+
+function scoreSentence(sentence) {
+  let score = 0;
+  if (/\$|\b\d{2,}\b/.test(sentence)) score += 3;
+  if (/\b(contract|vote|donation|developer|board|council|county|city|hospital|police|sheriff|lawsuit|million|billion)\b/i.test(sentence)) score += 3;
+  if (/[A-Z][a-z]+ [A-Z][a-z]+/.test(sentence)) score += 2;
+  if (sentence.length > 80) score += 1;
+  return score;
+}
+
+function buildPunchyExcerpt(issue, maxLen = 220) {
+  const homepageTeaser = cleanTruncate(issue?.homepage_teaser || "", maxLen);
+  if (homepageTeaser) return homepageTeaser;
+
+  const detailsSentences = splitSentences(issue?.details || "");
+  if (detailsSentences.length) {
+    const selected = detailsSentences
+      .map((sentence, index) => ({ sentence: sentence.trim(), index, score: scoreSentence(sentence) }))
+      .filter((item) => item.sentence)
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .slice(0, 3)
+      .sort((a, b) => a.index - b.index)
+      .map((item) => item.sentence)
+      .join(" ");
+
+    if (selected) return cleanTruncate(selected, maxLen);
+  }
+
+  return cleanTruncate(issue?.summary || "", maxLen);
+}
+
 function buildShareText(issue, mode) {
   const ref = issue.ref_number || issue.id || "";
-  const module = issue.module || "";
-  const shortUrl = ref && module ? "https://hsvcivicwatch.org/#" + module + "?card=" + encodeURIComponent(ref) : "https://hsvcivicwatch.org";
-  const teaser = issue.homepage_teaser || issue.summary || "";
+  const shortUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
+  const teaser = buildPunchyExcerpt(issue, mode === "sms" ? 240 : 220);
   
   if (mode === "sms") {
-    // Clean, short, no hashtags, complete sentences only
     return [
-      issue.title || "",
-      "",
-      cleanTruncate(teaser, 200),
+      teaser,
       "",
       shortUrl,
     ].join("\n");
   }
 
-  // Social media caption
   return [
     issue.title ? issue.title.toUpperCase() : "",
     "",
-    cleanTruncate(teaser, 220),
+    teaser,
     "",
     "Full investigation: " + shortUrl,
     "",
@@ -478,64 +90,105 @@ function slugifyFilePart(value) {
     .slice(0, 60) || "issue-card";
 }
 
+function renderTextOnlyShareCard(issue, body) {
+  return (
+    <div style={{
+      background: COLORS.panel,
+      border: "1px solid " + COLORS.border,
+      borderRadius: 20,
+      padding: "24px 24px 20px",
+      boxShadow: "0 12px 30px rgba(25,49,80,0.12)",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+    }}>
+      {issue.label ? (
+        <div style={{ display: "inline-block", background: "rgba(198,163,77,0.18)", color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", padding: "4px 10px", borderRadius: 6, marginBottom: 14 }}>
+          {issue.label}
+        </div>
+      ) : null}
+      <div style={{ color: COLORS.text, fontSize: 34, fontWeight: 900, lineHeight: 1.16, marginBottom: 16 }}>
+        {truncateText(issue.title, 140)}
+      </div>
+      <div style={{ color: COLORS.text, fontSize: 21, lineHeight: 1.7 }}>
+        {body}
+      </div>
+      <div style={{
+        marginTop: 20,
+        background: "rgba(62,139,91,0.12)",
+        borderTop: "1px solid rgba(62,139,91,0.26)",
+        borderRadius: 12,
+        padding: "16px 18px",
+      }}>
+        <div style={{ color: COLORS.green, fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: "uppercase" }}>
+          READ THE FULL INVESTIGATION
+        </div>
+        <div style={{ color: COLORS.green, fontSize: 24, fontWeight: 900, marginTop: 4, lineHeight: 1.3, wordBreak: "break-word" }}>
+          hsvcivicwatch.org
+        </div>
+      </div>
+    </div>
+  );
+}
 
-function ShareIssueCard({ issue, cardRef }) {
-  const fullText = issue?.homepage_teaser || issue?.summary || "";
-  const body = cleanTruncate(fullText, 160);
+function ShareIssueCard({ issue, cardRef, shareStatBlock }) {
+  const body = buildPunchyExcerpt(issue, 210);
+  const shareVisualConfig = issue?.visual_config && (issue?.visual_score || 0) >= 7
+    ? issue.visual_config
+    : shareStatBlock?.visual_config || null;
+
   return (
     <div ref={cardRef} style={{
-      width: 900,
-      background: "#e8e1d0",
-      padding: 28,
+      width: 800,
+      background: COLORS.bg,
+      padding: 20,
       boxSizing: "border-box",
       fontFamily: "Georgia, serif",
     }}>
-      <div style={{
-        background: COLORS.panel,
-        border: "1px solid " + COLORS.border,
-        borderRadius: 20,
-        padding: "24px 24px 20px",
-        boxShadow: "0 12px 30px rgba(25,49,80,0.12)",
-        display: "flex", flexDirection: "column",
-        overflow: "hidden",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-          <div style={{ color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase" }}>HSV Civic Watch</div>
-          <div style={{ color: COLORS.muted, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase" }}>Issue Card</div>
-        </div>
-        {issue.label && (
-          <div style={{ display: "inline-block", background: "rgba(198,163,77,0.18)", color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", padding: "4px 10px", borderRadius: 6, marginBottom: 14 }}>
-            {issue.label}
-          </div>
-        )}
-        <div style={{ color: COLORS.text, fontSize: 34, fontWeight: 900, lineHeight: 1.16, marginBottom: 16 }}>
-          {truncateText(issue.title, 140)}
-        </div>
-        {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ width: 900, overflow: "hidden", transform: "none" }}>
-              <IssueCardVisual config={issue.visual_config} />
+      {shareVisualConfig ? (
+        <div style={{
+          background: COLORS.panel,
+          border: "1px solid " + COLORS.border,
+          borderRadius: 24,
+          overflow: "hidden",
+          boxShadow: "0 14px 36px rgba(25,49,80,0.14)",
+        }}>
+          <div style={{ padding: 16, background: "#e8dfd2" }}>
+            <div style={{ width: "100%", transform: "scale(1.06)", transformOrigin: "top center" }}>
+              <IssueCardVisual config={shareVisualConfig} />
             </div>
           </div>
-        ) : null}
-        <div style={{ color: COLORS.text, fontSize: 21, lineHeight: 1.7 }}>
-          {body}
-        </div>
-        <div style={{
-          marginTop: 20,
-          background: "rgba(62,139,91,0.12)",
-          borderTop: "1px solid rgba(62,139,91,0.26)",
-          borderRadius: 12,
-          padding: "16px 18px",
-        }}>
-          <div style={{ color: COLORS.green, fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: "uppercase" }}>
-            READ THE FULL INVESTIGATION
+          <div style={{ padding: "24px 28px 22px" }}>
+            {issue.label ? (
+              <div style={{ color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
+                {issue.label}
+              </div>
+            ) : null}
+            <div style={{ color: COLORS.text, fontSize: 38, fontWeight: 900, lineHeight: 1.08, marginBottom: 16 }}>
+              {truncateText(issue.title, 150)}
+            </div>
+            <div style={{ color: COLORS.text, fontSize: 22, lineHeight: 1.65 }}>
+              {body}
+            </div>
           </div>
-          <div style={{ color: COLORS.green, fontSize: 24, fontWeight: 900, marginTop: 4, lineHeight: 1.3, wordBreak: "break-word" }}>
-            hsvcivicwatch.org
+          <div style={{
+            borderTop: "1px solid rgba(25,49,80,0.08)",
+            background: "#efe6d8",
+            padding: "16px 28px 18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 14,
+          }}>
+            <div style={{ color: COLORS.navy, fontSize: 12, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase" }}>
+              HSV Civic Watch
+            </div>
+            <div style={{ color: COLORS.muted, fontSize: 20, fontWeight: 700 }}>
+              hsvcivicwatch.org
+            </div>
           </div>
         </div>
-      </div>
+      ) : renderTextOnlyShareCard(issue, body)}
     </div>
   );
 }
@@ -554,13 +207,13 @@ async function shareStoryCard(cardEl, issue) {
   if (!cardEl) return;
   await loadHtml2Canvas();
   const canvas = await window.html2canvas(cardEl, {
-    width: 900,
-    windowWidth: 900,
-    windowHeight: 1400,
+    width: 800,
+    windowWidth: 800,
+    windowHeight: 1500,
     scale: 2.5,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: "#e8e1d0",
+    backgroundColor: COLORS.bg,
   });
   const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
   if (!blob) return;
@@ -597,6 +250,7 @@ export default function IssueCard({ issue }) {
   const [arrivalHighlight, setArrivalHighlight] = useState(false);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [shareOptions, setShareOptions] = useState({ blobUrl: "", shareText: "", shareUrl: "", fbUrl: "", fileName: "" });
+  const [shareStatBlock, setShareStatBlock] = useState(null);
   const storyCardRef = useRef(null);
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
@@ -657,7 +311,37 @@ export default function IssueCard({ issue }) {
     };
   }, [shareOptions.blobUrl]);
 
+  const loadShareStatBlock = async () => {
+    if (issue.visual_config && (issue.visual_score || 0) >= 7) return null;
+    if (shareStatBlock) return shareStatBlock;
+    if (!issue.ref_number) return null;
+    const url = process.env.REACT_APP_SUPABASE_URL;
+    const anonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+    if (!url || !anonKey) return null;
+
+    const query = `${url}/rest/v1/stat_blocks?select=*&card_ref=eq.${encodeURIComponent(issue.ref_number)}&order=strength_score.desc.nullslast&limit=1`;
+    const res = await fetch(query, {
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const topBlock = Array.isArray(rows) ? rows[0] || null : null;
+    if (topBlock?.visual_config) {
+      setShareStatBlock(topBlock);
+      return topBlock;
+    }
+    return null;
+  };
+
   const handleShare = async () => {
+    if (!(issue.visual_config && (issue.visual_score || 0) >= 7)) {
+      try {
+        await loadShareStatBlock();
+      } catch (e) {}
+    }
     setStoryOpen(true);
     setSharing(true);
     await new Promise(r => setTimeout(r, 120));
@@ -811,7 +495,7 @@ export default function IssueCard({ issue }) {
       </div>
       {storyOpen && (
         <div style={{ position: "fixed", left: -9999, top: 0, zIndex: -1 }}>
-          <ShareIssueCard issue={issue} cardRef={storyCardRef} />
+          <ShareIssueCard issue={issue} cardRef={storyCardRef} shareStatBlock={shareStatBlock} />
         </div>
       )}
       {showShareOptions ? (

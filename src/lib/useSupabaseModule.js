@@ -175,11 +175,13 @@ export default function useSupabaseModule(pageId) {
             tabs: effectiveTabs,
           };
 
-          return {
-            ...row,
-            tab: effectiveTab,
-            effectiveTab,
-            effectiveTabs,
+        return {
+          ...row,
+          card_ref: row.card_ref || row.issue_card_ref || null,
+          visual_config: row.visual_config || nextData.visual_config || null,
+          tab: effectiveTab,
+          effectiveTab,
+          effectiveTabs,
             data: nextData,
           };
         });

@@ -852,18 +852,22 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
               </div>
 
               <div style={{ marginBottom:16 }}>
-                <FieldLabel>Summary</FieldLabel>
-                <TextArea rows={4} value={issueState.summary} onChange={e => setIssueState(prev => ({ ...prev, summary: e.target.value }))} />
-              </div>
-
-              <div style={{ marginBottom:16 }}>
-                <FieldLabel>Homepage Teaser</FieldLabel>
+                <div style={{ color:"#B4473E", fontSize:12, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
+                  Homepage Teaser
+                </div>
+                <div style={{ color:"#B4473E", fontSize:12, lineHeight:1.6, marginBottom:8 }}>
+                  Used in Active Investigations feed and share text. 1-2 sentences. Expos&eacute; register. Name names.
+                </div>
                 <TextArea
                   rows={3}
-                  placeholder={"1-2 punchy exposé-style sentences for the homepage mini issue card."}
                   value={issueState.homepage_teaser}
                   onChange={e => setIssueState(prev => ({ ...prev, homepage_teaser: e.target.value }))}
                 />
+              </div>
+
+              <div style={{ marginBottom:16 }}>
+                <FieldLabel>Summary</FieldLabel>
+                <TextArea rows={4} value={issueState.summary} onChange={e => setIssueState(prev => ({ ...prev, summary: e.target.value }))} />
               </div>
 
               <div style={{ marginBottom:20 }}>

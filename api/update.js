@@ -8,7 +8,7 @@ const supabase = createClient(
 const ISSUE_FIELDS = [
   "label","title","summary","details","sources","tab","module",
   "decoder_what","decoder_connections","decoder_who_benefits","decoder_impact",
-  "actions","visual_config","visual_score","shock_factor",
+  "actions","visual_config","visual_score","shock_factor","homepage_teaser",
   "module_relevance","homepage_score","show_on_overview",
 ];
 
