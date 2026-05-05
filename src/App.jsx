@@ -90,7 +90,7 @@ export default function App() {
   const initialRoute = useMemo(() => getRouteFromLocation(), []);
 
   const [activeId, setActiveId] = useState(initialRoute);
-  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 960 : false);
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrollPositions = useRef({});
   const pendingRestore = useRef(null);
@@ -124,7 +124,7 @@ export default function App() {
       setActiveId(nextRoute);
       setMobileOpen(false);
     };
-    const onResize = () => setIsMobile(window.innerWidth < 960);
+    const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("popstate", onPopState);
     window.addEventListener("resize", onResize);
     return () => {

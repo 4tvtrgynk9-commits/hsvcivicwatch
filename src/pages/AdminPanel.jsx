@@ -306,6 +306,17 @@ function getTabsForModule(module) {
 
 function pulseWiggleStyle() {
   return `
+    @keyframes slideUp {
+      0% {
+        transform: translateY(24px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     @keyframes hsvAdminEditedPulse {
       0% {
         transform: translateX(0);
@@ -469,7 +480,7 @@ function buildStatEditState(item) {
   };
 }
 
-function EditModal({ config, onClose, onSave, onDelete, saving }) {
+function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false }) {
   const { itemType, item } = config;
   const isIssue = itemType === "issue_card";
   const [issueState, setIssueState] = useState(() => buildIssueEditState(item));
@@ -483,7 +494,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   const hasChanges = isIssue
     ? JSON.stringify(issueState) !== originalIssueState
     : JSON.stringify(statState) !== originalStatState;
-  const isCompact = typeof window !== "undefined" ? window.innerWidth < 760 : false;
+  const isCompact = isMobile;
   const twoColGrid = isCompact ? "1fr" : "repeat(2, minmax(0, 1fr))";
 
   useEffect(() => {
@@ -721,9 +732,9 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   };
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:4000, display:"flex", alignItems:"center", justifyContent:"center", padding:16, overflowY:"auto" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:4000, display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"center", padding:isMobile ? 0 : 16, overflowY:"auto" }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, width:"100%", maxWidth:1040, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
+      <div style={{ background:"#f5f0e8", border:isMobile ? "none" : "1px solid #ddd8cf", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 1040, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
         <div style={{ padding:"20px 24px", borderBottom:"1px solid #ddd8cf", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
           <div style={{ minWidth:0 }}>
             <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>
@@ -936,18 +947,18 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
           </div>
         </div>
 
-        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer" }}
+            style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !hasChanges}
-            style={{ background:(saving || !hasChanges) ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:(saving || !hasChanges) ? "not-allowed" : "pointer", minWidth:120, opacity:(saving || !hasChanges) ? 0.7 : 1 }}
+            style={{ background:(saving || !hasChanges) ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:(saving || !hasChanges) ? "not-allowed" : "pointer", minWidth:120, opacity:(saving || !hasChanges) ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
           >
             {saving ? "Saving..." : (savedFlash ? "Saved" : "Save")}
           </button>
@@ -957,7 +968,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving }) {
   );
 }
 
-function ProfileEditModal({ profile, onClose, onSave, saving }) {
+function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }) {
   const [form, setForm] = useState(() => ({
     name: profile?.name || "",
     office: profile?.office || "",
@@ -993,14 +1004,14 @@ function ProfileEditModal({ profile, onClose, onSave, saving }) {
   }, [profile]);
 
   const darkInputStyle = {
-    background:"#2e3440",
-    border:"1px solid #4a5268",
-    color:"#f5f0e8",
+    background:"#f5f0e8",
+    border:"1px solid #ddd8cf",
+    color:"#1a1a1a",
   };
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", zIndex:4100, display:"flex", alignItems:"center", justifyContent:"center", padding:16, overflowY:"auto" }}>
-      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, width:"100%", maxWidth:980, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 24px 80px rgba(0,0,0,0.45)", display:"flex", flexDirection:"column" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", zIndex:4100, display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"center", padding:isMobile ? 0 : 16, overflowY:"auto" }}>
+      <div style={{ background:"#f5f0e8", border:isMobile ? "none" : "1px solid #ddd8cf", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 980, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.45)", display:"flex", flexDirection:"column" }}>
         <div style={{ padding:"20px 24px", borderBottom:"1px solid #4a5268", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
           <div>
             <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Edit Profile</div>
@@ -1009,79 +1020,79 @@ function ProfileEditModal({ profile, onClose, onSave, saving }) {
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#2e3440", color:"#aaa", border:"1px solid #4a5268", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
+            style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
           >
             ×
           </button>
         </div>
 
         <div style={{ padding:"22px 24px", overflowY:"auto", flex:"1 1 auto", minHeight:0 }}>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:16, marginBottom:18 }}>
+          <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(auto-fit, minmax(220px, 1fr))", gap:16, marginBottom:18 }}>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Name</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Name</div>
               <TextInput value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Office</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Office</div>
               <TextInput value={form.office} onChange={e => setForm(prev => ({ ...prev, office: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Level</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Level</div>
               <SelectInput value={form.level} onChange={e => setForm(prev => ({ ...prev, level: e.target.value }))} style={darkInputStyle}>
                 {PROFILE_LEVEL_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
               </SelectInput>
             </div>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Kind</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Kind</div>
               <TextInput value={form.kind} onChange={e => setForm(prev => ({ ...prev, kind: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Geography</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Geography</div>
               <TextInput value={form.geography} onChange={e => setForm(prev => ({ ...prev, geography: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
+              <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
               <TextInput value={form.party} onChange={e => setForm(prev => ({ ...prev, party: e.target.value }))} style={darkInputStyle} />
             </div>
           </div>
 
           <div style={{ marginBottom:18 }}>
-            <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Status Line</div>
+            <div style={{ color:"#555", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Status Line</div>
             <TextArea rows={3} value={form.status_line} onChange={e => setForm(prev => ({ ...prev, status_line: e.target.value }))} style={darkInputStyle} />
           </div>
 
           <div style={{ display:"grid", gap:16 }}>
-            <div style={{ background:"#2e3440", border:"1px solid #C6A34D", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#f5f0e8", border:"1px solid #C6A34D", borderRadius:10, padding:14 }}>
               <div style={{ color:"#C6A34D", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Rise</div>
               <TextArea rows={5} value={form.decoder.rise} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, rise: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #C6A34D" }} />
             </div>
-            <div style={{ background:"#2e3440", border:"1px solid #2F5D8A", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#f5f0e8", border:"1px solid #2F5D8A", borderRadius:10, padding:14 }}>
               <div style={{ color:"#7ab", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Affiliations</div>
               <TextArea rows={5} value={form.decoder.affiliations} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, affiliations: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #2F5D8A" }} />
             </div>
-            <div style={{ background:"#2e3440", border:"1px solid #7A4FA3", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#f5f0e8", border:"1px solid #7A4FA3", borderRadius:10, padding:14 }}>
               <div style={{ color:"#c7a7e8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Beneficiaries</div>
               <TextArea rows={5} value={form.decoder.beneficiaries} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, beneficiaries: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #7A4FA3" }} />
             </div>
-            <div style={{ background:"#2e3440", border:"1px solid #B4473E", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#f5f0e8", border:"1px solid #B4473E", borderRadius:10, padding:14 }}>
               <div style={{ color:"#e59d97", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Track Record</div>
               <TextArea rows={6} value={form.decoder.track_record} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, track_record: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #B4473E" }} />
             </div>
           </div>
         </div>
 
-        <div style={{ padding:"16px 24px", borderTop:"1px solid #4a5268", display:"flex", justifyContent:"flex-end", gap:12, background:"#353b48", flexShrink:0 }}>
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#2e3440", color:"#aaa", border:"1px solid #4a5268", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer" }}
+            style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(form)}
             disabled={saving}
-            style={{ background:saving ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:saving ? "not-allowed" : "pointer", minWidth:120, opacity:saving ? 0.7 : 1 }}
+            style={{ background:saving ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:saving ? "not-allowed" : "pointer", minWidth:120, opacity:saving ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
           >
             {saving ? "Saving..." : "Save"}
           </button>
@@ -1286,19 +1297,20 @@ function IssueCardMini({ card }) {
 
 // --- Modals ------------------------------------------------------------------
 
-function ConfirmIssueModal({ card, onConfirm, onCancel, publishing }) {
+function ConfirmIssueModal({ card, onConfirm, onCancel, publishing, isMobile = false }) {
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, width:"100%", maxWidth:580, boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
+      <style>{pulseWiggleStyle()}</style>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:580, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
           <div style={{ color:"#1a1a1a", fontSize:18, fontWeight:700 }}>This issue will go live on HSV Civic Watch</div>
           <div style={{ color:"#888", fontSize:13, marginTop:4 }}>Review before confirming.</div>
         </div>
         <div style={{ padding:22 }}><IssueCardMini card={card} /></div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Cancel</button>
-          <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+          <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish"}
           </button>
         </div>
@@ -1307,11 +1319,12 @@ function ConfirmIssueModal({ card, onConfirm, onCancel, publishing }) {
   );
 }
 
-function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCancel, publishing }) {
+function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCancel, publishing, isMobile = false }) {
   const [linkedRef, setLinkedRef] = useState(issueCardsForModule?.[0]?.ref_number || "");
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
+      <style>{pulseWiggleStyle()}</style>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
           <div style={{ color:"#1a1a1a", fontSize:18, fontWeight:700 }}>This visual will go live on HSV Civic Watch</div>
@@ -1330,9 +1343,9 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
           )}
         </div>
         <div style={{ padding:22 }}><StatBlockPreview block={block} /></div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Cancel</button>
-          <button onClick={() => onConfirm(linkedRef)} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+          <button onClick={() => onConfirm(linkedRef)} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish"}
           </button>
         </div>
@@ -1341,11 +1354,12 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
   );
 }
 
-function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publishing }) {
+function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publishing, isMobile = false }) {
   const total = issueCards.length + statBlocks.length;
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
+      <style>{pulseWiggleStyle()}</style>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
         <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
           <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Bulk Publish</div>
           <div style={{ color:"#1a1a1a", fontSize:18, fontWeight:700 }}>{total} item{total !== 1 ? "s" : ""} going live</div>
@@ -1372,9 +1386,9 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
             </div>
           ))}
         </div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Cancel</button>
-          <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+          <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish All"}
           </button>
         </div>
@@ -1385,20 +1399,26 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
 
 // --- Review Row Components ---------------------------------------------------
 
-function IssueRow({ card, selected, onToggle, onApprove, onReject }) {
+function IssueRow({ card, selected, onToggle, onApprove, onReject, isMobile = false }) {
   return (
     <div style={{ background:selected?"#fef9ec":"#f5f0e8", border:"2px solid "+(selected?"#b8860b":"#ddd8cf"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
-      <div style={{ display:"flex", alignItems:"center", gap:14, padding:"18px 22px" }}>
-        <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0 }} />
-        <div style={{ display:"flex", gap:8, flexShrink:0 }}>
-          <span style={{ background:"#b8860b", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
-          <span style={{ background:"#e8e4dc", color:"#555", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{card.module}</span>
+      <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", alignItems:isMobile ? "stretch" : "center", gap:14, padding:"18px 22px" }}>
+        <div style={{ display:"flex", gap:14, alignItems:isMobile ? "flex-start" : "center", flex:1, minWidth:0 }}>
+          <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0, marginTop:isMobile ? 2 : 0 }} />
+          <div style={{ display:"flex", flexDirection:"column", gap:10, flex:1, minWidth:0 }}>
+            <div style={{ display:"flex", gap:8, flexShrink:0, flexWrap:"wrap" }}>
+              <span style={{ background:"#b8860b", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
+              <span style={{ background:"#e8e4dc", color:"#555", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{card.module}</span>
+            </div>
+            <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
+          </div>
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
-        <button onClick={onApprove} style={{ width:46, height:46, borderRadius:"50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10003;</button>
-        <button onClick={onReject} style={{ width:46, height:46, borderRadius:"50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10005;</button>
+        <div style={{ display:"flex", gap:12, width:isMobile ? "100%" : "auto" }}>
+          <button onClick={onApprove} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10003;</button>
+          <button onClick={onReject} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10005;</button>
+        </div>
       </div>
-      <div style={{ padding:"0 22px 18px 64px", color:"#555", fontSize:14, lineHeight:1.6 }}>
+      <div style={{ padding:isMobile ? "0 22px 18px" : "0 22px 18px 64px", color:"#555", fontSize:14, lineHeight:1.6 }}>
         {card.summary}
         <ActionBadges actions={card.actions} />
       </div>
@@ -1406,31 +1426,38 @@ function IssueRow({ card, selected, onToggle, onApprove, onReject }) {
   );
 }
 
-function StatRow({ block, selected, onToggle, onApprove, onReject }) {
+function StatRow({ block, selected, onToggle, onApprove, onReject, isMobile = false }) {
   const [expanded, setExpanded] = useState(false);
   const labels = { "key-number":"Key Number","comparison-bar":"Comparison Bar","pie-chart":"Pie Chart","trend-line":"Trend Line","bar-chart":"Bar Chart","pay-clock":"Pay Clock","zone-map":"Zone Map" };
+  const showPreview = isMobile || expanded;
   return (
     <div style={{ background:selected?"#fef9ec":"#f5f0e8", border:"2px solid "+(selected?"#b8860b":"#ddd8cf"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
-      <div style={{ display:"flex", alignItems:"center", gap:14, padding:"18px 22px" }}>
-        <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0 }} />
-        <div style={{ display:"flex", gap:8, flexShrink:0 }}>
-          <span style={{ background:"#1a5276", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{labels[block.type] || block.type}</span>
-          <span style={{ background:"#e8e4dc", color:"#555", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{block.module}</span>
+      <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", alignItems:isMobile ? "stretch" : "center", gap:14, padding:"18px 22px" }}>
+        <div style={{ display:"flex", gap:14, alignItems:isMobile ? "flex-start" : "center", flex:1, minWidth:0 }}>
+          <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0, marginTop:isMobile ? 2 : 0 }} />
+          <div style={{ display:"flex", flexDirection:"column", gap:10, flex:1, minWidth:0 }}>
+            <div style={{ display:"flex", gap:8, flexShrink:0, flexWrap:"wrap" }}>
+              <span style={{ background:"#1a5276", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{labels[block.type] || block.type}</span>
+              <span style={{ background:"#e8e4dc", color:"#555", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{block.module}</span>
+            </div>
+            <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
+          </div>
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
-        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"7px 14px", fontSize:13, cursor:"pointer", flexShrink:0, fontWeight:600 }}>{expanded?"Hide":"Preview"}</button>
-        <button onClick={onApprove} style={{ width:46, height:46, borderRadius:"50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10003;</button>
-        <button onClick={onReject} style={{ width:46, height:46, borderRadius:"50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>&#10005;</button>
+        {!isMobile ? <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"7px 14px", fontSize:13, cursor:"pointer", flexShrink:0, fontWeight:600 }}>{expanded?"Hide":"Preview"}</button> : null}
+        <div style={{ display:"flex", gap:12, width:isMobile ? "100%" : "auto" }}>
+          <button onClick={onApprove} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10003;</button>
+          <button onClick={onReject} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10005;</button>
+        </div>
       </div>
-      <div style={{ padding:"0 22px 12px 64px", color:"#777", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
-      {expanded && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block} /></div>}
+      <div style={{ padding:isMobile ? "0 22px 12px" : "0 22px 12px 64px", color:"#777", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
+      {showPreview && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block} /></div>}
     </div>
   );
 }
 
 // --- Published Tab -----------------------------------------------------------
 
-function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
+function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate, isMobile = false }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div
@@ -1443,17 +1470,21 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
         overflow:"hidden",
       }}
     >
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-          <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{card.ref_number}</span>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"stretch", gap:12, padding:"22px 24px", minHeight:84 }}>
+        <div style={{ display:"flex", alignItems:isMobile ? "flex-start" : "center", gap:12, flexDirection:isMobile ? "column" : "row" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, width:isMobile ? "100%" : "auto" }}>
+            <span style={{ background:"#2e3440", color:"#b8860b", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{card.ref_number}</span>
+          </div>
+          <div style={{ display:"flex", gap:6, flexShrink:0, flexWrap:"wrap" }}>
+            <span style={{ background:"#b8860b", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
+          </div>
+          <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1, lineHeight:1.3, width:isMobile ? "100%" : "auto" }}>{card.title}</div>
         </div>
-        <div style={{ display:"flex", gap:6, flexShrink:0 }}>
-          <span style={{ background:"#b8860b", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
+        <div style={{ display:"flex", gap:8, width:"100%" }}>
+          <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:600, flex:1 }}>{expanded ? "Hide" : "Details"}</button>
+          <button onClick={() => onEdit(card)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Edit</button>
+          <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Delete</button>
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
-        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Details"}</button>
-        <button onClick={() => onEdit(card)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Edit</button>
-        <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
       {expanded && (
         <div style={{ padding:"0 22px 20px", borderTop:"1px solid #e8e4dc" }}>
@@ -1464,7 +1495,7 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate }) {
   );
 }
 
-function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
+function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate, isMobile = false }) {
   const [expanded, setExpanded] = useState(false);
   const scoreColor = block.strength_score >= 8 ? "#1a7a3a" : block.strength_score >= 5 ? "#b8860b" : "#888";
   return (
@@ -1478,30 +1509,34 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
         overflow:"hidden",
       }}
     >
-      <div style={{ display:"flex", alignItems:"center", gap:12, padding:"22px 24px", minHeight:84 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-          <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{block.ref_number}</span>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"stretch", gap:12, padding:"22px 24px", minHeight:84 }}>
+        <div style={{ display:"flex", alignItems:isMobile ? "flex-start" : "center", gap:12, flexDirection:isMobile ? "column" : "row" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, width:isMobile ? "100%" : "auto" }}>
+            <span style={{ background:"#2e3440", color:"#7ab", fontSize:14, fontWeight:900, padding:"5px 12px", borderRadius:4, fontFamily:"monospace" }}>{block.ref_number}</span>
+          </div>
+          <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center", flexWrap:"wrap" }}>
+            <span style={{ background:"#1a5276", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
+            {block.issue_card_ref && (
+              <span style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#8594; {block.issue_card_ref}</span>
+            )}
+            {block.strength_score && (
+              <span style={{ background: scoreColor+"22", color: scoreColor, border:`1px solid ${scoreColor}`, fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#9733; {block.strength_score}/10</span>
+            )}
+          </div>
+          <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1, width:isMobile ? "100%" : "auto" }}>{block.label || block.title}</div>
         </div>
-        <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
-          <span style={{ background:"#1a5276", color:"#fff", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3, textTransform:"uppercase" }}>{block.type}</span>
-          {block.issue_card_ref && (
-            <span style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#8594; {block.issue_card_ref}</span>
-          )}
-          {block.strength_score && (
-            <span style={{ background: scoreColor+"22", color: scoreColor, border:`1px solid ${scoreColor}`, fontSize:12, fontWeight:700, padding:"3px 10px", borderRadius:3 }}>&#9733; {block.strength_score}/10</span>
-          )}
+        <div style={{ display:"flex", gap:8, width:"100%" }}>
+          <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:600, flex:1 }}>{expanded ? "Hide" : "Preview"}</button>
+          <button onClick={() => onEdit(block)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Edit</button>
+          <button onClick={() => onDelete(block)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Delete</button>
         </div>
-        <div style={{ color:"#1a1a1a", fontSize:17, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
-        <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:600, flexShrink:0 }}>{expanded ? "Hide" : "Preview"}</button>
-        <button onClick={() => onEdit(block)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Edit</button>
-        <button onClick={() => onDelete(block)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 16px", fontSize:14, cursor:"pointer", fontWeight:700, flexShrink:0 }}>Delete</button>
       </div>
       {expanded && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block.data || block} /></div>}
     </div>
   );
 }
 
-function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel }) {
+function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel, onRerank, rerankRunning, isMobile = false }) {
   const [section, setSection] = useState("issues");
 
 
@@ -1531,16 +1566,16 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
 
   return (
     <div>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+      <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", justifyContent:"space-between", alignItems:"flex-start", gap:12, marginBottom:8 }}>
         <div>
-          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
-          <p style={{ color:"#aaa", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
-          <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12 }}>
+          <h2 style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
+          <p style={{ color:"#555", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+          <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12, flexWrap:"wrap" }}>
             <button
               onClick={handleExport}
               disabled={exportStatus === "success"}
               style={{
-                background: exportStatus === "success" ? "#3E8B5B" : "#1a5276",
+                background: exportStatus === "success" ? "#1a7a3a" : "#b8860b",
                 color: "#fff",
                 border: "none",
                 borderRadius: 6,
@@ -1555,12 +1590,12 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
               {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "Export for NotebookLM"}
             </button>
             {getLastExportLabel() && exportStatus !== "success" && (
-              <span style={{ color:"#666", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
+              <span style={{ color:"#555", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
             )}
           </div>
           {exportStatus === "fallback" && (
             <div style={{ marginBottom:12 }}>
-              <p style={{ color:"#f5a623", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
+              <p style={{ color:"#555", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
               <textarea
                 ref={fallbackRef}
                 readOnly
@@ -1568,31 +1603,39 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 style={{
                   width: "100%",
                   minHeight: 120,
-                  background: "#1a1f2e",
-                  color: "#ddd",
-                  border: "1px solid #444",
-                  borderRadius: 4,
+                  background: "#f5f0e8",
+                  color: "#333",
+                  border: "1px solid #ddd8cf",
+                  borderRadius: 10,
                   padding: 8,
                   fontSize: 11,
-                  fontFamily: "monospace",
+                  fontFamily: "Georgia, serif",
                   resize: "vertical",
                 }}
               />
             </div>
           )}
         </div>
-        <button
-          onClick={async () => {
-            if (!window.confirm("Delete ALL published content? This cannot be undone.")) return;
-            const allItems = section === "issues" ? pubIssues : pubStats;
-            for (const item of allItems) {
-              if (section === "issues") await onDeleteIssue(item, true);
-              else await onDeleteStat(item, true);
-            }
-          }}
-          style={{ background:"#7f1d1d", color:"#fff", border:"1px solid #b91c1c", borderRadius:4, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0 }}>
-          Delete All {section === "issues" ? "Issue Cards" : "Stat Blocks"}
-        </button>
+        <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", gap:10, width:isMobile ? "100%" : "auto" }}>
+          <button
+            onClick={onRerank}
+            disabled={rerankRunning}
+            style={{ background:"#1a5276", color:"#fff", border:"none", borderRadius:4, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:rerankRunning ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
+            {rerankRunning ? "Re-ranking..." : "Re-rank All"}
+          </button>
+          <button
+            onClick={async () => {
+              if (!window.confirm("Delete ALL published content? This cannot be undone.")) return;
+              const allItems = section === "issues" ? pubIssues : pubStats;
+              for (const item of allItems) {
+                if (section === "issues") await onDeleteIssue(item, true);
+                else await onDeleteStat(item, true);
+              }
+            }}
+            style={{ background:"#7f1d1d", color:"#fff", border:"1px solid #b91c1c", borderRadius:4, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, width:isMobile ? "100%" : "auto" }}>
+            Delete All {section === "issues" ? "Issue Cards" : "Stat Blocks"}
+          </button>
+        </div>
       </div>
       <div style={{ display:"flex", gap:12, marginBottom:28 }}>
         <button style={secBtn("issues")} onClick={() => setSection("issues")}>Issue Cards ({pubIssues.length})</button>
@@ -1612,7 +1655,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
                 <span style={{ color:"#aaa", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
-              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} animate={animateId === card.id} />)}
+              {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} animate={animateId === card.id} isMobile={isMobile} />)}
             </div>
           ))}
         </div>
@@ -1632,7 +1675,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 <span style={{ color:"#aaa", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
               </div>
               {[...blocks].sort((a,b) => (b.strength_score||0)-(a.strength_score||0)).map((block, i) => (
-                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} animate={animateId === block.id} />
+                <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} animate={animateId === block.id} isMobile={isMobile} />
               ))}
             </div>
           ))}
@@ -2012,17 +2055,17 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
         <div>
-          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 6px" }}>Social Media Content</h2>
-          <p style={{ color:"#aaa", fontSize:14, margin:0 }}>
+          <h2 style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, margin:"0 0 6px" }}>Social Media Content</h2>
+          <p style={{ color:"#555", fontSize:15, margin:0 }}>
             Rotation {selectedIndex+1} of {rotationList.length} &middot; Next scheduled: <span style={{ color:"#b8860b", fontWeight:700 }}>{nextPostDate}</span>
           </p>
         </div>
         {slides && (
           <div style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"flex-end" }}>
-            <button onClick={copyAllText} style={{ background:copied==="all"?"#1a7a3a":"#353b48", color:copied==="all"?"#fff":"#ccc", border:"1px solid #4a5268", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+            <button onClick={copyAllText} style={{ background:copied==="all"?"#1a7a3a":"#e8e4dc", color:copied==="all"?"#fff":"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
               {copied==="all"?"Copied!":"Copy All Text"}
             </button>
-            <button onClick={downloadAll} style={{ background:"#353b48", color:"#b8860b", border:"1px solid #b8860b44", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+            <button onClick={downloadAll} style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
               Download All 4 PNGs
             </button>
             <button onClick={handleMarkPosted} style={{ background:markedPosted?"#1a7a3a":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
@@ -2032,7 +2075,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
         )}
       </div>
 
-      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"14px 20px", marginBottom:24 }}>
+      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 20px", marginBottom:24 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <div style={{ width:8, height:8, borderRadius:"50%", background:"#b8860b" }}/>
@@ -2040,29 +2083,29 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
           </div>
           {selectedCard && (
             <>
-              <span style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>{selectedCard.ref_number} -- {selectedCard.title}</span>
+              <span style={{ color:"#1a1a1a", fontSize:14, fontWeight:700 }}>{selectedCard.ref_number} -- {selectedCard.title}</span>
               <span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:11, fontWeight:700, padding:"2px 10px", borderRadius:3, textTransform:"uppercase" }}>{selectedCard.module}</span>
             </>
           )}
         </div>
         {moduleStats.length > 0 && (
-          <div style={{ marginTop:8, color:"#556", fontSize:12 }}>
+          <div style={{ marginTop:8, color:"#555", fontSize:12 }}>
             {moduleStats.length} stat block{moduleStats.length!==1?"s":""} from this module will be used in generation
           </div>
         )}
       </div>
 
       <div style={{ marginBottom:24 }}>
-        <div style={{ color:"#aaa", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+        <div style={{ color:"#555", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
           Rotation Order -- Select to Override
         </div>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           {rotationList.map((card,i)=>(
             <button key={card.id||i} onClick={()=>{ setSelectedIndex(i); setSlides(null); setImageUrls([null,null,null]); }}
               style={{
-                background:selectedIndex===i?"#b8860b":"#353b48",
-                color:selectedIndex===i?"#fff":"#aaa",
-                border:selectedIndex===i?"2px solid #b8860b":"2px solid #4a5268",
+                background:selectedIndex===i?"#b8860b":"#e8e4dc",
+                color:selectedIndex===i?"#fff":"#555",
+                border:selectedIndex===i?"2px solid #b8860b":"2px solid #ddd8cf",
                 borderRadius:6, padding:"7px 12px", fontSize:11,
                 fontWeight:700, cursor:"pointer",
                 display:"flex", flexDirection:"column", alignItems:"flex-start",
@@ -2077,7 +2120,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
       <button onClick={generateSlides} disabled={generating||!selectedCard}
         style={{
-          background:generating?"#4a5268":"linear-gradient(135deg,#b8860b,#d4a017)",
+          background:generating?"#888":"#b8860b",
           color:"#fff", border:"none", borderRadius:6,
           padding:"14px 32px", fontSize:15, fontWeight:700,
           cursor:generating?"not-allowed":"pointer",
@@ -2098,23 +2141,23 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
           <div style={{ color:"#aaa", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:16 }}>
             Preview -- {selectedCard?.title}
           </div>
-          <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
-            {slides.map((slide,i)=>(
-              <div key={i} style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                <SocialSlide slide={slide} index={i} imageUrl={imageUrls[i]} slideRef={slideRefs[i]}/>
-                <div style={{ width:540, background:"#353b48", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px" }}>
-                  {slide.headline && <div style={{ color:"#f5f0e8", fontWeight:700, marginBottom:4, fontSize:12, fontFamily:"Georgia,serif" }}>{slide.headline}</div>}
+            <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
+              {slides.map((slide,i)=>(
+                <div key={i} style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  <SocialSlide slide={slide} index={i} imageUrl={imageUrls[i]} slideRef={slideRefs[i]}/>
+                <div style={{ width:540, background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 14px" }}>
+                  {slide.headline && <div style={{ color:"#1a1a1a", fontWeight:700, marginBottom:4, fontSize:12, fontFamily:"Georgia,serif" }}>{slide.headline}</div>}
                   {slide.stat && <div style={{ color:"#b8860b", fontWeight:700, marginBottom:2, fontSize:12 }}>{slide.stat} {slide.statLabel}</div>}
-                  <div style={{ color:"#bbb", fontSize:11 }}>{slide.body}</div>
-                  {slide.source && <div style={{ color:"#556", marginTop:4, fontStyle:"italic", fontSize:11 }}>Source: {slide.source}</div>}
+                  <div style={{ color:"#333", fontSize:11 }}>{slide.body}</div>
+                  {slide.source && <div style={{ color:"#555", marginTop:4, fontStyle:"italic", fontSize:11 }}>Source: {slide.source}</div>}
                   {i===3 && <div style={{ color:"#b8860b", fontWeight:700, marginTop:4, fontSize:12 }}>www.hsvcivicwatch.org</div>}
                   <div style={{ display:"flex", gap:8, marginTop:10 }}>
                     <button onClick={()=>copySlideText(slide,i)}
-                      style={{ background:copied===i?"#1a7a3a":"#2e3440", color:copied===i?"#fff":"#aaa", border:"1px solid #4a5268", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:"pointer", flex:1 }}>
+                      style={{ background:copied===i?"#1a7a3a":"#e8e4dc", color:copied===i?"#fff":"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:"pointer", flex:1 }}>
                       {copied===i?"Copied!":"Copy Text"}
                     </button>
                     <button onClick={()=>downloadSlide(i)} disabled={downloading===i}
-                      style={{ background:downloading===i?"#4a5268":"#2e3440", color:downloading===i?"#888":"#b8860b", border:"1px solid #b8860b44", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:downloading===i?"not-allowed":"pointer", flex:1 }}>
+                      style={{ background:downloading===i?"#888":"#e8e4dc", color:downloading===i?"#fff":"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:downloading===i?"not-allowed":"pointer", flex:1 }}>
                       {downloading===i?"Saving...":"Download PNG"}
                     </button>
                   </div>
@@ -2122,7 +2165,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
               </div>
             ))}
           </div>
-          <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"16px 20px", marginTop:28, color:"#aaa", fontSize:13, lineHeight:1.6 }}>
+          <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"16px 20px", marginTop:28, color:"#555", fontSize:13, lineHeight:1.6 }}>
             <strong style={{ color:"#b8860b" }}>Posting workflow:</strong> Download all 4 PNGs, then upload as a multi-image post on Instagram or Facebook. Paste the slide text as your caption. Once posted, click <strong style={{ color:"#f5f0e8" }}>Mark as Posted &amp; Advance</strong> to move the queue to the next card.
           </div>
         </div>
@@ -2133,7 +2176,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
 function AdminPreviewBadge({ children }) {
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", background:"#efe7da", color:"#193150", borderRadius:999, padding:"5px 10px", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginRight:8 }}>
+    <span style={{ display:"inline-flex", alignItems:"center", background:"#efe7da", color:"#1a1a1a", borderRadius:999, padding:"5px 10px", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginRight:8 }}>
       {children}
     </span>
   );
@@ -2142,7 +2185,7 @@ function AdminPreviewBadge({ children }) {
 function AdminPreviewBlock({ borderColor, children }) {
   if (!children) return null;
   return (
-    <div style={{ borderLeft:`4px solid ${borderColor}`, paddingLeft:12, marginBottom:10, fontSize:14, color:"#193150", lineHeight:1.7 }}>
+    <div style={{ borderLeft:`4px solid ${borderColor}`, paddingLeft:12, marginBottom:10, fontSize:14, color:"#1a1a1a", lineHeight:1.7 }}>
       {children}
     </div>
   );
@@ -2151,6 +2194,7 @@ function AdminPreviewBlock({ borderColor, children }) {
 // --- Main Admin Panel --------------------------------------------------------
 
 export default function AdminPanel() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
   const [authLoading, setAuthLoading] = useState(true);
@@ -2213,6 +2257,7 @@ export default function AdminPanel() {
   const [weeklyResult, setWeeklyResult] = useState(null);
   const [weeklyError, setWeeklyError] = useState("");
   const [weeklyToast, setWeeklyToast] = useState(null);
+  const [rerankRunning, setRerankRunning] = useState(false);
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
   const fallbackRef = useRef(null);
@@ -2588,6 +2633,12 @@ export default function AdminPanel() {
   }
 
   useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     const boot = async () => {
@@ -2618,6 +2669,32 @@ export default function AdminPanel() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!authed) return;
+
+    let timer = null;
+
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        await supabase.auth.signOut();
+        setAuthed(false);
+        setPubIssues([]);
+        setPubStats([]);
+        resetAuthUi("Session expired due to inactivity. Please sign in again.");
+      }, 10 * 60 * 1000);
+    };
+
+    const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+    events.forEach((eventName) => window.addEventListener(eventName, resetTimer, { passive: true }));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timer);
+      events.forEach((eventName) => window.removeEventListener(eventName, resetTimer));
+    };
+  }, [authed]);
 
   useEffect(() => {
     if (adminTab === "profiles") loadSeats();
@@ -3065,6 +3142,36 @@ export default function AdminPanel() {
     }
   };
 
+  const handleRerank = async () => {
+    if (!supabase) return;
+    setRerankRunning(true);
+    try {
+      const { data: issues } = await supabase
+        .from("issue_cards")
+        .select("id, shock_score, module_relevance_score");
+
+      for (const issue of issues || []) {
+        const shock = Math.max(1, Math.min(10, issue.shock_score || 1));
+        const relevance = Math.max(1, Math.min(10, issue.module_relevance_score || 1));
+        const homepageScore = Math.max(1, Math.min(10, Math.round(
+          (shock * 0.70) + (10 * 0.20) + (relevance * 0.10)
+        )));
+        await supabase
+          .from("issue_cards")
+          .update({ homepage_score: homepageScore })
+          .eq("id", issue.id);
+      }
+      await loadPublished();
+      setSavedToast("Re-rank complete — homepage scores updated");
+      setTimeout(() => setSavedToast(""), 3000);
+    } catch (e) {
+      setSavedToast("Re-rank failed: " + e.message);
+      setTimeout(() => setSavedToast(""), 4000);
+    } finally {
+      setRerankRunning(false);
+    }
+  };
+
   useEffect(() => {
     if (!weeklyResult) return;
     setWeeklyToast({
@@ -3090,22 +3197,29 @@ export default function AdminPanel() {
   const totalDrafts = draftIssues.length + draftStats.length + pasteQueue.reduce((a, b) => a + b.length, 0);
 
   const tabStyle = (id) => ({
-    background: "none", border: "none",
+    background: "none",
+    border: "none",
     borderBottom: activeTab===id ? "3px solid #b8860b" : "3px solid transparent",
     color: activeTab===id ? "#b8860b" : "#aaa",
-    padding: "16px 20px", fontSize: 13, fontWeight: 700,
-    cursor: "pointer", textTransform: "uppercase", letterSpacing: 1
+    padding: isMobile ? "12px 14px" : "12px 20px",
+    fontSize: isMobile ? 12 : 13,
+    fontWeight: 700,
+    cursor: "pointer",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 0,
   });
   const adminTabStyle = (id) => ({
     background:"transparent",
     border:"none",
     borderBottom: adminTab === id ? "3px solid #b8860b" : "3px solid transparent",
-    padding:"12px 20px",
-    fontSize:14,
+    padding:isMobile ? "12px 14px" : "14px 20px",
+    fontSize:isMobile ? 12 : 14,
     fontWeight:900,
     cursor:"pointer",
     color: adminTab === id ? "#b8860b" : "#aaa",
-    transition:"color 0.15s"
+    transition:"color 0.15s",
+    marginBottom: adminTab === id ? -2 : 0,
   });
 
   const issueCardsForStatModule = confirmStat
@@ -3387,43 +3501,86 @@ export default function AdminPanel() {
           {weeklyToast.message}
         </div>
       ) : null}
-      {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} />}
-      {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
-      {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
-      {editConfig && <EditModal config={editConfig} onClose={() => setEditConfig(null)} onSave={handleSaveEdit} onDelete={editConfig.itemType === "issue_card" ? handleDeleteIssue : handleDeleteStat} saving={editSaving} />}
-      {profileEditConfig ? <ProfileEditModal profile={profileEditConfig} onClose={() => setProfileEditConfig(null)} onSave={handleSaveProfileEdit} saving={profileEditSaving} /> : null}
+      {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} isMobile={isMobile} />}
+      {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} isMobile={isMobile} />}
+      {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} isMobile={isMobile} />}
+      {editConfig && <EditModal config={editConfig} onClose={() => setEditConfig(null)} onSave={handleSaveEdit} onDelete={editConfig.itemType === "issue_card" ? handleDeleteIssue : handleDeleteStat} saving={editSaving} isMobile={isMobile} />}
+      {profileEditConfig ? <ProfileEditModal profile={profileEditConfig} onClose={() => setProfileEditConfig(null)} onSave={handleSaveProfileEdit} saving={profileEditSaving} isMobile={isMobile} /> : null}
 
       {/* Header */}
-      <div style={{ borderBottom:"1px solid #4a5268", padding:"18px 36px", display:"flex", justifyContent:"space-between", alignItems:"center", background:"#2e3440" }}>
+      <div style={{ borderBottom:"1px solid #4a5268", padding:isMobile ? "12px 16px" : "18px 36px", display:"flex", flexDirection:isMobile ? "column" : "row", justifyContent:"space-between", alignItems:isMobile ? "stretch" : "center", gap:isMobile ? 12 : 0, background:"#2e3440" }}>
         <div>
           <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
           <div style={{ color:"#fff", fontSize:20, fontWeight:700, marginTop:2 }}>Content Admin</div>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-          <button
-            onClick={handleRunWeeklyJob}
-            disabled={weeklyRunning}
-            style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:weeklyRunning ? "not-allowed" : "pointer" }}
-          >
-            {weeklyRunning ? "Running..." : "Run Weekly Report"}
-          </button>
-          <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, width:isMobile ? "100%" : "auto" }}>
+          <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flex:isMobile ? 1 : "none" }}>
             Sign Out
           </button>
         </div>
       </div>
 
-      <div style={{ display:"flex", gap:0, borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:"0 36px" }}>
-        <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Content</button>
-        <button onClick={() => setAdminTab("profiles")} style={adminTabStyle("profiles")}>Profiles</button>
-        <button onClick={() => setAdminTab("blueprints")} style={adminTabStyle("blueprints")}>Blueprints</button>
-        <button onClick={() => setAdminTab("tools")} style={adminTabStyle("tools")}>Tools</button>
+      <div style={{ borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:isMobile ? "0 12px" : "0 36px" }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:0, flexWrap:"nowrap" }}>
+            <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Content</button>
+            <button onClick={() => setAdminTab("profiles")} style={adminTabStyle("profiles")}>Profiles</button>
+            <button onClick={() => setAdminTab("blueprints")} style={adminTabStyle("blueprints")}>Blueprints</button>
+            <button onClick={() => setAdminTab("tools")} style={adminTabStyle("tools")}>Tools</button>
+          </div>
+          {!isMobile && adminTab === "tools" ? (
+            <div style={{ display:"flex", gap:10, marginLeft:"auto", alignItems:"center" }}>
+              <button
+                onClick={handleExport}
+                disabled={exportStatus === "success"}
+                style={{ background:"#1a5276", color:"#fff", border:"none", borderRadius:4, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:exportStatus === "success" ? "default" : "pointer", whiteSpace:"nowrap" }}
+              >
+                {exportStatus === "success" ? "Copied! ✓" : "NotebookLM Export ↗"}
+              </button>
+              <button
+                onClick={handleRunWeeklyJob}
+                disabled={weeklyRunning}
+                style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:weeklyRunning ? "not-allowed" : "pointer", whiteSpace:"nowrap" }}
+              >
+                {weeklyRunning ? "Running..." : "Run Weekly Report"}
+              </button>
+            </div>
+          ) : null}
+        </div>
+        {isMobile && adminTab === "tools" ? (
+          <div style={{ display:"flex", flexDirection:"column", gap:10, width:"100%", padding:"0 0 12px" }}>
+            <button
+              onClick={handleExport}
+              disabled={exportStatus === "success"}
+              style={{ background:"#1a5276", color:"#fff", border:"none", borderRadius:4, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:exportStatus === "success" ? "default" : "pointer", whiteSpace:"nowrap", width:"100%" }}
+            >
+              {exportStatus === "success" ? "Copied! ✓" : "NotebookLM Export ↗"}
+            </button>
+            <button
+              onClick={handleRunWeeklyJob}
+              disabled={weeklyRunning}
+              style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:weeklyRunning ? "not-allowed" : "pointer", whiteSpace:"nowrap", width:"100%" }}
+            >
+              {weeklyRunning ? "Running..." : "Run Weekly Report"}
+            </button>
+          </div>
+        ) : null}
       </div>
+      {adminTab === "tools" && exportStatus === "fallback" ? (
+        <div style={{ padding:isMobile ? "12px" : "12px 36px", background:"#2e3440" }}>
+          <textarea
+            ref={fallbackRef}
+            readOnly
+            value={fallbackText}
+            style={{ width:"100%", minHeight:120, background:"#f5f0e8", color:"#333", border:"1px solid #ddd8cf", borderRadius:10, padding:12, fontSize:11, fontFamily:"Georgia, serif", resize:"vertical" }}
+          />
+        </div>
+      ) : null}
 
       {adminTab === "issue_cards" ? (
         <>
       {/* Nav tabs */}
-      <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
+      <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
         <button onClick={() => setActiveTab("import")} style={tabStyle("import")}>Import</button>
         <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
         <button onClick={() => setActiveTab("drafts")} style={tabStyle("drafts")}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
@@ -3431,19 +3588,19 @@ export default function AdminPanel() {
 
       </div>
 
-      <div style={{ maxWidth:1060, margin:"0 auto", padding:36 }}>
+      <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
 
         {activeTab === "import" && (
           <div>
-            <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
-            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#b8860b" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
+            <h2 style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
+            <p style={{ color:"#555", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#b8860b" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
             <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:10, marginBottom:18 }}>
               <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
                 placeholder={"Paste your formatted research here...\n\nInclude --- ISSUE CARD START/END --- and --- STAT BLOCK START/END --- blocks.\nMultiple of each supported."}
-                style={{ width:"100%", minHeight:360, background:"transparent", border:"none", color:"#333", fontSize:14, lineHeight:1.7, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:14 }} />
+                style={{ width:"100%", minHeight:isMobile ? 220 : 360, background:"transparent", border:"none", color:"#333", fontSize:isMobile ? 13 : 14, lineHeight:1.7, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:14 }} />
             </div>
             {parseError && <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:6, padding:"14px 18px", marginBottom:18, color:"#b91c1c", fontSize:14, fontWeight:600 }}>{parseError}</div>}
-            <div style={{ display:"flex", gap:14, alignItems:"center" }}>
+            <div style={{ display:"flex", gap:14, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
               <button onClick={handleParse} disabled={parsing || !rawPaste.trim()}
                 style={{ background:parsing?"#888":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:parsing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1 }}>
                 {parsing ? "Processing..." : "Process & Organize"}
@@ -3457,8 +3614,8 @@ export default function AdminPanel() {
 
         {activeTab === "review" && (
           <div>
-            <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
-            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>
+            <h2 style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
+            <p style={{ color:"#555", fontSize:15, margin:"0 0 22px" }}>
               {totalPending ? pendingIssues.length+" issue card(s) · "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
             </p>
             {totalPending === 0 && (
@@ -3470,10 +3627,10 @@ export default function AdminPanel() {
             )}
             {totalPending > 0 && (
               <>
-                <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 20px", marginBottom:22, display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
+                <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 20px", marginBottom:22, display:"flex", alignItems:isMobile ? "stretch" : "center", gap:16, flexWrap:"wrap", flexDirection:isMobile ? "column" : "row" }}>
                   <span style={{ color:"#444", fontSize:15, fontWeight:600 }}>{totalSel} of {totalPending} selected</span>
                   {totalSel > 0 && (
-                    <button onClick={handleBulkPublish} style={{ marginLeft:"auto", background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"11px 26px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+                    <button onClick={handleBulkPublish} style={{ marginLeft:isMobile ? 0 : "auto", width:isMobile ? "100%" : "auto", background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"11px 26px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
                       {totalSel === totalPending ? "Publish All ("+totalSel+")" : "Publish ("+totalSel+")"}
                     </button>
                   )}
@@ -3487,7 +3644,7 @@ export default function AdminPanel() {
                         {selIssues.length === pendingIssues.length ? "Deselect All" : "Select All"}
                       </label>
                     </div>
-                    {pendingIssues.map((card,i) => <IssueRow key={i} card={card} selected={selIssues.includes(i)} onToggle={() => toggleIssue(i)} onApprove={() => approveIssue(card)} onReject={() => rejectIssue(card)} />)}
+                    {pendingIssues.map((card,i) => <IssueRow key={i} card={card} selected={selIssues.includes(i)} onToggle={() => toggleIssue(i)} onApprove={() => approveIssue(card)} onReject={() => rejectIssue(card)} isMobile={isMobile} />)}
                   </div>
                 )}
                 {pendingStats.length > 0 && (
@@ -3499,7 +3656,7 @@ export default function AdminPanel() {
                         {selStats.length === pendingStats.length ? "Deselect All" : "Select All"}
                       </label>
                     </div>
-                    {pendingStats.map((block,i) => <StatRow key={i} block={block} selected={selStats.includes(i)} onToggle={() => toggleStat(i)} onApprove={() => approveStat(block)} onReject={() => rejectStat(block)} />)}
+                    {pendingStats.map((block,i) => <StatRow key={i} block={block} selected={selStats.includes(i)} onToggle={() => toggleStat(i)} onApprove={() => approveStat(block)} onReject={() => rejectStat(block)} isMobile={isMobile} />)}
                   </div>
                 )}
               </>
@@ -3509,8 +3666,8 @@ export default function AdminPanel() {
 
         {activeTab === "drafts" && (
           <div>
-            <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Drafts</h2>
-            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 26px" }}>Holding cell for queued batches and rejected content.</p>
+            <h2 style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Drafts</h2>
+            <p style={{ color:"#555", fontSize:15, margin:"0 0 26px" }}>Holding cell for queued batches and rejected content.</p>
 
             {/* Paste Research Queue */}
             <div style={{ marginBottom:40 }}>
@@ -3522,19 +3679,19 @@ export default function AdminPanel() {
                 <div style={{ color:"#556", fontSize:14, padding:"20px 0" }}>No queued batches. Paste more than 3 cards at once to queue overflow here.</div>
               ) : (
                 pasteQueue.map((batch, bi) => (
-                  <div key={bi} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid #4a5268" }}>
+                  <div key={bi} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                    <div style={{ display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"space-between", flexDirection:isMobile ? "column" : "row", gap:isMobile ? 12 : 0, padding:"14px 20px", borderBottom:"1px solid #ddd8cf" }}>
                       <div>
-                        <span style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>Batch {bi + 2}</span>
-                        <span style={{ color:"#aaa", fontSize:13, marginLeft:10 }}>{batch.length} card{batch.length !== 1 ? "s" : ""}</span>
+                        <span style={{ color:"#1a1a1a", fontSize:14, fontWeight:700 }}>Batch {bi + 2}</span>
+                        <span style={{ color:"#555", fontSize:13, marginLeft:10 }}>{batch.length} card{batch.length !== 1 ? "s" : ""}</span>
                       </div>
-                      <div style={{ display:"flex", gap:10 }}>
+                      <div style={{ display:"flex", gap:10, flexDirection:isMobile ? "column" : "row", width:isMobile ? "100%" : "auto" }}>
                         <button onClick={() => processBatch(bi)} disabled={parsing}
-                          style={{ background:parsing?"#4a5268":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"8px 18px", fontSize:13, fontWeight:700, cursor:parsing?"not-allowed":"pointer", textTransform:"uppercase" }}>
+                          style={{ background:parsing?"#4a5268":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"8px 18px", fontSize:13, fontWeight:700, cursor:parsing?"not-allowed":"pointer", textTransform:"uppercase", width:isMobile ? "100%" : "auto" }}>
                           {parsing ? "Processing..." : "Process Batch"}
                         </button>
                         <button onClick={() => setPasteQueue(p => p.filter((_,i) => i !== bi))}
-                          style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                          style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"8px 14px", fontSize:13, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}>
                           Discard
                         </button>
                       </div>
@@ -3544,9 +3701,9 @@ export default function AdminPanel() {
                         const titleMatch = raw.match(/TITLE:\s*(.+)/);
                         const labelMatch = raw.match(/LABEL:\s*(.+)/);
                         return (
-                          <div key={ci} style={{ display:"flex", gap:10, alignItems:"center", padding:"6px 0", borderBottom: ci < batch.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                          <div key={ci} style={{ display:"flex", gap:10, alignItems:"center", padding:"6px 0", borderBottom: ci < batch.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                             {labelMatch && <span style={{ background:"#b8860b", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3, textTransform:"uppercase", flexShrink:0 }}>{labelMatch[1].trim()}</span>}
-                            <span style={{ color:"#ccc", fontSize:13 }}>{titleMatch ? titleMatch[1].trim() : "Card " + (ci+1)}</span>
+                            <span style={{ color:"#333", fontSize:13 }}>{titleMatch ? titleMatch[1].trim() : "Card " + (ci+1)}</span>
                           </div>
                         );
                       })}
@@ -3631,6 +3788,9 @@ export default function AdminPanel() {
             fallbackRef={fallbackRef}
             handleExport={handleExport}
             getLastExportLabel={getLastExportLabel}
+            onRerank={handleRerank}
+            rerankRunning={rerankRunning}
+            isMobile={isMobile}
           />
         )}
 
@@ -3642,35 +3802,35 @@ export default function AdminPanel() {
 
       {adminTab === "profiles" ? (
         <div>
-          <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48", marginTop:20 }}>
+          <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
             <button
               onClick={() => setProfileAdminTab("paste")}
-              style={{ padding:"14px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer" }}
+              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
             >
               Paste Profile
             </button>
             <button
               onClick={() => setProfileAdminTab("published")}
-              style={{ padding:"14px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer" }}
+              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
             >
               Published Profiles
             </button>
           </div>
 
-          <div style={{ maxWidth:1060, margin:"0 auto", padding:"36px 36px" }}>
+          <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
             {profileAdminTab === "paste" ? (
               <div>
                 <textarea
                   value={profileRawPaste}
                   onChange={(e) => setProfileRawPaste(e.target.value)}
-                  style={{ width:"100%", minHeight:"280px", fontFamily:"monospace", fontSize:13, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
+                  style={{ width:"100%", minHeight:"280px", fontFamily:"Georgia, serif", fontSize:14, color:"#333", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical" }}
                 />
 
                 <div style={{ display:"flex", gap:10 }}>
                   <button
                     onClick={() => handleParseProfile("parse")}
                     disabled={profileParsing || !profileRawPaste.trim()}
-                    style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                    style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
                   >
                     Parse Profile
                   </button>
@@ -3678,7 +3838,7 @@ export default function AdminPanel() {
                     <button
                       onClick={() => handleParseProfile("publish")}
                       disabled={profileParsing}
-                      style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                      style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
                     >
                       Publish Profile
                     </button>
@@ -3686,18 +3846,18 @@ export default function AdminPanel() {
                 </div>
 
                 {parsedProfile ? (
-                  <div style={{ marginTop:18, background:"#2e3440", border:"1px solid #4a5268", borderRadius:10, padding:18 }}>
+                  <div style={{ marginTop:18, background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18 }}>
                     <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
-                    <div style={{ color:"#aaa", fontSize:13, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
+                    <div style={{ color:"#555", fontSize:15, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
                     <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title, level, or jurisdiction..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
-                      style={{ width:"100%", background:"#1e2330", border:"1px solid #4a5268", borderRadius:6, padding:"10px 12px", fontSize:13, color:"#f5f0e8", outline:"none", marginBottom:10, boxSizing:"border-box" }} />
+                      style={{ width:"100%", background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#333", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
                     {seatSearch.trim().length >= 2 ? (
-                      <div style={{ background:"#1e2330", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
+                      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
                         {seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
                           <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); }}
-                            style={{ width:"100%", background: selectedSeatId === seat.id ? "#b8860b22" : "transparent", border:"none", borderBottom:"1px solid #2a3040", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
-                            <span style={{ color:"#f5f0e8", fontSize:13, fontWeight:700 }}>{seat.title}</span>
-                            <span style={{ color:"#6b778a", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
+                            style={{ width:"100%", background: selectedSeatId === seat.id ? "#b8860b22" : "transparent", border:"none", borderBottom:"1px solid rgba(0,0,0,0.06)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
+                            <span style={{ color:"#1a1a1a", fontSize:13, fontWeight:700 }}>{seat.title}</span>
+                            <span style={{ color:"#555", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
                           </button>
                         ))}
                         {!seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
@@ -3719,9 +3879,9 @@ export default function AdminPanel() {
                 {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
 
                 {parsedProfile ? (
-                  <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
-                    <div style={{ color:"#193150", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
-                    <div style={{ color:"#6b778a", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
+                  <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:18, marginTop:16 }}>
+                    <div style={{ color:"#1a1a1a", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
+                    <div style={{ color:"#555", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
                     <div style={{ marginBottom:12 }}>
                       <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
                       <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
@@ -3756,14 +3916,14 @@ export default function AdminPanel() {
               const otherJudges = grouped.judge.filter(profile => !stateJudges.includes(profile) && !federalJudges.includes(profile));
 
               const badgeStyle = { background:"#b8860b", color:"#fff", textTransform:"uppercase", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, display:"inline-block" };
-              const pillStyle = { background:"#2e3440", border:"1px solid #4a5268", color:"#ddd5c4", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
+              const pillStyle = { background:"#e8e4dc", border:"1px solid #ddd8cf", color:"#555", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
 
               const renderProfileCard = (profile, options = {}) => (
-                <div key={profile.id} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
+                <div key={profile.id} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
                   <div style={{ minWidth:0 }}>
-                    <div style={{ color:"#fff", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
-                    {options.showDistrict && profile.geography ? <div style={{ color:"#8f97aa", fontSize:12, marginBottom:4 }}>{profile.geography}</div> : null}
-                    <div style={{ color:"#aaa", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
+                    <div style={{ color:"#1a1a1a", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
+                    {options.showDistrict && profile.geography ? <div style={{ color:"#555", fontSize:12, marginBottom:4 }}>{profile.geography}</div> : null}
+                    <div style={{ color:"#555", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
                       <span style={pillStyle}>{profile.level || "uncategorized"}</span>
                       {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
@@ -3772,13 +3932,13 @@ export default function AdminPanel() {
                   <div style={{ display:"flex", gap:10, flexShrink:0 }}>
                     <button
                       onClick={() => setProfileEditConfig(profile)}
-                      style={{ background:"#2e3440", color:"#ddd5c4", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+                      style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteProfile(profile)}
-                      style={{ background:"#4a1f25", color:"#f3b0b0", border:"1px solid #8a3a44", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+                      style={{ background:"#b91c1c", color:"#fff", border:"none", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
                     >
                       Delete
                     </button>
@@ -3799,13 +3959,13 @@ export default function AdminPanel() {
                 <div>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:16, marginBottom:22 }}>
                     <div>
-                      <div style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, marginBottom:6 }}>Published Profiles</div>
-                      <div style={{ color:"#aaa", fontSize:14 }}>Manage published official profiles by level, edit decoder copy, and remove stale rows.</div>
+                      <div style={{ color:"#1a1a1a", fontSize:24, fontWeight:700, marginBottom:6 }}>Published Profiles</div>
+                      <div style={{ color:"#555", fontSize:15 }}>Manage published official profiles by level, edit decoder copy, and remove stale rows.</div>
                     </div>
                     <button
                       onClick={loadPublishedProfiles}
                       disabled={pubProfilesLoading}
-                      style={{ background:"#2e3440", color:"#ddd5c4", border:"1px solid #4a5268", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:pubProfilesLoading ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1 }}
+                      style={{ background:"#e8e4dc", color:"#555", border:"1px solid #ddd8cf", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:pubProfilesLoading ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1 }}
                     >
                       {pubProfilesLoading ? "Refreshing..." : "Refresh"}
                     </button>
@@ -3860,34 +4020,36 @@ export default function AdminPanel() {
       ) : null}
 
       {adminTab === "blueprints" ? (
-        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
-          <div style={{ display:"flex", gap:10, marginBottom:14, marginTop:20 }}>
+        <div>
+          <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
             <button
               onClick={() => setBlueprintMode("brief")}
-              style={{ background: blueprintMode === "brief" ? "#193150" : "#f0ebe2", color: blueprintMode === "brief" ? "white" : "#6b778a", borderRadius:10, padding:"9px 18px", fontSize:14, fontWeight:900, border:"none" }}
+              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "brief" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "brief" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
             >
               Research Brief
             </button>
             <button
               onClick={() => setBlueprintMode("template")}
-              style={{ background: blueprintMode === "template" ? "#193150" : "#f0ebe2", color: blueprintMode === "template" ? "white" : "#6b778a", borderRadius:10, padding:"9px 18px", fontSize:14, fontWeight:900, border:"none" }}
+              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "template" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "template" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
             >
               Paste Template
             </button>
           </div>
 
+        <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
+
           <textarea
             value={blueprintInput}
             onChange={(e) => setBlueprintInput(e.target.value)}
             placeholder={blueprintMode === "brief" ? "Describe the specific policy idea in detail — include the target population, proposed funding mechanism, and the specific ask..." : "Paste your completed Blueprint research template here..."}
-            style={{ width:"100%", minHeight: blueprintMode === "brief" ? "160px" : "260px", fontSize:14, padding:14, border:"1px solid #e0d8cc", borderRadius:10, marginBottom:14, resize:"vertical" }}
+            style={{ width:"100%", minHeight: blueprintMode === "brief" ? "160px" : "260px", fontSize:14, color:"#333", fontFamily:"Georgia, serif", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical" }}
           />
 
           <div style={{ display:"flex", gap:10 }}>
             <button
               onClick={() => handleParseBlueprint("parse")}
               disabled={blueprintParsing || !blueprintInput.trim()}
-              style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+              style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
             >
               Parse Blueprint
             </button>
@@ -3895,14 +4057,14 @@ export default function AdminPanel() {
               <button
                 onClick={() => handleParseBlueprint("publish")}
                 disabled={blueprintParsing}
-                style={{ background:"#3E8B5B", color:"white", border:"none", borderRadius:10, padding:"11px 22px", fontSize:14, fontWeight:900, cursor:"pointer" }}
+                style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"14px 32px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}
               >
                 Publish Blueprint
               </button>
             ) : null}
           </div>
 
-          {blueprintParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing blueprint...</div> : null}
+          {blueprintParsing ? <div style={{ color:"#555", fontSize:15, marginTop:14 }}>Parsing blueprint...</div> : null}
           {blueprintError ? (
             <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
               {blueprintError}
@@ -3911,91 +4073,40 @@ export default function AdminPanel() {
           {blueprintPublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{blueprintPublishSuccess}</div> : null}
 
           {parsedBlueprint ? (
-            <div style={{ background:"#f8f3eb", border:"1px solid #e0d8cc", borderRadius:12, padding:18, marginTop:16 }}>
-              <div style={{ fontSize:22, fontWeight:900, color:"#193150", marginBottom:8 }}>{parsedBlueprint.title}</div>
+            <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:18, marginTop:16 }}>
+              <div style={{ fontSize:22, fontWeight:900, color:"#1a1a1a", marginBottom:8 }}>{parsedBlueprint.title}</div>
               <AdminPreviewBlock borderColor="#B4473E">{parsedBlueprint.the_problem}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#C6A34D">{parsedBlueprint.the_ask}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#2F5D8A">{parsedBlueprint.who_decides}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#3E8B5B">{parsedBlueprint.other_cities}</AdminPreviewBlock>
               <div style={{ display:"grid", gap:8, marginTop:12 }}>
-                <div style={{ color:"#6b778a", fontSize:13 }}><strong>Estimated Cost:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.estimated_cost || "—"}</span></div>
-                <div style={{ color:"#6b778a", fontSize:13 }}><strong>ROI:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.roi || "—"}</span></div>
+                <div style={{ color:"#555", fontSize:13 }}><strong>Estimated Cost:</strong> <span style={{ color:"#1a1a1a" }}>{parsedBlueprint.estimated_cost || "—"}</span></div>
+                <div style={{ color:"#555", fontSize:13 }}><strong>ROI:</strong> <span style={{ color:"#1a1a1a" }}>{parsedBlueprint.roi || "—"}</span></div>
               </div>
             </div>
           ) : null}
         </div>
+        </div>
       ) : null}
 
       {adminTab === "tools" ? (
-        <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
-          <div style={{ background:"#2e3440", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
+        <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "0 12px 16px" : "0 36px 36px" }}>
+          <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:28 }}>
             <div>
               <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📱 SOCIAL MEDIA CONTENT</div>
               <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
             </div>
 
-            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>NOTEBOOKLM EXPORT</div>
-              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:16 }}>
-                Copy the published cards and supporting context into NotebookLM using the existing export flow, with a manual fallback if clipboard access is blocked.
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12, flexWrap:"wrap" }}>
-                <button
-                  onClick={handleExport}
-                  disabled={exportStatus === "success"}
-                  style={{
-                    background: exportStatus === "success" ? "#3E8B5B" : "#1a5276",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "9px 18px",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: exportStatus === "success" ? "default" : "pointer",
-                    letterSpacing: 0.5,
-                    transition: "background 0.2s",
-                  }}
-                >
-                  {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "NotebookLM Export ↗"}
-                </button>
-                {getLastExportLabel() && exportStatus !== "success" && (
-                  <span style={{ color:"#aaa", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
-                )}
-              </div>
-              {exportStatus === "fallback" && (
-                <div style={{ marginBottom:12 }}>
-                  <p style={{ color:"#f5a623", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
-                  <textarea
-                    ref={fallbackRef}
-                    readOnly
-                    value={fallbackText}
-                    style={{
-                      width: "100%",
-                      minHeight: 120,
-                      background: "#2a2f3e",
-                      color: "#ddd5c4",
-                      border: "1px solid #4a5268",
-                      borderRadius: 4,
-                      padding: 8,
-                      fontSize: 11,
-                      fontFamily: "monospace",
-                      resize: "vertical",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
+            <div style={{ borderTop:"1px solid #ddd8cf", paddingTop:24, marginTop:24 }}>
               <button
                 onClick={() => setToolsTemplatesOpen((prev) => !prev)}
-                style={{ width:"100%", background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}
+                style={{ width:"100%", background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}
               >
-                <span style={{ color:"#f5f0e8", fontSize:15, fontWeight:700 }}>Templates</span>
+                <span style={{ color:"#1a1a1a", fontSize:15, fontWeight:700 }}>Templates</span>
                 <span style={{ color:"#b8860b", fontSize:16, fontWeight:900 }}>{toolsTemplatesOpen ? "▲" : "▼"}</span>
               </button>
               {toolsTemplatesOpen ? (
-                <div style={{ borderTop:"1px solid #4a5268", padding:"8px 0" }}>
+                <div style={{ borderTop:"1px solid #ddd8cf", padding:"8px 0" }}>
                   {[
                     {
                       key: "issue",

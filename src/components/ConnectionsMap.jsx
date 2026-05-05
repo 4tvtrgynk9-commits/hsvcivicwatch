@@ -265,6 +265,35 @@ function layoutNodes(activeOfficial, showAll) {
     positions[id].y = Math.max(8, Math.min(H - NODE_H - 8, positions[id].y));
   });
 
+  // Second pass — enforce minimum separation after clamping
+  for (let iter = 0; iter < 20; iter++) {
+    for (let i = 0; i < allIds.length; i++) {
+      for (let j = i + 1; j < allIds.length; j++) {
+        const a = positions[allIds[i]];
+        const b = positions[allIds[j]];
+        const overlapX = (NODE_W + PAD + 8) - Math.abs(b.x - a.x);
+        const overlapY = (NODE_H + PAD + 8) - Math.abs(b.y - a.y);
+        if (overlapX > 0 && overlapY > 0) {
+          const pushX = overlapX / 2 + 4;
+          const pushY = overlapY / 2 + 4;
+          if (overlapX < overlapY) {
+            if (b.x > a.x) { a.x -= pushX; b.x += pushX; }
+            else { a.x += pushX; b.x -= pushX; }
+          } else {
+            if (b.y > a.y) { a.y -= pushY; b.y += pushY; }
+            else { a.y += pushY; b.y -= pushY; }
+          }
+        }
+      }
+    }
+  }
+
+  // Re-clamp after second pass
+  allIds.forEach(id => {
+    positions[id].x = Math.max(8, Math.min(W - NODE_W - 8, positions[id].x));
+    positions[id].y = Math.max(8, Math.min(H - NODE_H - 8, positions[id].y));
+  });
+
   const visibleEdges = EDGES.filter(e => nodeIds.has(e.from) && nodeIds.has(e.to));
   return { positions, nodeIds: ids, visibleEdges, nodeMap };
 }
@@ -354,7 +383,7 @@ export default function ConnectionsMap() {
             if (len < 2) return null;
             const ux = dx / len;
             const uy = dy / len;
-            const gap = 10;
+            const gap = 16;
             const sx = start.x + ux * gap;
             const sy = start.y + uy * gap;
             const ex = end.x - ux * gap;
