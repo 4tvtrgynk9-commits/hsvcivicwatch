@@ -2212,7 +2212,7 @@ export default function AdminPanel() {
   const [weeklyError, setWeeklyError] = useState("");
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
-  const fallbackRef = React.useRef(null);
+  const fallbackRef = useRef(null);
 
   const loadPublished = async () => {
     if (!supabase) return;
