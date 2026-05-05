@@ -703,7 +703,17 @@ export default function DashboardHome({ onOpenModule }) {
           ))}
         </section>
 
-        <section style={{ marginTop: 12, marginBottom: 4, overflow: "hidden" }}>
+        <section
+          style={{
+            marginTop: 12,
+            marginBottom: 4,
+            overflow: "hidden",
+            width: "100%",
+            position: "relative",
+            left: 0,
+            right: 0,
+          }}
+        >
           <div
             style={{
               background: COLORS.tickerBg,

@@ -129,7 +129,7 @@ function Dashboard({go}){
               <div key={i} className="dash-card" style={{borderLeftColor:g.color}} onClick={()=>go(item.id)}>
                 <div className="dash-card-icon">{item.icon}</div>
                 <div className="dash-card-title">{item.label}</div>
-                {item.desc&&<div style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3,lineHeight:1.4}}>{item.desc}</div>}
+                {item.sub&&<div style={{fontSize:11,color:"rgba(255,255,255,.55)",marginTop:3,lineHeight:1.4}}>{item.sub}</div>}
               </div>
             ))}
           </div>

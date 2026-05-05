@@ -322,6 +322,7 @@ export default function Sidebar({
       <div
         style={{
           width: 312,
+          flexShrink: 0,
           height: "100%",
           minHeight: "100vh",
           paddingBottom: 8,
