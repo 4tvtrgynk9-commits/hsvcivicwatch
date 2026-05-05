@@ -383,7 +383,7 @@ export default function ConnectionsMap() {
             if (len < 2) return null;
             const ux = dx / len;
             const uy = dy / len;
-            const gap = 16;
+            const gap = 28;
             const sx = start.x + ux * gap;
             const sy = start.y + uy * gap;
             const ex = end.x - ux * gap;

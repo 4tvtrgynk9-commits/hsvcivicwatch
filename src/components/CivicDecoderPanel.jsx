@@ -17,12 +17,13 @@ function isUrl(str) {
 
 function linkLabel(type) {
   if (!type) return "Open link";
-  var t = type.toLowerCase();
-  if (t.includes("investigation")) return "Request investigation";
-  if (t.includes("records")) return "Request records";
-  if (t.includes("complaint")) return "File complaint";
-  if (t.includes("misconduct")) return "Submit misconduct report";
-  if (t.includes("election") || t.includes("vote") || t.includes("register")) return "Register to vote";
+  var t = type.toLowerCase().replace(/[^a-z_]/g, "");
+  if (t === "investigation_request" || t === "investigation") return "Request investigation";
+  if (t === "records_request" || t === "records") return "Request records";
+  if (t === "complaint") return "File complaint";
+  if (t === "misconduct_report" || t === "misconduct") return "Submit misconduct report";
+  if (t === "elections" || t === "election" || t === "vote" || t === "register") return "Register to vote";
+  if (t === "media_outreach" || t === "media") return "Submit tip";
   if (t.includes("organiz")) return "Connect with organizers";
   if (t.includes("policy") || t.includes("model")) return "View policy model";
   if (t.includes("research")) return "View research";
