@@ -2169,13 +2169,13 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
                 maxWidth:isMobile ? "none" : 200,
               }}>
               <div style={{ display:"flex", gap:6, alignItems:"center", width:isMobile ? "auto" : "100%" }}>
-                <span style={{ fontSize:9, fontWeight:900, color:selectedIndex===i?"#f0c93a":"#8fa3b8", textTransform:"uppercase", letterSpacing:1 }}>
+                <span style={{ fontSize:9, fontWeight:900, color:"#f0c93a", textTransform:"uppercase", letterSpacing:1 }}>
                   {[card.ref_number, card.module].filter(Boolean).join(" · ")}
                 </span>
               </div>
-              <span style={{ fontSize:12, lineHeight:1.3, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", flex:isMobile ? 1 : "none", marginLeft:isMobile ? 10 : 0 }}>{card.title}</span>
+              <span style={{ color:"#ffffff", fontSize:12, lineHeight:1.3, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", flex:isMobile ? 1 : "none", marginLeft:isMobile ? 10 : 0 }}>{card.title}</span>
               {card.label && (
-                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:selectedIndex===i?"#f0c93a":"#8fa3b8", marginTop:isMobile ? 0 : 2, marginLeft:isMobile ? 10 : 0 }}>{card.label}</span>
+                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:"#c8d1dc", marginTop:isMobile ? 0 : 2, marginLeft:isMobile ? 10 : 0 }}>{card.label}</span>
               )}
             </button>
           ))}
@@ -3297,7 +3297,7 @@ export default function AdminPanel() {
     background: activeTab===id ? "rgba(198,163,77,0.13)" : "transparent",
     border: "none",
     borderBottom: activeTab===id ? "3px solid #C6A34D" : "3px solid transparent",
-    color: activeTab===id ? "#f0c93a" : "#c8d1dc",
+    color: activeTab===id ? "#f0c93a" : "#e2e8f0",
     padding: isMobile ? "12px 14px" : "12px 20px",
     fontSize: isMobile ? 12 : 13,
     fontWeight: activeTab===id ? 900 : 700,
@@ -3713,8 +3713,8 @@ export default function AdminPanel() {
       <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
         {activeTab === "import" && (
           <div>
-            <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
-            <p style={{ color:"#c8d1dc", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#f0c93a" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
+            <h2 style={{ color:"#ffffff", fontSize:22, fontWeight:900, margin:"0 0 8px" }}>Import Research</h2>
+            <p style={{ color:"#c8d1dc", fontSize:14, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#f0c93a" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
             <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:10, marginBottom:18 }}>
               <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
                 placeholder={"Paste your formatted research here...\n\nInclude --- ISSUE CARD START/END --- and --- STAT BLOCK START/END --- blocks.\nMultiple of each supported."}
@@ -4306,7 +4306,7 @@ export default function AdminPanel() {
                   ].map((item, index, list) => (
                     <div key={item.key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 18px", borderBottom: index < list.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
                       <div>
-                        <div style={{ color:"#ffffff", fontSize:14, fontWeight:700 }}>{item.name}</div>
+                        <div style={{ color:"#ffffff", fontWeight:900, fontSize:15, marginBottom:4 }}>{item.name}</div>
                         <div style={{ color:"#8fa3b8", fontSize:12, marginTop:3 }}>{item.description}</div>
                       </div>
                       <button
