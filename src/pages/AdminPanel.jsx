@@ -363,7 +363,7 @@ function pulseWiggleStyle() {
 
 function FieldLabel({ children }) {
   return (
-    <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
+    <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
       {children}
     </div>
   );
@@ -375,8 +375,8 @@ function TextInput(props) {
       {...props}
       style={{
         width:"100%",
-        background:"#fff",
-        border:"1px solid #ddd8cf",
+        background:"#f5f0e8",
+        border:"1px solid #4a5268",
         borderRadius:6,
         padding:"11px 12px",
         fontSize:14,
@@ -395,8 +395,8 @@ function TextArea(props) {
       {...props}
       style={{
         width:"100%",
-        background:"#fff",
-        border:"1px solid #ddd8cf",
+        background:"#f5f0e8",
+        border:"1px solid #4a5268",
         borderRadius:6,
         padding:"11px 12px",
         fontSize:14,
@@ -416,8 +416,8 @@ function SelectInput({ children, ...props }) {
       {...props}
       style={{
         width:"100%",
-        background:"#fff",
-        border:"1px solid #ddd8cf",
+        background:"#f5f0e8",
+        border:"1px solid #4a5268",
         borderRadius:6,
         padding:"11px 12px",
         fontSize:14,
@@ -435,10 +435,10 @@ function SelectInput({ children, ...props }) {
 function AdminMetaRow({ label, value }) {
   return (
     <div style={{ marginBottom:8 }}>
-      <span style={{ color:"#b0bec5", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, display:"inline-block", minWidth:110 }}>
+      <span style={{ color:"#8fa3b8", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:1, display:"inline-block", minWidth:110 }}>
         {label}:
       </span>
-      <span style={{ color:"#333", fontSize:13, fontFamily:"monospace" }}>
+      <span style={{ color:"#c8d1dc", fontSize:13, fontFamily:"monospace" }}>
         {value || "—"}
       </span>
     </div>
@@ -734,13 +734,13 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:4000, display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"center", padding:isMobile ? 0 : 16, overflowY:"auto" }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:isMobile ? "none" : "1px solid #ddd8cf", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 1040, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
-        <div style={{ padding:"20px 24px", borderBottom:"1px solid #ddd8cf", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
+      <div style={{ background:"#353b48", border:isMobile ? "none" : "1px solid #4a5268", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 1040, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.35)", display:"flex", flexDirection:"column" }}>
+        <div style={{ padding:"20px 24px", borderBottom:"1px solid #4a5268", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
           <div style={{ minWidth:0 }}>
-            <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>
+            <div style={{ color:"#f0c93a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>
               Edit {isIssue ? "Issue Card" : "Stat Block"}
             </div>
-            <div style={{ color:"#193150", fontSize:20, fontWeight:700, lineHeight:1.3 }}>
+            <div style={{ color:"#ffffff", fontSize:20, fontWeight:700, lineHeight:1.3 }}>
               {isIssue ? item.title : (item.label || item.title || item.ref_number)}
             </div>
           </div>
@@ -755,7 +755,7 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
             </button>
             <button
               onClick={onClose}
-              style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
+              style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
             >
               ×
             </button>
@@ -807,11 +807,12 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
                           display:"flex",
                           alignItems:"center",
                           gap:8,
-                          background:"#fff",
-                          border:"1px solid #ddd8cf",
+                          background:"#353b48",
+                          border:"1px solid #4a5268",
                           borderRadius:8,
                           padding:"8px 10px",
                           fontSize:13,
+                          color:"#c8d1dc",
                           cursor:"pointer"
                         }}
                       >
@@ -923,8 +924,8 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
                 </div>
               </div>
 
-              <div style={{ background:"#efe7da", border:"1px solid #ddd8cf", borderRadius:10, padding:16, marginBottom:18 }}>
-                <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+              <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:16, marginBottom:18 }}>
+                <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
                   Stat Block Setup
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:twoColGrid, gap:16 }}>
@@ -932,8 +933,8 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
                 </div>
               </div>
 
-              <div style={{ background:"#efe7da", border:"1px solid #ddd8cf", borderRadius:10, padding:16 }}>
-                <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:12 }}>
+              <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:16 }}>
+                <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:12 }}>
                   Live Preview
                 </div>
                 <StatBlockPreview block={{ ...statState.data, module: statState.module, tab: statState.tab, type: statState.type, color: statState.color }} />
@@ -941,8 +942,8 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
             </>
           )}
 
-          <div style={{ marginTop:24, paddingTop:16, borderTop:"1px solid #ddd8cf" }}>
-            <div style={{ color:"#b0bec5", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
+          <div style={{ marginTop:24, paddingTop:16, borderTop:"1px solid #4a5268" }}>
+            <div style={{ color:"#8fa3b8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>
               Admin Details
             </div>
             <AdminMetaRow label="ID" value={item.id} />
@@ -951,18 +952,18 @@ function EditModal({ config, onClose, onSave, onDelete, saving, isMobile = false
           </div>
         </div>
 
-        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #4a5268", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#353b48", flexShrink:0 }}>
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
+            style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !hasChanges}
-            style={{ background:(saving || !hasChanges) ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:(saving || !hasChanges) ? "not-allowed" : "pointer", minWidth:120, opacity:(saving || !hasChanges) ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
+            style={{ background:(saving || !hasChanges) ? "#4a5268" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:(saving || !hasChanges) ? "not-allowed" : "pointer", minWidth:120, opacity:(saving || !hasChanges) ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
           >
             {saving ? "Saving..." : (savedFlash ? "Saved" : "Save")}
           </button>
@@ -1013,22 +1014,22 @@ function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }
 
   const darkInputStyle = {
     background:"#f5f0e8",
-    border:"1px solid #ddd8cf",
+    border:"1px solid #4a5268",
     color:"#193150",
   };
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", zIndex:4100, display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"center", padding:isMobile ? 0 : 16, overflowY:"auto" }}>
-      <div style={{ background:"#f5f0e8", border:isMobile ? "none" : "1px solid #ddd8cf", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 980, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.45)", display:"flex", flexDirection:"column" }}>
+      <div style={{ background:"#353b48", border:isMobile ? "none" : "1px solid #4a5268", borderRadius:isMobile ? 0 : 12, width:"100%", maxWidth:isMobile ? "100%" : 980, maxHeight:isMobile ? "100vh" : "92vh", overflow:"hidden", boxShadow:isMobile ? "none" : "0 24px 80px rgba(0,0,0,0.45)", display:"flex", flexDirection:"column" }}>
         <div style={{ padding:"20px 24px", borderBottom:"1px solid #4a5268", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexShrink:0 }}>
           <div>
-            <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Edit Profile</div>
+            <div style={{ color:"#f0c93a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Edit Profile</div>
             <div style={{ color:"#fff", fontSize:22, fontWeight:900, lineHeight:1.3 }}>{profile?.name || "Profile"}</div>
           </div>
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
+            style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, width:40, height:40, fontSize:20, fontWeight:700, cursor:"pointer", lineHeight:1 }}
           >
             ×
           </button>
@@ -1037,78 +1038,78 @@ function ProfileEditModal({ profile, onClose, onSave, saving, isMobile = false }
         <div style={{ padding:"22px 24px", overflowY:"auto", flex:"1 1 auto", minHeight:0 }}>
           <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(auto-fit, minmax(220px, 1fr))", gap:16, marginBottom:18 }}>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Name</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Name</div>
               <TextInput value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Office</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Office</div>
               <TextInput value={form.office} onChange={e => setForm(prev => ({ ...prev, office: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Level</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Level</div>
               <SelectInput value={form.level} onChange={e => setForm(prev => ({ ...prev, level: e.target.value }))} style={darkInputStyle}>
                 {PROFILE_LEVEL_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
               </SelectInput>
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Kind</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Kind</div>
               <TextInput value={form.kind} onChange={e => setForm(prev => ({ ...prev, kind: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Geography</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Geography</div>
               <TextInput value={form.geography} onChange={e => setForm(prev => ({ ...prev, geography: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Party</div>
               <TextInput value={form.party} onChange={e => setForm(prev => ({ ...prev, party: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Pronouns</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Pronouns</div>
               <TextInput value={form.pronouns} onChange={e => setForm(prev => ({ ...prev, pronouns: e.target.value }))} style={darkInputStyle} />
             </div>
             <div>
-              <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Gender Identity</div>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Gender Identity</div>
               <TextInput value={form.gender_identity} onChange={e => setForm(prev => ({ ...prev, gender_identity: e.target.value }))} style={darkInputStyle} />
             </div>
           </div>
 
           <div style={{ marginBottom:18 }}>
-            <div style={{ color:"#4a5a6e", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Status Line</div>
+            <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Status Line</div>
             <TextArea rows={3} value={form.status_line} onChange={e => setForm(prev => ({ ...prev, status_line: e.target.value }))} style={darkInputStyle} />
           </div>
 
           <div style={{ display:"grid", gap:16 }}>
-            <div style={{ background:"#f5f0e8", border:"1px solid #C6A34D", borderRadius:10, padding:14 }}>
-              <div style={{ color:"#C6A34D", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Rise</div>
+            <div style={{ background:"#353b48", border:"1px solid #C6A34D", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#f0c93a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Rise</div>
               <TextArea rows={5} value={form.decoder.rise} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, rise: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #C6A34D" }} />
             </div>
-            <div style={{ background:"#f5f0e8", border:"1px solid #2F5D8A", borderRadius:10, padding:14 }}>
-              <div style={{ color:"#7ab", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Affiliations</div>
+            <div style={{ background:"#353b48", border:"1px solid #2F5D8A", borderRadius:10, padding:14 }}>
+              <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Affiliations</div>
               <TextArea rows={5} value={form.decoder.affiliations} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, affiliations: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #2F5D8A" }} />
             </div>
-            <div style={{ background:"#f5f0e8", border:"1px solid #7A4FA3", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#353b48", border:"1px solid #7A4FA3", borderRadius:10, padding:14 }}>
               <div style={{ color:"#c7a7e8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Beneficiaries</div>
               <TextArea rows={5} value={form.decoder.beneficiaries} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, beneficiaries: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #7A4FA3" }} />
             </div>
-            <div style={{ background:"#f5f0e8", border:"1px solid #B4473E", borderRadius:10, padding:14 }}>
+            <div style={{ background:"#353b48", border:"1px solid #B4473E", borderRadius:10, padding:14 }}>
               <div style={{ color:"#e59d97", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>Track Record</div>
               <TextArea rows={6} value={form.decoder.track_record} onChange={e => setForm(prev => ({ ...prev, decoder: { ...prev.decoder, track_record: e.target.value } }))} style={{ ...darkInputStyle, border:"1px solid #B4473E" }} />
             </div>
           </div>
         </div>
 
-        <div style={{ padding:"16px 24px", borderTop:"1px solid #ddd8cf", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#f5f0e8", flexShrink:0 }}>
+        <div style={{ padding:"16px 24px", borderTop:"1px solid #4a5268", display:"flex", flexDirection:isMobile ? "column-reverse" : "row", justifyContent:"flex-end", gap:12, background:"#353b48", flexShrink:0 }}>
           <button
             onClick={onClose}
             disabled={saving}
-            style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
+            style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:"pointer", width:isMobile ? "100%" : "auto" }}
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(form)}
             disabled={saving}
-            style={{ background:saving ? "#888" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:saving ? "not-allowed" : "pointer", minWidth:120, opacity:saving ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
+            style={{ background:saving ? "#4a5268" : "#1a7a3a", color:"#fff", border:"none", borderRadius:6, padding:"12px 22px", fontSize:14, fontWeight:700, cursor:saving ? "not-allowed" : "pointer", minWidth:120, opacity:saving ? 0.7 : 1, width:isMobile ? "100%" : "auto" }}
           >
             {saving ? "Saving..." : "Save"}
           </button>
@@ -1127,7 +1128,7 @@ function KeyNumberBlock({ block }) {
     <div style={{ background: bg, border: `1px solid ${c}`, borderLeft: `4px solid ${c}`, borderRadius: 8, padding: "20px 22px" }}>
       <div style={{ color: c, fontSize: 38, fontWeight: 900, fontFamily: "Georgia,serif", lineHeight: 1 }}>{block.value}</div>
       <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, marginTop: 6, textTransform: "uppercase", letterSpacing: 1 }}>{block.label}</div>
-      <div style={{ color: "#aaa", fontSize: 12, marginTop: 5, lineHeight: 1.5 }}>{block.context}</div>
+      <div style={{ color: "#8fa3b8", fontSize: 12, marginTop: 5, lineHeight: 1.5 }}>{block.context}</div>
     </div>
   );
 }
@@ -1139,8 +1140,8 @@ function ComparisonBar({ block }) {
     <div style={{ background: "#1a1f2e", border: "1px solid #3a4268", borderRadius: 8, padding: "20px 22px" }}>
       <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, marginBottom: 14, textTransform: "uppercase", letterSpacing: 1 }}>{block.title}</div>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <span style={{ color: "#c0392b", fontSize: 20, fontWeight: 900 }}>{block.leftValue} <span style={{ fontSize: 11, color: "#888" }}>{block.unit}</span></span>
-        <span style={{ color: "#aaa", fontSize: 20, fontWeight: 900 }}>{block.rightValue} <span style={{ fontSize: 11, color: "#888" }}>{block.unit}</span></span>
+        <span style={{ color: "#c0392b", fontSize: 20, fontWeight: 900 }}>{block.leftValue} <span style={{ fontSize: 11, color: "#8fa3b8" }}>{block.unit}</span></span>
+        <span style={{ color: "#c8d1dc", fontSize: 20, fontWeight: 900 }}>{block.rightValue} <span style={{ fontSize: 11, color: "#8fa3b8" }}>{block.unit}</span></span>
       </div>
       <div style={{ background: "#2a3040", borderRadius: 4, height: 22, display: "flex", overflow: "hidden", marginBottom: 8 }}>
         <div style={{ width: leftPct + "%", background: "linear-gradient(90deg,#c0392b,#e74c3c)", transition: "width 0.8s" }} />
@@ -1150,7 +1151,7 @@ function ComparisonBar({ block }) {
         <span style={{ color: "#c0392b", fontSize: 11, fontWeight: 700 }}>{block.leftLabel}</span>
         <span style={{ color: "#7ab", fontSize: 11, fontWeight: 700 }}>{block.rightLabel}</span>
       </div>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 10, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 10, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1169,7 +1170,7 @@ function PieBlock({ block }) {
           <Tooltip formatter={v => v + "%"} contentStyle={{ background: "#1a1f2e", border: "1px solid #3a4268", color: "#fff" }} />
         </PieChart>
       </ResponsiveContainer>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1181,13 +1182,13 @@ function TrendBlock({ block }) {
       <ResponsiveContainer width="100%" height={160}>
         <LineChart data={block.points || []}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2a3040" />
-          <XAxis dataKey="year" stroke="#556" tick={{ fill: "#889", fontSize: 11 }} />
-          <YAxis stroke="#556" tick={{ fill: "#889", fontSize: 11 }} />
+          <XAxis dataKey="year" stroke="#8fa3b8" tick={{ fill: "#8fa3b8", fontSize: 11 }} />
+          <YAxis stroke="#8fa3b8" tick={{ fill: "#8fa3b8", fontSize: 11 }} />
           <Tooltip contentStyle={{ background: "#1a1f2e", border: "1px solid #3a4268", color: "#fff" }} />
           <Line type="monotone" dataKey="value" stroke="#c0392b" strokeWidth={2} dot={{ fill: "#c0392b", r: 3 }} />
         </LineChart>
       </ResponsiveContainer>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1198,13 +1199,13 @@ function BarBlock({ block }) {
       <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, marginBottom: 14, textTransform: "uppercase", letterSpacing: 1 }}>{block.title}</div>
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={block.bars || []} layout="vertical">
-          <XAxis type="number" stroke="#556" tick={{ fill: "#889", fontSize: 10 }} />
-          <YAxis type="category" dataKey="name" stroke="#556" tick={{ fill: "#ccc", fontSize: 10 }} width={120} />
+          <XAxis type="number" stroke="#8fa3b8" tick={{ fill: "#8fa3b8", fontSize: 10 }} />
+          <YAxis type="category" dataKey="name" stroke="#8fa3b8" tick={{ fill: "#c8d1dc", fontSize: 10 }} width={120} />
           <Tooltip contentStyle={{ background: "#1a1f2e", border: "1px solid #3a4268", color: "#fff" }} />
           <Bar dataKey="value" fill="#b8860b" radius={[0,3,3,0]} />
         </BarChart>
       </ResponsiveContainer>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 8, borderTop: "1px solid #2a3040", paddingTop: 8 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1228,8 +1229,8 @@ function PayClockBlock({ block }) {
         <span style={{ color: "#c0392b", fontSize: 42, fontWeight: 900, lineHeight: 1, fontFamily: "Georgia,serif" }}>{parseInt(whole).toLocaleString()}</span>
         <span style={{ color: "#c0392b", fontSize: 22, fontWeight: 700 }}>.{cents}</span>
       </div>
-      <div style={{ color: "#556", fontSize: 11, marginTop: 4 }}>earned since you opened this page</div>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 10, borderTop: "1px solid #3a1a1a", paddingTop: 8 }}>{block.context}</div>}
+      <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 4 }}>earned since you opened this page</div>
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 10, borderTop: "1px solid #3a1a1a", paddingTop: 8 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1240,21 +1241,21 @@ function ZoneMapBlock({ block }) {
   return (
     <div style={{ background: "#1a1f2e", border: "1px solid #3a4268", borderRadius: 8, padding: "20px 22px" }}>
       <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: 1 }}>{block.title}</div>
-      {block.unit && <div style={{ color: "#556", fontSize: 11, marginBottom: 14 }}>Measured in: {block.unit}</div>}
+      {block.unit && <div style={{ color: "#8fa3b8", fontSize: 11, marginBottom: 14 }}>Measured in: {block.unit}</div>}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {(block.zones || []).map((z, i) => {
           const c = STATUS_COLORS[z.status] || "#888";
           return (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: c, flexShrink: 0 }} />
-              <div style={{ flex: 1, color: "#ccc", fontSize: 13 }}>{z.name}</div>
+              <div style={{ flex: 1, color: "#c8d1dc", fontSize: 13 }}>{z.name}</div>
               <div style={{ color: c, fontSize: 13, fontWeight: 700 }}>{z.value}</div>
               <div style={{ background: c+"33", color: c, fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{z.status}</div>
             </div>
           );
         })}
       </div>
-      {block.context && <div style={{ color: "#889", fontSize: 11, marginTop: 12, borderTop: "1px solid #2a3040", paddingTop: 10 }}>{block.context}</div>}
+      {block.context && <div style={{ color: "#8fa3b8", fontSize: 11, marginTop: 12, borderTop: "1px solid #2a3040", paddingTop: 10 }}>{block.context}</div>}
     </div>
   );
 }
@@ -1268,7 +1269,7 @@ function StatBlockPreview({ block }) {
     case "bar-chart":      return <BarBlock block={block} />;
     case "pay-clock":      return <PayClockBlock block={block} />;
     case "zone-map":       return <ZoneMapBlock block={block} />;
-    default: return <div style={{ color: "#556", padding: 16 }}>Unknown type: {block.type}</div>;
+    default: return <div style={{ color: "#8fa3b8", padding: 16 }}>Unknown type: {block.type}</div>;
   }
 }
 
@@ -1302,7 +1303,7 @@ function IssueCardMini({ card }) {
       <div style={{ color: "#555", fontSize: 14, lineHeight: 1.6 }}>{card.summary}</div>
       {card.decoder?.whatsHappening && (
         <div style={{ marginTop: 14, borderLeft: "3px solid #b8860b", paddingLeft: 12 }}>
-          <div style={{ color: "#b8860b", fontSize: 10, fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>What's Happening</div>
+          <div style={{ color: "#f0c93a", fontSize: 10, fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>What's Happening</div>
           <div style={{ color: "#444", fontSize: 13, lineHeight: 1.5 }}>{card.decoder.whatsHappening}</div>
         </div>
       )}
@@ -1317,15 +1318,15 @@ function ConfirmIssueModal({ card, onConfirm, onCancel, publishing, isMobile = f
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:580, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
-        <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
-          <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
-          <div style={{ color:"#193150", fontSize:18, fontWeight:700 }}>This issue will go live on HSV Civic Watch</div>
-          <div style={{ color:"#b0bec5", fontSize:13, marginTop:4 }}>Review before confirming.</div>
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:580, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
+        <div style={{ padding:"22px 28px", borderBottom:"1px solid #4a5268" }}>
+          <div style={{ color:"#5DBF85", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
+          <div style={{ color:"#ffffff", fontSize:18, fontWeight:700 }}>This issue will go live on HSV Civic Watch</div>
+          <div style={{ color:"#8fa3b8", fontSize:13, marginTop:4 }}>Review before confirming.</div>
         </div>
         <div style={{ padding:22 }}><IssueCardMini card={card} /></div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #4a5268", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
           <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish"}
           </button>
@@ -1340,16 +1341,16 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
-        <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
-          <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
-          <div style={{ color:"#193150", fontSize:18, fontWeight:700 }}>This visual will go live on HSV Civic Watch</div>
-          <div style={{ color:"#b0bec5", fontSize:13, marginTop:4 }}>{block.module} -- {block.tab} -- {block.type}</div>
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
+        <div style={{ padding:"22px 28px", borderBottom:"1px solid #4a5268" }}>
+          <div style={{ color:"#5DBF85", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Publish</div>
+          <div style={{ color:"#ffffff", fontSize:18, fontWeight:700 }}>This visual will go live on HSV Civic Watch</div>
+          <div style={{ color:"#8fa3b8", fontSize:13, marginTop:4 }}>{block.module} -- {block.tab} -- {block.type}</div>
           {issueCardsForModule?.length > 0 && (
             <div style={{ marginTop:14 }}>
-              <div style={{ color:"#4a5a6e", fontSize:13, fontWeight:600, marginBottom:6 }}>Link to Issue Card:</div>
+              <div style={{ color:"#c8d1dc", fontSize:13, fontWeight:600, marginBottom:6 }}>Link to Issue Card:</div>
               <select value={linkedRef} onChange={e => setLinkedRef(e.target.value)}
-                style={{ width:"100%", background:"#fff", border:"1px solid #ddd8cf", borderRadius:4, padding:"10px 12px", fontSize:13, color:"#193150", outline:"none" }}>
+                style={{ width:"100%", background:"#f5f0e8", border:"1px solid #4a5268", borderRadius:4, padding:"10px 12px", fontSize:13, color:"#193150", outline:"none" }}>
                 <option value="">No link (module-level only)</option>
                 {issueCardsForModule.map(ic => (
                   <option key={ic.ref_number} value={ic.ref_number}>{ic.ref_number} -- {ic.title}</option>
@@ -1359,8 +1360,8 @@ function ConfirmStatModal({ card: block, issueCardsForModule, onConfirm, onCance
           )}
         </div>
         <div style={{ padding:22 }}><StatBlockPreview block={block} /></div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #4a5268", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
           <button onClick={() => onConfirm(linkedRef)} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish"}
           </button>
@@ -1375,35 +1376,35 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:isMobile ? "flex-end" : "center", justifyContent:"center", padding:isMobile ? 0 : 20 }}>
       <style>{pulseWiggleStyle()}</style>
-      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
-        <div style={{ padding:"22px 28px", borderBottom:"1px solid #ddd8cf" }}>
-          <div style={{ color:"#1a7a3a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Bulk Publish</div>
-          <div style={{ color:"#193150", fontSize:18, fontWeight:700 }}>{total} item{total !== 1 ? "s" : ""} going live</div>
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:isMobile ? "12px 12px 0 0" : 10, width:"100%", maxWidth:520, boxShadow:"0 20px 60px rgba(0,0,0,0.3)", position:isMobile ? "fixed" : "relative", bottom:isMobile ? 0 : "auto", left:isMobile ? 0 : "auto", right:isMobile ? 0 : "auto", animation:isMobile ? "slideUp 0.22s ease-out" : "none" }}>
+        <div style={{ padding:"22px 28px", borderBottom:"1px solid #4a5268" }}>
+          <div style={{ color:"#5DBF85", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>Confirm Bulk Publish</div>
+          <div style={{ color:"#ffffff", fontSize:18, fontWeight:700 }}>{total} item{total !== 1 ? "s" : ""} going live</div>
         </div>
         <div style={{ padding:22, maxHeight:340, overflowY:"auto" }}>
           {issueCards.map((c,i) => (
-            <div key={"ic"+i} style={{ padding:"12px 16px", background:"#fff", border:"1px solid #ddd8cf", borderRadius:6, marginBottom:10, display:"flex", gap:12 }}>
+            <div key={"ic"+i} style={{ padding:"12px 16px", background:"#353b48", border:"1px solid #4a5268", borderRadius:6, marginBottom:10, display:"flex", gap:12 }}>
               <span style={{ color:"#1a7a3a", fontSize:20, flexShrink:0 }}>&#10003;</span>
               <div>
-                <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Issue Card</div>
-                <div style={{ color:"#193150", fontSize:15, fontWeight:700 }}>{c.title}</div>
-                <div style={{ color:"#b0bec5", fontSize:13 }}>{c.module}</div>
+                <div style={{ color:"#f0c93a", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Issue Card</div>
+                <div style={{ color:"#ffffff", fontSize:15, fontWeight:700 }}>{c.title}</div>
+                <div style={{ color:"#8fa3b8", fontSize:13 }}>{c.module}</div>
               </div>
             </div>
           ))}
           {statBlocks.map((b,i) => (
-            <div key={"sb"+i} style={{ padding:"12px 16px", background:"#fff", border:"1px solid #ddd8cf", borderRadius:6, marginBottom:10, display:"flex", gap:12 }}>
+            <div key={"sb"+i} style={{ padding:"12px 16px", background:"#353b48", border:"1px solid #4a5268", borderRadius:6, marginBottom:10, display:"flex", gap:12 }}>
               <span style={{ color:"#1a5276", fontSize:20, flexShrink:0 }}>&#9670;</span>
               <div>
                 <div style={{ color:"#1a5276", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:2 }}>Stat Block -- {b.type}</div>
-                <div style={{ color:"#193150", fontSize:15, fontWeight:700 }}>{b.label || b.title}</div>
-                <div style={{ color:"#b0bec5", fontSize:13 }}>{b.module} -- {b.tab}</div>
+                <div style={{ color:"#ffffff", fontSize:15, fontWeight:700 }}>{b.label || b.title}</div>
+                <div style={{ color:"#8fa3b8", fontSize:13 }}>{b.module} -- {b.tab}</div>
               </div>
             </div>
           ))}
         </div>
-        <div style={{ padding:"18px 28px", borderTop:"1px solid #ddd8cf", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
-          <button onClick={onCancel} disabled={publishing} style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
+        <div style={{ padding:"18px 28px", borderTop:"1px solid #4a5268", display:"flex", gap:12, justifyContent:"flex-end", flexDirection:isMobile ? "column-reverse" : "row" }}>
+          <button onClick={onCancel} disabled={publishing} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700, width:isMobile ? "100%" : "auto" }}>Cancel</button>
           <button onClick={onConfirm} disabled={publishing} style={{ background:publishing?"#1a5c2a":"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:publishing?"not-allowed":"pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {publishing ? "Going Live..." : "Confirm & Publish All"}
           </button>
@@ -1417,25 +1418,25 @@ function BulkConfirmModal({ issueCards, statBlocks, onConfirm, onCancel, publish
 
 function IssueRow({ card, selected, onToggle, onApprove, onReject, onEdit, isMobile = false }) {
   return (
-    <div style={{ background:selected?"#fef9ec":"#f5f0e8", border:"2px solid "+(selected?"#b8860b":"#ddd8cf"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
+    <div style={{ background:selected?"rgba(198,163,77,0.13)":"#353b48", border:"2px solid "+(selected?"#C6A34D":"#4a5268"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
       <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", alignItems:isMobile ? "stretch" : "center", gap:14, padding:"18px 22px" }}>
         <div style={{ display:"flex", gap:14, alignItems:isMobile ? "flex-start" : "center", flex:1, minWidth:0 }}>
           <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0, marginTop:isMobile ? 2 : 0 }} />
           <div style={{ display:"flex", flexDirection:"column", gap:10, flex:1, minWidth:0 }}>
             <div style={{ display:"flex", gap:8, flexShrink:0, flexWrap:"wrap" }}>
               <span style={{ background:"#b8860b", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{card.label}</span>
-              <span style={{ background:"#e8e4dc", color:"#4a5a6e", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{card.module}</span>
+              <span style={{ background:"#353b48", border:"1px solid #4a5268", color:"#c8d1dc", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{card.module}</span>
             </div>
-            <div style={{ color:"#193150", fontSize:16, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
+            <div style={{ color:"#ffffff", fontSize:16, fontWeight:700, flex:1, lineHeight:1.3 }}>{card.title}</div>
           </div>
         </div>
         <div style={{ display:"flex", gap:12, width:isMobile ? "100%" : "auto" }}>
-          <button onClick={onEdit} style={{ width:isMobile ? "auto" : 84, height:48, borderRadius:isMobile ? 8 : 24, background:"#fef9ec", border:"2px solid #b8860b", color:"#b8860b", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>Edit</button>
+          <button onClick={onEdit} style={{ width:isMobile ? "auto" : 84, height:48, borderRadius:isMobile ? 8 : 24, background:"#353b48", border:"2px solid #C6A34D", color:"#f0c93a", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>Edit</button>
           <button onClick={onApprove} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10003;</button>
           <button onClick={onReject} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10005;</button>
         </div>
       </div>
-      <div style={{ padding:isMobile ? "0 22px 18px" : "0 22px 18px 64px", color:"#4a5a6e", fontSize:14, lineHeight:1.6 }}>
+      <div style={{ padding:isMobile ? "0 22px 18px" : "0 22px 18px 64px", color:"#c8d1dc", fontSize:14, lineHeight:1.6 }}>
         {card.summary}
         <ActionBadges actions={card.actions} />
       </div>
@@ -1448,26 +1449,26 @@ function StatRow({ block, selected, onToggle, onApprove, onReject, onEdit, isMob
   const labels = { "key-number":"Key Number","comparison-bar":"Comparison Bar","pie-chart":"Pie Chart","trend-line":"Trend Line","bar-chart":"Bar Chart","pay-clock":"Pay Clock","zone-map":"Zone Map" };
   const showPreview = isMobile || expanded;
   return (
-    <div style={{ background:selected?"#fef9ec":"#f5f0e8", border:"2px solid "+(selected?"#b8860b":"#ddd8cf"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
+    <div style={{ background:selected?"rgba(198,163,77,0.13)":"#353b48", border:"2px solid "+(selected?"#C6A34D":"#4a5268"), borderRadius:10, marginBottom:14, overflow:"hidden", transition:"all 0.15s" }}>
       <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", alignItems:isMobile ? "stretch" : "center", gap:14, padding:"18px 22px" }}>
         <div style={{ display:"flex", gap:14, alignItems:isMobile ? "flex-start" : "center", flex:1, minWidth:0 }}>
           <input type="checkbox" checked={selected} onChange={onToggle} style={{ width:20, height:20, accentColor:"#b8860b", cursor:"pointer", flexShrink:0, marginTop:isMobile ? 2 : 0 }} />
           <div style={{ display:"flex", flexDirection:"column", gap:10, flex:1, minWidth:0 }}>
             <div style={{ display:"flex", gap:8, flexShrink:0, flexWrap:"wrap" }}>
               <span style={{ background:"#1a5276", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 9px", borderRadius:3, textTransform:"uppercase" }}>{labels[block.type] || block.type}</span>
-              <span style={{ background:"#e8e4dc", color:"#4a5a6e", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{block.module}</span>
+              <span style={{ background:"#353b48", border:"1px solid #4a5268", color:"#c8d1dc", fontSize:11, padding:"3px 9px", borderRadius:3 }}>{block.module}</span>
             </div>
-            <div style={{ color:"#193150", fontSize:16, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
+            <div style={{ color:"#ffffff", fontSize:16, fontWeight:700, flex:1 }}>{block.label || block.title}</div>
           </div>
         </div>
-        {!isMobile ? <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:"7px 14px", fontSize:13, cursor:"pointer", flexShrink:0, fontWeight:600 }}>{expanded?"Hide":"Preview"}</button> : null}
+        {!isMobile ? <button onClick={() => setExpanded(v => !v)} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"7px 14px", fontSize:13, cursor:"pointer", flexShrink:0, fontWeight:600 }}>{expanded?"Hide":"Preview"}</button> : null}
         <div style={{ display:"flex", gap:12, width:isMobile ? "100%" : "auto" }}>
-          <button onClick={onEdit} style={{ width:isMobile ? "auto" : 84, height:48, borderRadius:isMobile ? 8 : 24, background:"#fef9ec", border:"2px solid #b8860b", color:"#b8860b", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>Edit</button>
+          <button onClick={onEdit} style={{ width:isMobile ? "auto" : 84, height:48, borderRadius:isMobile ? 8 : 24, background:"#353b48", border:"2px solid #C6A34D", color:"#f0c93a", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>Edit</button>
           <button onClick={onApprove} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#e8f5ed", border:"2px solid #1a7a3a", color:"#1a7a3a", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10003;</button>
           <button onClick={onReject} style={{ width:isMobile ? "auto" : 46, height:48, borderRadius:isMobile ? 8 : "50%", background:"#fef2f2", border:"2px solid #b91c1c", color:"#b91c1c", fontSize:isMobile ? 15 : 24, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontWeight:700, flex:isMobile ? 1 : "0 0 auto" }}>&#10005;</button>
         </div>
       </div>
-      <div style={{ padding:isMobile ? "0 22px 12px" : "0 22px 12px 64px", color:"#b0bec5", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
+      <div style={{ padding:isMobile ? "0 22px 12px" : "0 22px 12px 64px", color:"#8fa3b8", fontSize:13 }}>{block.tab} tab -- {block.context}</div>
       {showPreview && <div style={{ padding:"0 22px 22px" }}><StatBlockPreview block={block} /></div>}
     </div>
   );
@@ -1506,7 +1507,7 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate, isMobi
       </div>
       {expanded && (
         <div style={{ padding:"0 22px 20px", borderTop:"1px solid #e8e4dc" }}>
-          <div style={{ color:"#4a5a6e", fontSize:15, lineHeight:1.6, marginTop:14 }}>{card.summary}</div>
+          <div style={{ color:"#c8d1dc", fontSize:15, lineHeight:1.6, marginTop:14 }}>{card.summary}</div>
         </div>
       )}
     </div>
@@ -1586,8 +1587,8 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
     <div>
       <div style={{ display:"flex", flexDirection:isMobile ? "column" : "row", justifyContent:"space-between", alignItems:"flex-start", gap:12, marginBottom:8 }}>
         <div>
-          <h2 style={{ color:"#193150", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
-          <p style={{ color:"#4a5a6e", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
+          <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Published</h2>
+          <p style={{ color:"#c8d1dc", fontSize:15, margin:"0 0 12px" }}>{pubIssues.length} issue card(s) &middot; {pubStats.length} stat block(s) live</p>
           <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:12, flexWrap:"wrap" }}>
             <button
               onClick={handleExport}
@@ -1608,12 +1609,12 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
               {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "Export for NotebookLM"}
             </button>
             {getLastExportLabel() && exportStatus !== "success" && (
-              <span style={{ color:"#4a5a6e", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
+              <span style={{ color:"#c8d1dc", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
             )}
           </div>
           {exportStatus === "fallback" && (
             <div style={{ marginBottom:12 }}>
-              <p style={{ color:"#4a5a6e", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
+              <p style={{ color:"#c8d1dc", fontSize:12, margin:"0 0 6px" }}>Clipboard blocked — select all and copy manually:</p>
               <textarea
                 ref={fallbackRef}
                 readOnly
@@ -1662,7 +1663,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
       {section === "issues" && (
         <div>
           {Object.keys(issuesByModule).length === 0 && (
-            <div style={{ textAlign:"center", padding:"60px 0", color:"#7a8a9a" }}>
+            <div style={{ textAlign:"center", padding:"60px 0", color:"#8fa3b8" }}>
               <div style={{ fontSize:40, marginBottom:16 }}>&#9670;</div>
               <div style={{ fontSize:16 }}>No issue cards published yet.</div>
             </div>
@@ -1671,7 +1672,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
             <div key={module} style={{ marginBottom:32 }}>
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
                 <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
-                <span style={{ color:"#7a8a9a", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
+                <span style={{ color:"#8fa3b8", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
               {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} animate={animateId === card.id} isMobile={isMobile} />)}
             </div>
@@ -1681,7 +1682,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
       {section === "stats" && (
         <div>
           {Object.keys(statsByModule).length === 0 && (
-            <div style={{ textAlign:"center", padding:"60px 0", color:"#7a8a9a" }}>
+            <div style={{ textAlign:"center", padding:"60px 0", color:"#8fa3b8" }}>
               <div style={{ fontSize:40, marginBottom:16 }}>&#9670;</div>
               <div style={{ fontSize:16 }}>No stat blocks published yet.</div>
             </div>
@@ -1690,7 +1691,7 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
             <div key={module} style={{ marginBottom:32 }}>
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
                 <span style={{ background:"#1a5276", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
-                <span style={{ color:"#7a8a9a", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
+                <span style={{ color:"#8fa3b8", fontSize:14 }}>{blocks.length} block{blocks.length !== 1 ? "s" : ""}</span>
               </div>
               {[...blocks].sort((a,b) => (b.strength_score||0)-(a.strength_score||0)).map((block, i) => (
                 <PublishedStatBlock key={block.id || i} block={block} onDelete={onDeleteStat} onEdit={onEditStat} highlight={highlightId === block.id} animate={animateId === block.id} isMobile={isMobile} />
@@ -1781,7 +1782,7 @@ function SocialSlide({ slide, index, imageUrl, slideRef }) {
       <div style={{ height:5, background:"linear-gradient(90deg," + meta.color + ",transparent)", flexShrink:0 }}/>
       <div style={{ padding:"10px 18px", display:"flex", alignItems:"center", gap:10, borderBottom:"1px solid " + meta.color + "33", flexShrink:0, position:"relative" }}>
         <div style={{ background:meta.color, color:"#fff", fontSize:8, fontWeight:900, padding:"3px 8px", borderRadius:2, letterSpacing:2, textTransform:"uppercase" }}>HSV CIVIC WATCH</div>
-        <div style={{ color:"#556", fontSize:8, letterSpacing:1, textTransform:"uppercase" }}>Huntsville, AL</div>
+        <div style={{ color:"#8fa3b8", fontSize:8, letterSpacing:1, textTransform:"uppercase" }}>Huntsville, AL</div>
         <div style={{ marginLeft:"auto", color:meta.color, fontSize:10, fontWeight:700 }}>{index+1} / 4</div>
       </div>
       <div style={{
@@ -1796,7 +1797,7 @@ function SocialSlide({ slide, index, imageUrl, slideRef }) {
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14 }}>
             <div style={{ color:meta.color, fontSize:28, fontWeight:900, letterSpacing:-1, lineHeight:1 }}>HSV<br/>CIVIC<br/>WATCH</div>
             <div style={{ width:36, height:2, background:meta.color }}/>
-            <div style={{ color:"#ccc", fontSize:12, lineHeight:1.6, maxWidth:200 }}>{slide.body}</div>
+            <div style={{ color:"#c8d1dc", fontSize:12, lineHeight:1.6, maxWidth:200 }}>{slide.body}</div>
             <div style={{ background:meta.color, color:"#fff", fontSize:11, fontWeight:700, padding:"10px 20px", borderRadius:4, letterSpacing:1, textTransform:"uppercase" }}>
               www.hsvcivicwatch.org
             </div>
@@ -1813,12 +1814,12 @@ function SocialSlide({ slide, index, imageUrl, slideRef }) {
             {slide.stat && (
               <div style={{ background:meta.color + "22", border:"1px solid " + meta.color, borderLeft:"4px solid " + meta.color, borderRadius:6, padding:"8px 12px", marginBottom:12 }}>
                 <div style={{ color:meta.color, fontSize:26, fontWeight:900, lineHeight:1, fontFamily:"Georgia,serif" }}>{slide.stat}</div>
-                {slide.statLabel && <div style={{ color:"#ccc", fontSize:10, marginTop:3 }}>{slide.statLabel}</div>}
+                {slide.statLabel && <div style={{ color:"#c8d1dc", fontSize:10, marginTop:3 }}>{slide.statLabel}</div>}
               </div>
             )}
-            <div style={{ color:"#bbb", fontSize:11, lineHeight:1.65, flex:1 }}>{slide.body}</div>
+            <div style={{ color:"#c8d1dc", fontSize:11, lineHeight:1.65, flex:1 }}>{slide.body}</div>
             {index===2 && slide.source && (
-              <div style={{ marginTop:10, color:"#556", fontSize:9, fontStyle:"italic", borderTop:"1px solid " + meta.color + "33", paddingTop:7 }}>
+              <div style={{ marginTop:10, color:"#8fa3b8", fontSize:9, fontStyle:"italic", borderTop:"1px solid " + meta.color + "33", paddingTop:7 }}>
                 Source: {slide.source}
               </div>
             )}
@@ -2061,10 +2062,10 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
   if (pubIssues.length === 0) {
     return (
-      <div style={{ textAlign:"center", padding:"80px 0", color:"#7a8a9a" }}>
+      <div style={{ textAlign:"center", padding:"80px 0", color:"#8fa3b8" }}>
         <div style={{ fontSize:44, marginBottom:18 }}>&#128247;</div>
         <div style={{ fontSize:18, marginBottom:8 }}>No published issue cards yet.</div>
-        <div style={{ fontSize:14, color:"#556" }}>Publish issue cards first to generate social media content.</div>
+        <div style={{ fontSize:14, color:"#8fa3b8" }}>Publish issue cards first to generate social media content.</div>
       </div>
     );
   }
@@ -2074,17 +2075,17 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
       {/* Header row */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20, flexWrap:"wrap", gap:12 }}>
         <div>
-          <h2 style={{ color:"#193150", fontSize:22, fontWeight:900, margin:"0 0 4px" }}>Social Media Content</h2>
-          <p style={{ color:"#4a5a6e", fontSize:13, margin:0 }}>
-            Rotation {selectedIndex+1} of {rotationList.length} &middot; Next scheduled: <span style={{ color:"#b8860b", fontWeight:700 }}>{nextPostDate}</span>
+          <h2 style={{ color:"#ffffff", fontSize:22, fontWeight:900, margin:"0 0 4px" }}>Social Media Content</h2>
+          <p style={{ color:"#c8d1dc", fontSize:13, margin:0 }}>
+            Rotation {selectedIndex+1} of {rotationList.length} &middot; Next scheduled: <span style={{ color:"#f0c93a", fontWeight:700 }}>{nextPostDate}</span>
           </p>
         </div>
         {slides && (
           <div style={{ display:"flex", gap:8, flexWrap:"wrap", justifyContent:"flex-end" }}>
-            <button onClick={copyAllText} style={{ background:copied==="all"?"#1a7a3a":"#e8e4dc", color:copied==="all"?"#fff":"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+            <button onClick={copyAllText} style={{ background:copied==="all"?"#1a7a3a":"#353b48", color:copied==="all"?"#fff":"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
               {copied==="all"?"Copied!":"Copy All Text"}
             </button>
-            <button onClick={downloadAll} style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+            <button onClick={downloadAll} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
               Download All 4
             </button>
             <button onClick={handleMarkPosted} style={{ background:markedPosted?"#1a7a3a":"#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"8px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>
@@ -2096,31 +2097,31 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
       {/* Up next — big queued card */}
       {selectedCard && (
-        <div style={{ background:"#193150", border:"2px solid rgba(198,163,77,0.45)", borderRadius:12, padding:isMobile ? "12px 14px" : "18px 22px", marginBottom:20 }}>
+        <div style={{ background:"#353b48", border:"2px solid rgba(198,163,77,0.45)", borderRadius:12, padding:isMobile ? "12px 14px" : "18px 22px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-            <div style={{ width:8, height:8, borderRadius:"50%", background:"#b8860b", flexShrink:0 }}/>
-            <span style={{ color:"#b8860b", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2 }}>Up Next</span>
-            <span style={{ background:"rgba(198,163,77,0.15)", color:"#b8860b", border:"1px solid rgba(198,163,77,0.35)", fontSize:10, fontWeight:700, padding:"2px 9px", borderRadius:3, textTransform:"uppercase", marginLeft:"auto" }}>{selectedCard.module}</span>
+            <div style={{ width:8, height:8, borderRadius:"50%", background:"#f0c93a", flexShrink:0 }}/>
+            <span style={{ color:"#f0c93a", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2 }}>Up Next</span>
+            <span style={{ background:"rgba(198,163,77,0.15)", color:"#f0c93a", border:"1px solid rgba(198,163,77,0.35)", fontSize:10, fontWeight:700, padding:"2px 9px", borderRadius:3, textTransform:"uppercase", marginLeft:"auto" }}>{selectedCard.module}</span>
             {selectedCard.ref_number && (
-              <span style={{ color:"rgba(247,243,234,0.45)", fontSize:10, fontWeight:700 }}>{selectedCard.ref_number}</span>
+              <span style={{ color:"#8fa3b8", fontSize:10, fontWeight:700 }}>{selectedCard.ref_number}</span>
             )}
           </div>
-          <div style={{ color:"#f7f3ea", fontSize:isMobile ? 15 : 18, fontWeight:900, lineHeight:1.25, marginBottom:10 }}>{selectedCard.title}</div>
+          <div style={{ color:"#ffffff", fontSize:isMobile ? 15 : 18, fontWeight:900, lineHeight:1.25, marginBottom:10 }}>{selectedCard.title}</div>
           {(selectedCard.label) && (
-            <div style={{ display:"inline-block", background:"rgba(198,163,77,0.18)", color:"#b8860b", fontSize:10, fontWeight:900, letterSpacing:1.5, textTransform:"uppercase", padding:"3px 10px", borderRadius:4, marginBottom:10 }}>{selectedCard.label}</div>
+            <div style={{ display:"inline-block", background:"rgba(198,163,77,0.18)", color:"#f0c93a", fontSize:10, fontWeight:900, letterSpacing:1.5, textTransform:"uppercase", padding:"3px 10px", borderRadius:4, marginBottom:10 }}>{selectedCard.label}</div>
           )}
           {(selectedCard.summary) && (
-            <div style={{ color:"rgba(247,243,234,0.65)", fontSize:13, lineHeight:1.6, marginBottom:14, maxWidth:680 }}>{selectedCard.summary.slice(0,220)}{selectedCard.summary.length>220?"…":""}</div>
+            <div style={{ color:"#c8d1dc", fontSize:13, lineHeight:1.6, marginBottom:14, maxWidth:680 }}>{selectedCard.summary.slice(0,220)}{selectedCard.summary.length>220?"…":""}</div>
           )}
           <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
             {!isMobile && selectedCard.shock_factor && (
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ color:"rgba(247,243,234,0.4)", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Shock</span>
+                <span style={{ color:"#8fa3b8", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Shock</span>
                 <span style={{ color:"#e07068", fontSize:13, fontWeight:900 }}>{selectedCard.shock_factor}/10</span>
               </div>
             )}
             {!isMobile && moduleStats.length > 0 && (
-              <div style={{ color:"rgba(247,243,234,0.45)", fontSize:11 }}>
+              <div style={{ color:"#8fa3b8", fontSize:11 }}>
                 {moduleStats.length} stat block{moduleStats.length!==1?"s":""} queued for generation
               </div>
             )}
@@ -2147,7 +2148,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
       {/* Rotation queue */}
       <div style={{ marginBottom:20 }}>
-        <div style={{ color:"#4a5a6e", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
+        <div style={{ color:"#c8d1dc", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
           Rotation Order — Select to Override
         </div>
         <div style={{ display:"flex", gap:8, flexWrap:isMobile ? "nowrap" : "wrap", flexDirection:isMobile ? "column" : "row" }}>
@@ -2155,26 +2156,26 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
             <button key={card.id||i}
               onClick={()=>{ setSelectedIndex(i); setSlides(null); setImageUrls([null,null,null]); }}
               style={{
-                background:selectedIndex===i?"#193150":"#f5f0e8",
-                color:selectedIndex===i?"#f7f3ea":"#193150",
-                border:selectedIndex===i?"2px solid rgba(198,163,77,0.7)":"2px solid #ddd8cf",
+                background:selectedIndex===i?"#353b48":"#2e3440",
+                color:selectedIndex===i?"#ffffff":"#c8d1dc",
+                border:selectedIndex===i?"2px solid rgba(198,163,77,0.7)":"2px solid #4a5268",
                 borderRadius:8, padding:"10px 14px", fontSize:11,
                 fontWeight:700, cursor:"pointer",
                 display:"flex", flexDirection:isMobile ? "row" : "column", alignItems:isMobile ? "center" : "flex-start",
                 justifyContent:isMobile ? "space-between" : "flex-start",
                 gap:4, textAlign:"left", minWidth:160, maxWidth:200,
-                boxShadow:selectedIndex===i?"0 2px 10px rgba(25,49,80,0.18)":"none",
+                boxShadow:selectedIndex===i?"0 2px 10px rgba(0,0,0,0.18)":"none",
                 width:isMobile ? "100%" : "auto",
                 maxWidth:isMobile ? "none" : 200,
               }}>
               <div style={{ display:"flex", gap:6, alignItems:"center", width:isMobile ? "auto" : "100%" }}>
-                <span style={{ fontSize:9, fontWeight:900, color:selectedIndex===i?"#b8860b":"#7a8a9a", textTransform:"uppercase", letterSpacing:1 }}>
+                <span style={{ fontSize:9, fontWeight:900, color:selectedIndex===i?"#f0c93a":"#8fa3b8", textTransform:"uppercase", letterSpacing:1 }}>
                   {[card.ref_number, card.module].filter(Boolean).join(" · ")}
                 </span>
               </div>
               <span style={{ fontSize:12, lineHeight:1.3, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", flex:isMobile ? 1 : "none", marginLeft:isMobile ? 10 : 0 }}>{card.title}</span>
               {card.label && (
-                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:selectedIndex===i?"#b8860b":"#9aabb8", marginTop:isMobile ? 0 : 2, marginLeft:isMobile ? 10 : 0 }}>{card.label}</span>
+                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:selectedIndex===i?"#f0c93a":"#8fa3b8", marginTop:isMobile ? 0 : 2, marginLeft:isMobile ? 10 : 0 }}>{card.label}</span>
               )}
             </button>
           ))}
@@ -2188,26 +2189,26 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
       {slides && (
         <div>
-          <div style={{ color:"#7a8a9a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:16 }}>
+          <div style={{ color:"#8fa3b8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:16 }}>
             Preview -- {selectedCard?.title}
           </div>
             <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
               {slides.map((slide,i)=>(
                 <div key={i} style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   <SocialSlide slide={slide} index={i} imageUrl={imageUrls[i]} slideRef={slideRefs[i]}/>
-                <div style={{ width:540, background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 14px" }}>
-                  {slide.headline && <div style={{ color:"#193150", fontWeight:700, marginBottom:4, fontSize:12, fontFamily:"Georgia,serif" }}>{slide.headline}</div>}
-                  {slide.stat && <div style={{ color:"#b8860b", fontWeight:700, marginBottom:2, fontSize:12 }}>{slide.stat} {slide.statLabel}</div>}
-                  <div style={{ color:"#333", fontSize:11 }}>{slide.body}</div>
-                  {slide.source && <div style={{ color:"#4a5a6e", marginTop:4, fontStyle:"italic", fontSize:11 }}>Source: {slide.source}</div>}
-                  {i===3 && <div style={{ color:"#b8860b", fontWeight:700, marginTop:4, fontSize:12 }}>www.hsvcivicwatch.org</div>}
+                <div style={{ width:540, background:"#353b48", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px" }}>
+                  {slide.headline && <div style={{ color:"#ffffff", fontWeight:700, marginBottom:4, fontSize:12, fontFamily:"Georgia,serif" }}>{slide.headline}</div>}
+                  {slide.stat && <div style={{ color:"#f0c93a", fontWeight:700, marginBottom:2, fontSize:12 }}>{slide.stat} {slide.statLabel}</div>}
+                  <div style={{ color:"#c8d1dc", fontSize:11 }}>{slide.body}</div>
+                  {slide.source && <div style={{ color:"#c8d1dc", marginTop:4, fontStyle:"italic", fontSize:11 }}>Source: {slide.source}</div>}
+                  {i===3 && <div style={{ color:"#f0c93a", fontWeight:700, marginTop:4, fontSize:12 }}>www.hsvcivicwatch.org</div>}
                   <div style={{ display:"flex", gap:8, marginTop:10 }}>
                     <button onClick={()=>copySlideText(slide,i)}
-                      style={{ background:copied===i?"#1a7a3a":"#e8e4dc", color:copied===i?"#fff":"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:"pointer", flex:1 }}>
+                      style={{ background:copied===i?"#1a7a3a":"#353b48", color:copied===i?"#fff":"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:"pointer", flex:1 }}>
                       {copied===i?"Copied!":"Copy Text"}
                     </button>
                     <button onClick={()=>downloadSlide(i)} disabled={downloading===i}
-                      style={{ background:downloading===i?"#888":"#e8e4dc", color:downloading===i?"#fff":"#555", border:"1px solid #ddd8cf", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:downloading===i?"not-allowed":"pointer", flex:1 }}>
+                      style={{ background:downloading===i?"#4a5268":"#353b48", color:downloading===i?"#fff":"#c8d1dc", border:"1px solid #4a5268", borderRadius:4, padding:"6px 12px", fontSize:11, fontWeight:700, cursor:downloading===i?"not-allowed":"pointer", flex:1 }}>
                       {downloading===i?"Saving...":"Download PNG"}
                     </button>
                   </div>
@@ -2215,8 +2216,8 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
               </div>
             ))}
           </div>
-          <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"16px 20px", marginTop:28, color:"#4a5a6e", fontSize:13, lineHeight:1.6 }}>
-            <strong style={{ color:"#b8860b" }}>Posting workflow:</strong> Download all 4 PNGs, then upload as a multi-image post on Instagram or Facebook. Paste the slide text as your caption. Once posted, click <strong style={{ color:"#f5f0e8" }}>Mark as Posted &amp; Advance</strong> to move the queue to the next card.
+          <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"16px 20px", marginTop:28, color:"#c8d1dc", fontSize:13, lineHeight:1.6 }}>
+            <strong style={{ color:"#f0c93a" }}>Posting workflow:</strong> Download all 4 PNGs, then upload as a multi-image post on Instagram or Facebook. Paste the slide text as your caption. Once posted, click <strong style={{ color:"#ffffff" }}>Mark as Posted &amp; Advance</strong> to move the queue to the next card.
           </div>
         </div>
       )}
@@ -2226,7 +2227,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
 function AdminPreviewBadge({ children }) {
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", background:"#efe7da", color:"#193150", borderRadius:999, padding:"5px 10px", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginRight:8 }}>
+    <span style={{ display:"inline-flex", alignItems:"center", background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:999, padding:"5px 10px", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1, marginRight:8 }}>
       {children}
     </span>
   );
@@ -2235,7 +2236,7 @@ function AdminPreviewBadge({ children }) {
 function AdminPreviewBlock({ borderColor, children }) {
   if (!children) return null;
   return (
-    <div style={{ borderLeft:`4px solid ${borderColor}`, paddingLeft:12, marginBottom:10, fontSize:14, color:"#193150", lineHeight:1.7 }}>
+    <div style={{ borderLeft:`4px solid ${borderColor}`, paddingLeft:12, marginBottom:10, fontSize:14, color:"#c8d1dc", lineHeight:1.7 }}>
       {children}
     </div>
   );
@@ -3293,10 +3294,10 @@ export default function AdminPanel() {
   const totalDrafts = draftIssues.length + draftStats.length + pasteQueue.reduce((a, b) => a + b.length, 0);
 
   const tabStyle = (id) => ({
-    background: activeTab===id ? "rgba(184,134,11,0.12)" : "transparent",
+    background: activeTab===id ? "rgba(198,163,77,0.13)" : "transparent",
     border: "none",
     borderBottom: activeTab===id ? "3px solid #C6A34D" : "3px solid transparent",
-    color: activeTab===id ? "#b8860b" : "#4a5a6e",
+    color: activeTab===id ? "#f0c93a" : "#c8d1dc",
     padding: isMobile ? "12px 14px" : "12px 20px",
     fontSize: isMobile ? 12 : 13,
     fontWeight: activeTab===id ? 900 : 700,
@@ -3306,7 +3307,7 @@ export default function AdminPanel() {
     marginBottom: 0,
   });
   const adminTabStyle = (id) => ({
-    background: adminTab === id ? "rgba(198,163,77,0.15)" : "transparent",
+    background: adminTab === id ? "rgba(198,163,77,0.13)" : "transparent",
     border:"none",
     borderBottom: adminTab === id ? "3px solid #C6A34D" : "3px solid transparent",
     padding:isMobile ? "12px 14px" : "14px 24px",
@@ -3326,11 +3327,11 @@ export default function AdminPanel() {
   // Queue notice modal
   const QueueNoticeModal = queueNotice > 0 ? (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:3000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div style={{ background:"#353b48", border:"1px solid #b8860b", borderRadius:10, width:"100%", maxWidth:460, padding:"28px 32px", boxShadow:"0 20px 60px rgba(0,0,0,0.4)" }}>
-        <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>Holding Cell</div>
+      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, width:"100%", maxWidth:460, padding:"28px 32px", boxShadow:"0 20px 60px rgba(0,0,0,0.4)" }}>
+        <div style={{ color:"#f0c93a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>Holding Cell</div>
         <div style={{ color:"#fff", fontSize:18, fontWeight:700, marginBottom:10 }}>{queueNotice} card{queueNotice !== 1 ? "s" : ""} moved to the queue</div>
-        <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.6, marginBottom:20 }}>
-          You pasted more than 3 cards. The first 3 are in Review now. The rest have been shelved in the Drafts tab under <strong style={{ color:"#b8860b" }}>Paste Research Queue</strong>, grouped in batches of 3. Process them whenever you are ready.
+        <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.6, marginBottom:20 }}>
+          You pasted more than 3 cards. The first 3 are in Review now. The rest have been shelved in the Drafts tab under <strong style={{ color:"#f0c93a" }}>Paste Research Queue</strong>, grouped in batches of 3. Process them whenever you are ready.
         </div>
         <button onClick={() => setQueueNotice(0)}
           style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
@@ -3385,14 +3386,14 @@ export default function AdminPanel() {
     return (
       <>
         {authLoading ? (
-          <div style={{ color:"#ccc", fontSize:15, textAlign:"center", lineHeight:1.7 }}>
+          <div style={{ color:"#c8d1dc", fontSize:15, textAlign:"center", lineHeight:1.7 }}>
             Checking the current admin session...
           </div>
         ) : null}
 
         {!authLoading && authView === "password" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               Enter your password first. A second factor is required every time before the admin panel opens.
             </div>
             <input
@@ -3420,7 +3421,7 @@ export default function AdminPanel() {
 
         {!authLoading && authView === "mfa-passkey" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               Approve this sign-in with your saved passkey. On Apple devices this can trigger the iPhone or iCloud Keychain approval prompt.
             </div>
             {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
@@ -3440,7 +3441,7 @@ export default function AdminPanel() {
 
         {!authLoading && authView === "mfa-choice" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               Finish the second step before entering the admin panel.
             </div>
             {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
@@ -3460,7 +3461,7 @@ export default function AdminPanel() {
 
         {!authLoading && authView === "mfa-totp" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               Enter the 6-digit code from your authenticator app to finish signing in.
             </div>
             <input
@@ -3491,7 +3492,7 @@ export default function AdminPanel() {
 
         {!authLoading && authView === "setup-choice" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               This admin account needs a second factor before it can be used. The passkey option is the closest match to the iPhone approval flow you asked for.
             </div>
             {authError ? <div style={{ color:"#f5b7b1", fontSize:14, marginBottom:12, lineHeight:1.6 }}>{authError}</div> : null}
@@ -3511,7 +3512,7 @@ export default function AdminPanel() {
 
         {!authLoading && authView === "setup-totp" ? (
           <>
-            <div style={{ color:"#7a8a9a", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
+            <div style={{ color:"#8fa3b8", fontSize:14, lineHeight:1.7, marginBottom:18, textAlign:"center" }}>
               Scan this QR code with your authenticator app, then confirm the 6-digit code below.
             </div>
             {totpSetup?.qrCode ? (
@@ -3560,7 +3561,7 @@ export default function AdminPanel() {
       <div style={{ minHeight:"100vh", background:"#2e3440", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Georgia,serif" }}>
         <div style={{ width:440, padding:52, background:"#353b48", border:"1px solid #4a5268", borderRadius:12, boxShadow:"0 20px 60px rgba(0,0,0,0.4)" }}>
           <div style={{ textAlign:"center", marginBottom:40 }}>
-            <div style={{ color:"#b8860b", fontSize:12, fontWeight:700, letterSpacing:4, textTransform:"uppercase", marginBottom:12 }}>HSV Civic Watch</div>
+            <div style={{ color:"#f0c93a", fontSize:12, fontWeight:700, letterSpacing:4, textTransform:"uppercase", marginBottom:12 }}>HSV Civic Watch</div>
             <div style={{ color:"#fff", fontSize:28, fontWeight:700, marginBottom:14 }}>Content Admin</div>
             <div style={{ color:"#e53e3e", fontSize:18, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>&#9888; Restricted Access</div>
           </div>
@@ -3583,10 +3584,10 @@ export default function AdminPanel() {
     letterSpacing:1,
     width:isMobile ? "100%" : "auto",
   };
-  const pasteStatusStyle = { color:"#bbb", fontSize:14 };
+  const pasteStatusStyle = { color:"#8fa3b8", fontSize:14 };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#193150" }}>
+    <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#c8d1dc" }}>
       <style>{`
         .admin-scroll-tabs {
           scrollbar-width: none;
@@ -3598,7 +3599,7 @@ export default function AdminPanel() {
       `}</style>
       {QueueNoticeModal}
       {savedToast ? (
-        <div style={{ position:"fixed", top:18, right:18, zIndex:5000, background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", borderRadius:8, padding:"12px 16px", fontSize:14, fontWeight:700, boxShadow:"0 10px 28px rgba(0,0,0,0.18)" }}>
+        <div style={{ position:"fixed", top:18, right:18, zIndex:5000, background:"#353b48", color:"#5DBF85", border:"1px solid #4a5268", borderRadius:8, padding:"12px 16px", fontSize:14, fontWeight:700, boxShadow:"0 10px 28px rgba(0,0,0,0.18)" }}>
           {savedToast}
         </div>
       ) : null}
@@ -3631,7 +3632,7 @@ export default function AdminPanel() {
       {/* Header */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:isMobile ? "12px 16px" : "18px 36px", display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", gap:0, background:"#2e3440" }}>
         <div>
-          <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
+          <div style={{ color:"#f0c93a", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
           <div style={{ color:"#fff", fontSize:isMobile ? 13 : 20, fontWeight:700, marginTop:2 }}>Content Admin</div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:10, width:"auto" }}>
@@ -3693,7 +3694,7 @@ export default function AdminPanel() {
             ref={fallbackRef}
             readOnly
             value={fallbackText}
-            style={{ width:"100%", minHeight:120, background:"#f5f0e8", color:"#333", border:"1px solid #ddd8cf", borderRadius:10, padding:12, fontSize:11, fontFamily:"Georgia, serif", resize:"vertical" }}
+            style={{ width:"100%", minHeight:120, background:"#f5f0e8", color:"#193150", border:"1px solid #4a5268", borderRadius:10, padding:12, fontSize:11, fontFamily:"Georgia, serif", resize:"vertical" }}
           />
         </div>
       ) : null}
@@ -3712,17 +3713,17 @@ export default function AdminPanel() {
       <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
         {activeTab === "import" && (
           <div>
-            <h2 style={{ color:"#193150", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
-            <p style={{ color:"#4a5a6e", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#b8860b" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
-            <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:10, marginBottom:18 }}>
+            <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
+            <p style={{ color:"#c8d1dc", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#f0c93a" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
+            <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:10, marginBottom:18 }}>
               <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
                 placeholder={"Paste your formatted research here...\n\nInclude --- ISSUE CARD START/END --- and --- STAT BLOCK START/END --- blocks.\nMultiple of each supported."}
-                style={{ width:"100%", minHeight:isMobile ? 220 : 360, background:"transparent", border:"none", color:"#333", fontSize:isMobile ? 13 : 14, lineHeight:1.7, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:14 }} />
+                style={{ width:"100%", minHeight:isMobile ? 220 : 360, background:"#f5f0e8", border:"1px solid #4a5268", color:"#193150", fontSize:isMobile ? 13 : 14, lineHeight:1.7, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:14, borderRadius:8 }} />
             </div>
             {parseError && <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:6, padding:"14px 18px", marginBottom:18, color:"#b91c1c", fontSize:14, fontWeight:600 }}>{parseError}</div>}
             <div style={{ display:"flex", gap:14, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
               <button onClick={handleParse} disabled={parsing || !rawPaste.trim()}
-                style={{ ...primaryParseButtonStyle, background:parsing ? "#888" : "#b8860b", cursor:parsing ? "not-allowed" : "pointer" }}>
+                style={{ ...primaryParseButtonStyle, background:parsing ? "#4a5268" : "#b8860b", cursor:parsing ? "not-allowed" : "pointer" }}>
                 {parsing ? "Processing..." : "Process & Organize"}
               </button>
               <span style={pasteStatusStyle}>
@@ -3734,21 +3735,21 @@ export default function AdminPanel() {
 
         {activeTab === "review" && (
           <div>
-            <h2 style={{ color:"#193150", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
-            <p style={{ color:"#4a5a6e", fontSize:15, margin:"0 0 22px" }}>
+            <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Review</h2>
+            <p style={{ color:"#c8d1dc", fontSize:15, margin:"0 0 22px" }}>
               {totalPending ? pendingIssues.length+" issue card(s) · "+pendingStats.length+" stat block(s) ready." : "Nothing to review yet."}
             </p>
             {totalPending === 0 && (
-              <div style={{ textAlign:"center", padding:"80px 0", color:"#7a8a9a" }}>
+              <div style={{ textAlign:"center", padding:"80px 0", color:"#8fa3b8" }}>
                 <div style={{ fontSize:44, marginBottom:18 }}>&#9670;</div>
                 <div style={{ fontSize:18 }}>Nothing to review.</div>
-                <button onClick={() => setActiveTab("import")} style={{ marginTop:18, background:"#f5f0e8", color:"#b8860b", border:"2px solid #b8860b", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Go to Import</button>
+                <button onClick={() => setActiveTab("import")} style={{ marginTop:18, background:"#353b48", color:"#f0c93a", border:"2px solid #C6A34D", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Go to Import</button>
               </div>
             )}
             {totalPending > 0 && (
               <>
-                <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 20px", marginBottom:22, display:"flex", alignItems:isMobile ? "stretch" : "center", gap:16, flexWrap:"wrap", flexDirection:isMobile ? "column" : "row" }}>
-                  <span style={{ color:"#444", fontSize:15, fontWeight:600 }}>{totalSel} of {totalPending} selected</span>
+                <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"14px 20px", marginBottom:22, display:"flex", alignItems:isMobile ? "stretch" : "center", gap:16, flexWrap:"wrap", flexDirection:isMobile ? "column" : "row" }}>
+                  <span style={{ color:"#c8d1dc", fontSize:15, fontWeight:600 }}>{totalSel} of {totalPending} selected</span>
                   {totalSel > 0 && (
                     <button onClick={handleBulkPublish} style={{ marginLeft:isMobile ? 0 : "auto", width:isMobile ? "100%" : "auto", background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"11px 26px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
                       {totalSel === totalPending ? "Publish All ("+totalSel+")" : "Publish ("+totalSel+")"}
@@ -3758,8 +3759,8 @@ export default function AdminPanel() {
                 {pendingIssues.length > 0 && (
                   <div style={{ marginBottom:36 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-                      <div style={{ color:"#b8860b", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Issue Cards ({pendingIssues.length})</div>
-                      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", color:"#bbb", fontSize:13 }}>
+                      <div style={{ color:"#f0c93a", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Issue Cards ({pendingIssues.length})</div>
+                      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", color:"#c8d1dc", fontSize:13 }}>
                         <input type="checkbox" checked={selIssues.length === pendingIssues.length} onChange={toggleAllIssues} style={{ accentColor:"#b8860b", width:16, height:16 }} />
                         {selIssues.length === pendingIssues.length ? "Deselect All" : "Select All"}
                       </label>
@@ -3770,8 +3771,8 @@ export default function AdminPanel() {
                 {pendingStats.length > 0 && (
                   <div>
                     <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-                      <div style={{ color:"#7ab", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Stat Blocks ({pendingStats.length})</div>
-                      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", color:"#bbb", fontSize:13 }}>
+                      <div style={{ color:"#f0c93a", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Stat Blocks ({pendingStats.length})</div>
+                      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", color:"#c8d1dc", fontSize:13 }}>
                         <input type="checkbox" checked={selStats.length === pendingStats.length} onChange={toggleAllStats} style={{ accentColor:"#b8860b", width:16, height:16 }} />
                         {selStats.length === pendingStats.length ? "Deselect All" : "Select All"}
                       </label>
@@ -3786,24 +3787,24 @@ export default function AdminPanel() {
 
         {activeTab === "drafts" && (
           <div>
-            <h2 style={{ color:"#193150", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Drafts</h2>
-            <p style={{ color:"#4a5a6e", fontSize:15, margin:"0 0 26px" }}>Holding cell for queued batches and rejected content.</p>
+            <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Drafts</h2>
+            <p style={{ color:"#c8d1dc", fontSize:15, margin:"0 0 26px" }}>Holding cell for queued batches and rejected content.</p>
 
             {/* Paste Research Queue */}
             <div style={{ marginBottom:40 }}>
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, paddingBottom:10, borderBottom:"2px solid #4a5268" }}>
-                <span style={{ color:"#b8860b", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Paste Research Queue</span>
-                <span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"2px 10px", borderRadius:3 }}>{pasteQueue.reduce((a,b) => a+b.length, 0)} cards waiting</span>
+                <span style={{ color:"#f0c93a", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>Paste Research Queue</span>
+                <span style={{ background:"#b8860b22", color:"#f0c93a", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"2px 10px", borderRadius:3 }}>{pasteQueue.reduce((a,b) => a+b.length, 0)} cards waiting</span>
               </div>
               {pasteQueue.length === 0 ? (
-                <div style={{ color:"#556", fontSize:14, padding:"20px 0" }}>No queued batches. Paste more than 3 cards at once to queue overflow here.</div>
+                <div style={{ color:"#8fa3b8", fontSize:14, padding:"20px 0" }}>No queued batches. Paste more than 3 cards at once to queue overflow here.</div>
               ) : (
                 pasteQueue.map((batch, bi) => (
-                  <div key={bi} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
-                    <div style={{ display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"space-between", flexDirection:isMobile ? "column" : "row", gap:isMobile ? 12 : 0, padding:"14px 20px", borderBottom:"1px solid #ddd8cf" }}>
+                  <div key={bi} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                    <div style={{ display:"flex", alignItems:isMobile ? "stretch" : "center", justifyContent:"space-between", flexDirection:isMobile ? "column" : "row", gap:isMobile ? 12 : 0, padding:"14px 20px", borderBottom:"1px solid #4a5268" }}>
                       <div>
-                        <span style={{ color:"#193150", fontSize:14, fontWeight:700 }}>Batch {bi + 2}</span>
-                        <span style={{ color:"#4a5a6e", fontSize:13, marginLeft:10 }}>{batch.length} card{batch.length !== 1 ? "s" : ""}</span>
+                        <span style={{ color:"#ffffff", fontSize:14, fontWeight:700 }}>Batch {bi + 2}</span>
+                        <span style={{ color:"#8fa3b8", fontSize:13, marginLeft:10 }}>{batch.length} card{batch.length !== 1 ? "s" : ""}</span>
                       </div>
                       <div style={{ display:"flex", gap:10, flexDirection:isMobile ? "column" : "row", width:isMobile ? "100%" : "auto" }}>
                         <button onClick={() => processBatch(bi)} disabled={parsing}
@@ -3821,9 +3822,9 @@ export default function AdminPanel() {
                         const titleMatch = raw.match(/TITLE:\s*(.+)/);
                         const labelMatch = raw.match(/LABEL:\s*(.+)/);
                         return (
-                          <div key={ci} style={{ display:"flex", gap:10, alignItems:"center", padding:"6px 0", borderBottom: ci < batch.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
+                          <div key={ci} style={{ display:"flex", gap:10, alignItems:"center", padding:"6px 0", borderBottom: ci < batch.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none" }}>
                             {labelMatch && <span style={{ background:"#b8860b", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:3, textTransform:"uppercase", flexShrink:0 }}>{labelMatch[1].trim()}</span>}
-                            <span style={{ color:"#333", fontSize:13 }}>{titleMatch ? titleMatch[1].trim() : "Card " + (ci+1)}</span>
+                            <span style={{ color:"#c8d1dc", fontSize:13 }}>{titleMatch ? titleMatch[1].trim() : "Card " + (ci+1)}</span>
                           </div>
                         );
                       })}
@@ -3840,25 +3841,25 @@ export default function AdminPanel() {
                 <span style={{ background:"#e5737322", color:"#e57373", border:"1px solid #e5737344", fontSize:12, fontWeight:700, padding:"2px 10px", borderRadius:3 }}>{draftIssues.length + draftStats.length} items</span>
               </div>
               {draftIssues.length === 0 && draftStats.length === 0 ? (
-                <div style={{ color:"#556", fontSize:14, padding:"20px 0" }}>No rejected items.</div>
+                <div style={{ color:"#8fa3b8", fontSize:14, padding:"20px 0" }}>No rejected items.</div>
               ) : (
                 <>
                   {draftIssues.length > 0 && (
                     <div style={{ marginBottom:24 }}>
-                      <div style={{ color:"#7a8a9a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Issue Cards ({draftIssues.length})</div>
+                      <div style={{ color:"#8fa3b8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Issue Cards ({draftIssues.length})</div>
                       {draftIssues.map((card,i) => (
-                        <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                        <div key={i} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
                           <div style={{ background:"#fef2f2", borderBottom:"1px solid #fca5a5", padding:"10px 22px" }}>
                             <span style={{ color:"#b91c1c", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Rejected &mdash; Issue Card</span>
                           </div>
                           <div style={{ padding:"18px 22px" }}>
-                            <div style={{ color:"#193150", fontSize:16, fontWeight:700, marginBottom:8 }}>{card.title}</div>
-                            <div style={{ color:"#4a5a6e", fontSize:14, lineHeight:1.6, marginBottom:14 }}>{card.summary}</div>
+                            <div style={{ color:"#ffffff", fontSize:16, fontWeight:700, marginBottom:8 }}>{card.title}</div>
+                            <div style={{ color:"#c8d1dc", fontSize:14, lineHeight:1.6, marginBottom:14 }}>{card.summary}</div>
                             <div style={{ display:"flex", gap:12 }}>
                               <button onClick={() => { setPendingIssues(p => [...p, card]); setDraftIssues(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
                                 style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
                               <button onClick={() => openIssueEdit(card)}
-                                style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Edit</button>
+                                style={{ background:"#353b48", color:"#f0c93a", border:"1px solid #C6A34D", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Edit</button>
                               <button onClick={() => setDraftIssues(p => p.filter((_,di) => di !== i))}
                                 style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
                             </div>
@@ -3869,20 +3870,20 @@ export default function AdminPanel() {
                   )}
                   {draftStats.length > 0 && (
                     <div>
-                      <div style={{ color:"#7a8a9a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Stat Blocks ({draftStats.length})</div>
+                      <div style={{ color:"#8fa3b8", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:10 }}>Stat Blocks ({draftStats.length})</div>
                       {draftStats.map((block,i) => (
-                        <div key={i} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
+                        <div key={i} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, marginBottom:14, overflow:"hidden" }}>
                           <div style={{ background:"#eff6ff", borderBottom:"1px solid #93c5fd", padding:"10px 22px" }}>
                             <span style={{ color:"#1a4a7a", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>&#9679; Rejected &mdash; {block.type}</span>
                           </div>
                           <div style={{ padding:"18px 22px" }}>
-                            <div style={{ color:"#193150", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
-                            <div style={{ color:"#b0bec5", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
+                            <div style={{ color:"#ffffff", fontSize:16, fontWeight:700, marginBottom:6 }}>{block.label || block.title}</div>
+                            <div style={{ color:"#8fa3b8", fontSize:14, marginBottom:14 }}>{block.module} &mdash; {block.tab}</div>
                             <div style={{ display:"flex", gap:12 }}>
                               <button onClick={() => { setPendingStats(p => [...p, block]); setDraftStats(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
                                 style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
                               <button onClick={() => openStatEdit(block)}
-                                style={{ background:"#fef9ec", color:"#b8860b", border:"1px solid #b8860b", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Edit</button>
+                                style={{ background:"#353b48", color:"#f0c93a", border:"1px solid #C6A34D", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Edit</button>
                               <button onClick={() => setDraftStats(p => p.filter((_,di) => di !== i))}
                                 style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
                             </div>
@@ -3929,13 +3930,13 @@ export default function AdminPanel() {
           <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setProfileAdminTab("paste")}
-              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background: profileAdminTab === "paste" ? "rgba(198,163,77,0.13)" : "transparent", borderBottom: profileAdminTab === "paste" ? "3px solid #C6A34D" : "3px solid transparent", color: profileAdminTab === "paste" ? "#f0c93a" : "#c8d1dc", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Paste Profile
             </button>
             <button
               onClick={() => setProfileAdminTab("published")}
-              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background: profileAdminTab === "published" ? "rgba(198,163,77,0.13)" : "transparent", borderBottom: profileAdminTab === "published" ? "3px solid #C6A34D" : "3px solid transparent", color: profileAdminTab === "published" ? "#f0c93a" : "#c8d1dc", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Published Profiles
             </button>
@@ -3948,7 +3949,7 @@ export default function AdminPanel() {
                   value={profileRawPaste}
                   onChange={(e) => setProfileRawPaste(e.target.value)}
                   placeholder={"Paste your formatted profile research here...\n\nInclude the full profile template output from Tools → Templates.\nOne profile per paste. Parser will extract all fields automatically."}
-                  style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontFamily:"Georgia, serif", fontSize:isMobile ? 13 : 14, color:"#333", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
+                  style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontFamily:"Georgia, serif", fontSize:isMobile ? 13 : 14, color:"#193150", background:"#f5f0e8", padding:14, border:"1px solid #4a5268", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
                 />
                 {profileRawPaste.trim() ? <div style={{ ...pasteStatusStyle, marginBottom:14 }}>Profile detected — ready to parse</div> : null}
 
@@ -3973,12 +3974,12 @@ export default function AdminPanel() {
                 </div>
 
                 {parsedProfile ? (
-                  <div style={{ marginTop:18, background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18 }}>
-                    <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
-                    <div style={{ color:"#4a5a6e", fontSize:15, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
+                  <div style={{ marginTop:18, background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:18 }}>
+                    <div style={{ color:"#f0c93a", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
+                    <div style={{ color:"#c8d1dc", fontSize:15, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
                     {seatMatches.length > 0 && !selectedSeatId ? (
                       <div style={{ marginBottom: 10 }}>
-                        <div style={{ color: "#b8860b", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
+                        <div style={{ color: "#f0c93a", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
                           Suggested seats — click to select:
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -3986,7 +3987,7 @@ export default function AdminPanel() {
                             <button
                               key={seat.id}
                               onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
-                              style={{ background: "#f5f0e8", border: "1px solid #b8860b", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#b8860b", cursor: "pointer" }}
+                              style={{ background: "#353b48", border: "1px solid #C6A34D", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#f0c93a", cursor: "pointer" }}
                             >
                               {seat.title} · {seat.level} · {seat.jurisdiction}
                             </button>
@@ -3995,27 +3996,27 @@ export default function AdminPanel() {
                       </div>
                     ) : null}
                     <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title, level, or jurisdiction..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
-                      style={{ width:"100%", background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#333", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
+                      style={{ width:"100%", background:"#f5f0e8", border:"1px solid #4a5268", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#193150", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
                     {seatSearch.trim().length >= 2 ? (
-                      <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
+                      <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
                         {seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
                           <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
-                            style={{ width:"100%", background: selectedSeatId === seat.id ? "#b8860b22" : "transparent", border:"none", borderBottom:"1px solid rgba(0,0,0,0.06)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
-                            <span style={{ color:"#193150", fontSize:13, fontWeight:700 }}>{seat.title}</span>
-                            <span style={{ color:"#4a5a6e", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
+                            style={{ width:"100%", background: selectedSeatId === seat.id ? "rgba(198,163,77,0.13)" : "transparent", border:"none", borderBottom:"1px solid rgba(255,255,255,0.08)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
+                            <span style={{ color:"#ffffff", fontSize:13, fontWeight:700 }}>{seat.title}</span>
+                            <span style={{ color:"#8fa3b8", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
                           </button>
                         ))}
                         {!seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
-                          ? <div style={{ padding:"12px 14px", color:"#556", fontSize:13 }}>No seats match.</div> : null}
+                          ? <div style={{ padding:"12px 14px", color:"#8fa3b8", fontSize:13 }}>No seats match.</div> : null}
                       </div>
                     ) : null}
                     {selectedSeatId
-                      ? <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10 }}><span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:999 }}>✓ Seat selected</span><button onClick={() => { setSelectedSeatId(""); setSeatSearch(""); setSeatMatches([]); }} style={{ background:"none", border:"none", color:"#556", fontSize:12, cursor:"pointer" }}>Clear</button></div>
-                      : <div style={{ marginTop:6, color:"#556", fontSize:12 }}>No seat selected — profile will publish without seat link.</div>}
+                      ? <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10 }}><span style={{ background:"#b8860b22", color:"#f0c93a", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:999 }}>✓ Seat selected</span><button onClick={() => { setSelectedSeatId(""); setSeatSearch(""); setSeatMatches([]); }} style={{ background:"none", border:"none", color:"#8fa3b8", fontSize:12, cursor:"pointer" }}>Clear</button></div>
+                      : <div style={{ marginTop:6, color:"#8fa3b8", fontSize:12 }}>No seat selected — profile will publish without seat link.</div>}
                   </div>
                 ) : null}
 
-                {profileParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
+                {profileParsing ? <div style={{ color:"#8fa3b8", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
                 {profileParseError ? (
                   <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
                     {profileParseError}
@@ -4024,9 +4025,9 @@ export default function AdminPanel() {
                 {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
 
                 {parsedProfile ? (
-                  <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:18, marginTop:16 }}>
-                    <div style={{ color:"#193150", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
-                    <div style={{ color:"#4a5a6e", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
+                  <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:18, marginTop:16 }}>
+                    <div style={{ color:"#ffffff", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
+                    <div style={{ color:"#c8d1dc", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
                     <div style={{ marginBottom:12 }}>
                       <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
                       <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
@@ -4087,21 +4088,21 @@ export default function AdminPanel() {
               };
 
               const badgeStyle = { background:"#b8860b", color:"#fff", textTransform:"uppercase", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, display:"inline-block" };
-              const pillStyle = { background:"#e8e4dc", border:"1px solid #ddd8cf", color:"#4a5a6e", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
+              const pillStyle = { background:"#353b48", border:"1px solid #4a5268", color:"#c8d1dc", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
 
               const renderProfileCard = (profile) => {
                 const cardSeat = profile.seat_id ? seatById[profile.seat_id] : null;
                 return (
-                <div key={profile.id} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
+                <div key={profile.id} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
                   <div style={{ minWidth:0 }}>
-                    <div style={{ color:"#193150", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
+                    <div style={{ color:"#ffffff", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
                     {cardSeat ? (
-                      <div style={{ fontSize:11, color:"#7a8a9a", marginTop:2 }}>
+                      <div style={{ fontSize:11, color:"#8fa3b8", marginTop:2 }}>
                         {cardSeat.title} · {cardSeat.jurisdiction}
                       </div>
                     ) : null}
-                    {profile.created_at ? <div style={{ color:"#7a8a9a", fontSize:12, marginTop:4, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
-                    <div style={{ color:"#4a5a6e", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
+                    {profile.created_at ? <div style={{ color:"#8fa3b8", fontSize:12, marginTop:4, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
+                    <div style={{ color:"#c8d1dc", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
                       <span style={pillStyle}>{String(profile.level || "").trim().toLowerCase() || "uncategorized"}</span>
                       {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
@@ -4110,7 +4111,7 @@ export default function AdminPanel() {
                   <div style={{ display:"flex", gap:10, flexShrink:0 }}>
                     <button
                       onClick={() => setProfileEditConfig(profile)}
-                      style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
+                      style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:6, padding:"10px 14px", fontSize:13, fontWeight:700, cursor:"pointer" }}
                     >
                       Edit
                     </button>
@@ -4129,13 +4130,13 @@ export default function AdminPanel() {
                 <div>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:16, marginBottom:22 }}>
                     <div>
-                      <div style={{ color:"#193150", fontSize:24, fontWeight:700, marginBottom:6 }}>Published Profiles</div>
-                      <div style={{ color:"#4a5a6e", fontSize:15 }}>Manage published official profiles by level, edit decoder copy, and remove stale rows.</div>
+                      <div style={{ color:"#ffffff", fontSize:24, fontWeight:700, marginBottom:6 }}>Published Profiles</div>
+                      <div style={{ color:"#c8d1dc", fontSize:15 }}>Manage published official profiles by level, edit decoder copy, and remove stale rows.</div>
                     </div>
                     <button
                       onClick={loadPublishedProfiles}
                       disabled={pubProfilesLoading}
-                      style={{ background:"#e8e4dc", color:"#4a5a6e", border:"1px solid #ddd8cf", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:pubProfilesLoading ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1 }}
+                      style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:pubProfilesLoading ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1 }}
                     >
                       {pubProfilesLoading ? "Refreshing..." : "Refresh"}
                     </button>
@@ -4147,7 +4148,7 @@ export default function AdminPanel() {
                     </div>
                   ) : null}
 
-                  {pubProfilesLoading && !pubProfiles.length ? <div style={{ color:"#7a8a9a", fontSize:14, marginBottom:18 }}>Loading published profiles...</div> : null}
+                  {pubProfilesLoading && !pubProfiles.length ? <div style={{ color:"#8fa3b8", fontSize:14, marginBottom:18 }}>Loading published profiles...</div> : null}
 
                   {LEVEL_ORDER_ADMIN.map((level) => {
                     const profiles = byLevel[level];
@@ -4160,9 +4161,9 @@ export default function AdminPanel() {
                           <div style={{ marginTop:14 }}>
                             {seatTitles.map((seatTitle) => (
                               <div key={seatTitle} style={{ marginBottom:18 }}>
-                                <div style={{ fontSize:12, fontWeight:900, color:"#b8860b", textTransform:"uppercase", letterSpacing:1, borderBottom:"1px solid #ddd8cf", paddingBottom:6, marginBottom:8, marginTop:18 }}>
+                                <div style={{ fontSize:12, fontWeight:900, color:"#f0c93a", textTransform:"uppercase", letterSpacing:1, borderBottom:"1px solid #4a5268", paddingBottom:6, marginBottom:8, marginTop:18 }}>
                                   {seatTitle}
-                                  <div style={{ color:"#7a8a9a", fontSize:11, fontWeight:400, textTransform:"none", letterSpacing:0, marginTop:4 }}>
+                                  <div style={{ color:"#8fa3b8", fontSize:11, fontWeight:400, textTransform:"none", letterSpacing:0, marginTop:4 }}>
                                     {seatGroups[seatTitle].profiles.length} profile{seatGroups[seatTitle].profiles.length === 1 ? "" : "s"}
                                     {seatGroups[seatTitle].seat?.jurisdiction ? ` · ${seatGroups[seatTitle].seat.jurisdiction}` : ""}
                                   </div>
@@ -4174,7 +4175,7 @@ export default function AdminPanel() {
                             ))}
                           </div>
                         ) : (
-                          <div style={{ color:"#777f93", fontSize:14, padding:"10px 0", marginTop:14 }}>No profiles in this section yet.</div>
+                          <div style={{ color:"#8fa3b8", fontSize:14, padding:"10px 0", marginTop:14 }}>No profiles in this section yet.</div>
                         )}
                       </div>
                     );
@@ -4183,7 +4184,7 @@ export default function AdminPanel() {
                   <div style={{ marginBottom:8 }}>
                     <div style={badgeStyle}>UNCATEGORIZED</div>
                     <div style={{ display:"grid", gap:12, marginTop:14 }}>
-                      {uncategorized.length ? uncategorized.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No uncategorized profiles.</div>}
+                      {uncategorized.length ? uncategorized.map(profile => renderProfileCard(profile)) : <div style={{ color:"#8fa3b8", fontSize:14, padding:"10px 0" }}>No uncategorized profiles.</div>}
                     </div>
                   </div>
                 </div>
@@ -4198,13 +4199,13 @@ export default function AdminPanel() {
           <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setBlueprintMode("brief")}
-              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "brief" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "brief" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background: blueprintMode === "brief" ? "rgba(198,163,77,0.13)" : "transparent", borderBottom: blueprintMode === "brief" ? "3px solid #C6A34D" : "3px solid transparent", color: blueprintMode === "brief" ? "#f0c93a" : "#c8d1dc", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Research Brief
             </button>
             <button
               onClick={() => setBlueprintMode("template")}
-              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "template" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "template" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background: blueprintMode === "template" ? "rgba(198,163,77,0.13)" : "transparent", borderBottom: blueprintMode === "template" ? "3px solid #C6A34D" : "3px solid transparent", color: blueprintMode === "template" ? "#f0c93a" : "#c8d1dc", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Paste Template
             </button>
@@ -4216,7 +4217,7 @@ export default function AdminPanel() {
             value={blueprintInput}
             onChange={(e) => setBlueprintInput(e.target.value)}
             placeholder={blueprintMode === "brief" ? "Describe the specific policy idea in detail — include the target population, proposed funding mechanism, and the specific ask..." : "Paste your formatted blueprint research here...\n\nInclude the full Blueprint Template output from Tools → Templates.\nOne blueprint per paste. Parser will extract all fields automatically."}
-            style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontSize:isMobile ? 13 : 14, color:"#333", fontFamily:"Georgia, serif", background:"#f5f0e8", padding:14, border:"1px solid #ddd8cf", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
+            style={{ width:"100%", minHeight:isMobile ? 220 : 360, fontSize:isMobile ? 13 : 14, color:"#193150", fontFamily:"Georgia, serif", background:"#f5f0e8", padding:14, border:"1px solid #4a5268", borderRadius:10, marginBottom:14, resize:"vertical", boxSizing:"border-box" }}
           />
           {blueprintInput.trim() ? <div style={{ ...pasteStatusStyle, marginBottom:14 }}>Blueprint detected — ready to parse</div> : null}
 
@@ -4240,7 +4241,7 @@ export default function AdminPanel() {
             ) : null}
           </div>
 
-          {blueprintParsing ? <div style={{ color:"#4a5a6e", fontSize:15, marginTop:14 }}>Parsing blueprint...</div> : null}
+          {blueprintParsing ? <div style={{ color:"#c8d1dc", fontSize:15, marginTop:14 }}>Parsing blueprint...</div> : null}
           {blueprintError ? (
             <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:14, color:"#b91c1c", fontSize:14 }}>
               {blueprintError}
@@ -4249,15 +4250,15 @@ export default function AdminPanel() {
           {blueprintPublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{blueprintPublishSuccess}</div> : null}
 
           {parsedBlueprint ? (
-            <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:18, marginTop:16 }}>
-              <div style={{ fontSize:22, fontWeight:900, color:"#193150", marginBottom:8 }}>{parsedBlueprint.title}</div>
+            <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:18, marginTop:16 }}>
+              <div style={{ fontSize:22, fontWeight:900, color:"#ffffff", marginBottom:8 }}>{parsedBlueprint.title}</div>
               <AdminPreviewBlock borderColor="#B4473E">{parsedBlueprint.the_problem}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#C6A34D">{parsedBlueprint.the_ask}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#2F5D8A">{parsedBlueprint.who_decides}</AdminPreviewBlock>
               <AdminPreviewBlock borderColor="#3E8B5B">{parsedBlueprint.other_cities}</AdminPreviewBlock>
               <div style={{ display:"grid", gap:8, marginTop:12 }}>
-                <div style={{ color:"#4a5a6e", fontSize:13 }}><strong>Estimated Cost:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.estimated_cost || "—"}</span></div>
-                <div style={{ color:"#4a5a6e", fontSize:13 }}><strong>ROI:</strong> <span style={{ color:"#193150" }}>{parsedBlueprint.roi || "—"}</span></div>
+                <div style={{ color:"#c8d1dc", fontSize:13 }}><strong>Estimated Cost:</strong> <span style={{ color:"#ffffff" }}>{parsedBlueprint.estimated_cost || "—"}</span></div>
+                <div style={{ color:"#c8d1dc", fontSize:13 }}><strong>ROI:</strong> <span style={{ color:"#ffffff" }}>{parsedBlueprint.roi || "—"}</span></div>
               </div>
             </div>
           ) : null}
@@ -4267,22 +4268,22 @@ export default function AdminPanel() {
 
       {adminTab === "tools" ? (
         <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "0 12px 16px" : "0 36px 36px" }}>
-          <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:28 }}>
+          <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
             <div>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10, paddingBottom:10, borderBottom:"2px solid rgba(198,163,77,0.25)" }}>📱 SOCIAL MEDIA CONTENT</div>
+              <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10, paddingBottom:10, borderBottom:"2px solid rgba(198,163,77,0.25)" }}>📱 SOCIAL MEDIA CONTENT</div>
               <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} isMobile={isMobile} />
             </div>
 
-            <div style={{ borderTop:"1px solid #ddd8cf", paddingTop:24, marginTop:24 }}>
+            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
               <button
                 onClick={() => setToolsTemplatesOpen((prev) => !prev)}
-                style={{ width:"100%", background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:8, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}
+                style={{ width:"100%", background:"#353b48", border:"1px solid #4a5268", borderRadius:8, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}
               >
-                <span style={{ color:"#193150", fontSize:15, fontWeight:700 }}>Templates</span>
-                <span style={{ color:"#b8860b", fontSize:16, fontWeight:900 }}>{toolsTemplatesOpen ? "▲" : "▼"}</span>
+                <span style={{ color:"#ffffff", fontSize:15, fontWeight:700 }}>Templates</span>
+                <span style={{ color:"#f0c93a", fontSize:16, fontWeight:900 }}>{toolsTemplatesOpen ? "▲" : "▼"}</span>
               </button>
               {toolsTemplatesOpen ? (
-                <div style={{ borderTop:"1px solid #ddd8cf", padding:"8px 0" }}>
+                <div style={{ borderTop:"1px solid #4a5268", padding:"8px 0" }}>
                   {[
                     {
                       key: "issue",
@@ -4305,8 +4306,8 @@ export default function AdminPanel() {
                   ].map((item, index, list) => (
                     <div key={item.key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 18px", borderBottom: index < list.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
                       <div>
-                        <div style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>{item.name}</div>
-                        <div style={{ color:"#6b778a", fontSize:12, marginTop:3 }}>{item.description}</div>
+                        <div style={{ color:"#ffffff", fontSize:14, fontWeight:700 }}>{item.name}</div>
+                        <div style={{ color:"#8fa3b8", fontSize:12, marginTop:3 }}>{item.description}</div>
                       </div>
                       <button
                         onClick={() => copyToolTemplate(item.key, item.text)}
