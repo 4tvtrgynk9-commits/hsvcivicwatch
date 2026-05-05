@@ -3293,29 +3293,30 @@ export default function AdminPanel() {
   const totalDrafts = draftIssues.length + draftStats.length + pasteQueue.reduce((a, b) => a + b.length, 0);
 
   const tabStyle = (id) => ({
-    background: "none",
+    background: activeTab===id ? "rgba(184,134,11,0.13)" : "transparent",
     border: "none",
-    borderBottom: activeTab===id ? "3px solid #b8860b" : "3px solid transparent",
-    color: activeTab===id ? "#b8860b" : "#aaa",
+    borderBottom: activeTab===id ? "3px solid #C6A34D" : "3px solid transparent",
+    color: activeTab===id ? "#f0c93a" : "#c8d1dc",
     padding: isMobile ? "12px 14px" : "12px 20px",
     fontSize: isMobile ? 12 : 13,
-    fontWeight: 700,
+    fontWeight: activeTab===id ? 900 : 700,
     cursor: "pointer",
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 0,
   });
   const adminTabStyle = (id) => ({
-    background:"transparent",
+    background: adminTab === id ? "rgba(198,163,77,0.15)" : "transparent",
     border:"none",
-    borderBottom: adminTab === id ? "3px solid #b8860b" : "3px solid transparent",
-    padding:isMobile ? "12px 14px" : "14px 20px",
+    borderBottom: adminTab === id ? "3px solid #C6A34D" : "3px solid transparent",
+    padding:isMobile ? "12px 14px" : "14px 24px",
     fontSize:isMobile ? 12 : 14,
     fontWeight:900,
     cursor:"pointer",
-    color: adminTab === id ? "#b8860b" : "#aaa",
-    transition:"color 0.15s",
+    color: adminTab === id ? "#f0c93a" : "#c8d1dc",
+    transition:"color 0.15s, background 0.15s",
     marginBottom: adminTab === id ? -2 : 0,
+    borderRadius: adminTab === id ? "6px 6px 0 0" : 0,
   });
 
   const issueCardsForStatModule = confirmStat
