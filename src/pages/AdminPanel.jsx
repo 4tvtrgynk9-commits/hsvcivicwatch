@@ -2242,6 +2242,7 @@ export default function AdminPanel() {
   const [seatsLoading, setSeatsLoading] = useState(false);
   const [seatSearch, setSeatSearch] = useState("");
   const [selectedSeatId, setSelectedSeatId] = useState("");
+  const [seatMatches, setSeatMatches] = useState([]);
   const [pubProfiles, setPubProfiles] = useState([]);
   const [pubProfilesLoading, setPubProfilesLoading] = useState(false);
   const [pubProfilesError, setPubProfilesError] = useState("");
@@ -3034,6 +3035,7 @@ export default function AdminPanel() {
     const nextSeatId = selectedSeatId;
     setSelectedSeatId("");
     setSeatSearch("");
+    setSeatMatches([]);
     setProfileParsing(true);
     setProfileParseError("");
     setProfilePublishSuccess("");
@@ -3046,6 +3048,7 @@ export default function AdminPanel() {
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Profile parse failed");
       setParsedProfile(payload.profile || null);
+      await autoMatchSeat(payload.profile);
       if (mode === "publish") {
         setProfilePublishSuccess("Published successfully");
       }
@@ -3053,6 +3056,37 @@ export default function AdminPanel() {
       setProfileParseError(String(error?.message || "Profile parse failed"));
     } finally {
       setProfileParsing(false);
+    }
+  };
+
+  const autoMatchSeat = async (profile) => {
+    if (!supabase || !profile) return;
+    const officeRole = profile.office || profile.role_label || "";
+    const jurisdiction = profile.jurisdiction || profile.geography || "";
+
+    let { data: exactMatches } = await supabase
+      .from("seats")
+      .select("id, title, level, jurisdiction, geography")
+      .ilike("title", `%${officeRole}%`)
+      .limit(3);
+
+    if (!exactMatches?.length && jurisdiction) {
+      const { data: fallback } = await supabase
+        .from("seats")
+        .select("id, title, level, jurisdiction, geography")
+        .ilike("jurisdiction", `%${jurisdiction}%`)
+        .limit(3);
+      exactMatches = fallback;
+    }
+
+    if (exactMatches?.length === 1) {
+      setSelectedSeatId(exactMatches[0].id);
+      setSeatSearch(exactMatches[0].title);
+      setSeatMatches([]);
+    } else if (exactMatches?.length > 1) {
+      setSeatMatches(exactMatches);
+    } else {
+      setSeatMatches([]);
     }
   };
 
@@ -3849,12 +3883,30 @@ export default function AdminPanel() {
                   <div style={{ marginTop:18, background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18 }}>
                     <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
                     <div style={{ color:"#555", fontSize:15, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
+                    {seatMatches.length > 0 && !selectedSeatId ? (
+                      <div style={{ marginBottom: 10 }}>
+                        <div style={{ color: "#b8860b", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
+                          Suggested seats — click to select:
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {seatMatches.map(seat => (
+                            <button
+                              key={seat.id}
+                              onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
+                              style={{ background: "#f5f0e8", border: "1px solid #b8860b", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#b8860b", cursor: "pointer" }}
+                            >
+                              {seat.title} · {seat.level} · {seat.jurisdiction}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                     <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title, level, or jurisdiction..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
                       style={{ width:"100%", background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#333", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
                     {seatSearch.trim().length >= 2 ? (
                       <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
                         {seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
-                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); }}
+                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
                             style={{ width:"100%", background: selectedSeatId === seat.id ? "#b8860b22" : "transparent", border:"none", borderBottom:"1px solid rgba(0,0,0,0.06)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
                             <span style={{ color:"#1a1a1a", fontSize:13, fontWeight:700 }}>{seat.title}</span>
                             <span style={{ color:"#555", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
@@ -3865,7 +3917,7 @@ export default function AdminPanel() {
                       </div>
                     ) : null}
                     {selectedSeatId
-                      ? <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10 }}><span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:999 }}>✓ Seat selected</span><button onClick={() => { setSelectedSeatId(""); setSeatSearch(""); }} style={{ background:"none", border:"none", color:"#556", fontSize:12, cursor:"pointer" }}>Clear</button></div>
+                      ? <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10 }}><span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:999 }}>✓ Seat selected</span><button onClick={() => { setSelectedSeatId(""); setSeatSearch(""); setSeatMatches([]); }} style={{ background:"none", border:"none", color:"#556", fontSize:12, cursor:"pointer" }}>Clear</button></div>
                       : <div style={{ marginTop:6, color:"#556", fontSize:12 }}>No seat selected — profile will publish without seat link.</div>}
                   </div>
                 ) : null}

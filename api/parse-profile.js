@@ -4,7 +4,49 @@ import { requireAdmin } from "./_adminAuth";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const MODEL = "claude-sonnet-4-20250514";
 
-const PROFILE_PARSE_SYSTEM = `You are a structured data parser for HSV Civic Watch. Parse the profile research document into a JSON object. Extract every field verbatim — do not summarize, soften, or omit. Return ONLY valid JSON, no markdown, no explanation. Output shape: { name, office, kind, jurisdiction, geography, appointed_by, term_start, term_end, election_date, party, salary, net_worth, status, module, scopes, scope_category, role_label, status_line, headshot_url, date_of_birth, residency, criminal_record, ethics_complaints, education, military_service, school_name, district_name, metrics: [{label, value}], quick_facts: [{label, value}], profile: { summary, timeline: [{date, title, detail}] }, networks: { born_into, elite_connections, professional_network, board_seats, organizational_ties, named_orbit: [{name, relationship, amount}] }, donors: { summary, total_raised, top_donors: [{name, amount, note}], pacs: [{name, funder, agenda}], donations_made: [{name, amount, date}], dark_money, links: [{label, href}] }, family: { spouse_name, has_children, children_count, parents_siblings, business_ties }, conflicts: { summary, items: [{title, body, sourceLabel}] }, on_record: [{title, body, sourceLabel}], votes: [{title, date, position, summary, sourceLabel}], contact: { phone, email, address, office_hours, website, finance_url, twitter, facebook, instagram, linkedin, campaign_website }, decoder: { rise, affiliations, beneficiaries, track_record }, ro_fields: { agency, total_years_officer, current_school_assignment, current_assignment_duration, previous_assignments: [{school, district, duration}], previous_agencies: [{name, years, departure_reason}], has_children, children_count, spouse_name, use_of_force_incidents, complaints, civil_suits, disciplinary_history } }. scopes rules: elected/judge/candidate — local jurisdiction sets [local], state sets [state], federal sets [federal]. board_member/director/authority_member sets [appointed_boards]. superintendent/asst_superintendent sets [directors_executives, school_boards_staff]. principal/vice_principal/resource_officer/district_staff sets [school_boards_staff]. module rules: official_profiles table sets module to officials_elections. board_profiles and school_profiles set module to boards_oversight. ro_fields only populated if kind is resource_officer.`;
+const PROFILE_PARSE_SYSTEM = `You are a structured data parser for HSV Civic Watch. Parse the profile research document into a JSON object. Extract every field verbatim — do not summarize, soften, or omit. Return ONLY valid JSON, no markdown, no explanation. Output shape: { name, office, kind, jurisdiction, geography, appointed_by, term_start, term_end, election_date, party, salary, net_worth, status, module, scopes, scope_category, role_label, status_line, headshot_url, date_of_birth, residency, criminal_record, ethics_complaints, education, military_service, school_name, district_name, current_roles: [{ title, kind, jurisdiction, start_year, election_date, is_candidate, is_primary }], former_offices: [{ title, jurisdiction, start_year, end_year }], metrics: [{label, value}], quick_facts: [{label, value}], profile: { summary, timeline: [{date, title, detail}] }, networks: { born_into, elite_connections, professional_network, board_seats, organizational_ties, named_orbit: [{name, relationship, amount}] }, donors: { summary, total_raised, top_donors: [{name, amount, note}], pacs: [{name, funder, agenda}], donations_made: [{name, amount, date}], dark_money, links: [{label, href}] }, family: { spouse_name, has_children, children_count, parents_siblings, business_ties }, conflicts: { summary, items: [{title, body, sourceLabel}] }, on_record: [{title, body, sourceLabel}], votes: [{title, date, position, summary, sourceLabel}], contact: { phone, email, address, office_hours, website, finance_url, twitter, facebook, instagram, linkedin, campaign_website }, decoder: { rise, affiliations, beneficiaries, track_record }, ro_fields: { agency, total_years_officer, current_school_assignment, current_assignment_duration, previous_assignments: [{school, district, duration}], previous_agencies: [{name, years, departure_reason}], has_children, children_count, spouse_name, use_of_force_incidents, complaints, civil_suits, disciplinary_history } }.
+
+MULTI-ROLE DETECTION:
+Extract ALL roles this person currently holds simultaneously.
+Each role is a separate object in the current_roles array.
+
+current_roles shape:
+[{
+  title: string,
+  kind: string,
+  jurisdiction: string,
+  start_year: string,
+  election_date: string,
+  is_candidate: boolean,
+  is_primary: boolean
+}]
+
+Examples:
+- U.S. Senator running for Governor:
+  current_roles: [
+    { title: "U.S. Senator", kind: "elected", jurisdiction: "Alabama", start_year: "2021", is_candidate: false, is_primary: true },
+    { title: "Candidate for Governor", kind: "candidate", jurisdiction: "Alabama", election_date: "November 3, 2026", is_candidate: true, is_primary: false }
+  ]
+
+- School principal also on city council also on nonprofit board:
+  current_roles: [
+    { title: "Principal", kind: "appointed", jurisdiction: "Hazel Green High School", start_year: "2018", is_candidate: false, is_primary: true },
+    { title: "City Council Member", kind: "elected", jurisdiction: "City of X", start_year: "2020", is_candidate: false, is_primary: false },
+    { title: "Board Member", kind: "board_member", jurisdiction: "XYZ Nonprofit", start_year: "2022", is_candidate: false, is_primary: false }
+  ]
+
+Set status based on current_roles:
+- If any role has is_candidate: true AND another role has is_candidate: false → "active" (dual/multi-role)
+- If ALL roles have is_candidate: true → "candidate"
+- If NO roles have is_candidate: true → "active"
+
+Set office to the primary role title (where is_primary: true).
+Set kind to the primary role kind.
+
+former_offices: array of ALL previously held roles no longer active
+[{ title, jurisdiction, start_year, end_year }]
+
+scopes rules: elected/judge/candidate — local jurisdiction sets [local], state sets [state], federal sets [federal]. board_member/director/authority_member sets [appointed_boards]. superintendent/asst_superintendent sets [directors_executives, school_boards_staff]. principal/vice_principal/resource_officer/district_staff sets [school_boards_staff]. module rules: official_profiles table sets module to officials_elections. board_profiles and school_profiles set module to boards_oversight. ro_fields only populated if kind is resource_officer.`;
 
 const DECODER_SCORE_SYSTEM = `Score these HSV Civic Watch profile decoder fields. Return ONLY valid JSON: { shock_factor: number, module_relevance: number } both integers 1-10.`;
 
@@ -133,6 +175,21 @@ function normalizeProfile(parsedProfile, targetTable) {
     military_service: cleanString(profile.military_service),
     school_name: cleanString(profile.school_name),
     district_name: cleanString(profile.district_name),
+    current_roles: asArray(profile.current_roles).map((item) => ({
+      title: cleanString(item?.title),
+      kind: cleanString(item?.kind),
+      jurisdiction: cleanString(item?.jurisdiction),
+      start_year: cleanString(item?.start_year),
+      election_date: cleanString(item?.election_date),
+      is_candidate: Boolean(item?.is_candidate),
+      is_primary: Boolean(item?.is_primary),
+    })).filter((item) => item.title),
+    former_offices: asArray(profile.former_offices).map((item) => ({
+      title: cleanString(item?.title),
+      jurisdiction: cleanString(item?.jurisdiction),
+      start_year: cleanString(item?.start_year),
+      end_year: cleanString(item?.end_year),
+    })).filter((item) => item.title),
     metrics: asArray(profile.metrics).map((item) => ({
       label: cleanString(item?.label),
       value: cleanString(item?.value),

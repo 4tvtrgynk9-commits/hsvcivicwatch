@@ -49,18 +49,130 @@ const ELECTIONS = [
   { office: "Huntsville City Council D2, D3, D4", date: "Nov 2026", priority: false, note: "Council votes on roads, zoning, budgets, and appointments to key boards." },
 ];
 
-function ProfileCard({ profile, onClick }) {
+const DIRECTORY_TABS = [
+  { id: "current_officials", label: "Current Officials" },
+  { id: "candidates", label: "2026 Candidates" },
+  { id: "elections", label: "2026 Elections" },
+  { id: "voting", label: "Voting & Registration" },
+];
+
+function cleanString(value) {
+  return typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim();
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function normalizeProfileRecord(record) {
+  const data = record?.data && typeof record.data === "object" ? record.data : {};
+  const decoder = { ...(data.decoder || {}), ...(record.decoder || {}) };
+  const contact = { ...(data.contact || {}), ...(record.contact || {}) };
+  const donors = { ...(data.donors || {}), ...(record.donors || {}) };
+  const conflicts = { ...(data.conflicts || {}), ...(record.conflicts || {}) };
+  const merged = {
+    ...data,
+    ...record,
+    decoder,
+    contact,
+    donors,
+    conflicts,
+    profile: record.profile || data.profile || {},
+    quick_facts: record.quick_facts || data.quick_facts || [],
+    metrics: record.metrics || data.metrics || [],
+    on_record: record.on_record || data.on_record || [],
+    votes: record.votes || data.votes || [],
+  };
+
+  return {
+    ...merged,
+    current_roles: asArray(merged.current_roles).map((item) => ({
+      title: cleanString(item?.title),
+      kind: cleanString(item?.kind),
+      jurisdiction: cleanString(item?.jurisdiction),
+      start_year: cleanString(item?.start_year),
+      election_date: cleanString(item?.election_date),
+      is_candidate: Boolean(item?.is_candidate),
+      is_primary: Boolean(item?.is_primary),
+    })).filter((item) => item.title),
+    former_offices: asArray(merged.former_offices).filter((item) => item?.title),
+  };
+}
+
+function getCandidateRoles(profile) {
+  return asArray(profile.current_roles).filter((role) => role.is_candidate);
+}
+
+function getNonCandidateRoles(profile) {
+  return asArray(profile.current_roles).filter((role) => !role.is_candidate);
+}
+
+function getPrimaryRole(profile) {
+  return asArray(profile.current_roles).find((role) => role.is_primary) || asArray(profile.current_roles)[0] || null;
+}
+
+function FormerOffices({ offices }) {
+  const [open, setOpen] = useState(false);
+  if (!offices?.length) return null;
+  return (
+    <div style={{ marginTop: 14, borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10 }}>
+      <button onClick={() => setOpen(v => !v)}
+        style={{ background: "transparent", border: "none", color: "#9aaabb", fontSize: 12, fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: 1, padding: 0 }}>
+        Former Offices {open ? "▲" : "▼"}
+      </button>
+      {open ? (
+        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+          {offices.map((o, i) => (
+            <div key={i} style={{ fontSize: 13, color: "#ddd5c4" }}>
+              {o.title} · {o.jurisdiction} · {o.start_year}{o.end_year ? `–${o.end_year}` : "–present"}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function DecoderSummary({ profile }) {
+  const sections = [
+    { key: "rise", label: "The Rise", color: GOLD },
+    { key: "affiliations", label: "The Affiliations", color: BLUE },
+    { key: "beneficiaries", label: "The Beneficiaries", color: LAVENDER },
+    { key: "track_record", label: "The Track Record", color: RED },
+  ];
+
+  return (
+    <div style={{ display: "grid", gap: 10, marginTop: 14 }}>
+      {sections.map(({ key, label, color }) => (
+        profile.decoder?.[key] ? (
+          <div key={key} style={{ background: "rgba(10,16,28,0.22)", borderLeft: `3px solid ${color}`, borderRadius: 8, padding: "10px 12px" }}>
+            <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: 1.6, textTransform: "uppercase", color, marginBottom: 6 }}>{label}</div>
+            <div style={{ fontSize: 13, lineHeight: 1.6, color: COLORS.textSoft }}>{profile.decoder[key]}</div>
+          </div>
+        ) : null
+      ))}
+    </div>
+  );
+}
+
+function ProfileCard({ profile, onClick, variant = "current" }) {
   const [hovered, setHovered] = useState(false);
   const sc = statusColor(profile.status);
   const pb = partyBadge(profile.party);
   const criminalClean = !profile.criminal_record || profile.criminal_record === "NONE" || profile.criminal_record === "None" || profile.criminal_record === "No criminal record";
+  const isCandidateTab = variant === "candidate";
+  const candidateRoles = getCandidateRoles(profile);
+  const currentNonCandidateRoles = getNonCandidateRoles(profile);
+  const primaryRoleObject = getPrimaryRole(profile);
+  const primaryRole = primaryRoleObject?.title || profile.office || profile.role_label || "—";
+  const showFormerOffices = profile.former_offices?.length && (!isCandidateTab || profile.status === "candidate");
 
   return (
     <button
       onClick={() => onClick(profile)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ width: "100%", background: hovered ? COLORS.panelSoft : COLORS.panel, border: `1px solid ${hovered ? COLORS.borderStrong : COLORS.border}`, borderLeft: `4px solid ${sc}`, borderRadius: 12, padding: "14px 16px", cursor: "pointer", textAlign: "left", transition: "all 140ms ease", display: "flex", alignItems: "flex-start", gap: 14 }}
+      style={{ width: "100%", background: hovered ? COLORS.panelSoft : COLORS.panel, border: `1px solid ${hovered ? COLORS.borderStrong : COLORS.border}`, borderLeft: `4px solid ${isCandidateTab ? GOLD : sc}`, borderRadius: 12, padding: "16px 18px", cursor: "pointer", textAlign: "left", transition: "all 140ms ease", display: "flex", alignItems: "flex-start", gap: 14 }}
     >
       {profile.headshot_url
         ? <img src={profile.headshot_url} alt={profile.name} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `2px solid ${GOLD}` }} />
@@ -72,14 +184,35 @@ function ProfileCard({ profile, onClick }) {
           {pb ? <span style={{ background: pb.bg, color: pb.color, border: `1px solid ${pb.color}44`, fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999 }}>{pb.label}</span> : null}
           <span style={{ background: sc + "22", color: sc, border: `1px solid ${sc}44`, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 999, textTransform: "uppercase", letterSpacing: 0.8 }}>{statusLabel(profile.status)}</span>
         </div>
-        <div style={{ fontSize: 13, color: COLORS.textSoft, marginBottom: 4 }}>{profile.office || profile.role_label || "—"}</div>
+        {isCandidateTab ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 4 }}>
+            {candidateRoles.length ? candidateRoles.map((role, index) => (
+              <div key={`${role.title}-${index}`} style={{ fontSize: 13, color: COLORS.textSoft }}>
+                {role.title} {role.election_date ? `· ${role.election_date}` : ""}
+              </div>
+            )) : <div style={{ fontSize: 13, color: COLORS.textSoft }}>{primaryRole}</div>}
+          </div>
+        ) : (
+          <div style={{ fontSize: 13, color: COLORS.textSoft, marginBottom: 4 }}>{primaryRole}</div>
+        )}
         {profile.geography ? <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>{profile.geography}</div> : null}
+        {isCandidateTab && currentNonCandidateRoles.length ? (
+          <div style={{ display: "grid", gap: 6, marginTop: 8, marginBottom: 8 }}>
+            {currentNonCandidateRoles.map((role, index) => (
+              <div key={`${role.title}-${index}`} style={{ background: COLORS.goldSoft, color: NAVY, border: `1px solid ${GOLD}`, borderRadius: 8, padding: "8px 10px", fontSize: 12, fontWeight: 700 }}>
+                CURRENT: {role.title}, {role.jurisdiction}{role.start_year ? ` (${role.start_year}–present)` : ""}
+              </div>
+            ))}
+          </div>
+        ) : null}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12, color: COLORS.textSoft }}>
           {profile.salary ? <span>💰 {profile.salary}</span> : null}
           {profile.net_worth ? <span style={{ color: GOLD, fontWeight: 700 }}>Est. {profile.net_worth}</span> : null}
           {profile.residency ? <span>🏠 {profile.residency}</span> : null}
           <span style={{ color: criminalClean ? GREEN : RED, fontWeight: 700 }}>⚖️ {criminalClean ? "No criminal record" : profile.criminal_record}</span>
         </div>
+        <DecoderSummary profile={profile} />
+        {showFormerOffices ? <FormerOffices offices={profile.former_offices} /> : null}
       </div>
       <span style={{ fontSize: 20, color: COLORS.muted, flexShrink: 0, alignSelf: "center" }}>›</span>
     </button>
@@ -445,7 +578,7 @@ function ProfileModal({ profile, onClose }) {
 }
 
 export default function OfficialsElectionsPage() {
-  const [tab, setTab] = useState("directory");
+  const [tab, setTab] = useState("current_officials");
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -458,21 +591,28 @@ export default function OfficialsElectionsPage() {
     try {
       const { data, error: err } = await supabase
         .from("official_profiles")
-        .select("id, name, office, level, kind, geography, party, status, status_line, salary, net_worth, residency, criminal_record, term_start, term_end, headshot_url, seat_id, decoder, profile, quick_facts, metrics, contact, on_record, votes, donors, conflicts, ethics_complaints")
+        .select("id, name, office, level, kind, geography, party, status, status_line, salary, net_worth, residency, criminal_record, term_start, term_end, headshot_url, seat_id, decoder, profile, quick_facts, metrics, contact, on_record, votes, donors, conflicts, ethics_complaints, data")
         .order("level", { ascending: true })
         .order("name", { ascending: true });
       if (err) throw err;
-      setProfiles(data || []);
+      setProfiles((data || []).map(normalizeProfileRecord));
     } catch (e) { setError("Could not load profiles. " + (e?.message || "")); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { loadProfiles(); }, [loadProfiles]);
 
-  const filtered = profiles.filter((p) => {
+  const directoryProfiles = profiles.filter((p) => {
+    if (tab === "current_officials") return getNonCandidateRoles(p).length > 0;
+    if (tab === "candidates") return getCandidateRoles(p).length > 0;
+    return true;
+  });
+
+  const filtered = directoryProfiles.filter((p) => {
     const matchLevel = activeLevel === "all" || p.level === activeLevel;
     const q = search.toLowerCase();
-    const matchSearch = !q || [p.name, p.office, p.geography, p.party, p.residency].filter(Boolean).some((v) => v.toLowerCase().includes(q));
+    const roleSearch = asArray(p.current_roles).flatMap((role) => [role.title, role.jurisdiction, role.election_date]).filter(Boolean);
+    const matchSearch = !q || [p.name, p.office, p.geography, p.party, p.residency, ...roleSearch].filter(Boolean).some((v) => v.toLowerCase().includes(q));
     return matchLevel && matchSearch;
   });
 
@@ -502,16 +642,16 @@ export default function OfficialsElectionsPage() {
       </div>
 
       <div style={{ borderBottom: `2px solid ${COLORS.border}`, display: "flex", overflowX: "auto", background: COLORS.panelSoft, borderRadius: "10px 10px 0 0" }}>
-        <button style={tabBtn("directory")} onClick={() => setTab("directory")}>Directory</button>
-        <button style={tabBtn("elections")} onClick={() => setTab("elections")}>2026 Elections</button>
-        <button style={tabBtn("voting")} onClick={() => setTab("voting")}>Voting & Registration</button>
+        {DIRECTORY_TABS.map((item) => (
+          <button key={item.id} style={tabBtn(item.id)} onClick={() => setTab(item.id)}>{item.label}</button>
+        ))}
       </div>
 
       <div style={{ padding: "24px 0" }}>
-        {tab === "directory" && (
+        {(tab === "current_officials" || tab === "candidates") && (
           <div>
             <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
-              <input type="text" placeholder="Search by name, office, party, or location..." value={search} onChange={(e) => setSearch(e.target.value)}
+              <input type="text" placeholder={tab === "candidates" ? "Search by name, candidacy, party, or location..." : "Search by name, office, party, or location..."} value={search} onChange={(e) => setSearch(e.target.value)}
                 style={{ flex: 1, minWidth: 200, background: "#fff", border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "10px 14px", fontSize: 14, color: COLORS.text, outline: "none" }} />
               {["all", ...LEVEL_ORDER].map((level) => (
                 <button key={level} onClick={() => setActiveLevel(level)}
@@ -537,7 +677,7 @@ export default function OfficialsElectionsPage() {
                   <span style={{ color: COLORS.muted, fontSize: 13 }}>{items.length} profile{items.length !== 1 ? "s" : ""}</span>
                 </div>
                 <div style={{ display: "grid", gap: 10 }}>
-                  {items.map((profile) => <ProfileCard key={profile.id} profile={profile} onClick={setSelectedProfile} />)}
+                  {items.map((profile) => <ProfileCard key={profile.id} profile={profile} onClick={setSelectedProfile} variant={tab === "candidates" ? "candidate" : "current"} />)}
                 </div>
               </div>
             ))}
