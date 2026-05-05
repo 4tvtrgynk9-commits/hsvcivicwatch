@@ -1495,57 +1495,9 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
 
 function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel }) {
   const [section, setSection] = useState("issues");
-  const [exportStatus, setExportStatus] = useState("idle"); // idle | success | fallback
-  const [fallbackText, setFallbackText] = useState("");
-  const fallbackRef = React.useRef(null);
 
-  const EXPORT_TS_KEY = "hsv_notebook_export_ts";
 
-  const getLastExportLabel = () => {
-    try {
-      const ts = localStorage.getItem(EXPORT_TS_KEY);
-      if (!ts) return null;
-      const d = new Date(parseInt(ts, 10));
-      return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-    } catch { return null; }
-  };
 
-  const buildExportText = () => {
-    const lines = [];
-    const allIssues = [...pubIssues].sort((a, b) => (a.module || "").localeCompare(b.module || ""));
-    allIssues.forEach((card, i) => {
-      lines.push("════════════════════════════════════════");
-      lines.push(`REF: ${card.ref_number || "—"}  |  MODULE: ${card.module || "—"}  |  TAB: ${card.tab || "—"}`);
-      lines.push(`TITLE: ${card.title || "—"}`);
-      lines.push("");
-      if (card.summary) { lines.push("SUMMARY:"); lines.push(card.summary); lines.push(""); }
-      const statMatches = pubStats.filter(s => s.module === card.module && s.ref_number === card.ref_number);
-      if (statMatches.length) {
-        lines.push("LINKED STAT BLOCKS:");
-        statMatches.forEach(s => {
-          lines.push(`  • ${s.label || s.stat_label || "—"}: ${s.value || s.stat_value || "—"}${s.context ? " — " + s.context : ""}`);
-        });
-        lines.push("");
-      }
-    });
-    lines.push("════════════════════════════════════════");
-    lines.push(`Exported from HSV Civic Watch Admin · ${new Date().toLocaleString("en-US")}`);
-    return lines.join("\n");
-  };
-
-  const handleExport = async () => {
-    const text = buildExportText();
-    try {
-      await navigator.clipboard.writeText(text);
-      localStorage.setItem(EXPORT_TS_KEY, Date.now().toString());
-      setExportStatus("success");
-      setTimeout(() => setExportStatus("idle"), 2500);
-    } catch {
-      setFallbackText(text);
-      setExportStatus("fallback");
-      setTimeout(() => { if (fallbackRef.current) fallbackRef.current.select(); }, 80);
-    }
-  };
 
   const issuesByModule = {};
   pubIssues.forEach(c => {
