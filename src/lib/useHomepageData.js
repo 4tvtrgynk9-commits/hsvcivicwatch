@@ -1,252 +1,146 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { COLORS } from "../config/theme";
 import { supabase } from "./supabase";
 
-const COLOR_MAP = {
-  red: "#B4473E",
-  gold: "#C6A34D",
-  purple: "#7A4FA3",
-  green: "#3E8B5B",
-  blue: "#2F5D8A",
-  lavender: "#7A4FA3",
-  orange: "#cf7b2f",
+const MODULE_COLOR = {
+  equity: COLORS.red,
+  utilities: COLORS.orange,
+  health: COLORS.red,
+  insurance_burdens: COLORS.blue,
+  workers_childcare: COLORS.green,
+  taxation: COLORS.gold,
+  housing_crisis: COLORS.orange,
+  officials_elections: COLORS.navy,
+  boards_oversight: COLORS.navy,
+  voting_rights: COLORS.blue,
+  criminal_justice: COLORS.red,
+  policing: COLORS.red,
+  data_collection: COLORS.lavender,
+  money: COLORS.gold,
+  landuse: COLORS.orange,
+  environment: COLORS.green,
+  information_warfare: COLORS.red,
+  proposals: COLORS.green,
+  action: COLORS.blue,
 };
 
-function getCardTabs(card) {
-  return Array.from(new Set([
-    ...(Array.isArray(card?.tabs) ? card.tabs : []),
-    card?.tab,
-  ].map(v => String(v || "").trim()).filter(Boolean)));
+const STAT_COLOR = {
+  red: COLORS.red,
+  gold: COLORS.gold,
+  blue: COLORS.blue,
+  green: COLORS.green,
+  purple: COLORS.lavender,
+};
+
+const EMPTY_DATA = {
+  activeInvestigations: [],
+  keyNumbers: [],
+  moduleCounts: {},
+  latestByModule: {},
+};
+
+function moduleColor(moduleId) {
+  return MODULE_COLOR[moduleId] || COLORS.gold;
 }
 
-function getHomepageTargetTab(card) {
-  const tabs = getCardTabs(card);
-  if (tabs.includes("overview")) return "overview";
-  return tabs[0] || card?.tab || "overview";
-}
-
-function statValueText(block) {
-  const d = block.data || block;
-
-  if (d.type === "key-number") return d.value || "";
-  if (d.type === "pay-clock") {
-    const amount = Number(d.annualAmount || 0);
-    if (!amount) return "$0";
-    if (amount >= 1000000000) return "$" + (amount / 1000000000).toFixed(1) + "B";
-    if (amount >= 1000000) return "$" + (amount / 1000000).toFixed(1) + "M";
-    if (amount >= 1000) return "$" + (amount / 1000).toFixed(0) + "K";
-    return "$" + amount.toLocaleString();
-  }
-  if (d.type === "comparison-bar") {
-    return `${d.leftValue || 0} vs ${d.rightValue || 0}`;
-  }
-  return d.value || d.title || d.label || "";
-}
-
-function statLabelText(block) {
-  const d = block.data || block;
-  return d.label || d.title || d.type || "Stat";
-}
-
-function statContextText(block) {
-  const d = block.data || block;
-  return d.context || d.note || "";
-}
-
-function toKeyNumber(block) {
-  const d = block.data || block;
-  return {
-    id: block.ref_number || block.id,
-    label: statLabelText(block),
-    value: statValueText(block),
-    sub: statContextText(block),
-    color: COLOR_MAP[d.color] || COLOR_MAP.red,
-    target: block.module,
-    strength_score: block.strength_score || 0,
-    ref_number: block.ref_number || "",
-  };
-}
-
-function visualConfigToKeyNumber(card) {
-  const visual = card.visual_config || {};
-  const data = Array.isArray(visual.data) ? visual.data : [];
-  const first = data.find(item => item && (item.value !== undefined && item.value !== null));
-  if (!first) return null;
-
-  return {
-    id: card.ref_number || card.id,
-    label: first.label || card.label || "Key number",
-    value: typeof first.value === "number" ? String(first.value) : (first.value || ""),
-    sub: first.context || card.summary || "",
-    color: COLOR_MAP[first.color] || COLOR_MAP.gold,
-    target: card.module,
-    strength_score: card.shock_score || card.visual_score || 0,
-    ref_number: card.ref_number || "",
-  };
+function statColor(colorName, moduleId) {
+  return STAT_COLOR[colorName] || moduleColor(moduleId);
 }
 
 function toActiveInvestigation(card) {
-  const score = Number(card.homepage_score || 0);
-  const shock = Number(card.shock_score || 0);
-  const color =
-    shock >= 9 ? COLOR_MAP.red :
-    shock >= 7 ? COLOR_MAP.gold :
-    shock >= 5 ? COLOR_MAP.blue :
-    COLOR_MAP.lavender;
-
   return {
-    id: card.ref_number || card.id,
-    module: card.module,
-    tab: getHomepageTargetTab(card),
-    tag: card.label || card.module,
-    color,
+    ref_number: card.ref_number || "",
+    id: card.id,
+    module: card.module || "",
+    tab: card.tab || "overview",
     title: card.title || "",
     summary: card.homepage_teaser || card.summary || "",
-    homepage_score: score,
-    ref_number: card.ref_number || "",
-    published_at: card.published_at || card.created_at || null,
+    color: moduleColor(card.module),
+    tag: card.label || "",
+  };
+}
+
+function toKeyNumber(block) {
+  const data = block.data && typeof block.data === "object" ? block.data : {};
+
+  return {
+    ref_number: block.ref_number || "",
+    label: data.label || "",
+    value: data.value || "",
+    sub: data.context || "",
+    color: statColor(block.color || data.color, block.module),
+    target: block.module || "",
   };
 }
 
 export default function useHomepageData() {
-  const [issueCards, setIssueCards] = useState([]);
-  const [statBlocks, setStatBlocks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [homepageData, setHomepageData] = useState(EMPTY_DATA);
 
   useEffect(() => {
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
+    let cancelled = false;
 
-    async function fetchHomepageData() {
-      setLoading(true);
+    async function loadHomepageData() {
+      if (!supabase) return;
+
       try {
-        const [{ data: issues }, { data: stats }] = await Promise.all([
+        const [{ data: issueCards }, { data: statBlocks }] = await Promise.all([
           supabase
             .from("issue_cards")
             .select("*")
+            .gte("homepage_score", 7)
             .order("homepage_score", { ascending: false })
-            .order("published_at", { ascending: false, nullsFirst: false }),
+            .order("created_at", { ascending: false }),
           supabase
             .from("stat_blocks")
             .select("*")
+            .filter("data->>type", "eq", "key-number")
             .order("strength_score", { ascending: false })
             .order("created_at", { ascending: false }),
         ]);
 
-        setIssueCards(issues || []);
-        setStatBlocks(stats || []);
-      } catch (error) {
-        console.error("useHomepageData fetch error:", error);
-      } finally {
-        setLoading(false);
+        if (cancelled) return;
+
+        const moduleCounts = {};
+        const latestByModule = {};
+
+        (issueCards || []).forEach((card) => {
+          const moduleId = card.module || "";
+          if (!moduleId) return;
+
+          moduleCounts[moduleId] = (moduleCounts[moduleId] || 0) + 1;
+
+          const cardTime = new Date(card.created_at || 0).getTime();
+          const knownTime = latestByModule[moduleId]?.createdAt || 0;
+
+          if (!latestByModule[moduleId] || cardTime > knownTime) {
+            latestByModule[moduleId] = {
+              title: card.title || "",
+              createdAt: cardTime,
+            };
+          }
+        });
+
+        Object.keys(latestByModule).forEach((moduleId) => {
+          latestByModule[moduleId] = { title: latestByModule[moduleId].title };
+        });
+
+        setHomepageData({
+          activeInvestigations: (issueCards || []).map(toActiveInvestigation),
+          keyNumbers: (statBlocks || []).map(toKeyNumber),
+          moduleCounts,
+          latestByModule,
+        });
+      } catch {
+        if (!cancelled) setHomepageData(EMPTY_DATA);
       }
     }
 
-    fetchHomepageData();
+    loadHomepageData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const activeInvestigations = useMemo(() => {
-    const ranked = issueCards
-      .filter(card => card.module && card.title && card.ref_number)
-      .sort((a, b) => {
-        const aHomepage = Number(a.homepage_score || a.shock_score || a.visual_score || 0);
-        const bHomepage = Number(b.homepage_score || b.shock_score || b.visual_score || 0);
-        if (bHomepage !== aHomepage) return bHomepage - aHomepage;
-
-        const aShock = Number(a.shock_score || a.visual_score || 0);
-        const bShock = Number(b.shock_score || b.visual_score || 0);
-        if (bShock !== aShock) return bShock - aShock;
-
-        return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
-      });
-
-    const preferredWithTabs = ranked.filter(card => {
-      const tabs = getCardTabs(card);
-      return card.show_on_overview || !tabs.length || tabs.includes("overview");
-    });
-    const source = preferredWithTabs.length ? preferredWithTabs : ranked;
-
-    const perModuleCap = {};
-    const selected = [];
-    for (const card of source) {
-      const module = card.module || "unknown";
-      const count = perModuleCap[module] || 0;
-      if (count >= 2) continue;
-      perModuleCap[module] = count + 1;
-      selected.push(card);
-      if (selected.length >= 12) break;
-    }
-
-    return selected.map(toActiveInvestigation);
-  }, [issueCards]);
-
-  const keyNumbers = useMemo(() => {
-    const allowedTypes = new Set(["key-number", "comparison-bar", "pay-clock", "trend-line", "bar-chart"]);
-    const rankedStats = statBlocks
-      .filter(block => {
-        const d = block.data || block;
-        return (
-          allowedTypes.has(d.type || block.type) &&
-          statLabelText(block) &&
-          statValueText(block)
-        );
-      })
-      .sort((a, b) => {
-        if ((b.strength_score || 0) !== (a.strength_score || 0)) {
-          return (b.strength_score || 0) - (a.strength_score || 0);
-        }
-        return new Date(b.created_at || 0) - new Date(a.created_at || a.created_at || 0);
-      })
-      .map(toKeyNumber);
-
-    if (rankedStats.length) return rankedStats;
-
-    const visualFallback = issueCards
-      .filter(card => card.visual_config && Array.isArray(card.visual_config.data) && card.visual_config.data.length)
-      .sort((a, b) => {
-        const aScore = Number(a.shock_score || a.visual_score || 0);
-        const bScore = Number(b.shock_score || b.visual_score || 0);
-        if (bScore !== aScore) return bScore - aScore;
-        return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
-      })
-      .map(visualConfigToKeyNumber)
-      .filter(Boolean);
-
-    if (visualFallback.length) return visualFallback;
-
-    return [];
-  }, [statBlocks, issueCards]);
-
-  const moduleCounts = useMemo(() => {
-    const counts = {};
-    issueCards.forEach(card => {
-      const module = card.module || "unknown";
-      counts[module] = (counts[module] || 0) + 1;
-    });
-    return counts;
-  }, [issueCards]);
-
-  const latestByModule = useMemo(() => {
-    const latest = {};
-    issueCards.forEach(card => {
-      const module = card.module || "unknown";
-      const dateValue = new Date(card.published_at || card.created_at || 0).getTime();
-      if (!latest[module] || dateValue > latest[module].dateValue) {
-        latest[module] = {
-          title: card.title || "",
-          dateValue,
-        };
-      }
-    });
-    return latest;
-  }, [issueCards]);
-
-  return {
-    loading,
-    activeInvestigations,
-    keyNumbers,
-    moduleCounts,
-    latestByModule,
-  };
+  return homepageData;
 }

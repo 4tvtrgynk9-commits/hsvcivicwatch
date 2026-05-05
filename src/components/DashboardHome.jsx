@@ -630,7 +630,35 @@ export default function DashboardHome({ onOpenModule }) {
 
         {visibleInvestigations.length > 0 ? (
           <section style={{ marginBottom: 18 }}>
-            {sectionTitle("Active investigations")}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+              <div
+                style={{
+                  fontSize: 15,
+                  color: COLORS.blue,
+                  fontWeight: 900,
+                  letterSpacing: 1.8,
+                  textTransform: "uppercase",
+                  lineHeight: 1.15,
+                }}
+              >
+                Active investigations
+              </div>
+              {activeInvestigations.length > 0 ? (
+                <div
+                  style={{
+                    background: COLORS.red,
+                    color: "#fff",
+                    fontSize: 11,
+                    fontWeight: 900,
+                    padding: "3px 9px",
+                    borderRadius: 999,
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  {activeInvestigations.length} live
+                </div>
+              ) : null}
+            </div>
             <div style={{ display: "grid", gap: 10 }}>
               {visibleInvestigations.map((item) => (
                 <FeedRow key={item.ref_number || item.title} item={item} onClick={() => openSpecificInvestigation(item)} />
@@ -707,11 +735,11 @@ export default function DashboardHome({ onOpenModule }) {
           style={{
             marginTop: 12,
             marginBottom: 4,
-            overflow: "hidden",
-            width: "100%",
+            marginLeft: "calc(-50vw + 50%)",
+            marginRight: "calc(-50vw + 50%)",
+            width: "100vw",
             position: "relative",
-            left: 0,
-            right: 0,
+            overflow: "hidden",
           }}
         >
           <div

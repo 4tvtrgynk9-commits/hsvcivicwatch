@@ -237,6 +237,8 @@ THE AFFILIATIONS: Every organizational financial and personal tie creating oblig
 THE BENEFICIARIES: Named individuals only. Never organizations. Never industries. Never vague categories. Who specifically got richer got the contract got the appointment got the zoning variance got the case dismissed got the regulatory pass. One named individual per sentence. Dollar amount or specific benefit stated. Relationship to official stated explicitly. No softening.
 THE TRACK RECORD: Receipts only. Specific votes. Specific rulings. Specific contracts. Specific statements contradicted by actions. Dates on everything. Dollar amounts on everything. Who was harmed named explicitly. Every reversal documented with before and after. Ethics complaints with outcomes. Criminal record if any. Order by impact unless chronology hits harder.`;
 
+const BLUEPRINT_RESEARCH_TEMPLATE = ""; // TODO: add blueprint research template text
+
 const COLOR_MAP = { red:"#c0392b", gold:"#b8860b", purple:"#6c3483", green:"#1e8449", blue:"#1a5276" };
 const COLOR_BG  = { red:"#2a0a0a", gold:"#2a1f00", purple:"#1a0a2a", green:"#0a1f0a", blue:"#0a1520" };
 
@@ -2180,7 +2182,8 @@ export default function AdminPanel() {
   const [confirmStat, setConfirmStat] = useState(null);
   const [confirmBulk, setConfirmBulk] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [templateCopied, setTemplateCopied] = useState(false);
+  const [toolsTemplatesOpen, setToolsTemplatesOpen] = useState(false);
+  const [toolTemplateCopied, setToolTemplateCopied] = useState({ issue: false, profile: false, blueprint: false });
   const [editConfig, setEditConfig] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
@@ -2195,7 +2198,6 @@ export default function AdminPanel() {
   const [seatsLoading, setSeatsLoading] = useState(false);
   const [seatSearch, setSeatSearch] = useState("");
   const [selectedSeatId, setSelectedSeatId] = useState("");
-  const [profileTemplateCopied, setProfileTemplateCopied] = useState(false);
   const [pubProfiles, setPubProfiles] = useState([]);
   const [pubProfilesLoading, setPubProfilesLoading] = useState(false);
   const [pubProfilesError, setPubProfilesError] = useState("");
@@ -2210,6 +2212,7 @@ export default function AdminPanel() {
   const [weeklyRunning, setWeeklyRunning] = useState(false);
   const [weeklyResult, setWeeklyResult] = useState(null);
   const [weeklyError, setWeeklyError] = useState("");
+  const [weeklyToast, setWeeklyToast] = useState(null);
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
   const fallbackRef = useRef(null);
@@ -2943,11 +2946,10 @@ export default function AdminPanel() {
   const toggleStat = (i) => setSelStats(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i]);
   const toggleAllIssues = () => setSelIssues(selIssues.length === pendingIssues.length ? [] : pendingIssues.map((_,i) => i));
   const toggleAllStats = () => setSelStats(selStats.length === pendingStats.length ? [] : pendingStats.map((_,i) => i));
-  const copyTemplate = () => { navigator.clipboard.writeText(RESEARCH_TEMPLATE); setTemplateCopied(true); setTimeout(() => setTemplateCopied(false), 2500); };
-  const copyProfileTemplate = async () => {
-    await navigator.clipboard.writeText(PROFILE_RESEARCH_TEMPLATE);
-    setProfileTemplateCopied(true);
-    setTimeout(() => setProfileTemplateCopied(false), 2000);
+  const copyToolTemplate = async (type, text) => {
+    await navigator.clipboard.writeText(text);
+    setToolTemplateCopied((prev) => ({ ...prev, [type]: true }));
+    setTimeout(() => setToolTemplateCopied((prev) => ({ ...prev, [type]: false })), 2000);
   };
 
   const handleParseProfile = async (mode) => {
@@ -3063,6 +3065,26 @@ export default function AdminPanel() {
     }
   };
 
+  useEffect(() => {
+    if (!weeklyResult) return;
+    setWeeklyToast({
+      type: "success",
+      message: `Rescored: ${weeklyResult.rescored} · Flagged: ${weeklyResult.stale_flagged}`,
+    });
+    const id = setTimeout(() => setWeeklyToast(null), 5000);
+    return () => clearTimeout(id);
+  }, [weeklyResult]);
+
+  useEffect(() => {
+    if (!weeklyError) return;
+    setWeeklyToast({
+      type: "error",
+      message: weeklyError,
+    });
+    const id = setTimeout(() => setWeeklyToast(null), 5000);
+    return () => clearTimeout(id);
+  }, [weeklyError]);
+
   const totalPending = pendingIssues.length + pendingStats.length;
   const totalSel = selIssues.length + selStats.length;
   const totalDrafts = draftIssues.length + draftStats.length + pasteQueue.reduce((a, b) => a + b.length, 0);
@@ -3078,7 +3100,6 @@ export default function AdminPanel() {
     background:"transparent",
     border:"none",
     borderBottom: adminTab === id ? "3px solid #b8860b" : "3px solid transparent",
-    marginBottom:-2,
     padding:"12px 20px",
     fontSize:14,
     fontWeight:900,
@@ -3346,6 +3367,26 @@ export default function AdminPanel() {
           {savedToast}
         </div>
       ) : null}
+      {weeklyToast ? (
+        <div
+          style={{
+            position:"fixed",
+            top: savedToast ? 72 : 18,
+            right:18,
+            zIndex:5000,
+            background: weeklyToast.type === "error" ? "#b91c1c" : "#1a7a3a",
+            color: "#fff",
+            border: "none",
+            borderRadius:8,
+            padding:"12px 16px",
+            fontSize:14,
+            fontWeight:700,
+            boxShadow:"0 10px 28px rgba(0,0,0,0.18)"
+          }}
+        >
+          {weeklyToast.message}
+        </div>
+      ) : null}
       {confirmIssue && <ConfirmIssueModal card={confirmIssue} onConfirm={confirmSingleIssue} onCancel={() => setConfirmIssue(null)} publishing={publishing} />}
       {confirmStat && <ConfirmStatModal card={confirmStat} issueCardsForModule={issueCardsForStatModule} onConfirm={confirmSingleStat} onCancel={() => setConfirmStat(null)} publishing={publishing} />}
       {confirmBulk && <BulkConfirmModal issueCards={selIssues.map(i => pendingIssues[i])} statBlocks={selStats.map(i => pendingStats[i])} onConfirm={confirmBulkPublish} onCancel={() => setConfirmBulk(false)} publishing={publishing} />}
@@ -3358,9 +3399,18 @@ export default function AdminPanel() {
           <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
           <div style={{ color:"#fff", fontSize:20, fontWeight:700, marginTop:2 }}>Content Admin</div>
         </div>
-        <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
-          Sign Out
-        </button>
+        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <button
+            onClick={handleRunWeeklyJob}
+            disabled={weeklyRunning}
+            style={{ background:"#1a7a3a", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:weeklyRunning ? "not-allowed" : "pointer" }}
+          >
+            {weeklyRunning ? "Running..." : "Run Weekly Report"}
+          </button>
+          <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:4, padding:"12px 24px", fontSize:15, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1 }}>
+            Sign Out
+          </button>
+        </div>
       </div>
 
       <div style={{ display:"flex", gap:0, borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:"0 36px" }}>
@@ -3592,7 +3642,7 @@ export default function AdminPanel() {
 
       {adminTab === "profiles" ? (
         <div>
-          <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
+          <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48", marginTop:20 }}>
             <button
               onClick={() => setProfileAdminTab("paste")}
               style={{ padding:"14px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer" }}
@@ -3811,7 +3861,7 @@ export default function AdminPanel() {
 
       {adminTab === "blueprints" ? (
         <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
-          <div style={{ display:"flex", gap:10, marginBottom:14 }}>
+          <div style={{ display:"flex", gap:10, marginBottom:14, marginTop:20 }}>
             <button
               onClick={() => setBlueprintMode("brief")}
               style={{ background: blueprintMode === "brief" ? "#193150" : "#f0ebe2", color: blueprintMode === "brief" ? "white" : "#6b778a", borderRadius:10, padding:"9px 18px", fontSize:14, fontWeight:900, border:"none" }}
@@ -3880,50 +3930,12 @@ export default function AdminPanel() {
         <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
           <div style={{ background:"#2e3440", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
             <div>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:6 }}>TEMPLATES</div>
-              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
-                Copy the relevant template into your AI chat after gathering source material. Each template produces output formatted for its respective admin paste tab.
-              </div>
-
-              <div style={{ marginBottom:24 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                  <div>
-                    <div style={{ color:"#f5f0e8", fontSize:15, fontWeight:900, marginBottom:2 }}>Issue Card Research Template</div>
-                    <div style={{ color:"#6b778a", fontSize:13 }}>Formats raw research into issue cards and stat blocks for the Content → Import tab.</div>
-                  </div>
-                  <button
-                    onClick={copyTemplate}
-                    style={{ background:templateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:18, transition:"background 0.3s" }}
-                  >
-                    {templateCopied ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-                <div style={{ background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:260, overflowY:"auto" }}>
-                  <pre style={{ color:"#ddd5c4", fontSize:12, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{RESEARCH_TEMPLATE}</pre>
-                </div>
-              </div>
-
-              <div style={{ marginBottom:8 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                  <div>
-                    <div style={{ color:"#f5f0e8", fontSize:15, fontWeight:900, marginBottom:2 }}>Official Profile Research Template</div>
-                    <div style={{ color:"#6b778a", fontSize:13 }}>Formats research into prosecutor-style official profiles for the Profiles → Paste Profile tab.</div>
-                  </div>
-                  <button
-                    onClick={copyProfileTemplate}
-                    style={{ background:profileTemplateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:18, transition:"background 0.3s" }}
-                  >
-                    {profileTemplateCopied ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-                <div style={{ background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:260, overflowY:"auto" }}>
-                  <pre style={{ color:"#ddd5c4", fontSize:12, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{PROFILE_RESEARCH_TEMPLATE}</pre>
-                </div>
-              </div>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📱 SOCIAL MEDIA CONTENT</div>
+              <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
             </div>
 
             <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>EXPORT FOR NOTEBOOKLM</div>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>NOTEBOOKLM EXPORT</div>
               <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:16 }}>
                 Copy the published cards and supporting context into NotebookLM using the existing export flow, with a manual fallback if clipboard access is blocked.
               </div>
@@ -3944,7 +3956,7 @@ export default function AdminPanel() {
                     transition: "background 0.2s",
                   }}
                 >
-                  {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "Export for NotebookLM"}
+                  {exportStatus === "success" ? "Copied! Paste into NotebookLM ✓" : "NotebookLM Export ↗"}
                 </button>
                 {getLastExportLabel() && exportStatus !== "success" && (
                   <span style={{ color:"#aaa", fontSize:12 }}>Last export: {getLastExportLabel()}</span>
@@ -3975,48 +3987,48 @@ export default function AdminPanel() {
             </div>
 
             <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📱 SOCIAL MEDIA CONTENT</div>
-              <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
-            </div>
-
-            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>WEEKLY REPORT</div>
-              <div style={{ color:"#6b778a", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
-                Run the weekly report manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
-              </div>
               <button
-                onClick={handleRunWeeklyJob}
-                disabled={weeklyRunning}
-                style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"12px 24px", fontSize:15, fontWeight:900, cursor:"pointer" }}
+                onClick={() => setToolsTemplatesOpen((prev) => !prev)}
+                style={{ width:"100%", background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}
               >
-                {weeklyRunning ? "Running..." : "Run Weekly Report"}
+                <span style={{ color:"#f5f0e8", fontSize:15, fontWeight:700 }}>Templates</span>
+                <span style={{ color:"#b8860b", fontSize:16, fontWeight:900 }}>{toolsTemplatesOpen ? "▲" : "▼"}</span>
               </button>
-              {weeklyError ? (
-                <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
-                  {weeklyError}
-                </div>
-              ) : null}
-              {weeklyResult ? (
-                <div style={{ background:"#f0fdf4", border:"1px solid rgba(62,139,91,0.3)", borderRadius:12, padding:18, marginTop:16 }}>
-                  <div style={{ display:"grid", gap:14 }}>
-                    <div>
-                      <div style={{ color:"#6b778a", fontSize:13 }}>Candidates flagged for review</div>
-                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.graduated}</div>
+              {toolsTemplatesOpen ? (
+                <div style={{ borderTop:"1px solid #4a5268", padding:"8px 0" }}>
+                  {[
+                    {
+                      key: "issue",
+                      name: "Issue Card Research Template",
+                      description: "Formats raw research into issue cards and stat blocks for the Content → Import tab.",
+                      text: RESEARCH_TEMPLATE,
+                    },
+                    {
+                      key: "profile",
+                      name: "Official Profile Research Template",
+                      description: "Formats research into prosecutor-style official profiles for the Profiles → Paste Profile tab.",
+                      text: PROFILE_RESEARCH_TEMPLATE,
+                    },
+                    {
+                      key: "blueprint",
+                      name: "Blueprint Research Template",
+                      description: "Formats policy proposal research for the Blueprints → Paste Blueprint tab.",
+                      text: BLUEPRINT_RESEARCH_TEMPLATE,
+                    },
+                  ].map((item, index, list) => (
+                    <div key={item.key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 18px", borderBottom: index < list.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                      <div>
+                        <div style={{ color:"#f5f0e8", fontSize:14, fontWeight:700 }}>{item.name}</div>
+                        <div style={{ color:"#6b778a", fontSize:12, marginTop:3 }}>{item.description}</div>
+                      </div>
+                      <button
+                        onClick={() => copyToolTemplate(item.key, item.text)}
+                        style={{ background:"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"8px 14px", fontSize:12, fontWeight:700, flexShrink:0, marginLeft:16, cursor:"pointer" }}
+                      >
+                        {toolTemplateCopied[item.key] ? "Copied!" : "Copy"}
+                      </button>
                     </div>
-                    <div>
-                      <div style={{ color:"#6b778a", fontSize:13 }}>Stale profiles flagged</div>
-                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.stale_flagged}</div>
-                    </div>
-                    <div>
-                      <div style={{ color:"#6b778a", fontSize:13 }}>Issue cards rescored</div>
-                      <div style={{ color:"#193150", fontSize:20, fontWeight:900 }}>{weeklyResult.rescored}</div>
-                    </div>
-                  </div>
-                  {Array.isArray(weeklyResult.errors) && weeklyResult.errors.length ? (
-                    <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
-                      {weeklyResult.errors.join("\n")}
-                    </div>
-                  ) : null}
+                  ))}
                 </div>
               ) : null}
             </div>
