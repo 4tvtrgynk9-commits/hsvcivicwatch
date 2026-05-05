@@ -2185,6 +2185,10 @@ export default function AdminPanel() {
   const [profileParseError, setProfileParseError] = useState("");
   const [parsedProfile, setParsedProfile] = useState(null);
   const [profilePublishSuccess, setProfilePublishSuccess] = useState("");
+  const [seats, setSeats] = useState([]);
+  const [seatsLoading, setSeatsLoading] = useState(false);
+  const [seatSearch, setSeatSearch] = useState("");
+  const [selectedSeatId, setSelectedSeatId] = useState("");
   const [profileTemplateCopied, setProfileTemplateCopied] = useState(false);
   const [pubProfiles, setPubProfiles] = useState([]);
   const [pubProfilesLoading, setPubProfilesLoading] = useState(false);
@@ -2281,6 +2285,16 @@ export default function AdminPanel() {
       setExportStatus("fallback");
       setTimeout(() => { if (fallbackRef.current) fallbackRef.current.select(); }, 80);
     }
+  };
+
+  const loadSeats = async () => {
+    if (!supabase || seats.length) return;
+    setSeatsLoading(true);
+    try {
+      const { data } = await supabase.from("seats").select("id, title, level, jurisdiction, geography").order("level", { ascending: true }).order("title", { ascending: true });
+      setSeats(data || []);
+    } catch (e) { console.error("loadSeats error:", e); }
+    finally { setSeatsLoading(false); }
   };
 
   const getAdminAuthHeaders = async (baseHeaders = {}) => {
@@ -2597,6 +2611,7 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
+    if (adminTab === "profiles") loadSeats();
     if (adminTab === "profiles" && profileAdminTab === "published") {
       loadPublishedProfiles();
     }
@@ -2931,6 +2946,9 @@ export default function AdminPanel() {
 
   const handleParseProfile = async (mode) => {
     if (!profileRawPaste.trim()) return;
+    const nextSeatId = selectedSeatId;
+    setSelectedSeatId("");
+    setSeatSearch("");
     setProfileParsing(true);
     setProfileParseError("");
     setProfilePublishSuccess("");
@@ -2938,7 +2956,7 @@ export default function AdminPanel() {
     try {
       const res = await adminJsonFetch("/api/parse-profile", {
         method: "POST",
-        body: { rawPaste: profileRawPaste, mode, profileId: null }
+        body: { rawPaste: profileRawPaste, mode, profileId: null, seatId: mode === "publish" ? (nextSeatId || null) : null }
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Profile parse failed");
@@ -3610,6 +3628,31 @@ export default function AdminPanel() {
                     </button>
                   ) : null}
                 </div>
+
+                {parsedProfile ? (
+                  <div style={{ marginTop:18, background:"#2e3440", border:"1px solid #4a5268", borderRadius:10, padding:18 }}>
+                    <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
+                    <div style={{ color:"#aaa", fontSize:13, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
+                    <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title, level, or jurisdiction..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
+                      style={{ width:"100%", background:"#1e2330", border:"1px solid #4a5268", borderRadius:6, padding:"10px 12px", fontSize:13, color:"#f5f0e8", outline:"none", marginBottom:10, boxSizing:"border-box" }} />
+                    {seatSearch.trim().length >= 2 ? (
+                      <div style={{ background:"#1e2330", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
+                        {seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
+                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); }}
+                            style={{ width:"100%", background: selectedSeatId === seat.id ? "#b8860b22" : "transparent", border:"none", borderBottom:"1px solid #2a3040", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
+                            <span style={{ color:"#f5f0e8", fontSize:13, fontWeight:700 }}>{seat.title}</span>
+                            <span style={{ color:"#6b778a", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
+                          </button>
+                        ))}
+                        {!seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
+                          ? <div style={{ padding:"12px 14px", color:"#556", fontSize:13 }}>No seats match.</div> : null}
+                      </div>
+                    ) : null}
+                    {selectedSeatId
+                      ? <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10 }}><span style={{ background:"#b8860b22", color:"#b8860b", border:"1px solid #b8860b44", fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:999 }}>✓ Seat selected</span><button onClick={() => { setSelectedSeatId(""); setSeatSearch(""); }} style={{ background:"none", border:"none", color:"#556", fontSize:12, cursor:"pointer" }}>Clear</button></div>
+                      : <div style={{ marginTop:6, color:"#556", fontSize:12 }}>No seat selected — profile will publish without seat link.</div>}
+                  </div>
+                ) : null}
 
                 {profileParsing ? <div style={{ color:"#6b778a", fontSize:14, marginTop:14 }}>Parsing profile...</div> : null}
                 {profileParseError ? (

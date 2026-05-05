@@ -422,7 +422,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { rawPaste, mode = "parse", profileId = null } = req.body || {};
+    const { rawPaste, mode = "parse", profileId = null, seatId = null } = req.body || {};
 
     if (!cleanString(rawPaste)) {
       return json(res, 400, { error: "Missing rawPaste" });
@@ -486,7 +486,10 @@ export default async function handler(req, res) {
     if (profileId) {
       const { data, error } = await supabase
         .from(targetTable)
-        .update(finalProfile)
+        .update({
+          ...finalProfile,
+          seat_id: seatId || null,
+        })
         .eq("id", profileId)
         .select()
         .single();
@@ -497,7 +500,10 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from(targetTable)
-      .insert(finalProfile)
+      .insert({
+        ...finalProfile,
+        seat_id: seatId || null,
+      })
       .select()
       .single();
 
