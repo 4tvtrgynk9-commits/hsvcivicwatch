@@ -735,9 +735,8 @@ export default function DashboardHome({ onOpenModule }) {
           style={{
             marginTop: 12,
             marginBottom: 4,
-            marginLeft: "calc(-50vw + 50%)",
-            marginRight: "calc(-50vw + 50%)",
-            width: "100vw",
+            marginLeft: -18,
+            marginRight: -22,
             position: "relative",
             overflow: "hidden",
           }}
