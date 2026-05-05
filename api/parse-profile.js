@@ -69,6 +69,14 @@ function getAdminClient() {
   });
 }
 
+function normalizeSeatId(value) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trimmed)
+    ? trimmed
+    : null;
+}
+
 async function anthropicFetch(system, userContent, maxTokens = 16000, { enableWebSearch = false } = {}) {
   const body = {
     model: MODEL,
@@ -485,6 +493,7 @@ export default async function handler(req, res) {
 
   try {
     const { rawPaste, mode = "parse", profileId = null, seatId = null } = req.body || {};
+    const normalizedSeatId = normalizeSeatId(seatId);
 
     if (!cleanString(rawPaste)) {
       return json(res, 400, { error: "Missing rawPaste" });
@@ -550,7 +559,7 @@ export default async function handler(req, res) {
         .from(targetTable)
         .update({
           ...finalProfile,
-          seat_id: seatId || null,
+          seat_id: normalizedSeatId,
         })
         .eq("id", profileId)
         .select()
@@ -564,7 +573,7 @@ export default async function handler(req, res) {
       .from(targetTable)
       .insert({
         ...finalProfile,
-        seat_id: seatId || null,
+        seat_id: normalizedSeatId,
       })
       .select()
       .single();

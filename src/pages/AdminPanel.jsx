@@ -2335,15 +2335,22 @@ export default function AdminPanel() {
         .select("id, name, office, level, kind, geography, party, status_line, headshot_url, decoder, created_at, seat_id")
         .order("level", { ascending: true })
         .order("name", { ascending: true });
-      const { data: seatsData } = await supabase
-        .from("seats")
-        .select("id, title, body, level, county")
-        .order("level", { ascending: true })
-        .order("title", { ascending: true });
 
       if (error) throw error;
       setPubProfiles(data || []);
-      setAdminSeats(seatsData || []);
+
+      try {
+        const { data: seatsData, error: seatsError } = await supabase
+          .from("seats")
+          .select("id, title, body, level, county")
+          .order("level", { ascending: true })
+          .order("title", { ascending: true });
+        if (seatsError) throw seatsError;
+        setAdminSeats(seatsData || []);
+      } catch (seatsError) {
+        console.error("loadPublishedProfiles seats error:", seatsError);
+        setAdminSeats([]);
+      }
     } catch (e) {
       console.error("loadPublishedProfiles error:", e);
       setPubProfilesError(e?.message || "Could not load published profiles.");
@@ -2415,6 +2422,15 @@ export default function AdminPanel() {
     const body = seat.body ? ` — ${seat.body}` : "";
     const county = includeCounty && seat.county ? ` (${seat.county})` : "";
     return `${seat.title || "Untitled seat"}${body}${county}`;
+  };
+
+  const formatSeatSearchValue = (seat) => `${seat?.title || ""} — ${seat?.body || ""}`.trim();
+  const normalizeSeatId = (value) => {
+    if (typeof value !== "string") return null;
+    const trimmed = value.trim();
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trimmed)
+      ? trimmed
+      : null;
   };
 
   const getAdminAuthHeaders = async (baseHeaders = {}) => {
@@ -3097,7 +3113,7 @@ export default function AdminPanel() {
 
   const handleParseProfile = async (mode) => {
     if (!profileRawPaste.trim()) return;
-    const nextSeatId = selectedSeatId;
+    const nextSeatId = normalizeSeatId(selectedSeatId);
     setSelectedSeatId("");
     setSeatSearch("");
     setSeatMatches([]);
@@ -3108,7 +3124,7 @@ export default function AdminPanel() {
     try {
       const res = await adminJsonFetch("/api/parse-profile", {
         method: "POST",
-        body: { rawPaste: profileRawPaste, mode, profileId: null, seatId: mode === "publish" ? (nextSeatId || null) : null }
+        body: { rawPaste: profileRawPaste, mode, profileId: null, seatId: mode === "publish" ? nextSeatId : null }
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Profile parse failed");
@@ -3125,59 +3141,48 @@ export default function AdminPanel() {
   };
 
   const autoMatchSeat = async (profile) => {
-    if (!supabase || !profile) return;
-    const officeRole = String(profile.office || profile.title || "").trim();
-    const rawLocation = String(
-      profile.jurisdiction ||
-      profile.county ||
-      profile.geography ||
-      profile.location ||
-      profile.city ||
-      profile.municipality ||
-      ""
-    ).trim();
-    const locationLower = rawLocation.toLowerCase();
-    const countyTerm =
-      locationLower.match(/\b(madison|huntsville|redstone)\b/) ? "madison" :
-      locationLower.match(/\b(limestone|athens|ardmore|elkmont|tanner)\b/) ? "limestone" :
-      locationLower.match(/\b(morgan|decatur|hartselle|priceville)\b/) ? "morgan" :
-      locationLower.match(/\b(alabama|state)\b/) ? "state" :
-      locationLower.match(/\b(u\.?s\.?|united states|federal)\b/) ? "federal" :
-      rawLocation;
-    const officeCandidates = [
-      officeRole,
-      officeRole.replace(/\b(Madison|Limestone|Morgan)\s+County\b/gi, "").trim(),
-      officeRole.replace(/\b(City|Town)\s+of\s+(Huntsville|Madison|Athens|Ardmore|Elkmont|Tanner|Decatur|Hartselle|Priceville)\b/gi, "").trim(),
-      officeRole.replace(/\b(Huntsville|Madison|Athens|Ardmore|Elkmont|Tanner|Decatur|Hartselle|Priceville)\b/gi, "").trim(),
-    ].filter(Boolean);
-    const uniqueOfficeCandidates = [...new Set(officeCandidates)];
+    try {
+      if (!supabase || !profile) return;
+      const officeTerm = String(profile.office || profile.title || profile.role || profile.position || "").trim();
+      const locationTerm = String(profile.jurisdiction || profile.county || profile.location || profile.geography || "").trim();
 
-    if (!officeRole || !countyTerm) {
-      setSeatMatches([]);
-      return;
-    }
+      if (!officeTerm) {
+        setSeatMatches([]);
+        return;
+      }
 
-    let exactMatches = [];
-    for (const candidate of uniqueOfficeCandidates) {
-      const { data } = await supabase
+      let query = supabase
         .from("seats")
         .select("id, title, body, level, county")
-        .ilike("title", `%${candidate}%`)
-        .ilike("county", `%${countyTerm}%`)
+        .ilike("title", `%${officeTerm}%`)
         .limit(10);
-      if (data?.length) {
-        exactMatches = data;
-        break;
-      }
-    }
 
-    if (exactMatches?.length === 1) {
-      setSelectedSeatId(exactMatches[0].id);
-      setSeatSearch(formatSeatDisplay(exactMatches[0], false));
-      setSeatMatches([]);
-    } else if (exactMatches?.length > 1) {
-      setSeatMatches(exactMatches);
-    } else {
+      if (locationTerm) {
+        const locationLower = locationTerm.toLowerCase();
+        const countyTerm =
+          locationLower.match(/\b(madison|huntsville|redstone)\b/) ? "madison" :
+          locationLower.match(/\b(limestone|athens|ardmore|elkmont|tanner)\b/) ? "limestone" :
+          locationLower.match(/\b(morgan|decatur|hartselle|priceville)\b/) ? "morgan" :
+          locationLower.match(/\b(alabama|state)\b/) ? "state" :
+          locationLower.match(/\b(u\.?s\.?|united states|federal)\b/) ? "federal" :
+          locationTerm;
+        query = query.ilike("county", `%${countyTerm}%`);
+      }
+
+      const { data: matches, error } = await query;
+      if (error) throw error;
+
+      if (matches?.length === 1) {
+        setSelectedSeatId(matches[0].id);
+        setSeatSearch(formatSeatSearchValue(matches[0]));
+        setSeatMatches([]);
+      } else if (matches?.length > 1) {
+        setSeatMatches(matches);
+      } else {
+        setSeatMatches([]);
+      }
+    } catch (error) {
+      console.error("autoMatchSeat error:", error);
       setSeatMatches([]);
     }
   };
@@ -4020,7 +4025,7 @@ export default function AdminPanel() {
                           {seatMatches.map(seat => (
                             <button
                               key={seat.id}
-                              onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatDisplay(seat, false)); setSeatMatches([]); }}
+                              onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatSearchValue(seat)); setSeatMatches([]); }}
                               style={{ background: "#353b48", border: "1px solid #C6A34D", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#f0c93a", cursor: "pointer" }}
                             >
                               {formatSeatDisplay(seat)}
@@ -4034,7 +4039,7 @@ export default function AdminPanel() {
                     {seatSearch.trim().length >= 2 ? (
                       <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
                         {seats.filter(seat => [seat.title, seat.body].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
-                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatDisplay(seat, false)); setSeatMatches([]); }}
+                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatSearchValue(seat)); setSeatMatches([]); }}
                             style={{ width:"100%", background: selectedSeatId === seat.id ? "rgba(198,163,77,0.13)" : "transparent", border:"none", borderBottom:"1px solid rgba(255,255,255,0.08)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
                             <span style={{ color:"#ffffff", fontSize:13, fontWeight:700 }}>{formatSeatDisplay(seat)}</span>
                             <span style={{ color:"#8fa3b8", fontSize:11 }}>{seat.level}</span>
