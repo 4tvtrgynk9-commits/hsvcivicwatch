@@ -2284,6 +2284,7 @@ export default function AdminPanel() {
   const [selectedSeatId, setSelectedSeatId] = useState("");
   const [seatMatches, setSeatMatches] = useState([]);
   const [pubProfiles, setPubProfiles] = useState([]);
+  const [adminSeats, setAdminSeats] = useState([]);
   const [pubProfilesLoading, setPubProfilesLoading] = useState(false);
   const [pubProfilesError, setPubProfilesError] = useState("");
   const [profileEditConfig, setProfileEditConfig] = useState(null);
@@ -2320,12 +2321,18 @@ export default function AdminPanel() {
     try {
       const { data, error } = await supabase
         .from("official_profiles")
-        .select("id, name, office, level, kind, geography, party, status_line, headshot_url, decoder, created_at")
+        .select("id, name, office, level, kind, geography, party, status_line, headshot_url, decoder, created_at, seat_id")
         .order("level", { ascending: true })
         .order("name", { ascending: true });
+      const { data: seatsData } = await supabase
+        .from("seats")
+        .select("id, title, level, jurisdiction, geography")
+        .order("level", { ascending: true })
+        .order("title", { ascending: true });
 
       if (error) throw error;
       setPubProfiles(data || []);
+      setAdminSeats(seatsData || []);
     } catch (e) {
       console.error("loadPublishedProfiles error:", e);
       setPubProfilesError(e?.message || "Could not load published profiles.");
@@ -4014,21 +4021,43 @@ export default function AdminPanel() {
             ) : null}
 
             {profileAdminTab === "published" ? (() => {
-              const grouped = {
-                local: [],
-                state: [],
-                federal: [],
-                judge: [],
-                uncategorized: [],
-              };
-              const resolveProfileLevel = (profile) => {
-                const level = String(profile?.level || "").trim().toLowerCase();
-                if (level === "local" || level === "state" || level === "federal" || level === "judge") return level;
-                const kind = String(profile?.kind || "").trim().toLowerCase();
-                if (kind === "judge" || kind === "magistrate") return "judge";
-                if (kind === "elected" || kind === "appointed" || kind === "sheriff" || kind === "tax_official" || kind === "superintendent" || kind === "board_member") return "local";
-                return "";
-              };
+              // Group profiles by level then by seat title
+              const LEVEL_ORDER = ["local", "state", "federal", "judge"];
+              const LEVEL_LABELS = { local: "Local", state: "State", federal: "Federal", judge: "Judiciary" };
+
+              // Build a map of seat_id → seat for quick lookup
+              const seatById = {};
+              for (const seat of adminSeats) seatById[seat.id] = seat;
+
+              // Group profiles by level
+              const byLevel = {};
+              for (const level of LEVEL_ORDER) byLevel[level] = [];
+              const uncategorized = [];
+
+              for (const profile of pubProfiles) {
+                const level = String(profile.level || "").toLowerCase();
+                if (byLevel[level]) byLevel[level].push(profile);
+                else {
+                  // Fallback: infer level from kind
+                  const kind = String(profile.kind || "").toLowerCase();
+                  if (kind.includes("judge") || kind.includes("magistrate")) byLevel["judge"].push(profile);
+                  else if (kind.includes("elected") || kind.includes("appointed") || kind.includes("sheriff") || kind.includes("tax_official") || kind.includes("superintendent") || kind.includes("board_member")) byLevel["local"].push(profile);
+                  else uncategorized.push(profile);
+                }
+              }
+
+              // Within each level, group by seat title (using seat_id lookup, falling back to office)
+              function groupBySeat(profiles) {
+                const seatGroups = {};
+                for (const profile of profiles) {
+                  const seat = profile.seat_id ? seatById[profile.seat_id] : null;
+                  const seatTitle = seat?.title || profile.office || "Other";
+                  if (!seatGroups[seatTitle]) seatGroups[seatTitle] = [];
+                  seatGroups[seatTitle].push(profile);
+                }
+                return seatGroups;
+              }
+
               const formatAddedDate = (value) => {
                 if (!value) return "";
                 const date = new Date(value);
@@ -4036,29 +4065,21 @@ export default function AdminPanel() {
                 return date.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
               };
 
-              for (const profile of pubProfiles) {
-                const key = resolveProfileLevel(profile);
-                if (key === "local" || key === "state" || key === "federal" || key === "judge") grouped[key].push(profile);
-                else grouped.uncategorized.push(profile);
-              }
-
-              const lowerIncludes = (value, needle) => String(value || "").toLowerCase().includes(needle);
-              const stateJudges = grouped.judge.filter(profile => lowerIncludes(profile.kind, "state") || lowerIncludes(profile.geography, "state"));
-              const federalJudges = grouped.judge.filter(profile => lowerIncludes(profile.kind, "federal") || lowerIncludes(profile.geography, "federal"));
-              const otherJudges = grouped.judge.filter(profile => !stateJudges.includes(profile) && !federalJudges.includes(profile));
-
               const badgeStyle = { background:"#b8860b", color:"#fff", textTransform:"uppercase", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, display:"inline-block" };
               const pillStyle = { background:"#e8e4dc", border:"1px solid #ddd8cf", color:"#4a5a6e", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
 
-              const renderProfileCard = (profile, options = {}) => (
+              const renderProfileCard = (profile) => (
                 <div key={profile.id} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
                   <div style={{ minWidth:0 }}>
                     <div style={{ color:"#193150", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
-                    {options.showDistrict && profile.geography ? <div style={{ color:"#4a5a6e", fontSize:12, marginBottom:4 }}>{profile.geography}</div> : null}
+                    {(() => {
+                      const seat = profile.seat_id ? seatById[profile.seat_id] : null;
+                      return seat ? <div style={{ fontSize:11, color:"#7a8a9a" }}>{seat.title} · {seat.jurisdiction}</div> : null;
+                    })()}
                     <div style={{ color:"#4a5a6e", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
                     {profile.created_at ? <div style={{ color:"#7a8a9a", fontSize:12, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
                     <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-                      <span style={pillStyle}>{resolveProfileLevel(profile) || "uncategorized"}</span>
+                      <span style={pillStyle}>{String(profile.level || "").trim().toLowerCase() || "uncategorized"}</span>
                       {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
                     </div>
                   </div>
@@ -4075,15 +4096,6 @@ export default function AdminPanel() {
                     >
                       Delete
                     </button>
-                  </div>
-                </div>
-              );
-
-              const renderStandardGroup = (label, profiles) => (
-                <div style={{ marginBottom:28 }}>
-                  <div style={badgeStyle}>{label}</div>
-                  <div style={{ display:"grid", gap:12, marginTop:14 }}>
-                    {profiles.length ? profiles.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No profiles in this section yet.</div>}
                   </div>
                 </div>
               );
@@ -4112,37 +4124,40 @@ export default function AdminPanel() {
 
                   {pubProfilesLoading && !pubProfiles.length ? <div style={{ color:"#7a8a9a", fontSize:14, marginBottom:18 }}>Loading published profiles...</div> : null}
 
-                  {renderStandardGroup("LOCAL", grouped.local)}
-                  {renderStandardGroup("STATE", grouped.state)}
-                  {renderStandardGroup("FEDERAL", grouped.federal)}
-
-                  <div style={{ marginBottom:28 }}>
-                    <div style={badgeStyle}>JUDGES</div>
-
-                    <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>State Judges</div>
-                    <div style={{ display:"grid", gap:12 }}>
-                      {stateJudges.length ? stateJudges.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No state judges in this section yet.</div>}
-                    </div>
-
-                    <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>Federal Judges</div>
-                    <div style={{ display:"grid", gap:12 }}>
-                      {federalJudges.length ? federalJudges.map(profile => renderProfileCard(profile, { showDistrict: true })) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No federal judges in this section yet.</div>}
-                    </div>
-
-                    {otherJudges.length ? (
-                      <>
-                        <div style={{ color:"#ddd5c4", fontSize:14, fontWeight:700, marginBottom:8, marginTop:16, paddingBottom:6, borderBottom:"1px solid #4a5268" }}>Other Judges</div>
-                        <div style={{ display:"grid", gap:12 }}>
-                          {otherJudges.map(profile => renderProfileCard(profile))}
-                        </div>
-                      </>
-                    ) : null}
-                  </div>
+                  {LEVEL_ORDER.map((level) => {
+                    const profiles = byLevel[level];
+                    const seatGroups = groupBySeat(profiles);
+                    const seatTitles = Object.keys(seatGroups).sort((a, b) => a.localeCompare(b));
+                    return (
+                      <div key={level} style={{ marginBottom:28 }}>
+                        <div style={badgeStyle}>{LEVEL_LABELS[level].toUpperCase()}</div>
+                        {profiles.length ? (
+                          <div style={{ marginTop:14 }}>
+                            {seatTitles.map((seatTitle) => (
+                              <div key={seatTitle} style={{ marginBottom:18 }}>
+                                <div style={{ fontSize:13, fontWeight:700, color:"#193150", borderBottom:"1px solid #ddd8cf", paddingBottom:6, marginBottom:8, marginTop:16 }}>
+                                  {seatTitle}
+                                  <span style={{ color:"#7a8a9a", fontSize:11, fontWeight:400, marginLeft:8 }}>
+                                    {seatGroups[seatTitle].length} profile{seatGroups[seatTitle].length === 1 ? "" : "s"}
+                                  </span>
+                                </div>
+                                <div style={{ display:"grid", gap:12 }}>
+                                  {seatGroups[seatTitle].map(profile => renderProfileCard(profile))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ color:"#777f93", fontSize:14, padding:"10px 0", marginTop:14 }}>No profiles in this section yet.</div>
+                        )}
+                      </div>
+                    );
+                  })}
 
                   <div style={{ marginBottom:8 }}>
                     <div style={badgeStyle}>UNCATEGORIZED</div>
                     <div style={{ display:"grid", gap:12, marginTop:14 }}>
-                      {grouped.uncategorized.length ? grouped.uncategorized.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No uncategorized profiles.</div>}
+                      {uncategorized.length ? uncategorized.map(profile => renderProfileCard(profile)) : <div style={{ color:"#777f93", fontSize:14, padding:"10px 0" }}>No uncategorized profiles.</div>}
                     </div>
                   </div>
                 </div>
