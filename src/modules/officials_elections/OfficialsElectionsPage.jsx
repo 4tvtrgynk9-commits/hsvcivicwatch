@@ -148,6 +148,18 @@ function getPrimaryRole(profile) {
   return asArray(profile.current_roles).find((role) => role.is_primary) || asArray(profile.current_roles)[0] || null;
 }
 
+function cleanTruncate(text, maxLen) {
+  if (!text || text.length <= maxLen) return text;
+  const chunk = text.slice(0, maxLen);
+  const lastPeriod = Math.max(
+    chunk.lastIndexOf(". "),
+    chunk.lastIndexOf("! "),
+    chunk.lastIndexOf("? ")
+  );
+  if (lastPeriod > maxLen * 0.5) return text.slice(0, lastPeriod + 1);
+  return chunk.trimEnd();
+}
+
 function FormerOffices({ offices }) {
   const [open, setOpen] = useState(false);
   if (!offices?.length) return null;
@@ -374,23 +386,25 @@ function ProfileModal({ profile, onClose }) {
   ].filter((item) => item.value);
 
   const handleShareProfile = async () => {
-    const summary = profile.status_line || profile.profile?.summary || "";
-    const snippet = profile.status_line ? profile.status_line : (summary.length > 160 ? `${summary.slice(0, 160)}...` : summary);
-    const shareText = [
-      `${profile.name} — ${profile.office || profile.role_label || ""}`,
-      snippet,
-      "",
-      "Full prosecutor-style dossier — donors, votes, conflicts, and the full record:",
-      "https://hsvcivicwatch.org/#officials_elections",
-      "",
+    const slug = profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const shortUrl = "https://hsvcivicwatch.org/p/" + slug;
+    const smsText = (
+      profile.name + "\n" + profile.office + "\n\n" +
+      (profile.status_line || "").slice(0, 200) + "\n\n" + shortUrl
+    );
+    const socialSummary = profile.status_line || cleanTruncate(profile.profile?.summary || "", 200);
+    const socialText = (
+      profile.name.toUpperCase() + " — " + profile.office + "\n\n" +
+      socialSummary + "\n\n" +
+      "Full prosecutor-style dossier:\n" + shortUrl + "\n\n" +
       "#HuntsvilleAL #CivicWatch #MadisonCounty"
-    ].filter(Boolean).join("\n");
+    );
     try {
       if (navigator.share) {
         await navigator.share({
           title: `${profile.name} — ${profile.office || profile.role_label || "Officials & Elections"}`,
-          text: shareText,
-          url: "https://hsvcivicwatch.org/#officials_elections"
+          text: smsText,
+          url: shortUrl
         });
         return;
       }
@@ -398,7 +412,7 @@ function ProfileModal({ profile, onClose }) {
       return;
     }
     try {
-      await navigator.clipboard.writeText(shareText);
+      await navigator.clipboard.writeText(socialText);
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 1800);
     } catch (e) {}

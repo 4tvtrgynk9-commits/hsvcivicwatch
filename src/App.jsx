@@ -29,6 +29,7 @@ const ROUTE_ADMIN_RESET = "admin-reset";
 
 function getRouteFromLocation() {
   const url = new URL(window.location.href);
+  let didMutateSearch = false;
 
   if (url.pathname === "/admin-reset-password") {
     return ROUTE_ADMIN_RESET;
@@ -48,6 +49,17 @@ function getRouteFromLocation() {
       }));
     } catch (e) {}
     url.searchParams.delete("card");
+    didMutateSearch = true;
+  }
+  const profileParam = url.searchParams.get("profile");
+  if (profileParam) {
+    try {
+      sessionStorage.setItem("hsv_pending_profile", profileParam);
+    } catch (e) {}
+    url.searchParams.delete("profile");
+    didMutateSearch = true;
+  }
+  if (didMutateSearch) {
     window.history.replaceState(window.history.state || {}, "", `${url.pathname}${url.search}${url.hash}`);
   }
   return hash || ROUTE_DASHBOARD;

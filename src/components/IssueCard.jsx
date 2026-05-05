@@ -429,21 +429,57 @@ function truncateText(str, n) {
   return str && str.length > n ? str.slice(0, n).trim() + "\u2026" : str || "";
 }
 
-function buildShareText(issue) {
-  const cardId = issue.ref_number || issue.id || "";
-  const module = issue.module || "";
-  const deepLink = "https://hsvcivicwatch.org/#" + module + "?card=" + encodeURIComponent(cardId);
+function cleanTruncate(text, maxLen) {
+  if (!text || text.length <= maxLen) return text;
+  const chunk = text.slice(0, maxLen);
+  const lastPeriod = Math.max(
+    chunk.lastIndexOf(". "),
+    chunk.lastIndexOf("! "),
+    chunk.lastIndexOf("? ")
+  );
+  if (lastPeriod > maxLen * 0.5) return text.slice(0, lastPeriod + 1);
+  return chunk.trimEnd();
+}
+
+function buildShareText(issue, mode) {
+  const ref = issue.ref_number || issue.id || "";
+  const shortUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
   const teaser = issue.homepage_teaser || issue.summary || "";
-  const shortTeaser = teaser.length > 180 ? teaser.slice(0, 177) + "..." : teaser;
+  
+  // Find clean sentence boundary — never cut mid-sentence
+  function cleanTruncate(text, maxLen) {
+    if (!text || text.length <= maxLen) return text;
+    const chunk = text.slice(0, maxLen);
+    const lastPeriod = Math.max(
+      chunk.lastIndexOf(". "),
+      chunk.lastIndexOf("! "),
+      chunk.lastIndexOf("? ")
+    );
+    if (lastPeriod > maxLen * 0.5) return text.slice(0, lastPeriod + 1);
+    return chunk.trimEnd();
+  }
+
+  if (mode === "sms") {
+    // Clean, short, no hashtags, complete sentences only
+    return [
+      issue.title || "",
+      "",
+      cleanTruncate(teaser, 200),
+      "",
+      shortUrl,
+    ].join("\n");
+  }
+
+  // Social media caption
   return [
-    issue.title ? issue.title.toUpperCase() : "HSV CIVIC WATCH",
-    shortTeaser,
+    issue.title ? issue.title.toUpperCase() : "",
     "",
-    "Full investigation + action steps:",
-    deepLink,
+    cleanTruncate(teaser, 220),
+    "",
+    "Full investigation: " + shortUrl,
     "",
     "#HuntsvilleAL #CivicWatch #MadisonCounty #Alabama"
-  ].filter(s => s !== null && s !== undefined).join("\n");
+  ].join("\n");
 }
 
 function slugifyFilePart(value) {
@@ -459,13 +495,11 @@ function buildIssueDeepLink(issue) {
 }
 
 function ShareIssueCard({ issue, cardRef }) {
-  const deepLink = buildIssueDeepLink(issue);
-  const teaser = issue?.homepage_teaser || "";
-  const summary = issue?.summary || "";
-  const body = teaser || truncateText(summary, 160);
+  const fullText = issue?.homepage_teaser || issue?.summary || "";
+  const body = cleanTruncate(fullText, 160);
   return (
     <div ref={cardRef} style={{
-      width: 700,
+      width: 900,
       background: "#e8e1d0",
       padding: 28,
       boxSizing: "border-box",
@@ -494,7 +528,7 @@ function ShareIssueCard({ issue, cardRef }) {
         </div>
         {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ width: 700, overflow: "hidden", transform: "none" }}>
+            <div style={{ width: 900, overflow: "hidden", transform: "none" }}>
               <IssueCardVisual config={issue.visual_config} />
             </div>
           </div>
@@ -513,7 +547,7 @@ function ShareIssueCard({ issue, cardRef }) {
             READ THE FULL INVESTIGATION
           </div>
           <div style={{ color: COLORS.green, fontSize: 24, fontWeight: 900, marginTop: 4, lineHeight: 1.3, wordBreak: "break-word" }}>
-            {deepLink}
+            hsvcivicwatch.org
           </div>
         </div>
       </div>
@@ -535,10 +569,10 @@ async function shareStoryCard(cardEl, issue) {
   if (!cardEl) return;
   await loadHtml2Canvas();
   const canvas = await window.html2canvas(cardEl, {
-    width: 700,
-    windowWidth: 700,
-    windowHeight: 1200,
-    scale: 2,
+    width: 900,
+    windowWidth: 900,
+    windowHeight: 1400,
+    scale: 2.5,
     useCORS: true,
     allowTaint: true,
     backgroundColor: "#e8e1d0",
@@ -546,13 +580,14 @@ async function shareStoryCard(cardEl, issue) {
   const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
   if (!blob) return;
   const file = new File([blob], `hsvcivicwatch-${slugifyFilePart(issue?.title)}.png`, { type: "image/png" });
-  const shareUrl = buildIssueDeepLink(issue);
-  const shareText = buildShareText(issue);
+  const ref = issue?.ref_number || issue?.id || "";
+  const shareUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
+  const shareText = buildShareText(issue, "social");
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
     await navigator.share({
       files: [file],
-      text: shareText,
-      url: shareUrl,
+      text: buildShareText(issue, "sms"),
+      url: "https://hsvcivicwatch.org/c/" + (issue.ref_number || issue.id || ""),
     });
     return { shared: true };
   } else {
@@ -580,6 +615,7 @@ export default function IssueCard({ issue }) {
   const storyCardRef = useRef(null);
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
+  const issueRef = issue.ref_number || issue.id || "";
   const SCROLL_KEY = "hsv_last_card";
   const DECODER_KEY = "hsv_decoder_state";
   const SCROLL_TTL = 24 * 60 * 60 * 1000;
@@ -800,19 +836,19 @@ export default function IssueCard({ issue }) {
             <div style={{ fontSize: 14, color: "rgba(247,243,234,0.78)", lineHeight: 1.6, marginBottom: 16 }}>Choose how to share this issue card and deep link back to the full investigation.</div>
             <div style={{ display: "grid", gap: 10 }}>
               <button
-                onClick={async () => { try { await navigator.clipboard.writeText(shareOptions.shareUrl); } catch (e) {} }}
+                onClick={async () => { try { await navigator.clipboard.writeText(buildShareText(issue, "sms")); } catch (e) {} }}
                 style={{ background: COLORS.gold, color: COLORS.navyDark, border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
               >
-                Copy link
+                Copy for iMessage/SMS
               </button>
               <button
-                onClick={async () => { try { await navigator.clipboard.writeText(shareOptions.shareText); } catch (e) {} }}
+                onClick={async () => { try { await navigator.clipboard.writeText(buildShareText(issue, "social")); } catch (e) {} }}
                 style={{ background: COLORS.gold, color: COLORS.navyDark, border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
               >
-                Copy caption
+                Copy for Social Media
               </button>
               <button
-                onClick={() => window.open(shareOptions.fbUrl, "_blank", "noopener,noreferrer")}
+                onClick={() => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://hsvcivicwatch.org/c/" + issueRef), "_blank", "noopener,noreferrer")}
                 style={{ background: COLORS.green, color: "#fff", border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
               >
                 Share to Facebook
