@@ -2337,7 +2337,7 @@ export default function AdminPanel() {
         .order("name", { ascending: true });
       const { data: seatsData } = await supabase
         .from("seats")
-        .select("id, title, level, jurisdiction, geography")
+        .select("id, title, body, level, county")
         .order("level", { ascending: true })
         .order("title", { ascending: true });
 
@@ -2404,10 +2404,17 @@ export default function AdminPanel() {
     if (!supabase || seats.length) return;
     setSeatsLoading(true);
     try {
-      const { data } = await supabase.from("seats").select("id, title, level, jurisdiction, geography").order("level", { ascending: true }).order("title", { ascending: true });
+      const { data } = await supabase.from("seats").select("id, title, body, level, county").order("level", { ascending: true }).order("title", { ascending: true });
       setSeats(data || []);
     } catch (e) { console.error("loadSeats error:", e); }
     finally { setSeatsLoading(false); }
+  };
+
+  const formatSeatDisplay = (seat, includeCounty = true) => {
+    if (!seat) return "";
+    const body = seat.body ? ` — ${seat.body}` : "";
+    const county = includeCounty && seat.county ? ` (${seat.county})` : "";
+    return `${seat.title || "Untitled seat"}${body}${county}`;
   };
 
   const getAdminAuthHeaders = async (baseHeaders = {}) => {
@@ -3119,27 +3126,54 @@ export default function AdminPanel() {
 
   const autoMatchSeat = async (profile) => {
     if (!supabase || !profile) return;
-    const officeRole = profile.office || profile.role_label || "";
-    const jurisdiction = profile.jurisdiction || profile.geography || "";
+    const officeRole = String(profile.office || profile.title || "").trim();
+    const rawLocation = String(
+      profile.jurisdiction ||
+      profile.county ||
+      profile.geography ||
+      profile.location ||
+      profile.city ||
+      profile.municipality ||
+      ""
+    ).trim();
+    const locationLower = rawLocation.toLowerCase();
+    const countyTerm =
+      locationLower.match(/\b(madison|huntsville|redstone)\b/) ? "madison" :
+      locationLower.match(/\b(limestone|athens|ardmore|elkmont|tanner)\b/) ? "limestone" :
+      locationLower.match(/\b(morgan|decatur|hartselle|priceville)\b/) ? "morgan" :
+      locationLower.match(/\b(alabama|state)\b/) ? "state" :
+      locationLower.match(/\b(u\.?s\.?|united states|federal)\b/) ? "federal" :
+      rawLocation;
+    const officeCandidates = [
+      officeRole,
+      officeRole.replace(/\b(Madison|Limestone|Morgan)\s+County\b/gi, "").trim(),
+      officeRole.replace(/\b(City|Town)\s+of\s+(Huntsville|Madison|Athens|Ardmore|Elkmont|Tanner|Decatur|Hartselle|Priceville)\b/gi, "").trim(),
+      officeRole.replace(/\b(Huntsville|Madison|Athens|Ardmore|Elkmont|Tanner|Decatur|Hartselle|Priceville)\b/gi, "").trim(),
+    ].filter(Boolean);
+    const uniqueOfficeCandidates = [...new Set(officeCandidates)];
 
-    let { data: exactMatches } = await supabase
-      .from("seats")
-      .select("id, title, level, jurisdiction, geography")
-      .ilike("title", `%${officeRole}%`)
-      .limit(3);
+    if (!officeRole || !countyTerm) {
+      setSeatMatches([]);
+      return;
+    }
 
-    if (!exactMatches?.length && jurisdiction) {
-      const { data: fallback } = await supabase
+    let exactMatches = [];
+    for (const candidate of uniqueOfficeCandidates) {
+      const { data } = await supabase
         .from("seats")
-        .select("id, title, level, jurisdiction, geography")
-        .ilike("jurisdiction", `%${jurisdiction}%`)
-        .limit(3);
-      exactMatches = fallback;
+        .select("id, title, body, level, county")
+        .ilike("title", `%${candidate}%`)
+        .ilike("county", `%${countyTerm}%`)
+        .limit(10);
+      if (data?.length) {
+        exactMatches = data;
+        break;
+      }
     }
 
     if (exactMatches?.length === 1) {
       setSelectedSeatId(exactMatches[0].id);
-      setSeatSearch(exactMatches[0].title);
+      setSeatSearch(formatSeatDisplay(exactMatches[0], false));
       setSeatMatches([]);
     } else if (exactMatches?.length > 1) {
       setSeatMatches(exactMatches);
@@ -3986,27 +4020,27 @@ export default function AdminPanel() {
                           {seatMatches.map(seat => (
                             <button
                               key={seat.id}
-                              onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
+                              onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatDisplay(seat, false)); setSeatMatches([]); }}
                               style={{ background: "#353b48", border: "1px solid #C6A34D", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#f0c93a", cursor: "pointer" }}
                             >
-                              {seat.title} · {seat.level} · {seat.jurisdiction}
+                              {formatSeatDisplay(seat)}
                             </button>
                           ))}
                         </div>
                       </div>
                     ) : null}
-                    <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title, level, or jurisdiction..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
+                    <input type="text" placeholder={seatsLoading ? "Loading seats..." : "Search seats — type a title or office body..."} value={seatSearch} onChange={e => setSeatSearch(e.target.value)}
                       style={{ width:"100%", background:"#f5f0e8", border:"1px solid #4a5268", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#193150", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
                     {seatSearch.trim().length >= 2 ? (
                       <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
-                        {seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
-                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(seat.title); setSeatMatches([]); }}
+                        {seats.filter(seat => [seat.title, seat.body].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
+                          <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatDisplay(seat, false)); setSeatMatches([]); }}
                             style={{ width:"100%", background: selectedSeatId === seat.id ? "rgba(198,163,77,0.13)" : "transparent", border:"none", borderBottom:"1px solid rgba(255,255,255,0.08)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
-                            <span style={{ color:"#ffffff", fontSize:13, fontWeight:700 }}>{seat.title}</span>
-                            <span style={{ color:"#8fa3b8", fontSize:11 }}>{[seat.level, seat.jurisdiction, seat.geography].filter(Boolean).join(" · ")}</span>
+                            <span style={{ color:"#ffffff", fontSize:13, fontWeight:700 }}>{formatSeatDisplay(seat)}</span>
+                            <span style={{ color:"#8fa3b8", fontSize:11 }}>{seat.level}</span>
                           </button>
                         ))}
-                        {!seats.filter(seat => [seat.title, seat.level, seat.jurisdiction, seat.geography].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
+                        {!seats.filter(seat => [seat.title, seat.body].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
                           ? <div style={{ padding:"12px 14px", color:"#8fa3b8", fontSize:13 }}>No seats match.</div> : null}
                       </div>
                     ) : null}
@@ -4098,7 +4132,7 @@ export default function AdminPanel() {
                     <div style={{ color:"#ffffff", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
                     {cardSeat ? (
                       <div style={{ fontSize:11, color:"#8fa3b8", marginTop:2 }}>
-                        {cardSeat.title} · {cardSeat.jurisdiction}
+                        {formatSeatDisplay(cardSeat)}
                       </div>
                     ) : null}
                     {profile.created_at ? <div style={{ color:"#8fa3b8", fontSize:12, marginTop:4, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
@@ -4165,7 +4199,8 @@ export default function AdminPanel() {
                                   {seatTitle}
                                   <div style={{ color:"#8fa3b8", fontSize:11, fontWeight:400, textTransform:"none", letterSpacing:0, marginTop:4 }}>
                                     {seatGroups[seatTitle].profiles.length} profile{seatGroups[seatTitle].profiles.length === 1 ? "" : "s"}
-                                    {seatGroups[seatTitle].seat?.jurisdiction ? ` · ${seatGroups[seatTitle].seat.jurisdiction}` : ""}
+                                    {seatGroups[seatTitle].seat?.body ? ` · ${seatGroups[seatTitle].seat.body}` : ""}
+                                    {seatGroups[seatTitle].seat?.county ? ` (${seatGroups[seatTitle].seat.county})` : ""}
                                   </div>
                                 </div>
                                 <div style={{ display:"grid", gap:12 }}>
