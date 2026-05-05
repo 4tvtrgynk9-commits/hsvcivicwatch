@@ -323,6 +323,7 @@ function ProfileModal({ profile, onClose }) {
   const [activeTab, setActiveTab] = useState("profile");
   const [decoderOpen, setDecoderOpen] = useState(false);
   const [complaintsOpen, setComplaintsOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
@@ -372,6 +373,37 @@ function ProfileModal({ profile, onClose }) {
     { label: "Campaign Finance", value: profile.contact?.finance_url, href: profile.contact?.finance_url },
   ].filter((item) => item.value);
 
+  const handleShareProfile = async () => {
+    const summary = profile.status_line || profile.profile?.summary || "";
+    const snippet = profile.status_line ? profile.status_line : (summary.length > 160 ? `${summary.slice(0, 160)}...` : summary);
+    const shareText = [
+      `${profile.name} — ${profile.office || profile.role_label || ""}`,
+      snippet,
+      "",
+      "Full prosecutor-style dossier — donors, votes, conflicts, and the full record:",
+      "https://hsvcivicwatch.org/#officials_elections",
+      "",
+      "#HuntsvilleAL #CivicWatch #MadisonCounty"
+    ].filter(Boolean).join("\n");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${profile.name} — ${profile.office || profile.role_label || "Officials & Elections"}`,
+          text: shareText,
+          url: "https://hsvcivicwatch.org/#officials_elections"
+        });
+        return;
+      }
+    } catch (e) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1800);
+    } catch (e) {}
+  };
+
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,16,28,0.65)", backdropFilter: "blur(4px)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "24px 16px", overflowY: "auto" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 18, width: "100%", maxWidth: 820, boxShadow: "0 24px 80px rgba(0,0,0,0.35)", overflow: "hidden", marginBottom: 40 }}>
@@ -405,7 +437,10 @@ function ProfileModal({ profile, onClose }) {
               )}
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, width: 36, height: 36, fontSize: 20, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>×</button>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <button onClick={handleShareProfile} style={{ background: COLORS.green || "#3E8B5B", border: "none", borderRadius: 8, padding: "0 14px", height: 36, fontSize: 13, fontWeight: 900, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", whiteSpace: "nowrap" }}>{shareCopied ? "Copied!" : "Share"}</button>
+            <button onClick={onClose} style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, width: 36, height: 36, fontSize: 20, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>×</button>
+          </div>
         </div>
 
         {(profile.salary || profile.net_worth || profile.party || profile.term_start) ? (

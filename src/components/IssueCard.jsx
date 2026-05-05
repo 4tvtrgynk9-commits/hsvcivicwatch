@@ -430,10 +430,20 @@ function truncateText(str, n) {
 }
 
 function buildShareText(issue) {
-  if (!issue?.title) {
-    return "HSV Civic Watch issue card from hsvcivicwatch.org";
-  }
-  return `HSV Civic Watch issue card: ${issue.title}\nRead the full investigation at hsvcivicwatch.org`;
+  const cardId = issue.ref_number || issue.id || "";
+  const module = issue.module || "";
+  const deepLink = "https://hsvcivicwatch.org/#" + module + "?card=" + encodeURIComponent(cardId);
+  const teaser = issue.homepage_teaser || issue.summary || "";
+  const shortTeaser = teaser.length > 180 ? teaser.slice(0, 177) + "..." : teaser;
+  return [
+    issue.title ? issue.title.toUpperCase() : "HSV CIVIC WATCH",
+    shortTeaser,
+    "",
+    "Full investigation + action steps:",
+    deepLink,
+    "",
+    "#HuntsvilleAL #CivicWatch #MadisonCounty #Alabama"
+  ].filter(s => s !== null && s !== undefined).join("\n");
 }
 
 function slugifyFilePart(value) {
@@ -444,9 +454,15 @@ function slugifyFilePart(value) {
     .slice(0, 60) || "issue-card";
 }
 
+function buildIssueDeepLink(issue) {
+  return "https://hsvcivicwatch.org/#" + (issue?.module || "") + "?card=" + encodeURIComponent(issue?.ref_number || issue?.id || "");
+}
+
 function ShareIssueCard({ issue, cardRef }) {
-  const fullText = issue?.details || issue?.summary || "";
-  const body = truncateText(fullText, 520);
+  const deepLink = buildIssueDeepLink(issue);
+  const teaser = issue?.homepage_teaser || "";
+  const summary = issue?.summary || "";
+  const body = teaser || truncateText(summary, 160);
   return (
     <div ref={cardRef} style={{
       width: 700,
@@ -478,7 +494,9 @@ function ShareIssueCard({ issue, cardRef }) {
         </div>
         {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
           <div style={{ marginBottom: 16 }}>
-            <IssueCardVisual config={issue.visual_config} />
+            <div style={{ width: 700, overflow: "hidden", transform: "none" }}>
+              <IssueCardVisual config={issue.visual_config} />
+            </div>
           </div>
         ) : null}
         <div style={{ color: COLORS.text, fontSize: 21, lineHeight: 1.7 }}>
@@ -492,10 +510,10 @@ function ShareIssueCard({ issue, cardRef }) {
           padding: "16px 18px",
         }}>
           <div style={{ color: COLORS.green, fontSize: 12, fontWeight: 900, letterSpacing: 1.4, textTransform: "uppercase" }}>
-            From HSV Civic Watch
+            READ THE FULL INVESTIGATION
           </div>
-          <div style={{ color: COLORS.green, fontSize: 19, fontWeight: 900, marginTop: 4 }}>
-            hsvcivicwatch.org
+          <div style={{ color: COLORS.green, fontSize: 24, fontWeight: 900, marginTop: 4, lineHeight: 1.3, wordBreak: "break-word" }}>
+            {deepLink}
           </div>
         </div>
       </div>
@@ -517,22 +535,37 @@ async function shareStoryCard(cardEl, issue) {
   if (!cardEl) return;
   await loadHtml2Canvas();
   const canvas = await window.html2canvas(cardEl, {
-    scale: 2, useCORS: true, allowTaint: true,
+    width: 700,
+    windowWidth: 700,
+    windowHeight: 1200,
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
     backgroundColor: "#e8e1d0",
   });
   const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
   if (!blob) return;
   const file = new File([blob], `hsvcivicwatch-${slugifyFilePart(issue?.title)}.png`, { type: "image/png" });
+  const shareUrl = buildIssueDeepLink(issue);
+  const shareText = buildShareText(issue);
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
     await navigator.share({
       files: [file],
-      text: buildShareText(issue),
+      text: shareText,
+      url: shareUrl,
     });
+    return { shared: true };
   } else {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = file.name; a.click();
-    URL.revokeObjectURL(url);
+    const blobUrl = URL.createObjectURL(blob);
+    const fbUrl = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl);
+    return {
+      shared: false,
+      blobUrl,
+      shareText,
+      shareUrl,
+      fbUrl,
+      fileName: file.name,
+    };
   }
 }
 
@@ -542,6 +575,8 @@ export default function IssueCard({ issue }) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [arrivalHighlight, setArrivalHighlight] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [shareOptions, setShareOptions] = useState({ blobUrl: "", shareText: "", shareUrl: "", fbUrl: "", fileName: "" });
   const storyCardRef = useRef(null);
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
@@ -593,15 +628,42 @@ export default function IssueCard({ issue }) {
     } catch(e) {}
   }, [cardId]);
 
+  useEffect(() => {
+    return () => {
+      if (shareOptions.blobUrl) {
+        URL.revokeObjectURL(shareOptions.blobUrl);
+      }
+    };
+  }, [shareOptions.blobUrl]);
+
   const handleShare = async () => {
     setStoryOpen(true);
     setSharing(true);
     await new Promise(r => setTimeout(r, 120));
     try {
-      await shareStoryCard(storyCardRef.current, issue);
+      const result = await shareStoryCard(storyCardRef.current, issue);
+      if (result && result.shared === false) {
+        setShareOptions((prev) => {
+          if (prev.blobUrl) URL.revokeObjectURL(prev.blobUrl);
+          return result;
+        });
+        setShowShareOptions(true);
+      }
     } catch(e) { console.error("Share failed:", e); }
     setSharing(false);
     setStoryOpen(false);
+  };
+
+  const closeShareOptions = () => {
+    setShowShareOptions(false);
+  };
+
+  const handleDownloadShareImage = () => {
+    if (!shareOptions.blobUrl) return;
+    const a = document.createElement("a");
+    a.href = shareOptions.blobUrl;
+    a.download = shareOptions.fileName || `hsvcivicwatch-${slugifyFilePart(issue?.title)}.png`;
+    a.click();
   };
 
   const fullText = useMemo(() => issue?.details || issue?.summary || "", [issue]);
@@ -731,6 +793,46 @@ export default function IssueCard({ issue }) {
           <ShareIssueCard issue={issue} cardRef={storyCardRef} />
         </div>
       )}
+      {showShareOptions ? (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(10,16,28,0.72)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ width: "100%", maxWidth: 460, background: "#193150", color: "#f7f3ea", borderRadius: 16, border: `1px solid ${COLORS.border}`, boxShadow: "0 24px 80px rgba(0,0,0,0.35)", padding: 20 }}>
+            <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>Share Options</div>
+            <div style={{ fontSize: 14, color: "rgba(247,243,234,0.78)", lineHeight: 1.6, marginBottom: 16 }}>Choose how to share this issue card and deep link back to the full investigation.</div>
+            <div style={{ display: "grid", gap: 10 }}>
+              <button
+                onClick={async () => { try { await navigator.clipboard.writeText(shareOptions.shareUrl); } catch (e) {} }}
+                style={{ background: COLORS.gold, color: COLORS.navyDark, border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
+              >
+                Copy link
+              </button>
+              <button
+                onClick={async () => { try { await navigator.clipboard.writeText(shareOptions.shareText); } catch (e) {} }}
+                style={{ background: COLORS.gold, color: COLORS.navyDark, border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
+              >
+                Copy caption
+              </button>
+              <button
+                onClick={() => window.open(shareOptions.fbUrl, "_blank", "noopener,noreferrer")}
+                style={{ background: COLORS.green, color: "#fff", border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
+              >
+                Share to Facebook
+              </button>
+              <button
+                onClick={handleDownloadShareImage}
+                style={{ background: COLORS.green, color: "#fff", border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
+              >
+                Download image
+              </button>
+              <button
+                onClick={closeShareOptions}
+                style={{ background: "transparent", color: "#f7f3ea", border: "1px solid rgba(247,243,234,0.22)", borderRadius: 10, padding: "12px 14px", fontSize: 14, fontWeight: 900, cursor: "pointer" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {decoded ? (
         <CivicDecoderPanel
           analysis={issue.decoder}

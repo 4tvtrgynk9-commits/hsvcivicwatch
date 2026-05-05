@@ -39,6 +39,17 @@ function getRouteFromLocation() {
   }
 
   const hash = url.hash.replace("#", "").trim();
+  const cardParam = url.searchParams.get("card");
+  if (cardParam) {
+    try {
+      localStorage.setItem("hsv_last_card", JSON.stringify({
+        id: cardParam,
+        ts: Date.now()
+      }));
+    } catch (e) {}
+    url.searchParams.delete("card");
+    window.history.replaceState(window.history.state || {}, "", `${url.pathname}${url.search}${url.hash}`);
+  }
   return hash || ROUTE_DASHBOARD;
 }
 
