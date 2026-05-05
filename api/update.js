@@ -17,6 +17,19 @@ const TABLES = {
   stat_block: "stat_blocks",
 };
 
+const DIRECT_TABLES = {
+  official_profiles: [
+    "name",
+    "office",
+    "level",
+    "kind",
+    "geography",
+    "party",
+    "status_line",
+    "decoder",
+  ],
+};
+
 const ISSUE_CARD_FIELDS = [
   "module",
   "tab",
@@ -119,6 +132,32 @@ function sanitizeStatBlockPayload(payload) {
   return cleaned;
 }
 
+function sanitizeDirectTablePayload(table, payload) {
+  const allowed = DIRECT_TABLES[table] || [];
+  const cleaned = {};
+
+  for (const key of allowed) {
+    if (payload[key] !== undefined) cleaned[key] = payload[key];
+  }
+
+  ["name", "office", "level", "kind", "geography", "party", "status_line"].forEach((key) => {
+    if (cleaned[key] !== undefined) {
+      cleaned[key] = cleaned[key] ? String(cleaned[key]).trim() : "";
+    }
+  });
+
+  if (cleaned.decoder !== undefined && cleaned.decoder && typeof cleaned.decoder === "object") {
+    cleaned.decoder = {
+      rise: cleaned.decoder.rise || "",
+      affiliations: cleaned.decoder.affiliations || "",
+      beneficiaries: cleaned.decoder.beneficiaries || "",
+      track_record: cleaned.decoder.track_record || "",
+    };
+  }
+
+  return cleaned;
+}
+
 
 function getPrefix(moduleName) {
   const key = String(moduleName || "").trim().toLowerCase();
@@ -180,7 +219,43 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { itemType, id, updates } = req.body || {};
+    const { itemType, id, updates, table, fields } = req.body || {};
+
+    if (table) {
+      if (!DIRECT_TABLES[table]) {
+        return json(res, 400, { error: "Invalid table" });
+      }
+
+      if (!id) {
+        return json(res, 400, { error: "Missing id" });
+      }
+
+      if (!fields || typeof fields !== "object") {
+        return json(res, 400, { error: "Missing fields payload" });
+      }
+
+      const cleaned = sanitizeDirectTablePayload(table, fields);
+      if (!Object.keys(cleaned).length) {
+        return json(res, 400, { error: "No editable fields provided" });
+      }
+
+      const { data, error } = await supabase
+        .from(table)
+        .update(cleaned)
+        .eq("id", id)
+        .select("*")
+        .single();
+
+      if (error) {
+        return json(res, 500, { error: error.message });
+      }
+
+      return json(res, 200, {
+        success: true,
+        table,
+        item: data,
+      });
+    }
 
     if (!itemType || !TABLES[itemType]) {
       return json(res, 400, { error: "Invalid itemType" });
