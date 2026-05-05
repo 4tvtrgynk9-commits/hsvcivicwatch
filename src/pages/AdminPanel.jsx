@@ -1493,7 +1493,7 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate }) {
   );
 }
 
-function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId }) {
+function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel }) {
   const [section, setSection] = useState("issues");
   const [exportStatus, setExportStatus] = useState("idle"); // idle | success | fallback
   const [fallbackText, setFallbackText] = useState("");
@@ -2052,7 +2052,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
         <div>
-          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 6px" }}>Social Cards</h2>
+          <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 6px" }}>Social Media Content</h2>
           <p style={{ color:"#aaa", fontSize:14, margin:0 }}>
             Rotation {selectedIndex+1} of {rotationList.length} &middot; Next scheduled: <span style={{ color:"#b8860b", fontWeight:700 }}>{nextPostDate}</span>
           </p>
@@ -2204,7 +2204,7 @@ export default function AdminPanel() {
   const [totpSetup, setTotpSetup] = useState(null);
   const [adminTab, setAdminTab] = useState("issue_cards");
   const [profileAdminTab, setProfileAdminTab] = useState("paste");
-  const [activeTab, setActiveTab] = useState("paste");
+  const [activeTab, setActiveTab] = useState("import");
   const [rawPaste, setRawPaste] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parseError, setParseError] = useState("");
@@ -2248,6 +2248,9 @@ export default function AdminPanel() {
   const [weeklyRunning, setWeeklyRunning] = useState(false);
   const [weeklyResult, setWeeklyResult] = useState(null);
   const [weeklyError, setWeeklyError] = useState("");
+  const [exportStatus, setExportStatus] = useState("idle");
+  const [fallbackText, setFallbackText] = useState("");
+  const fallbackRef = React.useRef(null);
 
   const loadPublished = async () => {
     if (!supabase) return;
@@ -2277,6 +2280,54 @@ export default function AdminPanel() {
       setPubProfilesError(e?.message || "Could not load published profiles.");
     } finally {
       setPubProfilesLoading(false);
+    }
+  };
+
+  const EXPORT_TS_KEY = "hsv_notebook_export_ts";
+
+  const getLastExportLabel = () => {
+    try {
+      const ts = localStorage.getItem(EXPORT_TS_KEY);
+      if (!ts) return null;
+      const d = new Date(parseInt(ts, 10));
+      return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+    } catch { return null; }
+  };
+
+  const buildExportText = () => {
+    const lines = [];
+    const allIssues = [...pubIssues].sort((a, b) => (a.module || "").localeCompare(b.module || ""));
+    allIssues.forEach((card) => {
+      lines.push("════════════════════════════════════════");
+      lines.push(`REF: ${card.ref_number || "—"}  |  MODULE: ${card.module || "—"}  |  TAB: ${card.tab || "—"}`);
+      lines.push(`TITLE: ${card.title || "—"}`);
+      lines.push("");
+      if (card.summary) { lines.push("SUMMARY:"); lines.push(card.summary); lines.push(""); }
+      const statMatches = pubStats.filter(s => s.module === card.module && s.ref_number === card.ref_number);
+      if (statMatches.length) {
+        lines.push("LINKED STAT BLOCKS:");
+        statMatches.forEach(s => {
+          lines.push(`  • ${s.label || s.stat_label || "—"}: ${s.value || s.stat_value || "—"}${s.context ? " — " + s.context : ""}`);
+        });
+        lines.push("");
+      }
+    });
+    lines.push("════════════════════════════════════════");
+    lines.push(`Exported from HSV Civic Watch Admin · ${new Date().toLocaleString("en-US")}`);
+    return lines.join("\n");
+  };
+
+  const handleExport = async () => {
+    const text = buildExportText();
+    try {
+      await navigator.clipboard.writeText(text);
+      localStorage.setItem(EXPORT_TS_KEY, Date.now().toString());
+      setExportStatus("success");
+      setTimeout(() => setExportStatus("idle"), 2500);
+    } catch {
+      setFallbackText(text);
+      setExportStatus("fallback");
+      setTimeout(() => { if (fallbackRef.current) fallbackRef.current.select(); }, 80);
     }
   };
 
@@ -3347,7 +3398,7 @@ export default function AdminPanel() {
         <>
       {/* Nav tabs */}
       <div style={{ borderBottom:"1px solid #4a5268", padding:"0 36px", display:"flex", flexWrap:"wrap", background:"#353b48" }}>
-        <button onClick={() => setActiveTab("paste")} style={tabStyle("paste")}>Paste Research</button>
+        <button onClick={() => setActiveTab("import")} style={tabStyle("import")}>Import</button>
         <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
         <button onClick={() => setActiveTab("drafts")} style={tabStyle("drafts")}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
         <button onClick={() => setActiveTab("published")} style={tabStyle("published")}>Published ({pubIssues.length + pubStats.length})</button>
@@ -3356,10 +3407,10 @@ export default function AdminPanel() {
 
       <div style={{ maxWidth:1060, margin:"0 auto", padding:36 }}>
 
-        {activeTab === "paste" && (
+        {activeTab === "import" && (
           <div>
-            <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Paste Formatted Research</h2>
-            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>Research freely first. Then go to the Research Template tab, copy the template, paste it into your AI chat to format your findings, then paste the result below.</p>
+            <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Import Research</h2>
+            <p style={{ color:"#aaa", fontSize:15, margin:"0 0 22px" }}>Research first using AI. When done, copy the Issue Card Research Template from <strong style={{ color:"#b8860b" }}>Tools → Templates</strong>, format your findings, then paste the result below.</p>
             <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:10, marginBottom:18 }}>
               <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
                 placeholder={"Paste your formatted research here...\n\nInclude --- ISSUE CARD START/END --- and --- STAT BLOCK START/END --- blocks.\nMultiple of each supported."}
@@ -3388,7 +3439,7 @@ export default function AdminPanel() {
               <div style={{ textAlign:"center", padding:"80px 0", color:"#aaa" }}>
                 <div style={{ fontSize:44, marginBottom:18 }}>&#9670;</div>
                 <div style={{ fontSize:18 }}>Nothing to review.</div>
-                <button onClick={() => setActiveTab("paste")} style={{ marginTop:18, background:"#f5f0e8", color:"#b8860b", border:"2px solid #b8860b", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Go to Paste Research</button>
+                <button onClick={() => setActiveTab("import")} style={{ marginTop:18, background:"#f5f0e8", color:"#b8860b", border:"2px solid #b8860b", borderRadius:4, padding:"12px 24px", fontSize:14, cursor:"pointer", fontWeight:700 }}>Go to Import</button>
               </div>
             )}
             {totalPending > 0 && (
@@ -3549,29 +3600,15 @@ export default function AdminPanel() {
             onEditStat={openStatEdit}
             highlightId={highlightId}
             animateId={animateId}
+            exportStatus={exportStatus}
+            fallbackText={fallbackText}
+            fallbackRef={fallbackRef}
+            handleExport={handleExport}
+            getLastExportLabel={getLastExportLabel}
           />
         )}
 
-        {activeTab === "social" && (
-          <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
-        )}
 
-        {activeTab === "template" && (
-          <div>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:22 }}>
-              <div>
-                <h2 style={{ color:"#f5f0e8", fontSize:24, fontWeight:700, margin:"0 0 8px" }}>Research Template</h2>
-                <p style={{ color:"#aaa", fontSize:15, margin:0 }}>Complete your research with AI first. When done, copy this template and paste it into your AI chat. It will format everything for the admin form.</p>
-              </div>
-              <button onClick={copyTemplate} style={{ background:templateCopied?"#1a7a3a":"#b8860b", color:"#fff", border:"none", borderRadius:4, padding:"14px 28px", fontSize:14, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:24, transition:"background 0.3s" }}>
-                {templateCopied ? "Copied!" : "Copy Template"}
-              </button>
-            </div>
-            <div style={{ background:"#1e2330", border:"1px solid #3a4268", borderRadius:8, padding:28 }}>
-              <pre style={{ color:"#ccc", fontSize:13, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{RESEARCH_TEMPLATE}</pre>
-            </div>
-          </div>
-        )}
 
       </div>
         </>
@@ -3597,21 +3634,6 @@ export default function AdminPanel() {
           <div style={{ maxWidth:1060, margin:"0 auto", padding:"36px 36px" }}>
             {profileAdminTab === "paste" ? (
               <div>
-                <div style={{ background:"#193150", borderRadius:14, padding:20, marginBottom:20 }}>
-                  <div style={{ color:"#C6A34D", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>
-                    UNIVERSAL PROFILE RESEARCH TEMPLATE
-                  </div>
-                  <div style={{ color:"rgba(247,243,234,0.74)", fontSize:14, lineHeight:1.6, marginBottom:16 }}>
-                    Copy this template and paste it into Claude, ChatGPT, or Gemini with the official&apos;s name and role. The AI will research every field and return a completed profile ready to paste into the parser below.
-                  </div>
-                  <button
-                    onClick={copyProfileTemplate}
-                    style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"10px 18px", fontSize:14, fontWeight:900, cursor:"pointer" }}
-                  >
-                    {profileTemplateCopied ? "Copied!" : "Copy Template"}
-                  </button>
-                </div>
-
                 <textarea
                   value={profileRawPaste}
                   onChange={(e) => setProfileRawPaste(e.target.value)}
@@ -3857,20 +3879,45 @@ export default function AdminPanel() {
         <div style={{ maxWidth:1060, margin:"0 auto", padding:"0 36px 36px" }}>
           <div style={{ background:"#2e3440", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
             <div>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>RESEARCH TEMPLATE</div>
-              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:16 }}>
-                Copy the research formatting prompt below after you finish gathering source material. It converts raw findings into the admin-ready issue card and stat block structure.
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:6 }}>TEMPLATES</div>
+              <div style={{ color:"#aaa", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
+                Copy the relevant template into your AI chat after gathering source material. Each template produces output formatted for its respective admin paste tab.
               </div>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:18, marginBottom:18 }}>
-                <div style={{ flex:1, background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:320, overflowY:"auto" }}>
-                  <pre style={{ color:"#ddd5c4", fontSize:13, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{RESEARCH_TEMPLATE}</pre>
+
+              <div style={{ marginBottom:24 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                  <div>
+                    <div style={{ color:"#f5f0e8", fontSize:15, fontWeight:900, marginBottom:2 }}>Issue Card Research Template</div>
+                    <div style={{ color:"#6b778a", fontSize:13 }}>Formats raw research into issue cards and stat blocks for the Content → Import tab.</div>
+                  </div>
+                  <button
+                    onClick={copyTemplate}
+                    style={{ background:templateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:18, transition:"background 0.3s" }}
+                  >
+                    {templateCopied ? "Copied!" : "Copy"}
+                  </button>
                 </div>
-                <button
-                  onClick={copyTemplate}
-                  style={{ background:templateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"12px 18px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, transition:"background 0.3s" }}
-                >
-                  {templateCopied ? "Copied!" : "Copy Template"}
-                </button>
+                <div style={{ background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:260, overflowY:"auto" }}>
+                  <pre style={{ color:"#ddd5c4", fontSize:12, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{RESEARCH_TEMPLATE}</pre>
+                </div>
+              </div>
+
+              <div style={{ marginBottom:8 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                  <div>
+                    <div style={{ color:"#f5f0e8", fontSize:15, fontWeight:900, marginBottom:2 }}>Official Profile Research Template</div>
+                    <div style={{ color:"#6b778a", fontSize:13 }}>Formats research into prosecutor-style official profiles for the Profiles → Paste Profile tab.</div>
+                  </div>
+                  <button
+                    onClick={copyProfileTemplate}
+                    style={{ background:profileTemplateCopied ? "#1a7a3a" : "#b8860b", color:"#fff", border:"none", borderRadius:6, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:1, flexShrink:0, marginLeft:18, transition:"background 0.3s" }}
+                  >
+                    {profileTemplateCopied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <div style={{ background:"#2a2f3e", border:"1px solid #4a5268", borderRadius:8, padding:18, maxHeight:260, overflowY:"auto" }}>
+                  <pre style={{ color:"#ddd5c4", fontSize:12, lineHeight:1.8, whiteSpace:"pre-wrap", fontFamily:"monospace", margin:0 }}>{PROFILE_RESEARCH_TEMPLATE}</pre>
+                </div>
               </div>
             </div>
 
@@ -3927,21 +3974,21 @@ export default function AdminPanel() {
             </div>
 
             <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📷 SOCIAL CARDS</div>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>📱 SOCIAL MEDIA CONTENT</div>
               <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
             </div>
 
             <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
-              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>WEEKLY MAINTENANCE JOB</div>
+              <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>WEEKLY REPORT</div>
               <div style={{ color:"#6b778a", fontSize:14, lineHeight:1.7, marginBottom:20 }}>
-                Run the weekly maintenance job manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
+                Run the weekly report manually. This checks for candidates whose election dates have passed, flags profiles that have not been updated in 90 days, and rescores all issue card homepage scores.
               </div>
               <button
                 onClick={handleRunWeeklyJob}
                 disabled={weeklyRunning}
                 style={{ background:"#193150", color:"white", border:"none", borderRadius:10, padding:"12px 24px", fontSize:15, fontWeight:900, cursor:"pointer" }}
               >
-                {weeklyRunning ? "Running..." : "Run Weekly Job"}
+                {weeklyRunning ? "Running..." : "Run Weekly Report"}
               </button>
               {weeklyError ? (
                 <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:10, padding:14, marginTop:16, color:"#b91c1c", fontSize:14 }}>
