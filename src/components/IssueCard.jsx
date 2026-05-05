@@ -446,19 +446,6 @@ function buildShareText(issue, mode) {
   const shortUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
   const teaser = issue.homepage_teaser || issue.summary || "";
   
-  // Find clean sentence boundary — never cut mid-sentence
-  function cleanTruncate(text, maxLen) {
-    if (!text || text.length <= maxLen) return text;
-    const chunk = text.slice(0, maxLen);
-    const lastPeriod = Math.max(
-      chunk.lastIndexOf(". "),
-      chunk.lastIndexOf("! "),
-      chunk.lastIndexOf("? ")
-    );
-    if (lastPeriod > maxLen * 0.5) return text.slice(0, lastPeriod + 1);
-    return chunk.trimEnd();
-  }
-
   if (mode === "sms") {
     // Clean, short, no hashtags, complete sentences only
     return [
@@ -490,9 +477,6 @@ function slugifyFilePart(value) {
     .slice(0, 60) || "issue-card";
 }
 
-function buildIssueDeepLink(issue) {
-  return "https://hsvcivicwatch.org/#" + (issue?.module || "") + "?card=" + encodeURIComponent(issue?.ref_number || issue?.id || "");
-}
 
 function ShareIssueCard({ issue, cardRef }) {
   const fullText = issue?.homepage_teaser || issue?.summary || "";
