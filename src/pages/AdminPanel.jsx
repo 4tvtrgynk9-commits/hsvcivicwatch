@@ -1828,7 +1828,7 @@ function SocialSlide({ slide, index, imageUrl, slideRef }) {
 
 // --- Social Cards Tab ---
 
-function SocialCardsQueue({ pubIssues, pubStats }) {
+function SocialCardsQueue({ pubIssues, pubStats, isMobile }) {
   const rotationList = buildRotationList(pubIssues);
   const [selectedIndex, setSelectedIndex] = useState(() => getCurrentQueueIndex(rotationList));
   const [slides, setSlides] = useState(null);
@@ -2092,7 +2092,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
 
       {/* Up next — big queued card */}
       {selectedCard && (
-        <div style={{ background:"#193150", border:"2px solid rgba(198,163,77,0.45)", borderRadius:12, padding:"18px 22px", marginBottom:20 }}>
+        <div style={{ background:"#193150", border:"2px solid rgba(198,163,77,0.45)", borderRadius:12, padding:isMobile ? "12px 14px" : "18px 22px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
             <div style={{ width:8, height:8, borderRadius:"50%", background:"#b8860b", flexShrink:0 }}/>
             <span style={{ color:"#b8860b", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2 }}>Up Next</span>
@@ -2101,7 +2101,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
               <span style={{ color:"rgba(247,243,234,0.45)", fontSize:10, fontWeight:700 }}>{selectedCard.ref_number}</span>
             )}
           </div>
-          <div style={{ color:"#f7f3ea", fontSize:18, fontWeight:900, lineHeight:1.25, marginBottom:10 }}>{selectedCard.title}</div>
+          <div style={{ color:"#f7f3ea", fontSize:isMobile ? 15 : 18, fontWeight:900, lineHeight:1.25, marginBottom:10 }}>{selectedCard.title}</div>
           {(selectedCard.label) && (
             <div style={{ display:"inline-block", background:"rgba(198,163,77,0.18)", color:"#b8860b", fontSize:10, fontWeight:900, letterSpacing:1.5, textTransform:"uppercase", padding:"3px 10px", borderRadius:4, marginBottom:10 }}>{selectedCard.label}</div>
           )}
@@ -2109,13 +2109,13 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
             <div style={{ color:"rgba(247,243,234,0.65)", fontSize:13, lineHeight:1.6, marginBottom:14, maxWidth:680 }}>{selectedCard.summary.slice(0,220)}{selectedCard.summary.length>220?"…":""}</div>
           )}
           <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
-            {selectedCard.shock_factor && (
+            {!isMobile && selectedCard.shock_factor && (
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                 <span style={{ color:"rgba(247,243,234,0.4)", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Shock</span>
                 <span style={{ color:"#e07068", fontSize:13, fontWeight:900 }}>{selectedCard.shock_factor}/10</span>
               </div>
             )}
-            {moduleStats.length > 0 && (
+            {!isMobile && moduleStats.length > 0 && (
               <div style={{ color:"rgba(247,243,234,0.45)", fontSize:11 }}>
                 {moduleStats.length} stat block{moduleStats.length!==1?"s":""} queued for generation
               </div>
@@ -2124,13 +2124,15 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
               onClick={generateSlides}
               disabled={generating}
               style={{
-                marginLeft:"auto",
+                marginLeft:isMobile ? 0 : "auto",
+                marginTop:isMobile ? 10 : 0,
                 background:generating?"#4a5268":"#b8860b",
                 color:"#fff", border:"none", borderRadius:8,
                 padding:"10px 22px", fontSize:13, fontWeight:900,
                 cursor:generating?"not-allowed":"pointer",
                 letterSpacing:0.5,
-                boxShadow:generating?"none":"0 4px 16px rgba(184,134,11,0.4)"
+                boxShadow:generating?"none":"0 4px 16px rgba(184,134,11,0.4)",
+                width:isMobile ? "100%" : "auto",
               }}
             >
               {generating ? "Generating…" : "Generate 4 Social Slides"}
@@ -2144,7 +2146,7 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
         <div style={{ color:"#4a5a6e", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
           Rotation Order — Select to Override
         </div>
-        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:8, flexWrap:isMobile ? "nowrap" : "wrap", flexDirection:isMobile ? "column" : "row" }}>
           {rotationList.map((card,i)=>(
             <button key={card.id||i}
               onClick={()=>{ setSelectedIndex(i); setSlides(null); setImageUrls([null,null,null]); }}
@@ -2154,17 +2156,21 @@ Return ONLY valid JSON. No markdown fences. No explanation. No extra text.
                 border:selectedIndex===i?"2px solid rgba(198,163,77,0.7)":"2px solid #ddd8cf",
                 borderRadius:8, padding:"10px 14px", fontSize:11,
                 fontWeight:700, cursor:"pointer",
-                display:"flex", flexDirection:"column", alignItems:"flex-start",
+                display:"flex", flexDirection:isMobile ? "row" : "column", alignItems:isMobile ? "center" : "flex-start",
+                justifyContent:isMobile ? "space-between" : "flex-start",
                 gap:4, textAlign:"left", minWidth:160, maxWidth:200,
                 boxShadow:selectedIndex===i?"0 2px 10px rgba(25,49,80,0.18)":"none",
+                width:isMobile ? "100%" : "auto",
+                maxWidth:isMobile ? "none" : 200,
               }}>
-              <div style={{ display:"flex", gap:6, alignItems:"center", width:"100%" }}>
-                <span style={{ fontSize:9, fontWeight:900, color:selectedIndex===i?"#b8860b":"#7a8a9a", textTransform:"uppercase", letterSpacing:1 }}>{card.ref_number}</span>
-                <span style={{ fontSize:9, color:selectedIndex===i?"rgba(247,243,234,0.5)":"#9aabb8", marginLeft:"auto" }}>{card.module}</span>
+              <div style={{ display:"flex", gap:6, alignItems:"center", width:isMobile ? "auto" : "100%" }}>
+                <span style={{ fontSize:9, fontWeight:900, color:selectedIndex===i?"#b8860b":"#7a8a9a", textTransform:"uppercase", letterSpacing:1 }}>
+                  {[card.ref_number, card.module].filter(Boolean).join(" · ")}
+                </span>
               </div>
-              <span style={{ fontSize:12, lineHeight:1.3, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{card.title}</span>
+              <span style={{ fontSize:12, lineHeight:1.3, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", flex:isMobile ? 1 : "none", marginLeft:isMobile ? 10 : 0 }}>{card.title}</span>
               {card.label && (
-                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:selectedIndex===i?"#b8860b":"#9aabb8", marginTop:2 }}>{card.label}</span>
+                <span style={{ fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:1, color:selectedIndex===i?"#b8860b":"#9aabb8", marginTop:isMobile ? 0 : 2, marginLeft:isMobile ? 10 : 0 }}>{card.label}</span>
               )}
             </button>
           ))}
@@ -3576,6 +3582,15 @@ export default function AdminPanel() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#2e3440", fontFamily:"Georgia,serif", color:"#193150" }}>
+      <style>{`
+        .admin-scroll-tabs {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .admin-scroll-tabs::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       {QueueNoticeModal}
       {savedToast ? (
         <div style={{ position:"fixed", top:18, right:18, zIndex:5000, background:"#dfeee5", color:"#1a7a3a", border:"1px solid rgba(62,139,91,0.35)", borderRadius:8, padding:"12px 16px", fontSize:14, fontWeight:700, boxShadow:"0 10px 28px rgba(0,0,0,0.18)" }}>
@@ -3609,25 +3624,25 @@ export default function AdminPanel() {
       {profileEditConfig ? <ProfileEditModal profile={profileEditConfig} onClose={() => setProfileEditConfig(null)} onSave={handleSaveProfileEdit} saving={profileEditSaving} isMobile={isMobile} /> : null}
 
       {/* Header */}
-      <div style={{ borderBottom:"1px solid #4a5268", padding:isMobile ? "12px 16px" : "18px 36px", display:"flex", flexDirection:isMobile ? "column" : "row", justifyContent:"space-between", alignItems:isMobile ? "stretch" : "center", gap:isMobile ? 12 : 0, background:"#2e3440" }}>
+      <div style={{ borderBottom:"1px solid #4a5268", padding:isMobile ? "12px 16px" : "18px 36px", display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", gap:0, background:"#2e3440" }}>
         <div>
           <div style={{ color:"#b8860b", fontSize:11, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>HSV Civic Watch</div>
-          <div style={{ color:"#fff", fontSize:20, fontWeight:700, marginTop:2 }}>Content Admin</div>
+          <div style={{ color:"#fff", fontSize:isMobile ? 13 : 20, fontWeight:700, marginTop:2 }}>Content Admin</div>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:10, width:isMobile ? "100%" : "auto" }}>
-          <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:6, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:0.5, flex:isMobile ? 1 : "none" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, width:"auto" }}>
+          <button onClick={handleSignOut} style={{ background:"#e53e3e", color:"#fff", border:"none", borderRadius:6, padding:isMobile ? "7px 14px" : "9px 18px", fontSize:isMobile ? 12 : 13, fontWeight:700, cursor:"pointer", textTransform:"uppercase", letterSpacing:0.5, width:"auto", flex:"none" }}>
             Sign Out
           </button>
         </div>
       </div>
 
       <div style={{ borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:isMobile ? "0 12px" : "0 36px" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap" }}>
+        <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
           <div style={{ display:"flex", alignItems:"center", gap:0, flexWrap:"nowrap" }}>
-            <button onClick={() => setAdminTab("issue_cards")} style={adminTabStyle("issue_cards")}>Content</button>
-            <button onClick={() => setAdminTab("profiles")} style={adminTabStyle("profiles")}>Profiles</button>
-            <button onClick={() => setAdminTab("blueprints")} style={adminTabStyle("blueprints")}>Blueprints</button>
-            <button onClick={() => setAdminTab("tools")} style={adminTabStyle("tools")}>Tools</button>
+            <button onClick={() => setAdminTab("issue_cards")} style={{ ...adminTabStyle("issue_cards"), padding:isMobile ? "10px 14px" : adminTabStyle("issue_cards").padding, fontSize:isMobile ? 12 : adminTabStyle("issue_cards").fontSize, flexShrink:isMobile ? 0 : undefined }}>Content</button>
+            <button onClick={() => setAdminTab("profiles")} style={{ ...adminTabStyle("profiles"), padding:isMobile ? "10px 14px" : adminTabStyle("profiles").padding, fontSize:isMobile ? 12 : adminTabStyle("profiles").fontSize, flexShrink:isMobile ? 0 : undefined }}>Profiles</button>
+            <button onClick={() => setAdminTab("blueprints")} style={{ ...adminTabStyle("blueprints"), padding:isMobile ? "10px 14px" : adminTabStyle("blueprints").padding, fontSize:isMobile ? 12 : adminTabStyle("blueprints").fontSize, flexShrink:isMobile ? 0 : undefined }}>Blueprints</button>
+            <button onClick={() => setAdminTab("tools")} style={{ ...adminTabStyle("tools"), padding:isMobile ? "10px 14px" : adminTabStyle("tools").padding, fontSize:isMobile ? 12 : adminTabStyle("tools").fontSize, flexShrink:isMobile ? 0 : undefined }}>Tools</button>
           </div>
           {!isMobile && adminTab === "tools" ? (
             <div style={{ display:"flex", gap:10, marginLeft:"auto", alignItems:"center" }}>
@@ -3681,11 +3696,11 @@ export default function AdminPanel() {
       {adminTab === "issue_cards" ? (
         <>
       {/* Nav tabs */}
-      <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
-        <button onClick={() => setActiveTab("import")} style={tabStyle("import")}>Import</button>
-        <button onClick={() => setActiveTab("review")} style={tabStyle("review")}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
-        <button onClick={() => setActiveTab("drafts")} style={tabStyle("drafts")}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
-        <button onClick={() => setActiveTab("published")} style={tabStyle("published")}>Published ({pubIssues.length + pubStats.length})</button>
+      <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
+        <button onClick={() => setActiveTab("import")} style={{ ...tabStyle("import"), fontSize:isMobile ? 11 : tabStyle("import").fontSize, padding:isMobile ? "10px 12px" : tabStyle("import").padding, flexShrink:isMobile ? 0 : undefined }}>Import</button>
+        <button onClick={() => setActiveTab("review")} style={{ ...tabStyle("review"), fontSize:isMobile ? 11 : tabStyle("review").fontSize, padding:isMobile ? "10px 12px" : tabStyle("review").padding, flexShrink:isMobile ? 0 : undefined }}>Review{totalPending ? " ("+totalPending+")" : ""}</button>
+        <button onClick={() => setActiveTab("drafts")} style={{ ...tabStyle("drafts"), fontSize:isMobile ? 11 : tabStyle("drafts").fontSize, padding:isMobile ? "10px 12px" : tabStyle("drafts").padding, flexShrink:isMobile ? 0 : undefined }}>Drafts{totalDrafts ? " ("+totalDrafts+")" : ""}</button>
+        <button onClick={() => setActiveTab("published")} style={{ ...tabStyle("published"), fontSize:isMobile ? 11 : tabStyle("published").fontSize, padding:isMobile ? "10px 12px" : tabStyle("published").padding, flexShrink:isMobile ? 0 : undefined }}>Published ({pubIssues.length + pubStats.length})</button>
 
       </div>
 
@@ -3906,16 +3921,16 @@ export default function AdminPanel() {
 
       {adminTab === "profiles" ? (
         <div>
-          <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
+          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setProfileAdminTab("paste")}
-              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "paste" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "paste" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Paste Profile
             </button>
             <button
               onClick={() => setProfileAdminTab("published")}
-              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: profileAdminTab === "published" ? "3px solid #b8860b" : "3px solid transparent", color: profileAdminTab === "published" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Published Profiles
             </button>
@@ -4021,41 +4036,42 @@ export default function AdminPanel() {
             ) : null}
 
             {profileAdminTab === "published" ? (() => {
-              // Group profiles by level then by seat title
-              const LEVEL_ORDER = ["local", "state", "federal", "judge"];
-              const LEVEL_LABELS = { local: "Local", state: "State", federal: "Federal", judge: "Judiciary" };
+              const LEVEL_ORDER_ADMIN = ["local", "state", "federal", "judge"];
+              const LEVEL_LABELS_ADMIN = {
+                local: "Local", state: "State",
+                federal: "Federal", judge: "Judiciary"
+              };
 
-              // Build a map of seat_id → seat for quick lookup
               const seatById = {};
               for (const seat of adminSeats) seatById[seat.id] = seat;
 
-              // Group profiles by level
-              const byLevel = {};
-              for (const level of LEVEL_ORDER) byLevel[level] = [];
+              const byLevel = { local:[], state:[], federal:[], judge:[] };
               const uncategorized = [];
 
               for (const profile of pubProfiles) {
                 const level = String(profile.level || "").toLowerCase();
-                if (byLevel[level]) byLevel[level].push(profile);
-                else {
-                  // Fallback: infer level from kind
+                if (byLevel[level]) {
+                  byLevel[level].push(profile);
+                } else {
                   const kind = String(profile.kind || "").toLowerCase();
-                  if (kind.includes("judge") || kind.includes("magistrate")) byLevel["judge"].push(profile);
-                  else if (kind.includes("elected") || kind.includes("appointed") || kind.includes("sheriff") || kind.includes("tax_official") || kind.includes("superintendent") || kind.includes("board_member")) byLevel["local"].push(profile);
+                  if (kind.includes("judge") || kind.includes("magistrate"))
+                    byLevel["judge"].push(profile);
+                  else if (["elected","appointed","sheriff","tax_official",
+                             "superintendent","board_member"].some(k => kind.includes(k)))
+                    byLevel["local"].push(profile);
                   else uncategorized.push(profile);
                 }
               }
 
-              // Within each level, group by seat title (using seat_id lookup, falling back to office)
               function groupBySeat(profiles) {
-                const seatGroups = {};
+                const groups = {};
                 for (const profile of profiles) {
                   const seat = profile.seat_id ? seatById[profile.seat_id] : null;
-                  const seatTitle = seat?.title || profile.office || "Other";
-                  if (!seatGroups[seatTitle]) seatGroups[seatTitle] = [];
-                  seatGroups[seatTitle].push(profile);
+                  const key = seat?.title || profile.office || "Other";
+                  if (!groups[key]) groups[key] = { seat, profiles: [] };
+                  groups[key].profiles.push(profile);
                 }
-                return seatGroups;
+                return groups;
               }
 
               const formatAddedDate = (value) => {
@@ -4068,16 +4084,19 @@ export default function AdminPanel() {
               const badgeStyle = { background:"#b8860b", color:"#fff", textTransform:"uppercase", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, display:"inline-block" };
               const pillStyle = { background:"#e8e4dc", border:"1px solid #ddd8cf", color:"#4a5a6e", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, padding:"4px 9px", borderRadius:999 };
 
-              const renderProfileCard = (profile) => (
+              const renderProfileCard = (profile) => {
+                const cardSeat = profile.seat_id ? seatById[profile.seat_id] : null;
+                return (
                 <div key={profile.id} style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:10, padding:18, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:16 }}>
                   <div style={{ minWidth:0 }}>
                     <div style={{ color:"#193150", fontSize:16, fontWeight:900, marginBottom:4 }}>{profile.name}</div>
-                    {(() => {
-                      const seat = profile.seat_id ? seatById[profile.seat_id] : null;
-                      return seat ? <div style={{ fontSize:11, color:"#7a8a9a" }}>{seat.title} · {seat.jurisdiction}</div> : null;
-                    })()}
+                    {cardSeat ? (
+                      <div style={{ fontSize:11, color:"#7a8a9a", marginTop:2 }}>
+                        {cardSeat.title} · {cardSeat.jurisdiction}
+                      </div>
+                    ) : null}
+                    {profile.created_at ? <div style={{ color:"#7a8a9a", fontSize:12, marginTop:4, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
                     <div style={{ color:"#4a5a6e", fontSize:13, marginBottom:10 }}>{profile.office || "—"}</div>
-                    {profile.created_at ? <div style={{ color:"#7a8a9a", fontSize:12, marginBottom:10 }}>Added {formatAddedDate(profile.created_at)}</div> : null}
                     <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
                       <span style={pillStyle}>{String(profile.level || "").trim().toLowerCase() || "uncategorized"}</span>
                       {profile.kind ? <span style={pillStyle}>{profile.kind}</span> : null}
@@ -4098,7 +4117,8 @@ export default function AdminPanel() {
                     </button>
                   </div>
                 </div>
-              );
+                );
+              };
 
               return (
                 <div>
@@ -4124,25 +4144,26 @@ export default function AdminPanel() {
 
                   {pubProfilesLoading && !pubProfiles.length ? <div style={{ color:"#7a8a9a", fontSize:14, marginBottom:18 }}>Loading published profiles...</div> : null}
 
-                  {LEVEL_ORDER.map((level) => {
+                  {LEVEL_ORDER_ADMIN.map((level) => {
                     const profiles = byLevel[level];
                     const seatGroups = groupBySeat(profiles);
                     const seatTitles = Object.keys(seatGroups).sort((a, b) => a.localeCompare(b));
                     return (
                       <div key={level} style={{ marginBottom:28 }}>
-                        <div style={badgeStyle}>{LEVEL_LABELS[level].toUpperCase()}</div>
+                        <div style={badgeStyle}>{LEVEL_LABELS_ADMIN[level].toUpperCase()}</div>
                         {profiles.length ? (
                           <div style={{ marginTop:14 }}>
                             {seatTitles.map((seatTitle) => (
                               <div key={seatTitle} style={{ marginBottom:18 }}>
-                                <div style={{ fontSize:13, fontWeight:700, color:"#193150", borderBottom:"1px solid #ddd8cf", paddingBottom:6, marginBottom:8, marginTop:16 }}>
+                                <div style={{ fontSize:12, fontWeight:900, color:"#b8860b", textTransform:"uppercase", letterSpacing:1, borderBottom:"1px solid #ddd8cf", paddingBottom:6, marginBottom:8, marginTop:18 }}>
                                   {seatTitle}
-                                  <span style={{ color:"#7a8a9a", fontSize:11, fontWeight:400, marginLeft:8 }}>
-                                    {seatGroups[seatTitle].length} profile{seatGroups[seatTitle].length === 1 ? "" : "s"}
-                                  </span>
+                                  <div style={{ color:"#7a8a9a", fontSize:11, fontWeight:400, textTransform:"none", letterSpacing:0, marginTop:4 }}>
+                                    {seatGroups[seatTitle].profiles.length} profile{seatGroups[seatTitle].profiles.length === 1 ? "" : "s"}
+                                    {seatGroups[seatTitle].seat?.jurisdiction ? ` · ${seatGroups[seatTitle].seat.jurisdiction}` : ""}
+                                  </div>
                                 </div>
                                 <div style={{ display:"grid", gap:12 }}>
-                                  {seatGroups[seatTitle].map(profile => renderProfileCard(profile))}
+                                  {seatGroups[seatTitle].profiles.map(profile => renderProfileCard(profile))}
                                 </div>
                               </div>
                             ))}
@@ -4169,16 +4190,16 @@ export default function AdminPanel() {
 
       {adminTab === "blueprints" ? (
         <div>
-          <div style={{ marginTop:0, padding:"16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48" }}>
+          <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ marginTop:0, padding:isMobile ? "16px 12px 0" : "16px 36px 0", borderBottom:"1px solid #4a5268", display:"flex", gap:0, flexWrap:isMobile ? "nowrap" : "wrap", overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", background:"#353b48", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
             <button
               onClick={() => setBlueprintMode("brief")}
-              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "brief" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "brief" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "brief" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "brief" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Research Brief
             </button>
             <button
               onClick={() => setBlueprintMode("template")}
-              style={{ padding:"12px 20px", fontSize:13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "template" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "template" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0 }}
+              style={{ padding:isMobile ? "10px 12px" : "12px 20px", fontSize:isMobile ? 11 : 13, fontWeight:700, textTransform:"uppercase", letterSpacing:1, border:"none", background:"none", borderBottom: blueprintMode === "template" ? "3px solid #b8860b" : "3px solid transparent", color: blueprintMode === "template" ? "#b8860b" : "#aaa", cursor:"pointer", marginBottom:0, flexShrink:isMobile ? 0 : undefined }}
             >
               Paste Template
             </button>
@@ -4244,7 +4265,7 @@ export default function AdminPanel() {
           <div style={{ background:"#f5f0e8", border:"1px solid #ddd8cf", borderRadius:12, padding:28 }}>
             <div>
               <div style={{ color:"#b8860b", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10, paddingBottom:10, borderBottom:"2px solid rgba(198,163,77,0.25)" }}>📱 SOCIAL MEDIA CONTENT</div>
-              <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} />
+              <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} isMobile={isMobile} />
             </div>
 
             <div style={{ borderTop:"1px solid #ddd8cf", paddingTop:24, marginTop:24 }}>
