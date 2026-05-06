@@ -214,7 +214,7 @@ export default function App() {
   const mobileTitle = activeId === ROUTE_DASHBOARD ? "Huntsville Civic Investigator" : moduleTitle[activeId];
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "flex-start", background: COLORS.bg }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "stretch", background: COLORS.bg }}>
 
       {!isMobile && activeId !== "admin" && activeId !== ROUTE_ADMIN_RESET && (
         <Sidebar

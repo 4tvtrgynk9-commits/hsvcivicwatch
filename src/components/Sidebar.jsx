@@ -250,15 +250,15 @@ export default function Sidebar({
     width: "100%",
     background: COLORS.sidebarBg,
     color: COLORS.sidebarText,
-    padding: isMobile ? "10px 14px 12px" : "16px 14px 12px",
+    padding: isMobile ? "10px 14px 12px" : "16px 14px 0",
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
-    height: isMobile ? "100%" : "calc(100vh - 20px)",
-    borderRadius: isMobile ? 0 : 18,
+    height: isMobile ? "100%" : "100vh",
+    borderRadius: 0,
     boxShadow: isMobile ? "0 18px 60px rgba(0,0,0,0.35)" : "none",
     position: isMobile ? "relative" : "sticky",
-    top: isMobile ? 0 : 10,
+    top: 0,
   };
 
   const sidebarContent = (
@@ -530,10 +530,10 @@ export default function Sidebar({
           width: 312,
           minWidth: 312,
           flexShrink: 0,
-          height: "100vh",
+          alignSelf: "stretch",
+          height: "auto",
           maxHeight: "100vh",
           overflow: "hidden",
-          paddingBottom: 8,
         }}
       >
         {sidebarContent}

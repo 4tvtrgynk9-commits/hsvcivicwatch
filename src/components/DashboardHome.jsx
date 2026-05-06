@@ -384,33 +384,43 @@ function PayPanel({ elapsed, onOpenModule }) {
   );
 }
 
-const CAROUSEL_CLONE_COUNT = 3;
-const CAROUSEL_CARD_STEP = 138;
-
 function ModuleCarousel({ group, onOpenModule }) {
   const trackRef = useRef(null);
-  const [centeredKey, setCenteredKey] = useState("");
+  const [isCarouselMobile, setIsCarouselMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 960;
+  });
+  const [centeredKeys, setCenteredKeys] = useState([]);
   const [hoveredKey, setHoveredKey] = useState("");
   const [activeDot, setActiveDot] = useState(0);
   const items = group.items;
   const dotCount = Math.ceil(items.length / 2);
-  const leadingClones = items.slice(-CAROUSEL_CLONE_COUNT);
-  const trailingClones = items.slice(0, CAROUSEL_CLONE_COUNT);
-  const trackItems = [
-    ...leadingClones.map((item, index) => ({ item, key: `pre-${index}-${item.id}` })),
-    ...items.map((item, index) => ({ item, key: `real-${index}-${item.id}` })),
-    ...trailingClones.map((item, index) => ({ item, key: `post-${index}-${item.id}` })),
-  ];
+  const cardWidth = isCarouselMobile ? 148 : 208;
+  const cardFlex = isCarouselMobile ? "0 0 140px" : "0 0 200px";
+  const cardMinHeight = isCarouselMobile ? 84 : 100;
+  const emojiFontSize = isCarouselMobile ? 22 : 28;
+  const labelFontSize = isCarouselMobile ? 11 : 13;
+  const oneSetWidth = items.length * cardWidth;
+  const trackItems = [...items, ...items, ...items].map((item, index) => ({
+    item,
+    key: `${Math.floor(index / items.length)}-${index % items.length}-${item.id}`,
+  }));
+
+  useEffect(() => {
+    const updateCarouselMode = () => setIsCarouselMobile(window.innerWidth < 960);
+    updateCarouselMode();
+    window.addEventListener("resize", updateCarouselMode);
+    return () => window.removeEventListener("resize", updateCarouselMode);
+  }, []);
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return undefined;
-    const firstRealScrollLeft = CAROUSEL_CLONE_COUNT * CAROUSEL_CARD_STEP;
     requestAnimationFrame(() => {
-      track.scrollLeft = firstRealScrollLeft;
+      track.scrollLeft = oneSetWidth;
     });
     return undefined;
-  }, [items.length]);
+  }, [oneSetWidth]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -418,12 +428,19 @@ function ModuleCarousel({ group, onOpenModule }) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.7)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]?.target?.dataset?.carouselKey) {
-          setCenteredKey(visible[0].target.dataset.carouselKey);
-        }
+        setCenteredKeys((previousKeys) => {
+          const nextKeys = new Set(previousKeys);
+          entries.forEach((entry) => {
+            const key = entry.target?.dataset?.carouselKey;
+            if (!key) return;
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
+              nextKeys.add(key);
+            } else {
+              nextKeys.delete(key);
+            }
+          });
+          return Array.from(nextKeys);
+        });
       },
       { root: track, threshold: 0.7 }
     );
@@ -437,25 +454,24 @@ function ModuleCarousel({ group, onOpenModule }) {
     const track = trackRef.current;
     if (!track) return undefined;
 
-    const cloneWidth = CAROUSEL_CLONE_COUNT * CAROUSEL_CARD_STEP;
-    const realWidth = items.length * CAROUSEL_CARD_STEP;
-
     const onScroll = () => {
-      const rawProgress = track.scrollLeft - cloneWidth;
-      const normalizedProgress = ((rawProgress % realWidth) + realWidth) % realWidth;
-      const nextDot = Math.min(dotCount - 1, Math.floor((normalizedProgress / realWidth) * dotCount));
-      setActiveDot(nextDot);
-
-      if (track.scrollLeft < cloneWidth - CAROUSEL_CARD_STEP / 2) {
-        track.scrollLeft += realWidth;
-      } else if (track.scrollLeft > cloneWidth + realWidth - CAROUSEL_CARD_STEP / 2) {
-        track.scrollLeft -= realWidth;
+      let currentScrollLeft = track.scrollLeft;
+      if (currentScrollLeft < oneSetWidth) {
+        currentScrollLeft += oneSetWidth;
+        track.scrollLeft = currentScrollLeft;
+      } else if (currentScrollLeft > oneSetWidth * 2) {
+        currentScrollLeft -= oneSetWidth;
+        track.scrollLeft = currentScrollLeft;
       }
+
+      const progress = Math.max(0, Math.min(1, (currentScrollLeft - oneSetWidth) / oneSetWidth));
+      const nextDot = Math.min(dotCount - 1, Math.floor(progress * dotCount));
+      setActiveDot(nextDot);
     };
 
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => track.removeEventListener("scroll", onScroll);
-  }, [dotCount, items.length]);
+  }, [dotCount, oneSetWidth]);
 
   const scrollBy = (amount) => {
     trackRef.current?.scrollBy({ left: amount, behavior: "smooth" });
@@ -476,67 +492,45 @@ function ModuleCarousel({ group, onOpenModule }) {
         >
           {group.group}
         </div>
-        <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
-          <button
-            onClick={() => scrollBy(-140)}
-            style={{
-              background: COLORS.navy,
-              color: "white",
-              borderRadius: 8,
-              width: 30,
-              height: 30,
-              fontSize: 15,
-              border: "none",
-              cursor: "pointer",
-            }}
-            aria-label={`Scroll ${group.group} left`}
-          >
-            ←
-          </button>
-          <button
-            onClick={() => scrollBy(140)}
-            style={{
-              background: COLORS.navy,
-              color: "white",
-              borderRadius: 8,
-              width: 30,
-              height: 30,
-              fontSize: 15,
-              border: "none",
-              cursor: "pointer",
-            }}
-            aria-label={`Scroll ${group.group} right`}
-          >
-            →
-          </button>
-        </div>
+        {isCarouselMobile ? (
+          <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
+            <button
+              onClick={() => scrollBy(-140)}
+              style={{
+                background: COLORS.navy,
+                color: "white",
+                borderRadius: 8,
+                width: 30,
+                height: 30,
+                fontSize: 15,
+                border: "none",
+                cursor: "pointer",
+              }}
+              aria-label={`Scroll ${group.group} left`}
+            >
+              ←
+            </button>
+            <button
+              onClick={() => scrollBy(140)}
+              style={{
+                background: COLORS.navy,
+                color: "white",
+                borderRadius: 8,
+                width: 30,
+                height: 30,
+                fontSize: 15,
+                border: "none",
+                cursor: "pointer",
+              }}
+              aria-label={`Scroll ${group.group} right`}
+            >
+              →
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div style={{ position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 44,
-            background: `linear-gradient(to left, transparent, ${COLORS.bg})`,
-            pointerEvents: "none",
-            zIndex: 10,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 44,
-            background: `linear-gradient(to right, transparent, ${COLORS.bg})`,
-            pointerEvents: "none",
-            zIndex: 10,
-          }}
-        />
         <div
           ref={trackRef}
           className="hci-module-carousel-track"
@@ -552,7 +546,8 @@ function ModuleCarousel({ group, onOpenModule }) {
           }}
         >
           {trackItems.map(({ item, key }) => {
-            const highlighted = centeredKey === key || hoveredKey === key;
+            const highlighted = centeredKeys.includes(key) || hoveredKey === key;
+            const isProposal = item.id === "proposals";
             return (
               <button
                 key={key}
@@ -561,10 +556,12 @@ function ModuleCarousel({ group, onOpenModule }) {
                 onMouseEnter={() => setHoveredKey(key)}
                 onMouseLeave={() => setHoveredKey("")}
                 style={{
-                  flex: "0 0 130px",
-                  minHeight: 76,
-                  background: "white",
-                  border: `2px solid ${highlighted ? COLORS.gold : COLORS.navy}`,
+                  flex: cardFlex,
+                  minHeight: cardMinHeight,
+                  background: highlighted
+                    ? (isProposal ? "rgba(198,163,77,0.08)" : "white")
+                    : (isProposal ? "rgba(62,139,91,0.08)" : "white"),
+                  border: `2px solid ${highlighted ? COLORS.gold : (isProposal ? COLORS.green : COLORS.navy)}`,
                   borderRadius: 10,
                   padding: "10px 8px",
                   display: "flex",
@@ -581,12 +578,12 @@ function ModuleCarousel({ group, onOpenModule }) {
                   scrollSnapAlign: "center",
                 }}
               >
-                <span style={{ fontSize: 20, lineHeight: 1 }}>{item.emoji}</span>
+                <span style={{ fontSize: emojiFontSize, lineHeight: 1 }}>{item.emoji}</span>
                 <span
                   style={{
-                    fontSize: 10.5,
+                    fontSize: labelFontSize,
                     fontWeight: 800,
-                    color: COLORS.navy,
+                    color: isProposal ? COLORS.green : COLORS.navy,
                     textAlign: "center",
                     lineHeight: 1.25,
                   }}
@@ -619,7 +616,6 @@ function ModuleCarousel({ group, onOpenModule }) {
 
 export default function DashboardHome({ onOpenModule }) {
   const elapsed = useElapsedSeconds();
-  const isMobile = useIsMobileWidth();
   const { cards, statBlocks, loading, error } = useHomepageData();
   const [investigationStart, setInvestigationStart] = useState(0);
   const [keyNumberStart, setKeyNumberStart] = useState(0);
@@ -855,9 +851,11 @@ export default function DashboardHome({ onOpenModule }) {
             marginTop: 12,
             marginBottom: 4,
             position: "relative",
-            marginLeft: isMobile ? "-16px" : "calc(-1 * 40px)",
-            marginRight: isMobile ? "-16px" : "calc(-1 * 40px)",
-            width: isMobile ? "calc(100% + 32px)" : "calc(100% + 80px)",
+            left: "50%",
+            right: "50%",
+            marginLeft: "-50vw",
+            marginRight: "-50vw",
+            width: "100vw",
             overflow: "hidden",
           }}
         >
