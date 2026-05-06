@@ -10,7 +10,6 @@ import WorkersChildcarePage from "./modules/workers_childcare/WorkersChildcarePa
 import TaxationPage from "./modules/taxation/TaxationPage";
 import HousingCrisisPage from "./modules/housing_crisis/HousingCrisisPage";
 import OfficialsElectionsPage from "./modules/officials_elections/OfficialsElectionsPage";
-import OfficialProfile from "./modules/officials_elections/OfficialProfile";
 import BoardsOversightPage from "./modules/boards_oversight/BoardsOversightPage";
 import VotingRightsPage from "./modules/voting_rights/VotingRightsPage";
 import CriminalJusticePage from "./modules/criminal_justice/CriminalJusticePage";
@@ -112,8 +111,8 @@ function ActivePage({ activeId, activeSlug, onBack }) {
     case "workers_childcare": return <WorkersChildcarePage />;
     case "taxation": return <TaxationPage />;
     case "housing_crisis": return <HousingCrisisPage />;
-    case "officials_elections": return <OfficialsElectionsPage onNavigate={onBack} />;
-    case "official_profile": return <OfficialProfile slug={activeSlug} onBack={onBack} />;
+    case "officials_elections": return <OfficialsElectionsPage />;
+    case "official_profile": return <OfficialsElectionsPage initialSlug={activeSlug} />;
     case "boards_oversight": return <BoardsOversightPage />;
     case "voting_rights": return <VotingRightsPage />;
     case "criminal_justice": return <CriminalJusticePage />;

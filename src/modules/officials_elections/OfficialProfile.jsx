@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { COLORS } from "../../config/theme";
 import { generateSlug } from "../../lib/slug";
@@ -15,14 +15,10 @@ const TAB_ITEMS = [
 const MEDIA_OUTLETS = [
   ["WAFF 48", "news@waff.com"],
   ["WAAY 31", "newsroom@waaytv.com"],
-  ["WHNT 19", "Online at whnt.com/contact"],
+  ["WHNT 19", "news@whnt.com"],
   ["AL.com", "news@al.com"],
-  ["WZDX 54", "Online at rocketcitynow.com/contact-us"],
+  ["WZDX 54", "tips@rocketcitynow.com"],
 ];
-
-function cleanString(value) {
-  return typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim();
-}
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -32,46 +28,8 @@ function asObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 
-function initials(name) {
-  const parts = String(name || "").split(" ").filter(Boolean);
-  if (!parts.length) return "?";
-  return `${parts[0][0] || ""}${parts[parts.length - 1]?.[0] || ""}`.toUpperCase();
-}
-
-function slugToName(slug) {
-  return String(slug || "").replace(/-/g, " ").trim();
-}
-
-function normalizeOfficial(record) {
-  const data = asObject(record?.data);
-  return {
-    ...data,
-    ...record,
-    profile: asObject(record?.profile || data.profile),
-    decoder: { ...asObject(data.decoder), ...asObject(record?.decoder) },
-    contact: { ...asObject(data.contact), ...asObject(record?.contact) },
-    donors: record?.donors || data.donors || null,
-    on_record: record?.on_record || data.on_record || null,
-    votes: record?.votes || data.votes || null,
-    ethics_complaints: record?.ethics_complaints || data.ethics_complaints || null,
-    networks: record?.networks || data.networks || null,
-    family: record?.family || data.family || null,
-  };
-}
-
-function proseValue(value) {
-  if (!value) return "";
-  if (typeof value === "string") return value;
-  if (Array.isArray(value)) {
-    return value.map((item) => proseValue(item)).filter(Boolean).join("\n\n");
-  }
-  if (typeof value === "object") {
-    return Object.entries(value)
-      .filter(([, v]) => v && !(Array.isArray(v) && !v.length))
-      .map(([key, v]) => `${key.replace(/_/g, " ")}: ${proseValue(v)}`)
-      .join("\n");
-  }
-  return String(value);
+function cleanString(value) {
+  return typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim();
 }
 
 function isEmptyRecord(value) {
@@ -83,30 +41,18 @@ function isEmptyRecord(value) {
   return false;
 }
 
-function amountNumber(value) {
-  const number = parseFloat(String(value || "").replace(/[^0-9.-]+/g, ""));
-  return Number.isFinite(number) ? number : 0;
+function initials(name) {
+  const parts = String(name || "").split(" ").filter(Boolean);
+  if (!parts.length) return "?";
+  return `${parts[0][0] || ""}${parts[parts.length - 1]?.[0] || ""}`.toUpperCase();
 }
 
-function formatMoney(value) {
+function cleanObjectText(value) {
   if (!value) return "";
-  if (typeof value === "string" && value.includes("$")) return value;
-  const number = amountNumber(value);
-  return number ? `$${number.toLocaleString()}` : String(value);
-}
-
-function getDonorRows(donors) {
-  if (Array.isArray(donors)) return donors;
-  if (Array.isArray(donors?.top_donors)) return donors.top_donors.map((item) => ({ ...item, category: item.category || "Top Donors" }));
-  return [];
-}
-
-function getEthicsRows(value) {
-  if (Array.isArray(value)) return value;
-  if (isEmptyRecord(value)) return [];
-  if (typeof value === "string") return [{ type: "Ethics Complaint", description: value }];
-  if (typeof value === "object") return asArray(value.items).length ? value.items : [value];
-  return [];
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value.map(cleanObjectText).filter(Boolean).join(", ");
+  if (typeof value === "object") return Object.values(value).map(cleanObjectText).filter(Boolean).join(" — ");
+  return String(value);
 }
 
 function getStatusData(official) {
@@ -156,21 +102,119 @@ function getStatusData(official) {
   };
 }
 
-function FieldRow({ label, value }) {
-  if (!value) return null;
+function SectionHeader({ children }) {
+  return <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", color: COLORS.gold, marginBottom: 12 }}>{children}</div>;
+}
+
+function FieldBlock({ label, children }) {
+  if (!children) return null;
   return (
-    <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "11px 14px" }}>
-      <div style={{ color: COLORS.muted, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{label}</div>
-      <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.6, fontWeight: 700, whiteSpace: "pre-wrap" }}>{value}</div>
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, color: COLORS.muted, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 15, color: COLORS.text, lineHeight: 1.6 }}>{children}</div>
     </div>
   );
 }
 
-function SectionHeader({ children }) {
-  return <div style={{ color: COLORS.gold, fontSize: 11, fontWeight: 900, letterSpacing: 1.8, textTransform: "uppercase", marginBottom: 10 }}>{children}</div>;
+function EducationValue({ value }) {
+  const text = cleanString(value);
+  if (!text) return null;
+  const items = text.includes(";") ? text.split(";").map((item) => item.trim()).filter(Boolean) : [];
+  if (!items.length) return <span>{text}</span>;
+  return (
+    <div style={{ display: "grid", gap: 4 }}>
+      {items.map((item, index) => <div key={index}>• {item}</div>)}
+    </div>
+  );
 }
 
-function OfficialProfileHero({ official, pageSlug }) {
+function FamilyValue({ value }) {
+  if (isEmptyRecord(value)) return null;
+  if (typeof value === "string") return <span>{value}</span>;
+  const family = asObject(value);
+  const spouse = family.spouse_name || family.spouse || family.spouseName;
+  const businessTies = family.business_ties || family.businessTies;
+  const parentsSiblings = family.parents_siblings || family.parentsSiblings;
+  const children = family.children_count || family.childrenCount;
+  return (
+    <div style={{ display: "grid", gap: 6 }}>
+      {spouse ? <div><strong style={{ fontWeight: 700 }}>Spouse:</strong> {spouse}</div> : null}
+      {businessTies ? <div style={{ fontSize: 14, lineHeight: 1.6 }}><strong style={{ fontWeight: 700 }}>Business ties:</strong> {businessTies}</div> : null}
+      {parentsSiblings ? <div style={{ fontSize: 14, lineHeight: 1.6 }}><strong style={{ fontWeight: 700 }}>Parents/Siblings:</strong> {parentsSiblings}</div> : null}
+      {children ? <div style={{ fontSize: 14, lineHeight: 1.6 }}><strong style={{ fontWeight: 700 }}>Children:</strong> {children}</div> : null}
+    </div>
+  );
+}
+
+function NetworksValue({ value }) {
+  if (isEmptyRecord(value)) return null;
+  if (typeof value === "string") return <p style={{ fontSize: 15, lineHeight: 1.75, color: COLORS.text, margin: 0 }}>{value}</p>;
+  const networks = asObject(value);
+  const namedOrbit = asArray(networks.named_orbit);
+  const organizationalTies = networks.organizational_ties;
+  const professionalNetwork = networks.professional_network;
+  return (
+    <div style={{ display: "grid", gap: 12, color: COLORS.text }}>
+      {networks.born_into ? <div style={{ fontSize: 15, lineHeight: 1.7 }}><strong>Born into:</strong> {networks.born_into}</div> : null}
+      {namedOrbit.length ? (
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.muted, marginBottom: 6 }}>Key relationships:</div>
+          <div style={{ display: "grid", gap: 5 }}>
+            {namedOrbit.map((item, index) => (
+              <div key={index} style={{ fontSize: 15, lineHeight: 1.6 }}>
+                {[item.name, item.amount, item.relationship || item.role].filter(Boolean).join(" — ")}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {organizationalTies ? <div style={{ fontSize: 15, lineHeight: 1.7 }}><strong>Organizational ties:</strong> {cleanObjectText(organizationalTies)}</div> : null}
+      {professionalNetwork ? <div style={{ fontSize: 15, lineHeight: 1.7 }}><strong>Professional network:</strong> {cleanObjectText(professionalNetwork)}</div> : null}
+      {networks.elite_connections ? <div style={{ fontSize: 15, lineHeight: 1.7 }}><strong>Elite connections:</strong> {cleanObjectText(networks.elite_connections)}</div> : null}
+      {networks.board_seats ? <div style={{ fontSize: 15, lineHeight: 1.7 }}><strong>Board seats:</strong> {cleanObjectText(networks.board_seats)}</div> : null}
+    </div>
+  );
+}
+
+function getEthicsRows(value) {
+  if (Array.isArray(value)) return value;
+  if (isEmptyRecord(value)) return [];
+  if (typeof value === "string") return [{ type: "Ethics Complaint", description: value }];
+  if (typeof value === "object") return asArray(value.items).length ? value.items : [value];
+  return [];
+}
+
+const CONTRACTOR_KEYWORDS = [
+  "Wellpath",
+  "Securus",
+  "NCIC",
+  "Summit",
+  "Southern Health",
+  "Correct Care",
+  "jail contractor",
+  "healthcare contractor",
+  "phone contractor",
+];
+
+function getContractorName(text) {
+  const match = CONTRACTOR_KEYWORDS.find((keyword) => new RegExp(keyword, "i").test(text));
+  return match || "Contractor accountability";
+}
+
+function getContractorMentions(official) {
+  const sourceText = [official.decoder?.affiliations, official.decoder?.track_record].filter(Boolean).join("\n");
+  if (!sourceText) return [];
+  const chunks = sourceText
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return chunks
+    .filter((item) => CONTRACTOR_KEYWORDS.some((keyword) => new RegExp(keyword, "i").test(item)))
+    .map((text) => ({ name: getContractorName(text), text }));
+}
+
+function OfficialProfileHero({ official }) {
   const [copied, setCopied] = useState(false);
   const status = getStatusData(official);
   const pillBaseStyle = { fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.8, borderRadius: 999, padding: "4px 9px" };
@@ -184,7 +228,7 @@ function OfficialProfileHero({ official, pageSlug }) {
       : "";
   const salaryLine = official.salary ? `Salary: ${official.salary}` : "";
   const infoLine = [termLine, salaryLine].filter(Boolean).join(" · ");
-  const shareSlug = pageSlug || generateSlug(official.name);
+  const shareSlug = official.slug || generateSlug(official.name);
 
   const copyProfileUrl = async () => {
     const url = `${window.location.origin}/officials/${shareSlug}`;
@@ -196,9 +240,9 @@ function OfficialProfileHero({ official, pageSlug }) {
   };
 
   return (
-    <div style={{ background: status.heroBg, borderRadius: "14px 14px 0 0", padding: "24px 28px", display: "flex", gap: 20, alignItems: "center", position: "relative" }}>
-      <button onClick={copyProfileUrl} style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 8, color: "#fff", fontSize: 12, fontWeight: 800, padding: "7px 10px", cursor: "pointer" }}>
-        {copied ? "Link copied!" : "Share"}
+    <div style={{ background: status.heroBg, padding: "24px 28px", display: "flex", gap: 20, alignItems: "center", position: "relative" }}>
+      <button onClick={copyProfileUrl} style={{ position: "absolute", top: 16, right: 56, background: COLORS.green, color: "#fff", border: "none", borderRadius: 10, padding: "10px 16px", fontSize: 15, fontWeight: 900, cursor: "pointer" }}>
+        {copied ? "Link copied!" : "Share ↗"}
       </button>
       {official.headshot_url ? (
         <img src={official.headshot_url} alt={official.name} style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: `3px solid ${status.photoBorder}`, flexShrink: 0 }} />
@@ -207,7 +251,7 @@ function OfficialProfileHero({ official, pageSlug }) {
           {initials(official.name)}
         </div>
       )}
-      <div style={{ minWidth: 0, paddingRight: 86 }}>
+      <div style={{ minWidth: 0, paddingRight: 136 }}>
         <div style={{ color: status.heroTextColor, fontSize: 26, fontWeight: 900, lineHeight: 1.15, marginBottom: 6 }}>{official.name || "Unnamed profile"}</div>
         <div style={{ color: status.heroOfficeColor, fontSize: 14, marginBottom: 10 }}>{official.office || official.role_label || "Office not listed"}</div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: infoLine ? 9 : 0 }}>
@@ -236,7 +280,7 @@ function OfficialProfileHero({ official, pageSlug }) {
             official.party ? <span style={{ ...pillBaseStyle, ...status.partyPillStyle }}>{official.party}</span> : null
           )}
         </div>
-        {infoLine ? <div style={{ color: status.heroOfficeColor, fontSize: 12, fontWeight: 700 }}>{infoLine}</div> : null}
+        {infoLine ? <div style={{ color: status.heroOfficeColor, fontSize: 14, fontWeight: 700 }}>{infoLine}</div> : null}
       </div>
     </div>
   );
@@ -257,8 +301,8 @@ function DataStrip({ official }) {
     <div style={{ background: "#e8ddcb", borderBottom: "1px solid #d2c3ab", padding: "12px 28px", display: "flex", flexWrap: "wrap", gap: 24 }}>
       {items.map(([label, value]) => (
         <div key={label}>
-          <div style={{ color: "#746b5f", fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1 }}>{label}</div>
-          <div style={{ color: "#193150", fontSize: 13, fontWeight: 900 }}>{value}</div>
+          <div style={{ color: "#746b5f", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1 }}>{label}</div>
+          <div style={{ color: "#193150", fontSize: 14, fontWeight: 900 }}>{value}</div>
         </div>
       ))}
     </div>
@@ -269,8 +313,10 @@ function ProfileTab({ official }) {
   const [decoderOpen, setDecoderOpen] = useState(false);
   const summary = official.profile?.summary || official.status_line;
   const details = official.profile?.details;
-  const familyText = proseValue(official.family);
-  const networksText = proseValue(official.networks);
+  const showMilitary = !isEmptyRecord(official.military_service);
+  const showFamily = !isEmptyRecord(official.family);
+  const showBackground = official.education || showMilitary || showFamily;
+  const showNetworks = !isEmptyRecord(official.networks);
   const decoderSections = [
     ["rise", "THE RISE", "#E8C35A"],
     ["affiliations", "THE AFFILIATIONS", "#89C4E8"],
@@ -282,21 +328,19 @@ function ProfileTab({ official }) {
   return (
     <div>
       {summary ? <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.text, margin: "0 0 20px" }}>{summary}</p> : null}
-      {details ? <p style={{ fontSize: 15, lineHeight: 1.75, color: COLORS.textSoft, margin: "0 0 20px" }}>{details}</p> : null}
-      {(official.education || official.military_service || familyText) ? (
-        <div style={{ marginBottom: 20 }}>
+      {details ? <p style={{ fontSize: 15, lineHeight: 1.75, color: COLORS.text, margin: "0 0 20px" }}>{details}</p> : null}
+      {showBackground ? (
+        <div style={{ marginBottom: 22 }}>
           <SectionHeader>Background</SectionHeader>
-          <div style={{ display: "grid", gap: 10 }}>
-            <FieldRow label="Education" value={official.education} />
-            <FieldRow label="Military Service" value={official.military_service} />
-            <FieldRow label="Family" value={familyText} />
-          </div>
+          <FieldBlock label="Education"><EducationValue value={official.education} /></FieldBlock>
+          {showMilitary ? <FieldBlock label="Military Service">{official.military_service}</FieldBlock> : null}
+          {showFamily ? <FieldBlock label="Family"><FamilyValue value={official.family} /></FieldBlock> : null}
         </div>
       ) : null}
-      {networksText ? (
-        <div style={{ marginBottom: 20 }}>
+      {showNetworks ? (
+        <div style={{ marginBottom: 22 }}>
           <SectionHeader>Networks & Affiliations</SectionHeader>
-          <p style={{ fontSize: 15, lineHeight: 1.75, color: COLORS.text, margin: 0, whiteSpace: "pre-wrap" }}>{networksText}</p>
+          <NetworksValue value={official.networks} />
         </div>
       ) : null}
       {hasDecoder ? (
@@ -308,7 +352,7 @@ function ProfileTab({ official }) {
             <div style={{ background: COLORS.navy, borderRadius: 14, padding: "20px 22px" }}>
               {decoderSections.map(([key, label, color]) => official.decoder?.[key] ? (
                 <div key={key} style={{ borderLeft: `3px solid ${color}`, paddingLeft: 14, marginBottom: 22 }}>
-                  <div style={{ color, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>{label}</div>
+                  <div style={{ color, fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 2, marginBottom: 8 }}>{label}</div>
                   <div style={{ color, fontSize: 15, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{official.decoder[key]}</div>
                 </div>
               ) : null)}
@@ -332,7 +376,7 @@ function OnRecordTab({ official }) {
         <blockquote key={index} style={{ margin: 0, background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderLeft: `4px solid ${COLORS.gold}`, borderRadius: 8, padding: "14px 16px" }}>
           <div style={{ fontSize: 15, color: COLORS.text, lineHeight: 1.7 }}>{item.quote || item.body || item.summary || item.title}</div>
           {[item.attribution, item.date, item.sourceLabel].filter(Boolean).length ? (
-            <div style={{ color: COLORS.muted, fontSize: 12, marginTop: 8 }}>{[item.attribution, item.date, item.sourceLabel].filter(Boolean).join(" · ")}</div>
+            <div style={{ color: COLORS.muted, fontSize: 14, marginTop: 8 }}>{[item.attribution, item.date, item.sourceLabel].filter(Boolean).join(" · ")}</div>
           ) : null}
         </blockquote>
       ))}
@@ -344,10 +388,10 @@ function OnRecordTab({ official }) {
           <div key={index} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "14px 16px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
               <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{vote.bill || vote.measure || vote.title || "Vote Record"}</div>
-              {position ? <div style={{ color: yes ? COLORS.green : no ? COLORS.red : COLORS.muted, fontSize: 13, fontWeight: 900 }}>{position}</div> : null}
+              {position ? <div style={{ color: yes ? COLORS.gold : no ? COLORS.red : COLORS.muted, fontSize: 14, fontWeight: 900 }}>{position}</div> : null}
             </div>
-            {vote.date ? <div style={{ color: COLORS.muted, fontSize: 12, marginBottom: 6 }}>{vote.date}</div> : null}
-            {vote.description || vote.summary ? <div style={{ color: COLORS.textSoft, fontSize: 14, lineHeight: 1.65 }}>{vote.description || vote.summary}</div> : null}
+            {vote.date ? <div style={{ color: COLORS.muted, fontSize: 14, marginBottom: 6 }}>{vote.date}</div> : null}
+            {vote.description || vote.summary ? <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.65 }}>{vote.description || vote.summary}</div> : null}
           </div>
         );
       })}
@@ -357,66 +401,163 @@ function OnRecordTab({ official }) {
 }
 
 function DonorsTab({ official }) {
-  const donors = official.donors;
-  const rows = getDonorRows(donors);
-  const computedTotal = rows.reduce((sum, item) => sum + amountNumber(item.amount), 0);
-  const totalRaised = donors?.total_raised || (computedTotal ? formatMoney(computedTotal) : "");
-  const grouped = rows.reduce((acc, item) => {
-    const key = item.category || "Donors";
-    acc[key] = acc[key] || [];
-    acc[key].push(item);
-    return acc;
-  }, {});
+  const donors = official.donors || {};
+  const cycles = asArray(donors.totals_by_cycle);
+  const topIndividuals = asArray(donors.top_individuals);
+  const topPacs = asArray(donors.top_pacs);
+  const hasDonorData = donors.grand_total || donors.individual_total || donors.pac_total || donors.summary || cycles.length || topIndividuals.length || topPacs.length;
 
-  if (!rows.length && !donors?.summary && !totalRaised) {
+  if (!hasDonorData) {
     return <div style={{ color: COLORS.muted, fontSize: 14, fontStyle: "italic" }}>No donor data on file yet.</div>;
   }
 
+  const donorRow = (donor, index, items) => (
+    <div key={`${donor.name || "donor"}-${index}`} style={{ display: "flex", justifyContent: "space-between", gap: 16, padding: "12px 0", borderBottom: index < items.length - 1 ? `1px solid ${COLORS.border}` : "none" }}>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#193150", lineHeight: 1.35 }}>{donor.name || "Unnamed donor"}</div>
+        {donor.relationship ? <div style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.45, marginTop: 3 }}>{donor.relationship}</div> : null}
+      </div>
+      {donor.amount ? <div style={{ fontSize: 15, fontWeight: 900, color: "#193150", textAlign: "right", flexShrink: 0 }}>{donor.amount}</div> : null}
+    </div>
+  );
+
   return (
-    <div>
-      {donors?.summary ? <p style={{ fontSize: 15, color: COLORS.text, lineHeight: 1.7, margin: "0 0 14px" }}>{donors.summary}</p> : null}
-      {totalRaised ? <div style={{ color: COLORS.gold, fontSize: 26, fontWeight: 900, marginBottom: 18 }}>{totalRaised} <span style={{ color: COLORS.muted, fontSize: 13, fontWeight: 700 }}>total raised</span></div> : null}
-      {Object.entries(grouped).map(([category, items]) => (
-        <div key={category} style={{ marginBottom: 18 }}>
-          <SectionHeader>{category}</SectionHeader>
-          <div style={{ display: "grid", gap: 8 }}>
-            {items.map((donor, index) => (
-              <div key={index} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "10px 14px", display: "flex", justifyContent: "space-between", gap: 14, alignItems: "center" }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ color: COLORS.text, fontSize: 14, fontWeight: 900 }}>{donor.name || "Unnamed donor"}</div>
-                  {donor.note || donor.category ? <div style={{ color: COLORS.muted, fontSize: 12, marginTop: 3 }}>{donor.note || donor.category}</div> : null}
-                </div>
-                {donor.amount ? <div style={{ color: COLORS.gold, fontSize: 15, fontWeight: 900, flexShrink: 0 }}>{formatMoney(donor.amount)}</div> : null}
-              </div>
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ background: COLORS.panelWarm, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: "18px 20px" }}>
+        {donors.grand_total ? <div style={{ fontSize: 28, fontWeight: 900, color: "#193150", lineHeight: 1 }}>{donors.grand_total}</div> : null}
+        <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, marginTop: 6 }}>total raised — all cycles</div>
+        {cycles.length ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
+            {cycles.map((item, index) => (
+              <span key={`${item.cycle || "cycle"}-${index}`} style={{ background: COLORS.navy, color: COLORS.gold, border: `1px solid ${COLORS.gold}`, borderRadius: 999, padding: "5px 10px", fontSize: 13, fontWeight: 900 }}>
+                {[item.cycle, item.total].filter(Boolean).join(": ")}
+              </span>
             ))}
           </div>
+        ) : null}
+      </div>
+
+      {(donors.individual_total || donors.pac_total) ? (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
+          {donors.individual_total ? (
+            <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 14px" }}>
+              <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Individual Donors</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: "#193150" }}>{donors.individual_total}</div>
+            </div>
+          ) : null}
+          {donors.pac_total ? (
+            <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 14px" }}>
+              <div style={{ fontSize: 11, color: COLORS.muted, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>PAC/Committee Donors</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: "#193150" }}>{donors.pac_total}</div>
+            </div>
+          ) : null}
         </div>
-      ))}
+      ) : null}
+
+      {topIndividuals.length ? (
+        <div>
+          <SectionHeader>Top Individual Donors</SectionHeader>
+          <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "2px 14px" }}>
+            {topIndividuals.map(donorRow)}
+          </div>
+        </div>
+      ) : null}
+
+      {topPacs.length ? (
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", color: "#B98FD8", marginBottom: 12 }}>Top PAC & Committee Donors</div>
+          <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "2px 14px" }}>
+            {topPacs.map(donorRow)}
+          </div>
+        </div>
+      ) : null}
+
+      {donors.summary ? <p style={{ fontSize: 15, lineHeight: 1.7, color: COLORS.text, margin: 0 }}>{donors.summary}</p> : null}
+
+      <div style={{ fontSize: 11, color: COLORS.muted }}>
+        Source: FEC.gov / <a href="https://fcpa.alabama.gov" target="_blank" rel="noreferrer" style={{ color: COLORS.muted, textDecoration: "underline" }}>FCPA.Alabama.gov</a>
+      </div>
     </div>
   );
 }
 
 function EthicsTab({ official }) {
-  const complaints = getEthicsRows(official.ethics_complaints);
+  const ethics = official.ethics_complaints;
+  const ethicsObject = asObject(ethics);
+  const complaints = getEthicsRows(ethics);
+  const contractorMentions = getContractorMentions(official);
   const criminalRecord = isEmptyRecord(official.criminal_record) ? "" : official.criminal_record;
+  const currentYear = new Date().getFullYear();
+
+  const renderStatusPill = (status) => {
+    if (!status) return null;
+    const lower = String(status).toLowerCase();
+    const color = lower.includes("resolved") ? COLORS.green : lower.includes("pending") ? COLORS.red : COLORS.gold;
+    const background = lower.includes("resolved") ? COLORS.greenSoft : lower.includes("pending") ? COLORS.redSoft : COLORS.goldSoft;
+    return <span style={{ color, background, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.7 }}>{status}</span>;
+  };
+
+  const renderComplaints = () => {
+    if (typeof ethics === "string") {
+      const clean = ethics.trim();
+      const isNone = /(^|\b)(none|no ethics|no complaints|not located|no record)(\b|$)/i.test(clean);
+      return (
+        <div style={{ background: isNone ? COLORS.panel : COLORS.redSoft, border: `1px solid ${isNone ? COLORS.border : `${COLORS.red}55`}`, borderLeft: `4px solid ${isNone ? COLORS.gold : COLORS.red}`, borderRadius: 10, padding: "12px 16px", color: COLORS.text, fontSize: 14, lineHeight: 1.65, fontWeight: 700 }}>
+          {isNone ? "✓ " : "⚑ "}{clean}
+        </div>
+      );
+    }
+
+    if (ethicsObject.items && asArray(ethicsObject.items).length === 0) {
+      return (
+        <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 16px", color: COLORS.muted, fontSize: 14, lineHeight: 1.65 }}>
+          {ethicsObject.summary || `No ethics complaints located in public records as of ${currentYear}`}
+        </div>
+      );
+    }
+
+    if (complaints.length) {
+      const count = ethicsObject.count || complaints.length;
+      return (
+        <>
+          <div style={{ background: COLORS.redSoft, border: `1px solid ${COLORS.red}55`, borderLeft: `4px solid ${COLORS.red}`, borderRadius: 10, padding: "12px 16px", color: COLORS.red, fontSize: 14, fontWeight: 900 }}>
+            ⚑ {count} ethics complaint{Number(count) === 1 ? "" : "s"} on record
+          </div>
+          {complaints.map((complaint, index) => (
+            <div key={index} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
+                <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{complaint.type || "Complaint"}</div>
+                {renderStatusPill(complaint.status)}
+              </div>
+              {[complaint.filed_by, complaint.date].filter(Boolean).length ? (
+                <div style={{ color: COLORS.muted, fontSize: 14, marginBottom: 8 }}>
+                  {[complaint.filed_by ? `Filed by ${complaint.filed_by}` : "", complaint.date].filter(Boolean).join(" · ")}
+                </div>
+              ) : null}
+              <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.65 }}>{complaint.description || "Complaint details on file."}</div>
+            </div>
+          ))}
+        </>
+      );
+    }
+
+    return <div style={{ color: COLORS.muted, fontSize: 14, fontStyle: "italic" }}>No ethics complaints on record</div>;
+  };
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
-      {complaints.length ? (
-        <div style={{ background: COLORS.redSoft, border: `1px solid ${COLORS.red}55`, borderLeft: `4px solid ${COLORS.red}`, borderRadius: 10, padding: "12px 16px", color: COLORS.red, fontSize: 14, fontWeight: 900 }}>⚑ Ethics complaints on record</div>
-      ) : (
-        <div style={{ color: COLORS.muted, fontSize: 14, fontStyle: "italic" }}>No ethics complaints on record</div>
-      )}
-      {complaints.map((complaint, index) => (
-        <div key={index} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "14px 16px" }}>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 7 }}>
-            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{complaint.type || complaint.title || "Complaint"}</div>
-            {complaint.status ? <span style={{ color: COLORS.red, background: COLORS.redSoft, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 900 }}>{complaint.status}</span> : null}
-            {complaint.filing_date || complaint.date ? <span style={{ color: COLORS.muted, fontSize: 12 }}>{complaint.filing_date || complaint.date}</span> : null}
-          </div>
-          <div style={{ color: COLORS.textSoft, fontSize: 14, lineHeight: 1.65 }}>{complaint.description || complaint.body || proseValue(complaint)}</div>
+      {renderComplaints()}
+      {contractorMentions.length ? (
+        <div style={{ display: "grid", gap: 10, marginTop: 6 }}>
+          <SectionHeader>Contractor Accountability</SectionHeader>
+          {contractorMentions.map((mention, index) => (
+            <div key={`${mention.name}-${index}`} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderLeft: `4px solid ${COLORS.red}`, borderRadius: 10, padding: "12px 16px" }}>
+              <div style={{ color: COLORS.red, fontSize: 14, fontWeight: 900, marginBottom: 6 }}>{mention.name}</div>
+              <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.65 }}>{mention.text}</div>
+            </div>
+          ))}
         </div>
-      ))}
+      ) : null}
       {criminalRecord ? (
         <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "14px 16px" }}>
           <SectionHeader>Criminal Record</SectionHeader>
@@ -427,7 +568,7 @@ function EthicsTab({ official }) {
   );
 }
 
-function PredecessorsTab({ official }) {
+function PredecessorsTab({ official, onSelectOfficial }) {
   const [predecessors, setPredecessors] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -437,7 +578,7 @@ function PredecessorsTab({ official }) {
     setLoading(true);
     supabase
       .from("official_profiles")
-      .select("id, name, office, kind, party, term_start, term_end, headshot_url")
+      .select("*")
       .eq("seat_id", official.seat_id)
       .neq("id", official.id)
       .order("term_start", { ascending: false })
@@ -456,24 +597,21 @@ function PredecessorsTab({ official }) {
 
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      {predecessors.map((person) => {
-        const pageSlug = generateSlug(person.name);
-        return (
-          <a key={person.id} href={`/officials/${pageSlug}`} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 14px", display: "flex", gap: 12, alignItems: "center", textDecoration: "none" }}>
-            {person.headshot_url ? (
-              <img src={person.headshot_url} alt={person.name} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: `2px solid ${COLORS.navy}` }} />
-            ) : (
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: COLORS.navy, color: COLORS.gold, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, flexShrink: 0 }}>{initials(person.name)}</div>
-            )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{person.name}</div>
-              <div style={{ color: COLORS.muted, fontSize: 12 }}>{person.office}</div>
-              <div style={{ color: COLORS.textSoft, fontSize: 12 }}>{[person.term_start, person.term_end].filter(Boolean).join(" – ")}</div>
-            </div>
-            {person.party ? <span style={{ color: COLORS.navy, background: COLORS.goldSoft, border: `1px solid ${COLORS.gold}`, borderRadius: 999, padding: "3px 8px", fontSize: 10, fontWeight: 900 }}>{person.party}</span> : null}
-          </a>
-        );
-      })}
+      {predecessors.map((person) => (
+        <button key={person.id} onClick={() => onSelectOfficial(person)} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 14px", display: "flex", gap: 12, alignItems: "center", textAlign: "left", cursor: "pointer" }}>
+          {person.headshot_url ? (
+            <img src={person.headshot_url} alt={person.name} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: `2px solid ${COLORS.navy}`, flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: 44, height: 44, borderRadius: "50%", background: COLORS.navy, color: COLORS.gold, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, flexShrink: 0 }}>{initials(person.name)}</div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>{person.name}</div>
+            <div style={{ color: COLORS.muted, fontSize: 14 }}>{person.office}</div>
+            <div style={{ color: COLORS.text, fontSize: 14 }}>{[person.term_start, person.term_end].filter(Boolean).join(" – ")}</div>
+          </div>
+          {person.party ? <span style={{ color: COLORS.navy, background: COLORS.goldSoft, border: `1px solid ${COLORS.gold}`, borderRadius: 999, padding: "3px 8px", fontSize: 11, fontWeight: 900 }}>{person.party}</span> : null}
+        </button>
+      ))}
     </div>
   );
 }
@@ -494,15 +632,15 @@ function ContactTab({ official }) {
       {items.length ? items.map(([label, value, href]) => (
         <div key={label} style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "12px 16px", display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
           <span style={{ color: COLORS.muted, fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</span>
-          {href ? <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" style={{ color: COLORS.green, fontSize: 14, fontWeight: 900, textDecoration: "none" }}>{value} {href.startsWith("http") ? "↗" : ""}</a> : <span style={{ color: COLORS.text, fontSize: 14, fontWeight: 700 }}>{value}</span>}
+          {href ? <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" style={{ color: COLORS.gold, fontSize: 15, fontWeight: 900, textDecoration: "none" }}>{value} {href.startsWith("http") ? "↗" : ""}</a> : <span style={{ color: COLORS.text, fontSize: 15, fontWeight: 700 }}>{value}</span>}
         </div>
       )) : <div style={{ color: COLORS.muted, fontSize: 14, fontStyle: "italic" }}>No contact information on file yet.</div>}
       <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "14px 16px" }}>
         <SectionHeader>Tip a reporter about this official</SectionHeader>
         <div style={{ display: "grid", gap: 6 }}>
-          {MEDIA_OUTLETS.map(([name, contactValue]) => (
-            <div key={name} style={{ color: COLORS.textSoft, fontSize: 13 }}>
-              <strong style={{ color: COLORS.text }}>{name}:</strong> {contactValue.includes("@") ? <a href={`mailto:${contactValue}`} style={{ color: COLORS.green, fontWeight: 800, textDecoration: "none" }}>{contactValue}</a> : contactValue}
+          {MEDIA_OUTLETS.map(([name, email]) => (
+            <div key={name} style={{ color: COLORS.text, fontSize: 15 }}>
+              <strong>{name}:</strong> <a href={`mailto:${email}`} style={{ color: COLORS.gold, fontWeight: 900, textDecoration: "none" }}>{email}</a>
             </div>
           ))}
         </div>
@@ -511,57 +649,21 @@ function ContactTab({ official }) {
   );
 }
 
-export default function OfficialProfile({ slug, onBack }) {
-  const [official, setOfficial] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+export default function OfficialProfile({ official, onClose, onSelectOfficial }) {
   const [activeTab, setActiveTab] = useState("profile");
 
-  const fetchOfficial = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    setOfficial(null);
-    try {
-      let record = null;
-      const slugResult = await supabase
-        .from("official_profiles")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
-      if (!slugResult.error && slugResult.data) {
-        record = slugResult.data;
-      }
-
-      if (!record) {
-        const generatedName = slugToName(slug);
-        const { data, error: nameError } = await supabase
-          .from("official_profiles")
-          .select("*")
-          .ilike("name", generatedName)
-          .limit(1)
-          .maybeSingle();
-        if (nameError) throw nameError;
-        record = data;
-      }
-
-      setOfficial(record ? normalizeOfficial(record) : null);
-    } catch (e) {
-      setError(e?.message || "Could not load profile.");
-    } finally {
-      setLoading(false);
-    }
-  }, [slug]);
-
   useEffect(() => {
-    fetchOfficial();
-  }, [fetchOfficial]);
+    const onKey = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
-  const status = useMemo(() => official ? getStatusData(official) : null, [official]);
-  const pageSlug = official ? (official.slug || generateSlug(official.name) || slug) : slug;
+  if (!official) return null;
 
   const tabStyle = (id) => ({
-    padding: "10px 18px",
+    padding: "10px 16px",
     fontWeight: 700,
     fontSize: 13,
     border: "none",
@@ -573,41 +675,28 @@ export default function OfficialProfile({ slug, onBack }) {
   });
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "8px 0 28px" }}>
-      <button onClick={() => onBack ? onBack("officials_elections") : window.history.back()} style={{ background: "transparent", border: "none", color: COLORS.navy, fontSize: 13, fontWeight: 900, cursor: "pointer", padding: "0 0 14px" }}>
-        ← Officials & Elections
-      </button>
+    <>
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, backdropFilter: "blur(3px)" }} />
+      <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(680px, 100vw)", background: "#fbf7f0", overflowY: "auto", zIndex: 201, boxShadow: "-8px 0 40px rgba(0,0,0,0.25)" }}>
+        <button onClick={onClose} aria-label="Close profile" style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 34, height: 34, borderRadius: 10, border: "1px solid rgba(255,255,255,0.28)", background: "rgba(255,255,255,0.12)", color: "#fff", fontSize: 22, lineHeight: 1, cursor: "pointer" }}>×</button>
+        <OfficialProfileHero official={official} />
+        <DataStrip official={official} />
 
-      {loading ? (
-        <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: "44px 24px", color: COLORS.muted, textAlign: "center" }}>Loading profile...</div>
-      ) : error ? (
-        <div style={{ background: COLORS.redSoft, border: `1px solid ${COLORS.red}55`, borderRadius: 12, padding: "18px 20px", color: COLORS.red, fontWeight: 800 }}>{error}</div>
-      ) : !official ? (
-        <div style={{ background: COLORS.panel, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: "44px 24px", textAlign: "center" }}>
-          <div style={{ color: COLORS.text, fontSize: 22, fontWeight: 900, marginBottom: 8 }}>Profile not found</div>
-          <div style={{ color: COLORS.muted, fontSize: 14 }}>No official profile matched this link.</div>
+        <div style={{ display: "flex", borderBottom: `2px solid ${COLORS.border}`, overflowX: "auto", background: "#f0ebe2" }}>
+          {TAB_ITEMS.map((tab) => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={tabStyle(tab.id)}>{tab.label}</button>
+          ))}
         </div>
-      ) : (
-        <div style={{ border: `3px solid ${COLORS.navy}`, borderRadius: 14, overflow: "hidden", background: COLORS.bg, boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
-          <OfficialProfileHero official={official} status={status} pageSlug={pageSlug} />
-          <DataStrip official={official} />
 
-          <div style={{ display: "flex", borderBottom: `2px solid ${COLORS.border}`, overflowX: "auto", background: "#f0ebe2" }}>
-            {TAB_ITEMS.map((tab) => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={tabStyle(tab.id)}>{tab.label}</button>
-            ))}
-          </div>
-
-          <div style={{ background: COLORS.bg, padding: "24px 28px 28px" }}>
-            {activeTab === "profile" ? <ProfileTab official={official} /> : null}
-            {activeTab === "on_record" ? <OnRecordTab official={official} /> : null}
-            {activeTab === "donors" ? <DonorsTab official={official} /> : null}
-            {activeTab === "ethics" ? <EthicsTab official={official} /> : null}
-            {activeTab === "predecessors" ? <PredecessorsTab official={official} /> : null}
-            {activeTab === "contact" ? <ContactTab official={official} /> : null}
-          </div>
+        <div style={{ background: COLORS.bg, padding: "24px 28px 32px" }}>
+          {activeTab === "profile" ? <ProfileTab official={official} /> : null}
+          {activeTab === "on_record" ? <OnRecordTab official={official} /> : null}
+          {activeTab === "donors" ? <DonorsTab official={official} /> : null}
+          {activeTab === "ethics" ? <EthicsTab official={official} /> : null}
+          {activeTab === "predecessors" ? <PredecessorsTab official={official} onSelectOfficial={onSelectOfficial} /> : null}
+          {activeTab === "contact" ? <ContactTab official={official} /> : null}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }

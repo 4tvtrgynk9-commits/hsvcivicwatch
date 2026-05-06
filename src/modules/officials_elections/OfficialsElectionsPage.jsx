@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import { COLORS } from "../../config/theme";
 import { generateSlug } from "../../lib/slug";
+import OfficialProfile from "./OfficialProfile";
 
 const GOLD = "#C6A34D";
 const BLUE = "#2F5D8A";
@@ -116,6 +117,10 @@ function normalizeProfileRecord(record) {
     donors,
     conflicts,
     profile: record.profile || data.profile || {},
+    education: record.education || data.education || "",
+    military_service: record.military_service || data.military_service || "",
+    networks: record.networks || data.networks || null,
+    family: record.family || data.family || null,
     quick_facts: record.quick_facts || data.quick_facts || [],
     metrics: record.metrics || data.metrics || [],
     on_record: record.on_record || data.on_record || [],
@@ -135,6 +140,10 @@ function normalizeProfileRecord(record) {
     })).filter((item) => item.title),
     former_offices: asArray(merged.former_offices).filter((item) => item?.title),
   };
+}
+
+function slugToName(slug) {
+  return String(slug || "").replace(/-/g, " ").trim();
 }
 
 function getCandidateRoles(profile) {
@@ -674,21 +683,21 @@ function ProfileModal({ profile, onClose }) {
   );
 }
 
-export default function OfficialsElectionsPage({ onNavigate }) {
+export default function OfficialsElectionsPage({ initialSlug }) {
   const [tab, setTab] = useState("current_officials");
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [activeLevel, setActiveLevel] = useState("all");
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedOfficial, setSelectedOfficial] = useState(null);
 
   const loadProfiles = useCallback(async () => {
     setLoading(true); setError("");
     try {
       const { data, error: err } = await supabase
         .from("official_profiles")
-        .select("id, name, office, level, kind, geography, party, status, status_line, salary, net_worth, residency, criminal_record, term_start, term_end, headshot_url, seat_id, decoder, profile, quick_facts, metrics, contact, on_record, votes, donors, conflicts, ethics_complaints, data")
+        .select("id, name, office, level, kind, geography, party, status, status_line, salary, net_worth, residency, criminal_record, term_start, term_end, headshot_url, seat_id, decoder, profile, education, military_service, networks, family, quick_facts, metrics, contact, on_record, votes, donors, conflicts, ethics_complaints, data")
         .order("level", { ascending: true })
         .order("name", { ascending: true });
       if (err) throw err;
@@ -698,6 +707,69 @@ export default function OfficialsElectionsPage({ onNavigate }) {
   }, []);
 
   useEffect(() => { loadProfiles(); }, [loadProfiles]);
+
+  const openOfficial = useCallback((official, pushUrl = true) => {
+    const nextOfficial = normalizeProfileRecord(official);
+    const nextSlug = nextOfficial.slug || generateSlug(nextOfficial.name);
+    setSelectedOfficial(nextOfficial);
+    if (pushUrl && nextSlug) {
+      window.history.pushState({ route: { id: "official_profile", slug: nextSlug } }, "", `/officials/${nextSlug}`);
+    }
+  }, []);
+
+  const closeOfficial = useCallback(() => {
+    setSelectedOfficial(null);
+    window.history.pushState({ route: "officials_elections" }, "", "/#officials_elections");
+  }, []);
+
+  const fetchOfficialBySlug = useCallback(async (slug, pushUrl = false) => {
+    if (!slug) return;
+    try {
+      let record = null;
+      const slugResult = await supabase
+        .from("official_profiles")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (!slugResult.error && slugResult.data) record = slugResult.data;
+
+      if (!record) {
+        const { data, error: nameError } = await supabase
+          .from("official_profiles")
+          .select("*")
+          .ilike("name", slugToName(slug))
+          .limit(1)
+          .maybeSingle();
+        if (nameError) throw nameError;
+        record = data;
+      }
+
+      if (record) openOfficial(record, pushUrl);
+    } catch (e) {
+      setError("Could not load profile. " + (e?.message || ""));
+    }
+  }, [openOfficial]);
+
+  useEffect(() => {
+    const pathSlug = window.location.pathname.startsWith("/officials/")
+      ? decodeURIComponent(window.location.pathname.replace(/^\/officials\//, "").split("/")[0] || "").trim()
+      : "";
+    const slug = initialSlug || pathSlug;
+    if (slug) fetchOfficialBySlug(slug, false);
+  }, [fetchOfficialBySlug, initialSlug]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const pathSlug = window.location.pathname.startsWith("/officials/")
+        ? decodeURIComponent(window.location.pathname.replace(/^\/officials\//, "").split("/")[0] || "").trim()
+        : "";
+      if (pathSlug) fetchOfficialBySlug(pathSlug, false);
+      else setSelectedOfficial(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [fetchOfficialBySlug]);
 
   const directoryProfiles = profiles.filter((p) => {
     if (tab === "current_officials") return getNonCandidateRoles(p).length > 0;
@@ -730,7 +802,13 @@ export default function OfficialsElectionsPage({ onNavigate }) {
 
   return (
     <div>
-      {selectedProfile && <ProfileModal profile={selectedProfile} onClose={() => setSelectedProfile(null)} />}
+      {selectedOfficial ? (
+        <OfficialProfile
+          official={selectedOfficial}
+          onClose={closeOfficial}
+          onSelectOfficial={(official) => openOfficial(official, true)}
+        />
+      ) : null}
 
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>Officials & Elections</div>
@@ -778,11 +856,7 @@ export default function OfficialsElectionsPage({ onNavigate }) {
                     <ProfileCard
                       key={profile.id}
                       profile={profile}
-                      onClick={(nextProfile) => {
-                        const nextSlug = generateSlug(nextProfile.name);
-                        if (onNavigate && nextSlug) onNavigate({ id: "official_profile", slug: nextSlug });
-                        else setSelectedProfile(nextProfile);
-                      }}
+                      onClick={(nextProfile) => openOfficial(nextProfile, true)}
                       variant={tab === "candidates" ? "candidate" : "current"}
                     />
                   ))}

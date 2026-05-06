@@ -4,7 +4,7 @@ import { requireAdmin } from "./_adminAuth";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const MODEL = "claude-sonnet-4-20250514";
 
-const PROFILE_PARSE_SYSTEM = `You are a structured data parser for HSV Civic Watch. Parse the profile research document into a JSON object. Extract every field verbatim — do not summarize, soften, or omit. Return ONLY valid JSON, no markdown, no explanation. Output shape: { name, office, kind, jurisdiction, geography, appointed_by, term_start, term_end, election_date, party, salary, net_worth, status, module, scopes, scope_category, role_label, status_line, headshot_url, date_of_birth, residency, criminal_record, ethics_complaints, education, military_service, school_name, district_name, current_roles: [{ title, kind, jurisdiction, start_year, election_date, is_candidate, is_primary }], former_offices: [{ title, jurisdiction, start_year, end_year }], metrics: [{label, value}], quick_facts: [{label, value}], profile: { summary, timeline: [{date, title, detail}] }, networks: { born_into, elite_connections, professional_network, board_seats, organizational_ties, named_orbit: [{name, relationship, amount}] }, donors: { summary, total_raised, top_donors: [{name, amount, note}], pacs: [{name, funder, agenda}], donations_made: [{name, amount, date}], dark_money, links: [{label, href}] }, family: { spouse_name, has_children, children_count, parents_siblings, business_ties }, conflicts: { summary, items: [{title, body, sourceLabel}] }, on_record: [{title, body, sourceLabel}], votes: [{title, date, position, summary, sourceLabel}], contact: { phone, email, address, office_hours, website, finance_url, twitter, facebook, instagram, linkedin, campaign_website }, decoder: { rise, affiliations, beneficiaries, track_record }, ro_fields: { agency, total_years_officer, current_school_assignment, current_assignment_duration, previous_assignments: [{school, district, duration}], previous_agencies: [{name, years, departure_reason}], has_children, children_count, spouse_name, use_of_force_incidents, complaints, civil_suits, disciplinary_history } }.
+const PROFILE_PARSE_SYSTEM = `You are a structured data parser for HSV Civic Watch. Parse the profile research document into a JSON object. Extract every field verbatim — do not summarize, soften, or omit. Return valid JSON first, then append the FIELD COMPLETION REPORT comment block only after the JSON object. Output shape: { name, office, kind, jurisdiction, geography, appointed_by, term_start, term_end, election_date, party, salary, net_worth, status, module, scopes, scope_category, role_label, status_line, headshot_url, date_of_birth, residency, criminal_record, ethics_complaints, education, military_service, school_name, district_name, current_roles: [{ title, kind, jurisdiction, start_year, election_date, is_candidate, is_primary }], former_offices: [{ title, jurisdiction, start_year, end_year }], metrics: [{label, value}], quick_facts: [{label, value}], profile: { summary, timeline: [{date, title, detail}] }, networks: { born_into, elite_connections, professional_network, board_seats, organizational_ties, named_orbit: [{name, relationship, amount}] }, donors: { grand_total, totals_by_cycle: [{cycle, total}], top_individuals: [{name, amount, relationship}], top_pacs: [{name, amount, relationship}], individual_total, pac_total, dark_money, summary }, family: { spouse_name, has_children, children_count, parents_siblings, business_ties }, conflicts: { summary, items: [{title, body, sourceLabel}] }, on_record: [{title, body, sourceLabel}], votes: [{title, date, position, summary, sourceLabel}], contact: { phone, email, address, office_hours, website, finance_url, twitter, facebook, instagram, linkedin, campaign_website }, decoder: { rise, affiliations, beneficiaries, track_record }, ro_fields: { agency, total_years_officer, current_school_assignment, current_assignment_duration, previous_assignments: [{school, district, duration}], previous_agencies: [{name, years, departure_reason}], has_children, children_count, spouse_name, use_of_force_incidents, complaints, civil_suits, disciplinary_history } }.
 
 MULTI-ROLE DETECTION:
 Extract ALL roles this person currently holds simultaneously.
@@ -46,6 +46,33 @@ Set kind to the primary role kind.
 former_offices: array of ALL previously held roles no longer active
 [{ title, jurisdiction, start_year, end_year }]
 
+The donors field must be a JSON object with this exact structure:
+{
+  "grand_total": "$322,000+",
+  "totals_by_cycle": [
+    { "cycle": "2018", "total": "$84,000" },
+    { "cycle": "2022", "total": "$143,000" }
+  ],
+  "top_individuals": [
+    { "name": "Mark McDaniel", "amount": "$15,000", "relationship": "Attorney operating in Madison County courts" },
+    { "name": "Woody Anderson Ford", "amount": "$12,784", "relationship": "Vehicle dealership; sheriff office maintains fleet" },
+    { "name": "Angel Rey Almodovar", "amount": "$6,000", "relationship": "Identity and interests not publicly disclosed" }
+  ],
+  "top_pacs": [
+    { "name": "TSA PAC", "amount": "$10,000", "relationship": "Organizational identity not publicly disclosed" },
+    { "name": "Alabama Republican Executive Committee", "amount": "$6,919.65", "relationship": "State party apparatus" },
+    { "name": "Alabama Realtors PAC", "amount": "$6,000", "relationship": "Real estate industry; sheriff enforces evictions" }
+  ],
+  "individual_total": "$89,000",
+  "pac_total": "$233,000",
+  "summary": "Turner's campaign has collected over $322,000 since 2017..."
+}
+
+Always extract exactly 3 top individuals and 3 top PACs where data is available.
+If fewer than 3 exist for either category, include however many exist.
+grand_total covers all cycles combined.
+totals_by_cycle covers each election year or reporting period separately.
+
 DECODER FIELD FORMATTING:
 Apply these rules to decoder.rise, decoder.affiliations, decoder.beneficiaries, and decoder.track_record:
 - NEVER start entries with "—" or "-" or any dash/bullet character.
@@ -60,13 +87,77 @@ WRONG:
 CORRECT:
 A 48-year-old woman died by suicide in Madison County Detention Facility in February 2022. Cause of death listed as bedsheet. No disciplinary action taken.
 
+MANDATORY OUTPUT CHECKLIST — every profile must include all of the following.
+If a field cannot be filled from available research, write exactly what is known
+and flag it with [VERIFY] — never leave a field null or empty without explanation:
+
+1. name — full legal name
+2. office — current or most recent office
+3. kind — exactly one of: elected, appointed, candidate, former, deceased
+4. party — full party name
+5. salary — exact figure with source
+6. net_worth — Est. range with source, always show a figure
+7. term_start — month and year
+8. term_end — month and year if applicable
+9. ethics_complaints — MUST be a JSON object in this shape:
+   {
+     "count": 0,
+     "items": [],
+     "summary": "No ethics complaints located in public records as of [year]."
+   }
+   If complaints exist, each item must include:
+   { "type": "...", "filed_by": "...", "date": "...", "status": "resolved/pending/dismissed", "description": "..." }
+   NEVER store ethics_complaints as a plain string.
+
+10. decoder.rise — full career path in prosecutor voice, complete sentences
+11. decoder.affiliations — all organizational ties, PAC relationships, institutional networks
+    Must include every contractor relationship (healthcare, food, phone, communications)
+    Must name Securus, Wellpath, Summit, NCIC, or any jail contractor by name if present
+12. decoder.beneficiaries — named individuals only with dollar amounts, never categories
+13. decoder.track_record — all votes, decisions, deaths in custody, lawsuits, budget actions
+    Each entry must be a complete declarative sentence
+    Never start with a dash, bullet, or bare date
+    Deaths in custody: always name the person, age, date, cause, outcome
+    Lawsuits: always name the case, parties, outcome
+    Budget decisions: always include dollar amount and percentage change
+14. donors — MUST be a JSON object in this exact shape:
+    {
+      "grand_total": "$322,000+",
+      "totals_by_cycle": [
+        { "cycle": "2018", "total": "$84,000" },
+        { "cycle": "2022", "total": "$143,000" }
+      ],
+      "top_individuals": [
+        { "name": "...", "amount": "...", "relationship": "..." }
+      ],
+      "top_pacs": [
+        { "name": "...", "amount": "...", "relationship": "..." }
+      ],
+      "individual_total": "$89,000",
+      "pac_total": "$233,000",
+      "dark_money": "...",
+      "summary": "..."
+    }
+    Always separate individuals from PACs.
+    Always include grand_total and totals_by_cycle.
+    Always include dark_money note if any PAC has undisclosed funding.
+
+15. contact — phone, email, address, website at minimum
+16. on_record — at least 3 public statements or quotes with source and date
+17. votes — all significant votes or policy decisions with date and outcome
+
+After generating output, the AI must output a FIELD COMPLETION REPORT as a
+comment block listing which fields were filled, which were flagged [VERIFY],
+and which could not be found. This report is stripped before saving to Supabase
+but helps John verify completeness before publishing.
+
 scopes rules: elected/judge/candidate — local jurisdiction sets [local], state sets [state], federal sets [federal]. board_member/director/authority_member sets [appointed_boards]. superintendent/asst_superintendent sets [directors_executives, school_boards_staff]. principal/vice_principal/resource_officer/district_staff sets [school_boards_staff]. module rules: official_profiles table sets module to officials_elections. board_profiles and school_profiles set module to boards_oversight. ro_fields only populated if kind is resource_officer.`;
 
 const DECODER_SCORE_SYSTEM = `Score these HSV Civic Watch profile decoder fields. Return ONLY valid JSON: { shock_factor: number, module_relevance: number } both integers 1-10.`;
 
 const SCHOOL_RESEARCH_SYSTEM = `You are a civic research assistant. Use web search to find the most current verifiable public numbers for a named Alabama school or school district. Return ONLY valid JSON: { enrollment: string, staff_count: string, annual_budget: string, as_of_date: string, sources: [{ label, url }] }. Use empty strings if a figure cannot be verified.`;
 
-const OFFICIAL_KINDS = new Set(["elected", "appointed", "candidate", "judge", "sheriff", "tax_official"]);
+const OFFICIAL_KINDS = new Set(["elected", "appointed", "candidate", "former", "deceased", "judge", "sheriff", "tax_official"]);
 const BOARD_KINDS = new Set(["board_member", "director", "authority_member"]);
 const SCHOOL_KINDS = new Set(["superintendent", "asst_superintendent", "principal", "vice_principal", "resource_officer", "district_staff"]);
 
@@ -126,7 +217,10 @@ async function anthropicFetch(system, userContent, maxTokens = 16000, { enableWe
 }
 
 function parseJSON(text) {
-  const clean = String(text || "").replace(/```json|```/g, "").trim();
+  const clean = String(text || "")
+    .replace(/```json|```/g, "")
+    .replace(/\/\*\s*FIELD COMPLETION REPORT[\s\S]*?\*\//gi, "")
+    .trim();
   return JSON.parse(clean);
 }
 
@@ -196,7 +290,19 @@ function normalizeProfile(parsedProfile, targetTable) {
     date_of_birth: cleanString(profile.date_of_birth),
     residency: cleanString(profile.residency),
     criminal_record: cleanString(profile.criminal_record),
-    ethics_complaints: cleanString(profile.ethics_complaints),
+    ethics_complaints: typeof profile.ethics_complaints === "string"
+      ? cleanString(profile.ethics_complaints)
+      : {
+        count: Number.isFinite(Number(profile.ethics_complaints?.count)) ? Number(profile.ethics_complaints.count) : asArray(profile.ethics_complaints?.items).length,
+        items: asArray(profile.ethics_complaints?.items).map((item) => ({
+          type: cleanString(item?.type),
+          filed_by: cleanString(item?.filed_by),
+          date: cleanString(item?.date),
+          status: cleanString(item?.status),
+          description: cleanString(item?.description),
+        })).filter((item) => item.type || item.filed_by || item.date || item.status || item.description),
+        summary: cleanString(profile.ethics_complaints?.summary),
+      },
     education: cleanString(profile.education),
     military_service: cleanString(profile.military_service),
     school_name: cleanString(profile.school_name),
@@ -245,28 +351,25 @@ function normalizeProfile(parsedProfile, targetTable) {
       })).filter((item) => item.name || item.relationship || item.amount),
     },
     donors: {
-      summary: cleanString(profile.donors?.summary),
-      total_raised: cleanString(profile.donors?.total_raised),
-      top_donors: asArray(profile.donors?.top_donors).map((item) => ({
+      grand_total: cleanString(profile.donors?.grand_total),
+      totals_by_cycle: asArray(profile.donors?.totals_by_cycle).map((item) => ({
+        cycle: cleanString(item?.cycle),
+        total: cleanString(item?.total),
+      })).filter((item) => item.cycle || item.total),
+      top_individuals: asArray(profile.donors?.top_individuals).map((item) => ({
         name: cleanString(item?.name),
         amount: cleanString(item?.amount),
-        note: cleanString(item?.note),
-      })).filter((item) => item.name || item.amount || item.note),
-      pacs: asArray(profile.donors?.pacs).map((item) => ({
-        name: cleanString(item?.name),
-        funder: cleanString(item?.funder),
-        agenda: cleanString(item?.agenda),
-      })).filter((item) => item.name || item.funder || item.agenda),
-      donations_made: asArray(profile.donors?.donations_made).map((item) => ({
+        relationship: cleanString(item?.relationship),
+      })).filter((item) => item.name || item.amount || item.relationship),
+      top_pacs: asArray(profile.donors?.top_pacs).map((item) => ({
         name: cleanString(item?.name),
         amount: cleanString(item?.amount),
-        date: cleanString(item?.date),
-      })).filter((item) => item.name || item.amount || item.date),
+        relationship: cleanString(item?.relationship),
+      })).filter((item) => item.name || item.amount || item.relationship),
+      individual_total: cleanString(profile.donors?.individual_total),
+      pac_total: cleanString(profile.donors?.pac_total),
       dark_money: cleanString(profile.donors?.dark_money),
-      links: asArray(profile.donors?.links).map((item) => ({
-        label: cleanString(item?.label),
-        href: cleanString(item?.href),
-      })).filter((item) => item.label && item.href),
+      summary: cleanString(profile.donors?.summary),
     },
     family: {
       spouse_name: cleanString(profile.family?.spouse_name),
