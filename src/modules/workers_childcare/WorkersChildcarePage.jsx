@@ -32,7 +32,6 @@ function PayClockTab() {
 }
 
 
-  const [elapsedMs, setElapsedMs] = useState(0);
 export default function WorkersChildcarePage() {
   const { liveIssues, loading } = useSupabaseModule("workers_childcare");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
