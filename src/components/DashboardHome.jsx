@@ -531,6 +531,34 @@ function ModuleCarousel({ group, onOpenModule }) {
       </div>
 
       <div style={{ position: "relative" }}>
+        {isCarouselMobile ? (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 36,
+                background: "linear-gradient(to left, transparent, " + COLORS.bg + ")",
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: 36,
+                background: "linear-gradient(to right, transparent, " + COLORS.bg + ")",
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            />
+          </>
+        ) : null}
         <div
           ref={trackRef}
           className="hci-module-carousel-track"

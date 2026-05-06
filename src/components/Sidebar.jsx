@@ -528,12 +528,8 @@ export default function Sidebar({
       <div
         style={{
           width: 312,
-          minWidth: 312,
-          flexShrink: 0,
           alignSelf: "stretch",
-          height: "auto",
-          maxHeight: "100vh",
-          overflow: "hidden",
+          flexShrink: 0,
         }}
       >
         {sidebarContent}
