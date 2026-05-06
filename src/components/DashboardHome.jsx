@@ -395,16 +395,18 @@ function ModuleCarousel({ group, onOpenModule }) {
   const [activeDot, setActiveDot] = useState(0);
   const items = group.items;
   const dotCount = Math.ceil(items.length / 2);
-  const cardWidth = isCarouselMobile ? 148 : 208;
-  const cardFlex = isCarouselMobile ? "0 0 140px" : "0 0 200px";
+  const cardWidth = 148;
+  const cardFlex = isCarouselMobile ? "0 0 140px" : "0 0 190px";
   const cardMinHeight = isCarouselMobile ? 84 : 100;
   const emojiFontSize = isCarouselMobile ? 22 : 28;
   const labelFontSize = isCarouselMobile ? 11 : 13;
   const oneSetWidth = items.length * cardWidth;
-  const trackItems = [...items, ...items, ...items].map((item, index) => ({
-    item,
-    key: `${Math.floor(index / items.length)}-${index % items.length}-${item.id}`,
-  }));
+  const trackItems = isCarouselMobile
+    ? [...items, ...items, ...items].map((item, index) => ({
+      item,
+      key: `${Math.floor(index / items.length)}-${index % items.length}-${item.id}`,
+    }))
+    : items.map((item) => ({ item, key: item.id }));
 
   useEffect(() => {
     const updateCarouselMode = () => setIsCarouselMobile(window.innerWidth < 960);
@@ -415,16 +417,19 @@ function ModuleCarousel({ group, onOpenModule }) {
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return undefined;
+    if (!track || !isCarouselMobile) return undefined;
     requestAnimationFrame(() => {
       track.scrollLeft = oneSetWidth;
     });
     return undefined;
-  }, [oneSetWidth]);
+  }, [isCarouselMobile, oneSetWidth]);
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return undefined;
+    if (!track || !isCarouselMobile) {
+      setCenteredKeys([]);
+      return undefined;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -448,11 +453,11 @@ function ModuleCarousel({ group, onOpenModule }) {
     const cards = track.querySelectorAll("[data-carousel-key]");
     cards.forEach((card) => observer.observe(card));
     return () => observer.disconnect();
-  }, [trackItems.length]);
+  }, [isCarouselMobile, trackItems.length]);
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return undefined;
+    if (!track || !isCarouselMobile) return undefined;
 
     const onScroll = () => {
       let currentScrollLeft = track.scrollLeft;
@@ -471,7 +476,7 @@ function ModuleCarousel({ group, onOpenModule }) {
 
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => track.removeEventListener("scroll", onScroll);
-  }, [dotCount, oneSetWidth]);
+  }, [dotCount, isCarouselMobile, oneSetWidth]);
 
   const scrollBy = (amount) => {
     trackRef.current?.scrollBy({ left: amount, behavior: "smooth" });
@@ -564,7 +569,7 @@ function ModuleCarousel({ group, onOpenModule }) {
             overflowX: "auto",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            scrollSnapType: "x mandatory",
+            scrollSnapType: isCarouselMobile ? "x mandatory" : "none",
             WebkitOverflowScrolling: "touch",
             padding: "8px 4px",
           }}
@@ -599,7 +604,7 @@ function ModuleCarousel({ group, onOpenModule }) {
                   boxShadow: highlighted ? "0 6px 20px rgba(25,49,80,0.16)" : "none",
                   zIndex: highlighted ? 5 : 1,
                   position: "relative",
-                  scrollSnapAlign: "center",
+                  scrollSnapAlign: isCarouselMobile ? "center" : "none",
                 }}
               >
                 <span style={{ fontSize: emojiFontSize, lineHeight: 1 }}>{item.emoji}</span>
@@ -620,20 +625,22 @@ function ModuleCarousel({ group, onOpenModule }) {
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 5 }}>
-        {Array.from({ length: dotCount }).map((_, index) => (
-          <div
-            key={index}
-            style={{
-              background: index === activeDot ? COLORS.gold : "rgba(25,49,80,0.18)",
-              width: index === activeDot ? 14 : 6,
-              height: 6,
-              borderRadius: index === activeDot ? 3 : "50%",
-              transition: "all 0.18s ease",
-            }}
-          />
-        ))}
-      </div>
+      {isCarouselMobile ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 5 }}>
+          {Array.from({ length: dotCount }).map((_, index) => (
+            <div
+              key={index}
+              style={{
+                background: index === activeDot ? COLORS.gold : "rgba(25,49,80,0.18)",
+                width: index === activeDot ? 14 : 6,
+                height: 6,
+                borderRadius: index === activeDot ? 3 : "50%",
+                transition: "all 0.18s ease",
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
