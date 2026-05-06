@@ -3114,9 +3114,6 @@ export default function AdminPanel() {
   const handleParseProfile = async (mode) => {
     if (!profileRawPaste.trim()) return;
     const nextSeatId = normalizeSeatId(selectedSeatId);
-    setSelectedSeatId("");
-    setSeatSearch("");
-    setSeatMatches([]);
     setProfileParsing(true);
     setProfileParseError("");
     setProfilePublishSuccess("");
@@ -3129,9 +3126,14 @@ export default function AdminPanel() {
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Profile parse failed");
       setParsedProfile(payload.profile || null);
-      await autoMatchSeat(payload.profile);
       if (mode === "publish") {
-        setProfilePublishSuccess("Published successfully");
+        setSelectedSeatId("");
+        setSeatSearch("");
+        setSeatMatches([]);
+        setProfilePublishSuccess(nextSeatId ? "Published — seat linked ✓" : "Published (no seat selected)");
+      } else {
+        setSeatMatches([]);
+        await autoMatchSeat(payload.profile);
       }
     } catch (error) {
       setProfileParseError(String(error?.message || "Profile parse failed"));
@@ -3143,7 +3145,8 @@ export default function AdminPanel() {
   const autoMatchSeat = async (profile) => {
     try {
       if (!supabase || !profile) return;
-      const officeTerm = String(profile.office || profile.title || profile.role || profile.position || "").trim();
+      const rawOffice = String(profile.office || profile.title || profile.role || profile.position || "").trim();
+      const officeTerm = rawOffice.split(",")[0].trim();
       const locationTerm = String(profile.jurisdiction || profile.county || profile.location || profile.geography || "").trim();
 
       if (!officeTerm) {
