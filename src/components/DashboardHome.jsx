@@ -511,12 +511,14 @@ function ModuleCarousel({ group, onOpenModule }) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
         <div
           style={{
-            color: COLORS.gold,
+            color: "rgba(25,49,80,0.65)",
             fontSize: 10,
             fontWeight: 900,
             letterSpacing: 1.4,
             textTransform: "uppercase",
             lineHeight: 1.2,
+            marginTop: isCarouselMobile ? 20 : 0,
+            marginBottom: isCarouselMobile ? 14 : 0,
           }}
         >
           {group.group}
@@ -904,12 +906,11 @@ export default function DashboardHome({ onOpenModule }) {
 
         <div
           style={{
+            width: "100vw",
             position: "relative",
             left: "50%",
-            right: "50%",
-            marginLeft: "-50vw",
-            marginRight: "-50vw",
-            width: "100vw",
+            transform: "translateX(-50%)",
+            marginTop: 24,
             overflow: "hidden",
           }}
         >
