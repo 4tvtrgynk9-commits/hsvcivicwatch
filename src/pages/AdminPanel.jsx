@@ -2408,7 +2408,7 @@ export default function AdminPanel() {
   };
 
   const loadSeats = async () => {
-    if (!supabase || seats.length) return;
+    if (!supabase) return;
     setSeatsLoading(true);
     try {
       const { data } = await supabase.from("seats").select("id, title, body, level, county").order("level", { ascending: true }).order("title", { ascending: true });
@@ -2779,7 +2779,7 @@ export default function AdminPanel() {
   }, [authed]);
 
   useEffect(() => {
-    if (adminTab === "profiles") loadSeats();
+    if (adminTab === "profiles") { setSeats([]); loadSeats(); }
     if (adminTab === "profiles" && profileAdminTab === "published") {
       loadPublishedProfiles();
     }
@@ -3638,6 +3638,18 @@ export default function AdminPanel() {
         .admin-scroll-tabs::-webkit-scrollbar {
           display: none;
         }
+        .profile-processi {
+          pointer-events: none;
+          opacity: 0.6;
+        }
+        @keyframes hsvProcessing {
+          0% { opacity: 1; }
+          50% { opacity: 0.4; }
+          100% { opacity: 1; }
+        }
+        .profile-parsing-pulse {
+          animation: hsvProcessing 1.2s ease infinite;
+        }
       `}</style>
       {QueueNoticeModal}
       {savedToast ? (
@@ -3687,10 +3699,10 @@ export default function AdminPanel() {
       <div style={{ borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:isMobile ? "0 12px" : "0 36px" }}>
         <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
           <div style={{ display:"flex", alignItems:"center", gap:0, flexWrap:"nowrap" }}>
-            <button onClick={() => setAdminTab("issue_cards")} style={{ ...adminTabStyle("issue_cards"), padding:isMobile ? "10px 14px" : adminTabStyle("issue_cards").padding, fontSize:isMobile ? 12 : adminTabStyle("issue_cards").fontSize, flexShrink:isMobile ? 0 : undefined }}>Content</button>
-            <button onClick={() => setAdminTab("profiles")} style={{ ...adminTabStyle("profiles"), padding:isMobile ? "10px 14px" : adminTabStyle("profiles").padding, fontSize:isMobile ? 12 : adminTabStyle("profiles").fontSize, flexShrink:isMobile ? 0 : undefined }}>Profiles</button>
+            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("issue_cards"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("issue_cards"), padding:isMobile ? "10px 14px" : adminTabStyle("issue_cards").padding, fontSize:isMobile ? 12 : adminTabStyle("issue_cards").fontSize, flexShrink:isMobile ? 0 : undefined }}>Content</button>
+            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("profiles"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("profiles"), padding:isMobile ? "10px 14px" : adminTabStyle("profiles").padding, fontSize:isMobile ? 12 : adminTabStyle("profiles").fontSize, flexShrink:isMobile ? 0 : undefined }}>Profiles</button>
             <button onClick={() => setAdminTab("blueprints")} style={{ ...adminTabStyle("blueprints"), padding:isMobile ? "10px 14px" : adminTabStyle("blueprints").padding, fontSize:isMobile ? 12 : adminTabStyle("blueprints").fontSize, flexShrink:isMobile ? 0 : undefined }}>Blueprints</button>
-            <button onClick={() => setAdminTab("tools")} style={{ ...adminTabStyle("tools"), padding:isMobile ? "10px 14px" : adminTabStyle("tools").padding, fontSize:isMobile ? 12 : adminTabStyle("tools").fontSize, flexShrink:isMobile ? 0 : undefined }}>Tools</button>
+            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("tools"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("tools"), padding:isMobile ? "10px 14px" : adminTabStyle("tools").padding, fontSize:isMobile ? 12 : adminTabStyle("tools").fontSize, flexShrink:isMobile ? 0 : undefined }}>Tools</button>
           </div>
           {!isMobile && adminTab === "tools" ? (
             <div style={{ display:"flex", gap:10, marginLeft:"auto", alignItems:"center" }}>
