@@ -4122,17 +4122,55 @@ export default function AdminPanel() {
                 {parsedProfile ? (() => {
                   const previewName = parsedProfile.name || "Unnamed profile";
                   const previewInitials = previewName.split(" ").filter(Boolean).map(word => word[0]).join("").slice(0, 2).toUpperCase();
-                  const partyLower = String(parsedProfile.party || "").toLowerCase();
-                  const partyStyle = partyLower.includes("republican")
-                    ? { background:"#8B2020", color:"#fff" }
-                    : partyLower.includes("democrat")
-                      ? { background:"#2B4F8A", color:"#fff" }
-                      : { background:"rgba(247,243,234,0.14)", color:"#f7f3ea" };
+                  const partyLower = (parsedProfile.party || "").toLowerCase();
+                  const kindLower = (parsedProfile.kind || "").toLowerCase();
+                  const isRepublican = partyLower.includes("rep");
+                  const isDemocrat = partyLower.includes("dem");
+                  const isIndependent = partyLower.includes("ind");
+                  const isCurrent = kindLower === "elected" || kindLower === "appointed" || kindLower === "current";
+                  const isCandidate = kindLower === "candidate";
+                  const isFormer = kindLower === "former";
+                  const isDeceased = kindLower === "deceased";
+
+                  const heroBg = (isFormer || isDeceased)
+                    ? (isDeceased ? "#b8bec4" : "#cdd2d6")
+                    : isRepublican
+                      ? "#9e3535"
+                      : isDemocrat
+                        ? "#3a6ab0"
+                        : isIndependent
+                          ? "#5c3d8a"
+                          : "#193150";
+
+                  const photoBorder = isDeceased
+                    ? "#000000"
+                    : isCandidate
+                      ? "#C6A34D"
+                      : "#193150";
+
+                  const heroTextColor = (isFormer || isDeceased) ? "#193150" : "#ffffff";
+                  const heroOfficeColor = (isFormer || isDeceased) ? "rgba(25,49,80,0.65)" : isRepublican ? "rgba(255,225,225,0.85)" : isDemocrat ? "rgba(210,230,255,0.85)" : isIndependent ? "rgba(220,205,255,0.85)" : "rgba(247,243,234,0.72)";
+
+                  const partyPillStyle = isRepublican
+                    ? { background: "#e8453a", color: "#fff", border: "1px solid #ff6b60" }
+                    : isDemocrat
+                      ? { background: "#4a90d9", color: "#fff", border: "1px solid #74b0f0" }
+                      : isIndependent
+                        ? { background: "#8a5fd4", color: "#fff", border: "1px solid #b08af0" }
+                        : { background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.4)" };
+
+                  const currentPillStyle = { background: "transparent", color: "#fff", border: "1px solid #C6A34D" };
+                  const candidatePillStyle = { background: "#c9940a", color: "#fff", border: "1px solid #e8b030" };
+                  const formerPillStyle = { background: "transparent", color: "#193150", border: "1px solid #193150" };
+                  const deceasedPillStyle = { background: "#000", color: "#fff", border: "1px solid #333" };
+                  const pillBaseStyle = { fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" };
+                  const geographyValue = String(parsedProfile.geography || "").trim();
+                  const showGeography = geographyValue && !["local", "state", "federal", "judge"].includes(geographyValue.toLowerCase());
                   const dataItems = [
                     ["Salary", parsedProfile.salary],
                     ["Est. Net Worth", parsedProfile.net_worth],
                     ["Term Start", parsedProfile.term_start],
-                    ["Geography", parsedProfile.geography],
+                    ["Geography", showGeography ? geographyValue : ""],
                   ].filter(([, value]) => value);
                   const decoderSections = [
                     ["THE RISE", parsedProfile.decoder?.rise, "#E8C35A"],
@@ -4144,22 +4182,43 @@ export default function AdminPanel() {
                   return (
                     <div style={{ marginTop:20 }}>
                       <div style={{ color:"#8fa3b8", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1.5, marginBottom:8 }}>Public Profile Preview</div>
-                      <div style={{ background:"#f1e8db", border:"1px solid #d2c3ab", borderRadius:14, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,0.18)" }}>
-                        <div style={{ background:"#193150", padding:"22px 24px", display:"flex", gap:16, alignItems:"center" }}>
+                      <div style={{ background:"#f1e8db", border:"3px solid #193150", borderRadius:14, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,0.18)" }}>
+                        <div style={{ background:heroBg, padding:"22px 24px", display:"flex", gap:16, alignItems:"center" }}>
                           {parsedProfile.headshot_url ? (
-                            <img src={parsedProfile.headshot_url} alt={previewName} style={{ width:72, height:72, borderRadius:"50%", objectFit:"cover", border:"3px solid #C6A34D", flexShrink:0 }} />
+                            <img src={parsedProfile.headshot_url} alt={previewName} style={{ width:72, height:72, borderRadius:"50%", objectFit:"cover", border:`3px solid ${photoBorder}`, flexShrink:0 }} />
                           ) : (
-                            <div style={{ width:72, height:72, borderRadius:"50%", background:"#0d1e30", border:"3px solid #C6A34D", color:"#C6A34D", fontSize:24, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            <div style={{ width:72, height:72, borderRadius:"50%", background:"#0d1e30", border:`3px solid ${photoBorder}`, color:"#C6A34D", fontSize:24, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                               {previewInitials || "?"}
                             </div>
                           )}
                           <div style={{ minWidth:0 }}>
-                            <div style={{ color:"#C6A34D", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:1.8, marginBottom:5 }}>{parsedProfile.level || parsedProfile.module || "Profile"}</div>
-                            <div style={{ color:"#fff", fontSize:24, fontWeight:900, lineHeight:1.15, marginBottom:5 }}>{previewName}</div>
-                            <div style={{ color:"rgba(247,243,234,0.75)", fontSize:14, marginBottom:10 }}>{parsedProfile.office || parsedProfile.role_label || "Office not listed"}</div>
+                            <div style={{ color:heroTextColor, fontSize:24, fontWeight:900, lineHeight:1.15, marginBottom:5 }}>{previewName}</div>
+                            <div style={{ color:heroOfficeColor, fontSize:14, marginBottom:10 }}>{parsedProfile.office || parsedProfile.role_label || "Office not listed"}</div>
                             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-                              {parsedProfile.party ? <span style={{ ...partyStyle, fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" }}>{parsedProfile.party}</span> : null}
-                              {parsedProfile.kind ? <span style={{ background:"#C6A34D", color:"#193150", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" }}>{parsedProfile.kind}</span> : null}
+                              {isDeceased ? (
+                                <>
+                                  <span style={{ ...pillBaseStyle, ...deceasedPillStyle }}>Deceased</span>
+                                  {parsedProfile.party ? <span style={{ ...pillBaseStyle, ...partyPillStyle }}>{parsedProfile.party}</span> : null}
+                                  <span style={{ ...pillBaseStyle, ...formerPillStyle }}>Former</span>
+                                </>
+                              ) : isFormer && !isDeceased ? (
+                                <>
+                                  {parsedProfile.party ? <span style={{ ...pillBaseStyle, ...partyPillStyle }}>{parsedProfile.party}</span> : null}
+                                  <span style={{ ...pillBaseStyle, ...formerPillStyle }}>Former</span>
+                                </>
+                              ) : isCandidate ? (
+                                <>
+                                  {parsedProfile.party ? <span style={{ ...pillBaseStyle, ...partyPillStyle }}>{parsedProfile.party}</span> : null}
+                                  <span style={{ ...pillBaseStyle, ...candidatePillStyle }}>Candidate</span>
+                                </>
+                              ) : isCurrent ? (
+                                <>
+                                  {parsedProfile.party ? <span style={{ ...pillBaseStyle, ...partyPillStyle }}>{parsedProfile.party}</span> : null}
+                                  <span style={{ ...pillBaseStyle, ...currentPillStyle }}>Current</span>
+                                </>
+                              ) : (
+                                parsedProfile.party ? <span style={{ ...pillBaseStyle, ...partyPillStyle }}>{parsedProfile.party}</span> : null
+                              )}
                             </div>
                           </div>
                         </div>
