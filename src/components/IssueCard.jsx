@@ -225,7 +225,6 @@ async function shareStoryCard(cardEl, issue) {
     await navigator.share({
       files: [file],
       text: buildShareText(issue, "sms"),
-      url: "https://hsvcivicwatch.org/c/" + (issue.ref_number || issue.id || ""),
     });
     return { shared: true };
   } else {
