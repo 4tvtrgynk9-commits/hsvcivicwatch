@@ -2433,11 +2433,10 @@ export default function AdminPanel() {
     finally { setSeatsLoading(false); }
   };
 
-  const formatSeatDisplay = (seat, includeCounty = true) => {
+  const formatSeatDisplay = (seat) => {
     if (!seat) return "";
     const body = seat.body ? ` — ${seat.body}` : "";
-    const county = includeCounty && seat.county ? ` (${seat.county})` : "";
-    return `${seat.title || "Untitled seat"}${body}${county}`;
+    return `${seat.title || "Untitled seat"}${body}`;
   };
 
   const formatSeatSearchValue = (seat) => `${seat?.title || ""} — ${seat?.body || ""}`.trim();
@@ -4023,7 +4022,18 @@ export default function AdminPanel() {
 
           <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "16px 12px" : "36px 36px" }}>
             {profileAdminTab === "paste" ? (
-              <div>
+              <div style={{ position:"relative" }}>
+                {profileParsing ? (
+                  <div style={{ position:"fixed", inset:0, background:"rgba(14,20,32,0.82)", backdropFilter:"blur(4px)", zIndex:9000, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+                    <style>{`@keyframes hsvSpin { to { transform: rotate(360deg); } }`}</style>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14, textAlign:"center" }}>
+                      <div style={{ width:64, height:64, borderRadius:"50%", border:"5px solid rgba(198,163,77,0.22)", borderTopColor:"#C6A34D", animation:"hsvSpin 0.8s linear infinite" }} />
+                      <div style={{ color:"#f0c93a", fontSize:22, fontWeight:900 }}>Processing Profile</div>
+                      <div style={{ color:"#8fa3b8", fontSize:14 }}>Parsing and structuring — this takes 15–30 seconds</div>
+                    </div>
+                  </div>
+                ) : null}
+                <div style={{ opacity:profileParsing ? 0.45 : 1, pointerEvents:profileParsing ? "none" : "auto" }}>
                 <textarea
                   value={profileRawPaste}
                   onChange={(e) => setProfileRawPaste(e.target.value)}
@@ -4038,7 +4048,12 @@ export default function AdminPanel() {
                     disabled={profileParsing || !profileRawPaste.trim()}
                     style={{ ...primaryParseButtonStyle, cursor:profileParsing || !profileRawPaste.trim() ? "not-allowed" : "pointer" }}
                   >
-                    Parse Profile
+                    {profileParsing ? (
+                      <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                        <span style={{ width:16, height:16, borderRadius:"50%", border:"2px solid rgba(255,255,255,0.35)", borderTopColor:"#C6A34D", animation:"hsvSpin 0.8s linear infinite", display:"inline-block" }} />
+                        Processing...
+                      </span>
+                    ) : "Process & Organize"}
                   </button>
                   {!profileRawPaste.trim() ? <span style={pasteStatusStyle}>No profile pasted</span> : null}
                   {parsedProfile ? (
@@ -4057,18 +4072,19 @@ export default function AdminPanel() {
                     <div style={{ color:"#f0c93a", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>LINK TO SEAT (Required for Predecessors tab)</div>
                     <div style={{ color:"#c8d1dc", fontSize:15, lineHeight:1.6, marginBottom:12 }}>Select the permanent government seat this official holds. Enables the public Predecessors tab.</div>
                     {seatMatches.length > 0 && !selectedSeatId ? (
-                      <div style={{ marginBottom: 10 }}>
-                        <div style={{ color: "#f0c93a", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
-                          Suggested seats — click to select:
+                      <div style={{ background:"#1a2535", border:"2px solid #C6A34D", borderRadius:10, padding:"16px 18px", marginBottom:16 }}>
+                        <div style={{ color:"#f0c93a", fontSize:14, fontWeight:900, textTransform:"uppercase", letterSpacing:1.5, marginBottom:12 }}>
+                          ⚡ Auto-matched seats — select one:
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           {seatMatches.map(seat => (
                             <button
                               key={seat.id}
                               onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatSearchValue(seat)); setSeatMatches([]); }}
-                              style={{ background: "#353b48", border: "1px solid #C6A34D", borderRadius: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#f0c93a", cursor: "pointer" }}
+                              style={{ background:"#C6A34D", border:"none", borderRadius:8, padding:"12px 20px", fontSize:15, fontWeight:900, color:"#193150", cursor:"pointer", boxShadow:"0 2px 10px rgba(198,163,77,0.35)", textAlign:"left" }}
                             >
-                              {formatSeatDisplay(seat)}
+                              <span style={{ display:"block" }}>{seat.title || "Untitled seat"}</span>
+                              {seat.body ? <span style={{ display:"block", fontSize:12, fontWeight:700, opacity:0.7, marginTop:2 }}>{seat.body}</span> : null}
                             </button>
                           ))}
                         </div>
@@ -4103,20 +4119,83 @@ export default function AdminPanel() {
                 ) : null}
                 {profilePublishSuccess ? <div style={{ color:"#3E8B5B", fontSize:14, fontWeight:900, marginTop:14 }}>{profilePublishSuccess}</div> : null}
 
-                {parsedProfile ? (
-                  <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:18, marginTop:16 }}>
-                    <div style={{ color:"#ffffff", fontSize:22, fontWeight:900, marginBottom:4 }}>{parsedProfile.name}</div>
-                    <div style={{ color:"#c8d1dc", fontSize:15, marginBottom:12 }}>{parsedProfile.office}</div>
-                    <div style={{ marginBottom:12 }}>
-                      <AdminPreviewBadge>{parsedProfile.kind}</AdminPreviewBadge>
-                      <AdminPreviewBadge>{parsedProfile.module}</AdminPreviewBadge>
+                {parsedProfile ? (() => {
+                  const previewName = parsedProfile.name || "Unnamed profile";
+                  const previewInitials = previewName.split(" ").filter(Boolean).map(word => word[0]).join("").slice(0, 2).toUpperCase();
+                  const partyLower = String(parsedProfile.party || "").toLowerCase();
+                  const partyStyle = partyLower.includes("republican")
+                    ? { background:"#8B2020", color:"#fff" }
+                    : partyLower.includes("democrat")
+                      ? { background:"#2B4F8A", color:"#fff" }
+                      : { background:"rgba(247,243,234,0.14)", color:"#f7f3ea" };
+                  const dataItems = [
+                    ["Salary", parsedProfile.salary],
+                    ["Est. Net Worth", parsedProfile.net_worth],
+                    ["Term Start", parsedProfile.term_start],
+                    ["Geography", parsedProfile.geography],
+                  ].filter(([, value]) => value);
+                  const decoderSections = [
+                    ["THE RISE", parsedProfile.decoder?.rise, "#E8C35A"],
+                    ["THE AFFILIATIONS", parsedProfile.decoder?.affiliations, "#89C4E8"],
+                    ["THE BENEFICIARIES", parsedProfile.decoder?.beneficiaries, "#B98FD8"],
+                    ["THE TRACK RECORD", parsedProfile.decoder?.track_record, "#E07068"],
+                  ].filter(([, value]) => value);
+
+                  return (
+                    <div style={{ marginTop:20 }}>
+                      <div style={{ color:"#8fa3b8", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1.5, marginBottom:8 }}>Public Profile Preview</div>
+                      <div style={{ background:"#f1e8db", border:"1px solid #d2c3ab", borderRadius:14, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,0.18)" }}>
+                        <div style={{ background:"#193150", padding:"22px 24px", display:"flex", gap:16, alignItems:"center" }}>
+                          {parsedProfile.headshot_url ? (
+                            <img src={parsedProfile.headshot_url} alt={previewName} style={{ width:72, height:72, borderRadius:"50%", objectFit:"cover", border:"3px solid #C6A34D", flexShrink:0 }} />
+                          ) : (
+                            <div style={{ width:72, height:72, borderRadius:"50%", background:"#0d1e30", border:"3px solid #C6A34D", color:"#C6A34D", fontSize:24, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                              {previewInitials || "?"}
+                            </div>
+                          )}
+                          <div style={{ minWidth:0 }}>
+                            <div style={{ color:"#C6A34D", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:1.8, marginBottom:5 }}>{parsedProfile.level || parsedProfile.module || "Profile"}</div>
+                            <div style={{ color:"#fff", fontSize:24, fontWeight:900, lineHeight:1.15, marginBottom:5 }}>{previewName}</div>
+                            <div style={{ color:"rgba(247,243,234,0.75)", fontSize:14, marginBottom:10 }}>{parsedProfile.office || parsedProfile.role_label || "Office not listed"}</div>
+                            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                              {parsedProfile.party ? <span style={{ ...partyStyle, fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" }}>{parsedProfile.party}</span> : null}
+                              {parsedProfile.kind ? <span style={{ background:"#C6A34D", color:"#193150", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" }}>{parsedProfile.kind}</span> : null}
+                            </div>
+                          </div>
+                        </div>
+                        {dataItems.length ? (
+                          <div style={{ background:"#e8ddcb", borderBottom:"1px solid #d2c3ab", padding:"10px 24px", display:"flex", flexWrap:"wrap", gap:24 }}>
+                            {dataItems.map(([label, value]) => (
+                              <div key={label}>
+                                <div style={{ color:"#746b5f", fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:1 }}>{label}</div>
+                                <div style={{ color:"#193150", fontSize:13, fontWeight:900 }}>{value}</div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                        <div style={{ padding:"20px 24px", background:"#f1e8db" }}>
+                          {parsedProfile.profile?.summary || parsedProfile.status_line ? (
+                            <p style={{ fontSize:15, color:"#193150", lineHeight:1.75, margin:"0 0 16px" }}>{parsedProfile.profile?.summary || parsedProfile.status_line}</p>
+                          ) : null}
+                          <button type="button" disabled style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"10px 18px", fontSize:15, fontWeight:900, marginBottom:16, cursor:"default" }}>
+                            Decode This 🔍
+                          </button>
+                          {decoderSections.length ? (
+                            <div style={{ background:"#193150", borderRadius:14, padding:"18px 20px" }}>
+                              {decoderSections.map(([label, value, color]) => (
+                                <div key={label} style={{ borderLeft:`3px solid ${color}`, paddingLeft:12, marginBottom:18 }}>
+                                  <div style={{ color, fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:2, marginBottom:6 }}>{label}</div>
+                                  <div style={{ color, fontSize:14, lineHeight:1.65 }}>{value}</div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
                     </div>
-                    <AdminPreviewBlock borderColor="#C6A34D">{parsedProfile.decoder?.rise}</AdminPreviewBlock>
-                    <AdminPreviewBlock borderColor="#2F5D8A">{parsedProfile.decoder?.affiliations}</AdminPreviewBlock>
-                    <AdminPreviewBlock borderColor="#7A4FA3">{parsedProfile.decoder?.beneficiaries}</AdminPreviewBlock>
-                    <AdminPreviewBlock borderColor="#B4473E">{parsedProfile.decoder?.track_record}</AdminPreviewBlock>
-                  </div>
-                ) : null}
+                  );
+                })() : null}
+                </div>
               </div>
             ) : null}
 
@@ -4245,7 +4324,6 @@ export default function AdminPanel() {
                                   <div style={{ color:"#8fa3b8", fontSize:11, fontWeight:400, textTransform:"none", letterSpacing:0, marginTop:4 }}>
                                     {seatGroups[seatTitle].profiles.length} profile{seatGroups[seatTitle].profiles.length === 1 ? "" : "s"}
                                     {seatGroups[seatTitle].seat?.body ? ` · ${seatGroups[seatTitle].seat.body}` : ""}
-                                    {seatGroups[seatTitle].seat?.county ? ` (${seatGroups[seatTitle].seat.county})` : ""}
                                   </div>
                                 </div>
                                 <div style={{ display:"grid", gap:12 }}>
