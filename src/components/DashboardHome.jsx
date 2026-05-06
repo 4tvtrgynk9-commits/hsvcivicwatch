@@ -623,13 +623,16 @@ export default function DashboardHome({ onOpenModule }) {
               {cards.length > 0 ? (
                 <div
                   style={{
+                    fontSize: 13,
+                    fontWeight: 900,
+                    padding: "4px 12px",
+                    borderRadius: 999,
                     background: COLORS.red,
                     color: "#fff",
-                    fontSize: 11,
-                    fontWeight: 900,
-                    padding: "3px 9px",
-                    borderRadius: 999,
-                    letterSpacing: 0.5,
+                    letterSpacing: 0.3,
+                    marginLeft: 10,
+                    display: "inline-flex",
+                    alignItems: "center",
                   }}
                 >
                   {cards.length} live

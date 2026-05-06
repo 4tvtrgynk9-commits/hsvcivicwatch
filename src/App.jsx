@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import DashboardHome from "./components/DashboardHome";
-import { COLORS, SPACING } from "./config/theme";
+import { COLORS } from "./config/theme";
 import EquityPage from "./modules/equity/EquityPage";
 import UtilitiesPage from "./modules/utilities/UtilitiesPage";
 import HealthPage from "./modules/health/HealthPage";
@@ -320,17 +320,16 @@ export default function App() {
 
       <main
         style={{
-          flex: 1,
-          padding: isMobile ? "72px 16px 16px" : "20px 32px 24px 28px",
-          color: COLORS.text,
-          minWidth: 0,
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          flex: 1,
+          minWidth: 0,
+          padding: isMobile ? "72px 16px 16px" : "20px 40px 24px 40px",
+          color: COLORS.text,
+          overflow: "hidden",
         }}
       >
-        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto", width: "100%" }}>
+        <div style={{ width: "100%" }}>
           <ActivePage activeId={activeId} activeSlug={activeSlug} onBack={(id) => navigate(id)} />
         </div>
       </main>
