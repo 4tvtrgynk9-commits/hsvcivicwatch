@@ -530,8 +530,9 @@ export default function Sidebar({
           width: 312,
           minWidth: 312,
           flexShrink: 0,
-          height: "100%",
-          minHeight: "100vh",
+          height: "100vh",
+          maxHeight: "100vh",
+          overflow: "hidden",
           paddingBottom: 8,
         }}
       >

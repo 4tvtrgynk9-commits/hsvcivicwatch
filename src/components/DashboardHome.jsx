@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
 import IssueCard from "./IssueCard";
@@ -68,69 +68,6 @@ function sectionTitle(label) {
   );
 }
 
-function FeedRow({ item, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: "100%",
-        background: COLORS.card,
-        border: `1px solid ${COLORS.cardBorder}`,
-        borderTop: `4px solid ${item.color || COLORS.gold}`,
-        borderRadius: 14,
-        padding: "14px 16px",
-        cursor: "pointer",
-        display: "block",
-        textAlign: "left",
-        color: COLORS.text,
-      }}
-      title={item.title}
-    >
-      <div
-        style={{
-          fontSize: 11,
-          fontWeight: 900,
-          textTransform: "uppercase",
-          letterSpacing: 1.4,
-          color: item.color || COLORS.gold,
-          marginBottom: 8,
-        }}
-      >
-        {item.tag}
-      </div>
-
-      <div
-        style={{
-          fontSize: 16,
-          fontWeight: 900,
-          lineHeight: 1.28,
-          color: COLORS.text,
-          marginBottom: item.summary ? 8 : 10,
-        }}
-      >
-        {item.title}
-      </div>
-
-      {item.summary ? (
-        <div
-          style={{
-            color: COLORS.textSoft,
-            fontSize: 13.5,
-            lineHeight: 1.42,
-            marginBottom: 10,
-          }}
-        >
-          {item.summary}
-        </div>
-      ) : null}
-
-      <div style={{ color: COLORS.textSoft, fontWeight: 800, fontSize: 12.5 }}>
-        Open investigation →
-      </div>
-    </button>
-  );
-}
-
 function KeyCard({ item, onClick }) {
   const grocery = item.target === "taxation";
 
@@ -174,46 +111,6 @@ function KeyCard({ item, onClick }) {
       ) : (
         <div style={{ color: COLORS.text, fontSize: 13.5, lineHeight: 1.35, maxWidth: 188 }}>{item.sub}</div>
       )}
-    </button>
-  );
-}
-
-function ModuleCard({ item, onClick }) {
-  const isBlueprint = item.id === "proposals";
-
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        background: isBlueprint ? COLORS.greenSoft : COLORS.card,
-        border: `2px solid ${COLORS.navy}`,
-        borderRadius: 14,
-        padding: 14,
-        textAlign: "center",
-        cursor: "pointer",
-        minHeight: 96,
-        color: COLORS.text,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 800,
-          fontSize: 14.5,
-          lineHeight: 1.26,
-          display: "flex",
-          justifyContent: "center",
-          textAlign: "center",
-          gap: 8,
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <span>{item.emoji}</span>
-        <span>{item.label}</span>
-      </div>
     </button>
   );
 }
@@ -486,9 +383,242 @@ function PayPanel({ elapsed, onOpenModule }) {
   );
 }
 
+const CAROUSEL_CLONE_COUNT = 3;
+const CAROUSEL_CARD_STEP = 138;
+
+function ModuleCarousel({ group, onOpenModule }) {
+  const trackRef = useRef(null);
+  const [centeredKey, setCenteredKey] = useState("");
+  const [hoveredKey, setHoveredKey] = useState("");
+  const [activeDot, setActiveDot] = useState(0);
+  const items = group.items;
+  const dotCount = Math.ceil(items.length / 2);
+  const leadingClones = items.slice(-CAROUSEL_CLONE_COUNT);
+  const trailingClones = items.slice(0, CAROUSEL_CLONE_COUNT);
+  const trackItems = [
+    ...leadingClones.map((item, index) => ({ item, key: `pre-${index}-${item.id}` })),
+    ...items.map((item, index) => ({ item, key: `real-${index}-${item.id}` })),
+    ...trailingClones.map((item, index) => ({ item, key: `post-${index}-${item.id}` })),
+  ];
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+    const firstRealScrollLeft = CAROUSEL_CLONE_COUNT * CAROUSEL_CARD_STEP;
+    requestAnimationFrame(() => {
+      track.scrollLeft = firstRealScrollLeft;
+    });
+    return undefined;
+  }, [items.length]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.7)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.dataset?.carouselKey) {
+          setCenteredKey(visible[0].target.dataset.carouselKey);
+        }
+      },
+      { root: track, threshold: 0.7 }
+    );
+
+    const cards = track.querySelectorAll("[data-carousel-key]");
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [trackItems.length]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+
+    const cloneWidth = CAROUSEL_CLONE_COUNT * CAROUSEL_CARD_STEP;
+    const realWidth = items.length * CAROUSEL_CARD_STEP;
+
+    const onScroll = () => {
+      const rawProgress = track.scrollLeft - cloneWidth;
+      const normalizedProgress = ((rawProgress % realWidth) + realWidth) % realWidth;
+      const nextDot = Math.min(dotCount - 1, Math.floor((normalizedProgress / realWidth) * dotCount));
+      setActiveDot(nextDot);
+
+      if (track.scrollLeft < cloneWidth - CAROUSEL_CARD_STEP / 2) {
+        track.scrollLeft += realWidth;
+      } else if (track.scrollLeft > cloneWidth + realWidth - CAROUSEL_CARD_STEP / 2) {
+        track.scrollLeft -= realWidth;
+      }
+    };
+
+    track.addEventListener("scroll", onScroll, { passive: true });
+    return () => track.removeEventListener("scroll", onScroll);
+  }, [dotCount, items.length]);
+
+  const scrollBy = (amount) => {
+    trackRef.current?.scrollBy({ left: amount, behavior: "smooth" });
+  };
+
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
+        <div
+          style={{
+            color: COLORS.gold,
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: 1.4,
+            textTransform: "uppercase",
+            lineHeight: 1.2,
+          }}
+        >
+          {group.group}
+        </div>
+        <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
+          <button
+            onClick={() => scrollBy(-140)}
+            style={{
+              background: COLORS.navy,
+              color: "white",
+              borderRadius: 8,
+              width: 30,
+              height: 30,
+              fontSize: 15,
+              border: "none",
+              cursor: "pointer",
+            }}
+            aria-label={`Scroll ${group.group} left`}
+          >
+            ←
+          </button>
+          <button
+            onClick={() => scrollBy(140)}
+            style={{
+              background: COLORS.navy,
+              color: "white",
+              borderRadius: 8,
+              width: 30,
+              height: 30,
+              fontSize: 15,
+              border: "none",
+              cursor: "pointer",
+            }}
+            aria-label={`Scroll ${group.group} right`}
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 44,
+            background: `linear-gradient(to left, transparent, ${COLORS.bg})`,
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 44,
+            background: `linear-gradient(to right, transparent, ${COLORS.bg})`,
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        />
+        <div
+          ref={trackRef}
+          className="hci-module-carousel-track"
+          style={{
+            display: "flex",
+            gap: 8,
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            scrollSnapType: "x mandatory",
+            WebkitOverflowScrolling: "touch",
+            padding: "8px 4px",
+          }}
+        >
+          {trackItems.map(({ item, key }) => {
+            const highlighted = centeredKey === key || hoveredKey === key;
+            return (
+              <button
+                key={key}
+                data-carousel-key={key}
+                onClick={() => onOpenModule(item.id)}
+                onMouseEnter={() => setHoveredKey(key)}
+                onMouseLeave={() => setHoveredKey("")}
+                style={{
+                  flex: "0 0 130px",
+                  minHeight: 76,
+                  background: "white",
+                  border: `2px solid ${highlighted ? COLORS.gold : COLORS.navy}`,
+                  borderRadius: 10,
+                  padding: "10px 8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  cursor: "pointer",
+                  transition: "transform 0.2s, box-shadow 0.2s, border-color 0.2s",
+                  transform: highlighted ? "scale(1.10)" : "scale(1.0)",
+                  boxShadow: highlighted ? "0 6px 20px rgba(25,49,80,0.16)" : "none",
+                  zIndex: highlighted ? 5 : 1,
+                  position: "relative",
+                  scrollSnapAlign: "center",
+                }}
+              >
+                <span style={{ fontSize: 20, lineHeight: 1 }}>{item.emoji}</span>
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    color: COLORS.navy,
+                    textAlign: "center",
+                    lineHeight: 1.25,
+                  }}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 5 }}>
+        {Array.from({ length: dotCount }).map((_, index) => (
+          <div
+            key={index}
+            style={{
+              background: index === activeDot ? COLORS.gold : "rgba(25,49,80,0.18)",
+              width: index === activeDot ? 14 : 6,
+              height: 6,
+              borderRadius: index === activeDot ? 3 : "50%",
+              transition: "all 0.18s ease",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardHome({ onOpenModule }) {
   const elapsed = useElapsedSeconds();
-  const allGroups = useMemo(() => [...NAV, { group: BOTTOM_NAV.group, items: [BOTTOM_NAV] }], []);
+  const isMobile = useIsMobileWidth();
   const { cards, statBlocks, loading, error } = useHomepageData();
   const [investigationStart, setInvestigationStart] = useState(0);
   const [keyNumberStart, setKeyNumberStart] = useState(0);
@@ -543,6 +673,10 @@ export default function DashboardHome({ onOpenModule }) {
           100% { transform: translateX(-50%); }
         }
 
+        .hci-module-carousel-track::-webkit-scrollbar {
+          display: none;
+        }
+
         @media (max-width: 1180px) {
           .hci-home-wrap {
             max-width: 100% !important;
@@ -554,10 +688,6 @@ export default function DashboardHome({ onOpenModule }) {
 
           .hci-home-subtitle {
             font-size: 18px !important;
-          }
-
-          .hci-home-module-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
         }
 
@@ -574,10 +704,6 @@ export default function DashboardHome({ onOpenModule }) {
 
           .hci-pay-panel {
             padding: 10px !important;
-          }
-
-          .hci-home-module-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
 
           .hci-acronym-box {
@@ -696,55 +822,40 @@ export default function DashboardHome({ onOpenModule }) {
 
         <section style={{ marginBottom: 16, marginTop: 40 }}>
           {sectionTitle("Investigations")}
-          {allGroups.map((group, index) => (
-            <div
-              key={group.group}
-              style={{
-                marginBottom: index === allGroups.length - 1 ? 8 : 15,
-                marginTop: group.group === BOTTOM_NAV.group ? 16 : 0,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 900,
-                  color: COLORS.blue,
-                  marginBottom: group.group === "Daily Life: Costs & Burdens" ? 20 : 8,
-                  textTransform: "uppercase",
-                  letterSpacing: 1.2,
-                  lineHeight: 1.15,
-                }}
-              >
-                {group.group}
-              </div>
-
-              <div
-                className="hci-home-module-grid"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                  gap: 10,
-                }}
-              >
-                {group.items.map((item) => (
-                  <ModuleCard
-                    key={item.id}
-                    item={item}
-                    onClick={() => onOpenModule(item.id)}
-                  />
-                ))}
-              </div>
-            </div>
+          {NAV.map((group) => (
+            <ModuleCarousel key={group.group} group={group} onOpenModule={onOpenModule} />
           ))}
+          <button
+            onClick={() => onOpenModule(BOTTOM_NAV.id)}
+            style={{
+              background: COLORS.gold,
+              color: COLORS.navyDark,
+              borderRadius: 10,
+              padding: "13px 16px",
+              fontSize: 15,
+              fontWeight: 900,
+              border: "none",
+              cursor: "pointer",
+              width: "100%",
+              marginTop: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            📬 Take Action
+          </button>
         </section>
 
         <section
           style={{
             marginTop: 12,
             marginBottom: 4,
-            marginLeft: "calc(50% - 50vw)",
-            marginRight: "calc(50% - 50vw)",
             position: "relative",
+            marginLeft: isMobile ? "-16px" : "calc(-1 * 40px)",
+            marginRight: isMobile ? "-16px" : "calc(-1 * 40px)",
+            width: isMobile ? "calc(100% + 32px)" : "calc(100% + 80px)",
             overflow: "hidden",
           }}
         >
