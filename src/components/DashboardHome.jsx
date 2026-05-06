@@ -590,7 +590,7 @@ export default function DashboardHome({ onOpenModule }) {
                 maxWidth: 960,
               }}
             >
-              Real data. Real facts. Real connections — investigations decoded so Huntsville can uncover what’s really happening.
+              Real data. Real facts. Real connections — Investigations decoded so Huntsville can uncover what's really happening.
             </div>
           </div>
         </section>

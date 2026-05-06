@@ -89,23 +89,107 @@ export default function Sidebar({
 }) {
   const [hoveredId, setHoveredId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [submittedMobileQuery, setSubmittedMobileQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredResultId, setHoveredResultId] = useState(null);
   const searchRef = useRef(null);
-  const { results, loading } = useCardSearch(searchQuery);
+  const effectiveSearchQuery = isMobile ? submittedMobileQuery : searchQuery;
+  const { results, loading } = useCardSearch(effectiveSearchQuery);
   const grouped = useMemo(() => NAV, []);
   const compact = !isMobile;
-  const showSearchDropdown = searchQuery.trim().length >= 3;
+  const showSearchDropdown = effectiveSearchQuery.trim().length >= 3;
 
   useEffect(() => {
     const onMouseDown = (event) => {
       if (!searchRef.current || searchRef.current.contains(event.target)) return;
       setSearchQuery("");
+      setSubmittedMobileQuery("");
+      setMobileSearchOpen(false);
       setHoveredResultId(null);
     };
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
   }, []);
+
+  const submitSearch = () => {
+    if (isMobile) setSubmittedMobileQuery(searchQuery.trim());
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSubmittedMobileQuery("");
+    setHoveredResultId(null);
+  };
+
+  const searchInputStyle = {
+    fontSize: 13,
+    background: "rgba(255,255,255,0.07)",
+    border: searchFocused ? "1px solid rgba(198,163,77,0.5)" : "1px solid rgba(247,243,234,0.15)",
+    borderRadius: 10,
+    padding: "8px 12px",
+    color: COLORS.sidebarText,
+    width: "100%",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const searchResultsDropdown = showSearchDropdown ? (
+    <div
+      style={{
+        background: COLORS.navyDark,
+        border: "1px solid rgba(247,243,234,0.12)",
+        borderRadius: 10,
+        marginTop: 4,
+        overflow: "hidden",
+        zIndex: 200,
+        position: "relative",
+      }}
+    >
+      {loading ? (
+        <div style={{ padding: "10px 12px", color: COLORS.sidebarTextSoft, fontSize: 12 }}>
+          Searching...
+        </div>
+      ) : results.length > 0 ? (
+        results.map((result, index) => {
+          const resultId = result.id || result.ref_number || `${result.title}-${index}`;
+          return (
+            <button
+              key={resultId}
+              onMouseEnter={() => setHoveredResultId(resultId)}
+              onMouseLeave={() => setHoveredResultId(null)}
+              onClick={() => {
+                onNavigate(result.module);
+                clearSearch();
+                if (isMobile && onCloseMobile) onCloseMobile();
+              }}
+              style={{
+                width: "100%",
+                background: hoveredResultId === resultId ? "rgba(198,163,77,0.10)" : "transparent",
+                border: "none",
+                borderBottom: index === results.length - 1 ? "none" : "1px solid rgba(255,255,255,0.06)",
+                padding: "10px 12px",
+                cursor: "pointer",
+                textAlign: "left",
+                display: "block",
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.sidebarText, lineHeight: 1.3 }}>
+                {result.title || "Untitled investigation"}
+              </div>
+              <div style={{ fontSize: 11, color: COLORS.sidebarTextSoft, lineHeight: 1.35, marginTop: 3 }}>
+                {result.module || "Unknown module"}
+              </div>
+            </button>
+          );
+        })
+      ) : (
+        <div style={{ padding: "10px 12px", color: COLORS.sidebarTextSoft, fontSize: 12 }}>
+          No results found
+        </div>
+      )}
+    </div>
+  ) : null;
 
   const brandText = (
     <>
@@ -250,81 +334,81 @@ export default function Sidebar({
         }}
       >
         <div ref={searchRef} style={{ position: "relative", marginBottom: 4 }}>
-          <input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            placeholder="Search investigations..."
-            style={{
-              fontSize: 13,
-              background: "rgba(255,255,255,0.07)",
-              border: searchFocused ? "1px solid rgba(198,163,77,0.5)" : "1px solid rgba(247,243,234,0.15)",
-              borderRadius: 10,
-              padding: "8px 12px",
-              color: COLORS.sidebarText,
-              width: "100%",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-          />
-          {showSearchDropdown ? (
-            <div
-              style={{
-                background: COLORS.navyDark,
-                border: "1px solid rgba(247,243,234,0.12)",
-                borderRadius: 10,
-                marginTop: 4,
-                overflow: "hidden",
-                zIndex: 200,
-                position: "relative",
-              }}
-            >
-              {loading ? (
-                <div style={{ padding: "10px 12px", color: COLORS.sidebarTextSoft, fontSize: 12 }}>
-                  Searching...
-                </div>
-              ) : results.length > 0 ? (
-                results.map((result, index) => {
-                  const resultId = result.id || result.ref_number || `${result.title}-${index}`;
-                  return (
-                    <button
-                      key={resultId}
-                      onMouseEnter={() => setHoveredResultId(resultId)}
-                      onMouseLeave={() => setHoveredResultId(null)}
-                      onClick={() => {
-                        onNavigate(result.module);
-                        setSearchQuery("");
-                        setHoveredResultId(null);
-                        if (isMobile && onCloseMobile) onCloseMobile();
+          {isMobile ? (
+            <>
+              <button
+                onClick={() => setMobileSearchOpen((value) => !value)}
+                style={{
+                  display: "block",
+                  background: "rgba(255,255,255,0.07)",
+                  border: "1px solid rgba(247,243,234,0.15)",
+                  borderRadius: 10,
+                  padding: "10px 12px",
+                  color: COLORS.sidebarText,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textAlign: "left",
+                  cursor: "pointer",
+                  width: "100%",
+                }}
+              >
+                🔍 Search Investigations
+              </button>
+              {mobileSearchOpen ? (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", marginTop: 8 }}>
+                    <input
+                      value={searchQuery}
+                      onChange={(event) => {
+                        setSearchQuery(event.target.value);
+                        setSubmittedMobileQuery("");
                       }}
+                      onFocus={() => setSearchFocused(true)}
+                      onBlur={() => setSearchFocused(false)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") submitSearch();
+                      }}
+                      placeholder="Search investigations..."
+                      style={searchInputStyle}
+                    />
+                    <button
+                      onClick={submitSearch}
                       style={{
-                        width: "100%",
-                        background: hoveredResultId === resultId ? "rgba(198,163,77,0.10)" : "transparent",
+                        background: COLORS.gold,
+                        color: COLORS.navyDark,
+                        borderRadius: 8,
+                        padding: "8px 14px",
+                        fontSize: 13,
+                        fontWeight: 900,
                         border: "none",
-                        borderBottom: index === results.length - 1 ? "none" : "1px solid rgba(255,255,255,0.06)",
-                        padding: "10px 12px",
                         cursor: "pointer",
-                        textAlign: "left",
-                        display: "block",
+                        marginLeft: 8,
+                        flexShrink: 0,
                       }}
                     >
-                      <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.sidebarText, lineHeight: 1.3 }}>
-                        {result.title || "Untitled investigation"}
-                      </div>
-                      <div style={{ fontSize: 11, color: COLORS.sidebarTextSoft, lineHeight: 1.35, marginTop: 3 }}>
-                        {result.module || "Unknown module"}
-                      </div>
+                      Search
                     </button>
-                  );
-                })
-              ) : (
-                <div style={{ padding: "10px 12px", color: COLORS.sidebarTextSoft, fontSize: 12 }}>
-                  No results found
-                </div>
-              )}
-            </div>
-          ) : null}
+                  </div>
+                  {searchResultsDropdown}
+                </>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") submitSearch();
+                }}
+                placeholder="Search investigations..."
+                style={searchInputStyle}
+              />
+              {searchResultsDropdown}
+            </>
+          )}
         </div>
 
         {grouped.map((group) => (

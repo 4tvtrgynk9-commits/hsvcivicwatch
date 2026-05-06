@@ -16,6 +16,13 @@ const data = {
       stats: [],
       issues: [],
       trail: []
+    },
+    {
+      id: "pay_clock",
+      label: "Pay Clock",
+      stats: [],
+      issues: [],
+      trail: []
     }
   ]
 };

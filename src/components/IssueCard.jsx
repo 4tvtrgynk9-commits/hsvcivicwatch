@@ -570,6 +570,18 @@ export default function IssueCard({ issue }) {
             box-shadow: 0 0 0 rgba(198,163,77,0);
           }
         }
+
+        .hsv-decode-btn {
+          transform-origin: center;
+        }
+
+        .hsv-decode-btn.hsv-decode-pulse {
+          animation: hsvDecoderPulse 1.3s ease both;
+        }
+
+        .hsv-decode-btn.hsv-decode-close-pulse {
+          animation: hsvDecoderClosePulse 1.3s ease both;
+        }
       `}</style>
     <div ref={cardRef} style={{
       background: COLORS.panel,
@@ -609,6 +621,11 @@ export default function IssueCard({ issue }) {
       ) : null}
       <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button
+          className={
+            decoded
+              ? `hsv-decode-btn${decoderClosePulse ? " hsv-decode-close-pulse" : ""}`
+              : `hsv-decode-btn${decoderPulse ? " hsv-decode-pulse" : ""}`
+          }
           onClick={() => {
             const next = !decoded;
             setDecoded(next);
@@ -627,10 +644,6 @@ export default function IssueCard({ issue }) {
           style={{
             background: COLORS.gold, color: COLORS.navyDark, border: "none",
             borderRadius: 10, padding: "10px 16px", cursor: "pointer", fontSize: 15, fontWeight: 900,
-            animation: decoded
-              ? (decoderClosePulse ? "hsvDecoderClosePulse 1.3s ease both" : "none")
-              : (decoderPulse ? "hsvDecoderPulse 1.3s ease both" : "none"),
-            transformOrigin: "center",
           }}
         >
           {decoded ? "Hide Decoder \u25b2" : "Decode This \uD83D\uDD0E"}
