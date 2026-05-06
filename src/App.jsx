@@ -325,7 +325,7 @@ export default function App() {
           flexDirection: "column",
           flex: 1,
           minWidth: 0,
-          padding: isMobile ? "72px 16px 48px" : "20px 40px 48px 40px",
+          padding: isMobile ? "72px 16px 16px" : "20px 40px 24px 40px",
           color: COLORS.text,
           overflow: "hidden",
         }}
@@ -334,7 +334,7 @@ export default function App() {
           <ActivePage activeId={activeId} activeSlug={activeSlug} onBack={(id) => navigate(id)} />
         </div>
       </main>
-      {activeId === ROUTE_DASHBOARD && !isMobile && <HomepageTicker />}
+      {activeId === ROUTE_DASHBOARD && <HomepageTicker />}
     </div>
   );
 }
