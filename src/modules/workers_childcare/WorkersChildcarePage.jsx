@@ -114,13 +114,36 @@ function ratio(item) {
   return Math.round(item.executiveAnnual / annualFromHourly(item.workerHourly));
 }
 
-function PayClockTicker({ elapsedMs }) {
+function useIsMobileWidth() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 760;
+  });
+
+  useEffect(() => {
+    const updateIsMobile = () => setIsMobile(window.innerWidth <= 760);
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+    return () => window.removeEventListener("resize", updateIsMobile);
+  }, []);
+
+  return isMobile;
+}
+
+function PayClockTicker({ elapsedMs, isMobile }) {
   return (
     <section style={{ marginBottom: 24 }}>
       <div style={{ fontSize: 16, color: COLORS.blue, fontWeight: 900, letterSpacing: 1.6, textTransform: "uppercase", marginBottom: 14 }}>
         Live Pay Clock Ticker
       </div>
-      <div className="hsv-pay-clock-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
+      <div
+        className="hsv-pay-clock-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 14,
+        }}
+      >
         {PAY_CLOCK_EMPLOYERS.map((item) => {
           const workerAnnual = annualFromHourly(item.workerHourly);
           return (
@@ -155,14 +178,21 @@ function PayClockTicker({ elapsedMs }) {
   );
 }
 
-function RatioCards() {
+function RatioCards({ isMobile }) {
   const maxAnnual = Math.max(...PAY_CLOCK_EMPLOYERS.map((item) => item.executiveAnnual));
   return (
     <section>
       <div style={{ fontSize: 16, color: COLORS.blue, fontWeight: 900, letterSpacing: 1.6, textTransform: "uppercase", marginBottom: 14 }}>
         Static Ratio Cards
       </div>
-      <div className="hsv-ratio-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
+      <div
+        className="hsv-ratio-card-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 14,
+        }}
+      >
         {PAY_CLOCK_EMPLOYERS.map((item) => {
           const workerAnnual = annualFromHourly(item.workerHourly);
           const executiveWidth = Math.max(8, (item.executiveAnnual / maxAnnual) * 100);
@@ -210,6 +240,7 @@ function RatioCards() {
 
 function PayClockTab() {
   const [elapsedMs, setElapsedMs] = useState(0);
+  const isMobile = useIsMobileWidth();
 
   useEffect(() => {
     const started = Date.now();
@@ -227,8 +258,8 @@ function PayClockTab() {
           }
         }
       `}</style>
-      <PayClockTicker elapsedMs={elapsedMs} />
-      <RatioCards />
+      <PayClockTicker elapsedMs={elapsedMs} isMobile={isMobile} />
+      <RatioCards isMobile={isMobile} />
     </div>
   );
 }

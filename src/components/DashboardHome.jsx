@@ -34,6 +34,22 @@ function ratio(a, b) {
   return `${Math.round(a / b)}:1`;
 }
 
+function useIsMobileWidth() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 620;
+  });
+
+  useEffect(() => {
+    const updateIsMobile = () => setIsMobile(window.innerWidth <= 620);
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+    return () => window.removeEventListener("resize", updateIsMobile);
+  }, []);
+
+  return isMobile;
+}
+
 function sectionTitle(label) {
   return (
     <div
@@ -296,6 +312,7 @@ function PayPanel({ elapsed, onOpenModule }) {
   const hhCna = 34000;
   const hhCeo = 3100000;
   const tvaCeo = 8100000;
+  const isMobile = useIsMobileWidth();
 
   return (
     <section
@@ -309,7 +326,14 @@ function PayPanel({ elapsed, onOpenModule }) {
     >
       {sectionTitle("Live pay clocks — since you opened this page")}
 
-      <div className="hci-pay-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+      <div
+        className="hci-pay-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 12,
+        }}
+      >
         <div
           className="hci-pay-panel"
           style={{

@@ -94,6 +94,7 @@ export default function Sidebar({
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredResultId, setHoveredResultId] = useState(null);
   const searchRef = useRef(null);
+  const mobileSearchInputRef = useRef(null);
   const effectiveSearchQuery = isMobile ? submittedMobileQuery : searchQuery;
   const { results, loading } = useCardSearch(effectiveSearchQuery);
   const grouped = useMemo(() => NAV, []);
@@ -111,6 +112,10 @@ export default function Sidebar({
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
   }, []);
+
+  useEffect(() => {
+    if (mobileSearchOpen) mobileSearchInputRef.current?.focus();
+  }, [mobileSearchOpen]);
 
   const submitSearch = () => {
     if (isMobile) setSubmittedMobileQuery(searchQuery.trim());
@@ -161,6 +166,7 @@ export default function Sidebar({
               onClick={() => {
                 onNavigate(result.module);
                 clearSearch();
+                if (isMobile) setMobileSearchOpen(false);
                 if (isMobile && onCloseMobile) onCloseMobile();
               }}
               style={{
@@ -336,28 +342,38 @@ export default function Sidebar({
         <div ref={searchRef} style={{ position: "relative", marginBottom: 4 }}>
           {isMobile ? (
             <>
-              <button
-                onClick={() => setMobileSearchOpen((value) => !value)}
-                style={{
-                  display: "block",
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(247,243,234,0.15)",
-                  borderRadius: 10,
-                  padding: "10px 12px",
-                  color: COLORS.sidebarText,
-                  fontSize: 14,
-                  fontWeight: 700,
-                  textAlign: "left",
-                  cursor: "pointer",
-                  width: "100%",
-                }}
-              >
-                🔍 Search Investigations
-              </button>
-              {mobileSearchOpen ? (
+              {!mobileSearchOpen ? (
+                <button
+                  onClick={() => setMobileSearchOpen(true)}
+                  style={{
+                    background: "#C6A34D",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "7px 12px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 7,
+                    cursor: "pointer",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <span style={{ fontSize: 14, color: "#193150" }}>🔍</span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 800,
+                      color: "#193150",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Search Investigations
+                  </span>
+                </button>
+              ) : (
                 <>
-                  <div style={{ display: "flex", alignItems: "center", marginTop: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <input
+                      ref={mobileSearchInputRef}
                       value={searchQuery}
                       onChange={(event) => {
                         setSearchQuery(event.target.value);
@@ -369,29 +385,40 @@ export default function Sidebar({
                         if (event.key === "Enter") submitSearch();
                       }}
                       placeholder="Search investigations..."
-                      style={searchInputStyle}
+                      style={{
+                        flex: 1,
+                        background: "rgba(255,255,255,0.07)",
+                        border: "1px solid rgba(198,163,77,0.5)",
+                        borderRadius: 10,
+                        padding: "9px 11px",
+                        fontSize: 13,
+                        color: "#f7f3ea",
+                        outline: "none",
+                        boxSizing: "border-box",
+                        minWidth: 0,
+                      }}
                     />
                     <button
                       onClick={submitSearch}
                       style={{
-                        background: COLORS.gold,
-                        color: COLORS.navyDark,
-                        borderRadius: 8,
-                        padding: "8px 14px",
-                        fontSize: 13,
-                        fontWeight: 900,
+                        background: "#C6A34D",
                         border: "none",
+                        borderRadius: 10,
+                        width: 38,
+                        height: 38,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         cursor: "pointer",
-                        marginLeft: 8,
                         flexShrink: 0,
                       }}
                     >
-                      Search
+                      <span style={{ fontSize: 17, color: "#193150" }}>→</span>
                     </button>
                   </div>
                   {searchResultsDropdown}
                 </>
-              ) : null}
+              )}
             </>
           ) : (
             <>
