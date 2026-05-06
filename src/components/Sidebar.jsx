@@ -408,7 +408,7 @@ export default function Sidebar({
                         border: "1px solid rgba(198,163,77,0.5)",
                         borderRadius: 10,
                         padding: "9px 11px",
-                        fontSize: 13,
+                        fontSize: 16,
                         color: "#f7f3ea",
                         outline: "none",
                         boxSizing: "border-box",
