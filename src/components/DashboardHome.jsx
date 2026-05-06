@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
-import useHomepageData from "../lib/useHomepageData";
+import IssueCard from "./IssueCard";
+import useHomepageData from "../hooks/useHomepageData";
 
 function rotateWindow(items, startIndex, count) {
   if (!items.length) return [];
@@ -474,28 +475,48 @@ function PayPanel({ elapsed, onOpenModule }) {
 export default function DashboardHome({ onOpenModule }) {
   const elapsed = useElapsedSeconds();
   const allGroups = useMemo(() => [...NAV, { group: BOTTOM_NAV.group, items: [BOTTOM_NAV] }], []);
-  const { activeInvestigations, keyNumbers, moduleCounts, latestByModule } = useHomepageData();
+  const { cards, statBlocks, loading, error } = useHomepageData();
   const [investigationStart, setInvestigationStart] = useState(0);
   const [keyNumberStart, setKeyNumberStart] = useState(0);
 
+  const moduleCounts = useMemo(() => {
+    return cards.reduce((acc, card) => {
+      if (card.module) acc[card.module] = (acc[card.module] || 0) + 1;
+      return acc;
+    }, {});
+  }, [cards]);
+
+  const latestByModule = useMemo(() => {
+    const latest = {};
+    cards.forEach((card) => {
+      if (!card.module) return;
+      const cardTime = new Date(card.created_at || 0).getTime();
+      const knownTime = latest[card.module]?.createdAt || 0;
+      if (!latest[card.module] || cardTime > knownTime) {
+        latest[card.module] = { title: card.title || "", createdAt: cardTime };
+      }
+    });
+    return latest;
+  }, [cards]);
+
   useEffect(() => {
-    if (activeInvestigations.length <= 12) return;
+    if (cards.length <= 12) return;
     const id = setInterval(() => {
-      setInvestigationStart(prev => (prev + 1) % activeInvestigations.length);
+      setInvestigationStart(prev => (prev + 1) % cards.length);
     }, 9000);
     return () => clearInterval(id);
-  }, [activeInvestigations.length]);
+  }, [cards.length]);
 
   useEffect(() => {
-    if (keyNumbers.length <= 6) return;
+    if (statBlocks.length <= 6) return;
     const id = setInterval(() => {
-      setKeyNumberStart(prev => (prev + 1) % keyNumbers.length);
+      setKeyNumberStart(prev => (prev + 1) % statBlocks.length);
     }, 8000);
     return () => clearInterval(id);
-  }, [keyNumbers.length]);
+  }, [statBlocks.length]);
 
-  const visibleInvestigations = rotateWindow(activeInvestigations, investigationStart, 12);
-  const visibleKeyNumbers = rotateWindow(keyNumbers, keyNumberStart, 6);
+  const visibleInvestigations = rotateWindow(cards, investigationStart, 12);
+  const visibleKeyNumbers = rotateWindow(statBlocks, keyNumberStart, 6);
 
   const openSpecificInvestigation = (item) => {
     try {
@@ -507,6 +528,17 @@ export default function DashboardHome({ onOpenModule }) {
       }));
     } catch (e) {}
     onOpenModule(item.module || item.id);
+  };
+
+  const getStatData = (block) => {
+    const data = block?.data && typeof block.data === "object" ? block.data : block || {};
+    return {
+      label: data.label || block?.label || block?.title || "",
+      value: data.value || block?.value || "",
+      sub: data.context || block?.context || "",
+      target: block?.module || data.module || "",
+      color: COLORS.gold,
+    };
   };
 
   return (
@@ -628,6 +660,14 @@ export default function DashboardHome({ onOpenModule }) {
 
         <PayPanel elapsed={elapsed} onOpenModule={onOpenModule} />
 
+        {loading ? (
+          <div style={{ color: COLORS.muted, fontSize: 14, textAlign: "center", padding: "18px 0" }}>Loading...</div>
+        ) : null}
+
+        {error ? (
+          <div style={{ color: COLORS.red, fontSize: 13, marginBottom: 14 }}>{error.message || String(error)}</div>
+        ) : null}
+
         {visibleInvestigations.length > 0 ? (
           <section style={{ marginBottom: 18 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -643,7 +683,7 @@ export default function DashboardHome({ onOpenModule }) {
               >
                 Active investigations
               </div>
-              {activeInvestigations.length > 0 ? (
+              {cards.length > 0 ? (
                 <div
                   style={{
                     background: COLORS.red,
@@ -655,13 +695,15 @@ export default function DashboardHome({ onOpenModule }) {
                     letterSpacing: 0.5,
                   }}
                 >
-                  {activeInvestigations.length} live
+                  {cards.length} live
                 </div>
               ) : null}
             </div>
             <div style={{ display: "grid", gap: 10 }}>
               {visibleInvestigations.map((item) => (
-                <FeedRow key={item.ref_number || item.title} item={item} onClick={() => openSpecificInvestigation(item)} />
+                <div key={item.ref_number || item.id || item.title} onClick={() => openSpecificInvestigation(item)}>
+                  <IssueCard issue={item} />
+                </div>
               ))}
             </div>
           </section>
@@ -678,9 +720,10 @@ export default function DashboardHome({ onOpenModule }) {
                 gap: 12,
               }}
             >
-              {visibleKeyNumbers.map((item) => (
-                <KeyCard key={item.ref_number || item.label} item={item} onClick={() => onOpenModule(item.target)} />
-              ))}
+              {visibleKeyNumbers.map((block) => {
+                const item = getStatData(block);
+                return <KeyCard key={block.ref_number || block.id || item.label} item={item} onClick={() => onOpenModule(item.target)} />;
+              })}
             </div>
           </section>
         ) : null}

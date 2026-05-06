@@ -1,7 +1,7 @@
 const data = {
   id: "boards_oversight",
   title: "Boards, Directors, & School Boards",
-  intro: "Unelected boards, appointed executives, and school officials who control public funds and shape daily life in the Huntsville metro — without facing a ballot.",
+  intro: "They control hundreds of millions in public funds, set policy across Madison County, and never appear on a ballot. Who appointed them, what budgets they control, how many students they're responsible for, and who they actually serve — documented.",
   tabs: [
     {
       id: "appointed_boards",

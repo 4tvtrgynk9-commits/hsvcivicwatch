@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from '../lib/supabase';
+import EditCardModal from "../components/EditCardModal";
+import { COLORS } from "../config/theme";
 import {
   PieChart, Pie, Cell, Tooltip,
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
@@ -1516,7 +1518,7 @@ function PublishedIssueCard({ card, onDelete, onEdit, highlight, animate, isMobi
         </div>
         <div style={{ display:"flex", gap:8, width:"100%" }}>
           <button onClick={() => setExpanded(v => !v)} style={{ background:"#e8e4dc", color:"#444", border:"1px solid #ddd8cf", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:600, flex:1 }}>{expanded ? "Hide" : "Details"}</button>
-          <button onClick={() => onEdit(card)} style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Edit</button>
+          <button onClick={() => onEdit(card)} style={{ background: "transparent", border: "1px solid " + COLORS.border, borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 800, color: COLORS.textSoft, cursor: "pointer" }}>Edit</button>
           <button onClick={() => onDelete(card)} style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:isMobile ? "10px 8px" : "8px 16px", fontSize:isMobile ? 12 : 14, cursor:"pointer", fontWeight:700, flex:1 }}>Delete</button>
         </div>
       </div>
@@ -2295,6 +2297,7 @@ export default function AdminPanel() {
   const [toolsTemplatesOpen, setToolsTemplatesOpen] = useState(false);
   const [toolTemplateCopied, setToolTemplateCopied] = useState({ issue: false, profile: false, blueprint: false });
   const [editConfig, setEditConfig] = useState(null);
+  const [editCard, setEditCard] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
   const [animateId, setAnimateId] = useState(null);
@@ -2329,6 +2332,10 @@ export default function AdminPanel() {
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
   const fallbackRef = useRef(null);
+  const setCards = (updater) => {
+    setPubIssues(updater);
+    setDraftIssues(updater);
+  };
 
   const loadPublished = async () => {
     if (!supabase) return;
@@ -3936,8 +3943,7 @@ export default function AdminPanel() {
                             <div style={{ display:"flex", gap:12 }}>
                               <button onClick={() => { setPendingIssues(p => [...p, card]); setDraftIssues(p => p.filter((_,di) => di !== i)); setActiveTab("review"); }}
                                 style={{ background:"#eff6ff", color:"#1a4a7a", border:"1px solid #93c5fd", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Move to Review</button>
-                              <button onClick={() => openIssueEdit(card)}
-                                style={{ background:"#353b48", color:"#f0c93a", border:"1px solid #C6A34D", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Edit</button>
+                              <button onClick={() => setEditCard(card)} style={{ background: "transparent", border: "1px solid " + COLORS.border, borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 800, color: COLORS.textSoft, cursor: "pointer" }}>Edit</button>
                               <button onClick={() => setDraftIssues(p => p.filter((_,di) => di !== i))}
                                 style={{ background:"#fef2f2", color:"#b91c1c", border:"1px solid #fca5a5", borderRadius:4, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>Delete</button>
                             </div>
@@ -3982,7 +3988,7 @@ export default function AdminPanel() {
             pubStats={pubStats}
             onDeleteIssue={handleDeleteIssue}
             onDeleteStat={handleDeleteStat}
-            onEditIssue={openIssueEdit}
+            onEditIssue={setEditCard}
             onEditStat={openStatEdit}
             highlightId={highlightId}
             animateId={animateId}
@@ -4166,10 +4172,23 @@ export default function AdminPanel() {
                   const pillBaseStyle = { fontSize:10, fontWeight:900, textTransform:"uppercase", letterSpacing:0.8, borderRadius:999, padding:"4px 9px" };
                   const geographyValue = String(parsedProfile.geography || "").trim();
                   const showGeography = geographyValue && !["local", "state", "federal", "judge"].includes(geographyValue.toLowerCase());
+                  const termYear = parsedProfile.term_start
+                    ? parseInt(parsedProfile.term_start.toString().match(/\d{4}/)?.[0])
+                    : null;
+                  const currentYear = new Date().getFullYear();
+                  const yearsInOffice = termYear ? currentYear - termYear : null;
+                  const yearsLabel = isCurrent && yearsInOffice !== null
+                    ? ` (${yearsInOffice}+ yrs)`
+                    : "";
+                  const termDisplay = isCurrent
+                    ? (parsedProfile.term_start ? `${parsedProfile.term_start}${yearsLabel}` : "")
+                    : ((isFormer || isDeceased) && parsedProfile.term_start && parsedProfile.term_end
+                      ? `${parsedProfile.term_start} – ${parsedProfile.term_end}`
+                      : parsedProfile.term_start);
                   const dataItems = [
                     ["Salary", parsedProfile.salary],
                     ["Est. Net Worth", parsedProfile.net_worth],
-                    ["Term Start", parsedProfile.term_start],
+                    ["Term Start", termDisplay],
                     ["Geography", showGeography ? geographyValue : ""],
                   ].filter(([, value]) => value);
                   const decoderSections = [
@@ -4540,6 +4559,16 @@ export default function AdminPanel() {
           </div>
         </div>
       ) : null}
+      {editCard && (
+        <EditCardModal
+          card={editCard}
+          onClose={() => setEditCard(null)}
+          onSaved={(updated) => {
+            setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
+            setEditCard(null);
+          }}
+        />
+      )}
       </div>
   );
 }

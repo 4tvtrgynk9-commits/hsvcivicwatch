@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { COLORS } from "../../config/theme";
 import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
@@ -7,11 +8,13 @@ import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././workers_childcare.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
+import useModuleStatBlocks from "../../hooks/useModuleStatBlocks";
 
 export default function WorkersChildcarePage() {
-  const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("workers_childcare");
+  const { liveIssues, loading } = useSupabaseModule("workers_childcare");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
+  const { statBlocks: liveStatBlocks, loading: statBlocksLoading, error: statBlocksError } = useModuleStatBlocks("workers_childcare", tabId);
 
   const SCROLL_KEY = "hsv_last_card";
 
@@ -26,7 +29,6 @@ export default function WorkersChildcarePage() {
     } catch (e) {}
   }, [tabId]);
 
-  const activeTabIssues = activeTab?.issues || [];
   const tabLiveIssues = liveIssues.filter((li) => {
     const liTabs = Array.isArray(li.tabs) && li.tabs.length ? li.tabs : (li.tab ? [li.tab] : []);
     if (tabId === "overview") {
@@ -34,14 +36,10 @@ export default function WorkersChildcarePage() {
     }
     return liTabs.includes(tabId) || li.tab === tabId;
   });
-  const mergedIssues = [
-    ...tabLiveIssues.filter((li) => !activeTabIssues.find((hi) => hi.id === li.id)),
-    ...activeTabIssues,
-  ];
 
   const rotatingStats = useRotatingStats({
     liveStatBlocks,
-    fallbackStats: activeTab?.stats || data.stats || [],
+    fallbackStats: [],
     activeTabId: tabId,
     maxItems: 3,
   });
@@ -50,11 +48,18 @@ export default function WorkersChildcarePage() {
     <div>
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
+      {statBlocksLoading ? <div style={{ textAlign: "center", color: COLORS.muted, padding: "10px 0", fontSize: 14 }}>Loading...</div> : null}
+      {statBlocksError ? <div style={{ color: COLORS.red, fontSize: 13, marginBottom: 12 }}>{statBlocksError.message || String(statBlocksError)}</div> : null}
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       <div>
-        {(mergedIssues).map((issue, index) => (
+        {tabLiveIssues.map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
+        {!loading && tabLiveIssues.length === 0 ? (
+          <div style={{ textAlign: "center", color: COLORS.muted, padding: "40px 0", fontSize: 15 }}>
+            No cards published yet.
+          </div>
+        ) : null}
       </div>
       <InvestigativeTrail issues={liveIssues} />
     </div>

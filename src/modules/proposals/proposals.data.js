@@ -1,7 +1,7 @@
 const data = {
   id: "proposals",
   title: "A Better Huntsville: The Blueprint",
-  intro: "Evidence-based proposals for a more equitable Huntsville.",
+  intro: "The problems are documented. Here are the solutions — evidence-based, tested in other cities, and directly applicable to Huntsville. What a more equitable city actually looks like, and how to get there.",
   tabs: [
     {
       id: "economic_justice",

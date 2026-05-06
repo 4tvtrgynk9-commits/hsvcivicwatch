@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { COLORS } from "../../config/theme";
 import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
@@ -7,11 +8,13 @@ import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././equity.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
+import useModuleStatBlocks from "../../hooks/useModuleStatBlocks";
 
 export default function EquityPage() {
-  const { liveIssues, liveStats, liveStatBlocks, loading } = useSupabaseModule("equity");
+  const { liveIssues, loading } = useSupabaseModule("equity");
   const [tabId, setTabId] = useState(data.tabs?.[0]?.id || "overview");
   const activeTab = data.tabs?.find((t) => t.id === tabId) || data.tabs?.[0];
+  const { statBlocks: liveStatBlocks, loading: statBlocksLoading, error: statBlocksError } = useModuleStatBlocks("equity", tabId);
 
   const SCROLL_KEY = "hsv_last_card";
 
@@ -50,6 +53,8 @@ export default function EquityPage() {
     <div>
       <PageHeader title={data.title} intro={data.intro} />
       <VisualSwitcher visual={activeTab?.visual || data.topVisual} stats={rotatingStats.stats} rotationKey={rotatingStats.rotationKey} />
+      {statBlocksLoading ? <div style={{ textAlign: "center", color: COLORS.muted, padding: "10px 0", fontSize: 14 }}>Loading...</div> : null}
+      {statBlocksError ? <div style={{ color: COLORS.red, fontSize: 13, marginBottom: 12 }}>{statBlocksError.message || String(statBlocksError)}</div> : null}
       <TabBar tabs={data.tabs || []} activeTabId={tabId} onChange={setTabId} />
       <div>
         {(mergedIssues).map((issue, index) => (

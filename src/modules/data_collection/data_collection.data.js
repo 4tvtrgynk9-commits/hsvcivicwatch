@@ -1,7 +1,7 @@
 const data = {
   id: "data_collection",
   title: "Surveillance & Data Collection",
-  intro: "Track how Huntsville collects data on residents and deploys surveillance technology.",
+  intro: "Big brother just got a lot more gear — and it's not just watching you, it's monetizing you. How surveillance and data collection became a revenue stream — documented.",
   tabs: [
     {
       id: "data_collection",

@@ -1,7 +1,7 @@
 const data = {
   id: "utilities",
   title: "Utilities: Power, Water, & Gas",
-  intro: "Track utility burdens, billing pressure, water issues, and how ratepayers absorb system costs.",
+  intro: "Why is your power bill higher than your neighbor's in Tennessee? Huntsville Utilities answers to an unelected board, TVA sets the ceiling, and ratepayers absorb the rest. Every provider, every rate decision, every comparison — documented.",
   tabs: [
     {
       id: "overview",
@@ -29,6 +29,27 @@ const data = {
           }
         }
       ],
+      trail: []
+    },
+    {
+      id: "power",
+      label: "Power",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "water",
+      label: "Water",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "gas",
+      label: "Gas",
+      stats: [],
+      issues: [],
       trail: []
     }
   ]

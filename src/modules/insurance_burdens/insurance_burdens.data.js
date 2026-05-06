@@ -1,7 +1,7 @@
 const data = {
   id: "insurance_burdens",
   title: "Insurance Burdens",
-  intro: "Track insurance costs, coverage gaps, and industry influence in Huntsville.",
+  intro: "Your zip code, your credit score, and which side of town you live on can change your premium by hundreds of dollars — for the exact same coverage. Predatory pricing, denied claims, coverage deserts, and the industry's grip on state policy — documented.",
   tabs: [
     {
       id: "health",

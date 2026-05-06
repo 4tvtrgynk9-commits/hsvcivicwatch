@@ -1,7 +1,7 @@
 const data = {
   id: "action",
   title: "Take Action",
-  intro: "Use this page as a resource hub for voter registration, public records requests, complaint paths, media contacts, and other tools that help residents act on what they learn.",
+  intro: "This is not a 911 hotline. Nobody here is coming to save you. But if you've read this far and you're ready to file a complaint, request a record, tip off a reporter, or find out who your actual representative is — this is the page. It won't fix everything. It might fix something.",
   tabs: [
     {
       id: "overview",
@@ -33,6 +33,27 @@ const data = {
           }
         }
       ],
+      trail: []
+    },
+    {
+      id: "public_records",
+      label: "Public Records",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "complaint_paths",
+      label: "Complaint Paths",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "media_contacts",
+      label: "Media Contacts",
+      stats: [],
+      issues: [],
       trail: []
     }
   ]

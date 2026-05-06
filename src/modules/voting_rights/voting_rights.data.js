@@ -1,7 +1,7 @@
 const data = {
   id: "voting_rights",
   title: "The Ballot & Your Access",
-  intro: "Track voter access, registration, and representation in Huntsville.",
+  intro: "Voting is your civic duty. It's also apparently a full-day errand. Why does participating in democracy keep ending up at the bottom of your to-do list — and who keeps putting it there?",
   tabs: [
     {
       id: "overview",
@@ -11,22 +11,29 @@ const data = {
       trail: []
     },
     {
-      id: "voter_registration",
-      label: "Voter Registration",
+      id: "suppression",
+      label: "Suppression",
       stats: [],
       issues: [],
       trail: []
     },
     {
-      id: "polling_access",
-      label: "Polling & Access",
+      id: "registration",
+      label: "Registration",
       stats: [],
       issues: [],
       trail: []
     },
     {
-      id: "your_reps",
-      label: "Your Representatives",
+      id: "polling_locations",
+      label: "Polling Locations",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "my_representative",
+      label: "My Representative",
       stats: [],
       issues: [],
       trail: []

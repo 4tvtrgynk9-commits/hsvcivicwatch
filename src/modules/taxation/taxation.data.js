@@ -1,7 +1,7 @@
 const data = {
   id: "taxation",
   title: "Taxation",
-  intro: "Track grocery taxes, local burdens, exemptions, and who carries more of the tax load.",
+  intro: "Corporations get exemptions, abatements, and Tax Increment Financing (TIF) districts. You pay full grocery tax. Who actually carries the tax burden in Huntsville — and who decided it should work this way?",
   tabs: [
     {
       id: "overview",
@@ -29,6 +29,27 @@ const data = {
           }
         }
       ],
+      trail: []
+    },
+    {
+      id: "corporate_exemptions",
+      label: "Corporate Exemptions",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "grocery_sales_tax",
+      label: "Grocery & Sales Tax",
+      stats: [],
+      issues: [],
+      trail: []
+    },
+    {
+      id: "local_vs_state",
+      label: "Local vs. State",
+      stats: [],
+      issues: [],
       trail: []
     }
   ]

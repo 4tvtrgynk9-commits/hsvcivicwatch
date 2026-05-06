@@ -1,61 +1,41 @@
 const { createClient } = require("@supabase/supabase-js");
 
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-const ISSUE_FIELDS = [
-  "label","title","summary","details","sources","tab","module",
+const ALLOWED_FIELDS = [
+  "title","label","summary","details","sources",
+  "module","tab","shock_factor","module_relevance","visual_score",
   "decoder_what","decoder_connections","decoder_who_benefits","decoder_impact",
-  "actions","visual_config","visual_score","shock_factor","homepage_teaser",
-  "module_relevance","homepage_score","show_on_overview",
-];
-
-const STAT_FIELDS = [
-  "label","title","value","unit","context","color","type",
-  "module","tab","strength_score","issue_card_ref",
+  "show_on_overview",
 ];
 
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { itemType, id, updates } = req.body || {};
-  if (!id) return res.status(400).json({ error: "Missing id" });
+  const { id, updates } = req.body || {};
+  if (!id) return res.status(400).json({ error: "Missing card id" });
   if (!updates || typeof updates !== "object") return res.status(400).json({ error: "Missing updates" });
 
-  const allowedFields = itemType === "stat_block" ? STAT_FIELDS : ISSUE_FIELDS;
   const safeUpdates = {};
-  for (const key of allowedFields) {
+  for (const key of ALLOWED_FIELDS) {
     if (key in updates) safeUpdates[key] = updates[key];
   }
-  if (!Object.keys(safeUpdates).length) {
-    return res.status(400).json({ error: "No valid fields to update" });
-  }
+  if (!Object.keys(safeUpdates).length) return res.status(400).json({ error: "No valid fields" });
 
-  const table = itemType === "stat_block" ? "stat_blocks" : "issue_cards";
+  const supabase = createClient(
+    process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
 
   const { data, error } = await supabase
-    .from(table)
+    .from("issue_cards")
     .update(safeUpdates)
     .eq("id", id)
     .select()
     .single();
 
-  if (error) return res.status(500).json({ error: error.message });
-
-  let cascaded_stats = [];
-  if (itemType === "issue_card" && data.ref_number) {
-    const { data: linked } = await supabase
-      .from("stat_blocks")
-      .select("*")
-      .eq("issue_card_ref", data.ref_number);
-    cascaded_stats = linked || [];
-  }
-
-  return res.status(200).json({ item: data, cascaded_stats });
+  if (error) { console.error(error); return res.status(500).json({ error: error.message }); }
+  return res.status(200).json({ success: true, card: data });
 };

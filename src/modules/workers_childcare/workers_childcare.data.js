@@ -1,7 +1,7 @@
 const data = {
   id: "workers_childcare",
   title: "Worker Rights & Child Care",
-  intro: "Track worker protections, wages, and child care access in Huntsville.",
+  intro: "The jobs are here. The wages aren't. Neither is the childcare. What Huntsville's labor market looks like from the bottom up — not the chamber of commerce press release.",
   tabs: [
     {
       id: "worker_rights",

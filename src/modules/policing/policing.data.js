@@ -1,7 +1,7 @@
 const data = {
   id: "policing",
   title: "Law Enforcement & Accountability",
-  intro: "Track HPD and the Madison County Sheriff — budgets, misconduct, and oversight.",
+  intro: "Money, money, money, money. The police budget keeps growing — and not just because of Huntsville's record-breaking misconduct lawsuits. Where it's going, who's approving it, and what residents are getting in return — documented.",
   tabs: [
     {
       id: "hpd",

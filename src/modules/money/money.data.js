@@ -1,7 +1,7 @@
 const data = {
   id: "money",
   title: "Follow the Money",
-  intro: "Track donor relationships, executive pay, and contracts in Huntsville.",
+  intro: "You scratch my back, I'll scratch yours — and the rest of you lose. Campaign donors become contractors. Developers get Tax Increment Financing (TIF) districts. Public tax revenue gets redirected to private projects. The pay-to-play relationships shaping Huntsville — documented.",
   tabs: [
     {
       id: "connections_map",
