@@ -46,6 +46,20 @@ Set kind to the primary role kind.
 former_offices: array of ALL previously held roles no longer active
 [{ title, jurisdiction, start_year, end_year }]
 
+DECODER FIELD FORMATTING:
+Apply these rules to decoder.rise, decoder.affiliations, decoder.beneficiaries, and decoder.track_record:
+- NEVER start entries with "—" or "-" or any dash/bullet character.
+- NEVER start entries with a bare date like "Feb. 4, 2022:" — always lead with what happened, then put the date in parentheses or in a clause.
+- Each entry must be a complete declarative sentence or clause, written in prosecutor voice.
+- No shorthand, no fragments, no lazy em-dash list formatting.
+- Entries are separated by a single line break, not bullet points or dashes.
+
+WRONG:
+— Feb. 4, 2022: 48-year-old woman died by suicide in Madison County jail.
+
+CORRECT:
+A 48-year-old woman died by suicide in Madison County Detention Facility in February 2022. Cause of death listed as bedsheet. No disciplinary action taken.
+
 scopes rules: elected/judge/candidate — local jurisdiction sets [local], state sets [state], federal sets [federal]. board_member/director/authority_member sets [appointed_boards]. superintendent/asst_superintendent sets [directors_executives, school_boards_staff]. principal/vice_principal/resource_officer/district_staff sets [school_boards_staff]. module rules: official_profiles table sets module to officials_elections. board_profiles and school_profiles set module to boards_oversight. ro_fields only populated if kind is resource_officer.`;
 
 const DECODER_SCORE_SYSTEM = `Score these HSV Civic Watch profile decoder fields. Return ONLY valid JSON: { shock_factor: number, module_relevance: number } both integers 1-10.`;
@@ -459,22 +473,70 @@ async function updateMatchingSchoolProfiles(supabase, matchField, matchValue, me
 }
 
 function buildProfilePayload(profile, targetTable, scoring) {
+  const homepageScore = computeHomepageScore(scoring.shock_factor, scoring.module_relevance);
+  const shockFactor = clampScore(scoring.shock_factor);
+
+  if (targetTable === "official_profiles") {
+    return {
+      name: profile.name,
+      office: profile.office,
+      kind: profile.kind,
+      jurisdiction: profile.jurisdiction,
+      geography: profile.geography,
+      appointed_by: profile.appointed_by,
+      term_start: profile.term_start,
+      term_end: profile.term_end,
+      election_date: profile.election_date,
+      party: profile.party,
+      salary: profile.salary,
+      net_worth: profile.net_worth,
+      status: profile.status,
+      module: "officials_elections",
+      scopes: profile.scopes,
+      scope_category: profile.scope_category,
+      featured: false,
+      sort_order: 0,
+      date_of_birth: profile.date_of_birth,
+      residency: profile.residency,
+      criminal_record: profile.criminal_record,
+      ethics_complaints: profile.ethics_complaints,
+      education: profile.education,
+      military_service: profile.military_service,
+      headshot_url: profile.headshot_url,
+      role_label: profile.role_label,
+      status_line: profile.status_line,
+      metrics: profile.metrics,
+      quick_facts: profile.quick_facts,
+      profile: profile.profile,
+      networks: profile.networks,
+      donors: profile.donors,
+      family: profile.family,
+      on_record: profile.on_record,
+      votes: profile.votes,
+      contact: profile.contact,
+      decoder: profile.decoder,
+      shock_factor: shockFactor,
+      homepage_score: homepageScore,
+      level: profile.scopes?.[0] || profile.scope_category || null,
+    };
+  }
+
   return {
     ...profile,
-    module: targetTable === "official_profiles" ? "officials_elections" : "boards_oversight",
+    module: "boards_oversight",
     quick_facts: profile.quick_facts,
     on_record: profile.on_record,
     headshot_url: profile.headshot_url,
     role_label: profile.role_label,
     status_line: profile.status_line,
-    shock_factor: clampScore(scoring.shock_factor),
+    shock_factor: shockFactor,
     module_relevance: clampScore(scoring.module_relevance),
-    homepage_score: computeHomepageScore(scoring.shock_factor, scoring.module_relevance),
+    homepage_score: homepageScore,
     data: {
       ...profile,
-      shock_factor: clampScore(scoring.shock_factor),
+      shock_factor: shockFactor,
       module_relevance: clampScore(scoring.module_relevance),
-      homepage_score: computeHomepageScore(scoring.shock_factor, scoring.module_relevance),
+      homepage_score: homepageScore,
     },
   };
 }
