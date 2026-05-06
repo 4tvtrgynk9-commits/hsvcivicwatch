@@ -173,15 +173,16 @@ function AcronymKey() {
       className="hci-acronym-box"
       style={{
         marginTop: 10,
-        padding: "10px 12px",
-        background: COLORS.card,
-        border: `1px solid ${COLORS.cardBorder}`,
-        borderRadius: 12,
+        padding: "12px 14px",
+        background: COLORS.panelAlt,
+        border: "1px solid " + COLORS.border,
+        borderRadius: 10,
         fontSize: 12.5,
         lineHeight: 1.45,
         color: COLORS.text,
         width: "100%",
-        maxWidth: 470,
+        boxSizing: "border-box",
+        display: "block",
       }}
     >
       <div
@@ -775,16 +776,17 @@ export default function DashboardHome({ onOpenModule }) {
               {cards.length > 0 ? (
                 <div
                   style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: 900,
-                    padding: "4px 12px",
+                    padding: "5px 14px",
                     borderRadius: 999,
                     background: COLORS.red,
                     color: "#fff",
                     letterSpacing: 0.3,
-                    marginLeft: 10,
+                    marginLeft: 12,
                     display: "inline-flex",
                     alignItems: "center",
+                    lineHeight: 1,
                   }}
                 >
                   {cards.length} live
