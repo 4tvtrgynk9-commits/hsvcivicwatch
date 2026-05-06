@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import { COLORS } from "../../config/theme";
+import { generateSlug } from "../../lib/slug";
 
 const GOLD = "#C6A34D";
 const BLUE = "#2F5D8A";
@@ -673,7 +674,7 @@ function ProfileModal({ profile, onClose }) {
   );
 }
 
-export default function OfficialsElectionsPage() {
+export default function OfficialsElectionsPage({ onNavigate }) {
   const [tab, setTab] = useState("current_officials");
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -773,7 +774,18 @@ export default function OfficialsElectionsPage() {
                   <span style={{ color: COLORS.muted, fontSize: 13 }}>{items.length} profile{items.length !== 1 ? "s" : ""}</span>
                 </div>
                 <div style={{ display: "grid", gap: 10 }}>
-                  {items.map((profile) => <ProfileCard key={profile.id} profile={profile} onClick={setSelectedProfile} variant={tab === "candidates" ? "candidate" : "current"} />)}
+                  {items.map((profile) => (
+                    <ProfileCard
+                      key={profile.id}
+                      profile={profile}
+                      onClick={(nextProfile) => {
+                        const nextSlug = generateSlug(nextProfile.name);
+                        if (onNavigate && nextSlug) onNavigate({ id: "official_profile", slug: nextSlug });
+                        else setSelectedProfile(nextProfile);
+                      }}
+                      variant={tab === "candidates" ? "candidate" : "current"}
+                    />
+                  ))}
                 </div>
               </div>
             ))}

@@ -74,6 +74,10 @@ function json(res, status, body) {
   res.status(status).json(body);
 }
 
+function generateSlug(name) {
+  return name?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "";
+}
+
 function getAdminClient() {
   const url = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || "";
@@ -479,6 +483,7 @@ function buildProfilePayload(profile, targetTable, scoring) {
   if (targetTable === "official_profiles") {
     return {
       name: profile.name,
+      slug: generateSlug(profile.name),
       office: profile.office,
       kind: profile.kind,
       jurisdiction: profile.jurisdiction,

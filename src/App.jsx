@@ -10,6 +10,7 @@ import WorkersChildcarePage from "./modules/workers_childcare/WorkersChildcarePa
 import TaxationPage from "./modules/taxation/TaxationPage";
 import HousingCrisisPage from "./modules/housing_crisis/HousingCrisisPage";
 import OfficialsElectionsPage from "./modules/officials_elections/OfficialsElectionsPage";
+import OfficialProfile from "./modules/officials_elections/OfficialProfile";
 import BoardsOversightPage from "./modules/boards_oversight/BoardsOversightPage";
 import VotingRightsPage from "./modules/voting_rights/VotingRightsPage";
 import CriminalJusticePage from "./modules/criminal_justice/CriminalJusticePage";
@@ -27,9 +28,18 @@ import AdminResetPassword from "./pages/AdminResetPassword";
 const ROUTE_DASHBOARD = "dashboard";
 const ROUTE_ADMIN_RESET = "admin-reset";
 
+function getRouteId(route) {
+  return typeof route === "object" && route ? route.id : route;
+}
+
 function getRouteFromLocation() {
   const url = new URL(window.location.href);
   let didMutateSearch = false;
+
+  if (url.pathname.startsWith("/officials/")) {
+    const slug = decodeURIComponent(url.pathname.replace(/^\/officials\//, "").split("/")[0] || "").trim();
+    if (slug) return { id: "official_profile", slug };
+  }
 
   if (url.pathname === "/admin-reset-password") {
     return ROUTE_ADMIN_RESET;
@@ -67,8 +77,18 @@ function getRouteFromLocation() {
 
 function buildRouteUrl(routeId) {
   const url = new URL(window.location.href);
+  const id = getRouteId(routeId);
 
-  if (routeId === ROUTE_ADMIN_RESET) {
+  if (id === "official_profile") {
+    const slug = typeof routeId === "object" && routeId ? routeId.slug : "";
+    url.pathname = `/officials/${encodeURIComponent(slug || "")}`;
+    url.hash = "";
+    url.searchParams.delete("admin-reset");
+    url.searchParams.delete("code");
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
+  if (id === ROUTE_ADMIN_RESET) {
     url.pathname = "/admin-reset-password";
     url.searchParams.delete("admin-reset");
     return `${url.pathname}${url.search}${url.hash}`;
@@ -76,11 +96,12 @@ function buildRouteUrl(routeId) {
 
   url.searchParams.delete("admin-reset");
   url.searchParams.delete("code");
-  url.hash = `#${routeId || ROUTE_DASHBOARD}`;
+  url.pathname = "/";
+  url.hash = `#${id || ROUTE_DASHBOARD}`;
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
-function ActivePage({ activeId, onBack }) {
+function ActivePage({ activeId, activeSlug, onBack }) {
   switch (activeId) {
     case ROUTE_DASHBOARD:
       return <DashboardHome onOpenModule={onBack} />;
@@ -91,7 +112,8 @@ function ActivePage({ activeId, onBack }) {
     case "workers_childcare": return <WorkersChildcarePage />;
     case "taxation": return <TaxationPage />;
     case "housing_crisis": return <HousingCrisisPage />;
-    case "officials_elections": return <OfficialsElectionsPage />;
+    case "officials_elections": return <OfficialsElectionsPage onNavigate={onBack} />;
+    case "official_profile": return <OfficialProfile slug={activeSlug} onBack={onBack} />;
     case "boards_oversight": return <BoardsOversightPage />;
     case "voting_rights": return <VotingRightsPage />;
     case "criminal_justice": return <CriminalJusticePage />;
@@ -112,7 +134,9 @@ function ActivePage({ activeId, onBack }) {
 export default function App() {
   const initialRoute = useMemo(() => getRouteFromLocation(), []);
 
-  const [activeId, setActiveId] = useState(initialRoute);
+  const [activeRoute, setActiveRoute] = useState(initialRoute);
+  const activeId = getRouteId(activeRoute);
+  const activeSlug = typeof activeRoute === "object" && activeRoute ? activeRoute.slug : "";
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrollPositions = useRef({});
@@ -120,20 +144,20 @@ export default function App() {
   const previousRoute = useRef(initialRoute);
 
   const restoreScroll = useCallback((routeId) => {
-    const nextScroll = scrollPositions.current[routeId] ?? 0;
+    const nextScroll = scrollPositions.current[JSON.stringify(routeId)] ?? 0;
     window.requestAnimationFrame(() => window.scrollTo({ top: nextScroll, behavior: "auto" }));
   }, []);
 
   const navigate = useCallback((nextRoute, pushHistory = true) => {
     const currentRoute = previousRoute.current;
-    scrollPositions.current[currentRoute] = window.scrollY;
+    scrollPositions.current[JSON.stringify(currentRoute)] = window.scrollY;
     previousRoute.current = nextRoute;
     try { sessionStorage.removeItem("hsv_decoder_state"); } catch (e) {}
     if (pushHistory) {
       window.history.pushState({ route: nextRoute }, "", buildRouteUrl(nextRoute));
     }
     pendingRestore.current = nextRoute;
-    setActiveId(nextRoute);
+    setActiveRoute(nextRoute);
     setMobileOpen(false);
   }, []);
 
@@ -141,10 +165,10 @@ export default function App() {
     window.history.replaceState({ route: initialRoute }, "", buildRouteUrl(initialRoute));
     const onPopState = (event) => {
       const nextRoute = event.state?.route || getRouteFromLocation();
-      scrollPositions.current[previousRoute.current] = window.scrollY;
+      scrollPositions.current[JSON.stringify(previousRoute.current)] = window.scrollY;
       previousRoute.current = nextRoute;
       pendingRestore.current = nextRoute;
-      setActiveId(nextRoute);
+      setActiveRoute(nextRoute);
       setMobileOpen(false);
     };
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -172,6 +196,7 @@ export default function App() {
     taxation: "Taxation",
     housing_crisis: "Housing Crisis",
     officials_elections: "Officials & Elections",
+    official_profile: "Official Profile",
     boards_oversight: "Boards, Directors, & School Boards",
     voting_rights: "The Ballot & Your Access",
     criminal_justice: "Criminal Justice: Sentencing & Prisons",
@@ -304,7 +329,7 @@ export default function App() {
         }}
       >
         <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
-          <ActivePage activeId={activeId} onBack={(id) => navigate(id)} />
+          <ActivePage activeId={activeId} activeSlug={activeSlug} onBack={(id) => navigate(id)} />
         </div>
       </main>
     </div>
