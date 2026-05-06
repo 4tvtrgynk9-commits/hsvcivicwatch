@@ -54,9 +54,9 @@ function NavButton({
         boxShadow,
         borderRadius: 12,
         textAlign: "left",
-        padding: compact ? "8px 11px" : "9px 12px",
+        padding: compact ? "6px 10px" : "9px 12px",
         cursor: "pointer",
-        fontSize: compact ? 12.5 : 13.5,
+        fontSize: compact ? 11.5 : 13.5,
         fontWeight: active ? 900 : 700,
         display: "flex",
         alignItems: "center",
@@ -201,7 +201,7 @@ export default function Sidebar({
     <>
       <div
         style={{
-          fontSize: isMobile ? 27 : 33,
+          fontSize: isMobile ? 27 : 26,
           fontWeight: 1000,
           lineHeight: 0.92,
           marginBottom: 0,
@@ -212,7 +212,7 @@ export default function Sidebar({
       </div>
       <div
         style={{
-          fontSize: isMobile ? 25 : 31,
+          fontSize: isMobile ? 25 : 24,
           fontWeight: 1000,
           lineHeight: 0.92,
           marginBottom: 8,
@@ -320,7 +320,7 @@ export default function Sidebar({
             textAlign: "left",
             cursor: "pointer",
             padding: 0,
-            marginBottom: 14,
+            marginBottom: 8,
           }}
         >
           {brandText}
@@ -330,13 +330,13 @@ export default function Sidebar({
       <div
         style={{
           flex: 1,
-          overflowY: "auto",
+          overflowY: "hidden",
           overflowX: "hidden",
           display: "grid",
           alignContent: "start",
-          gap: 10,
+          gap: 4,
           paddingRight: 4,
-          paddingBottom: 8,
+          paddingBottom: 4,
         }}
       >
         <div ref={searchRef} style={{ position: "relative", marginBottom: 4 }}>
@@ -445,8 +445,8 @@ export default function Sidebar({
                 fontSize: 11.5,
                 fontWeight: 900,
                 color: COLORS.gold,
-                marginTop: compact ? 12 : 14,
-                marginBottom: 10,
+                marginTop: compact ? 6 : 10,
+                marginBottom: 6,
                 textTransform: "uppercase",
                 letterSpacing: 1.7,
                 lineHeight: 1.2,
@@ -455,7 +455,7 @@ export default function Sidebar({
               {group.group}
             </div>
 
-            <div style={{ display: "grid", gap: 6 }}>
+            <div style={{ display: "grid", gap: 3 }}>
               {group.items.map((item) => {
                 const isBlueprint = item.id === "proposals";
                 return (

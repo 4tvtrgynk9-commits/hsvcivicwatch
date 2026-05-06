@@ -531,34 +531,30 @@ function ModuleCarousel({ group, onOpenModule }) {
       </div>
 
       <div style={{ position: "relative" }}>
-        {isCarouselMobile ? (
-          <>
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: 36,
-                background: "linear-gradient(to left, transparent, " + COLORS.bg + ")",
-                pointerEvents: "none",
-                zIndex: 10,
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: 36,
-                background: "linear-gradient(to right, transparent, " + COLORS.bg + ")",
-                pointerEvents: "none",
-                zIndex: 10,
-              }}
-            />
-          </>
-        ) : null}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: "44px",
+            background: `linear-gradient(to left, transparent, ${COLORS.bg})`,
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: "44px",
+            background: `linear-gradient(to right, transparent, ${COLORS.bg})`,
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        />
         <div
           ref={trackRef}
           className="hci-module-carousel-track"
@@ -874,10 +870,8 @@ export default function DashboardHome({ onOpenModule }) {
           </button>
         </section>
 
-        <section
+        <div
           style={{
-            marginTop: 12,
-            marginBottom: 4,
             position: "relative",
             left: "50%",
             right: "50%",
@@ -887,36 +881,38 @@ export default function DashboardHome({ onOpenModule }) {
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              background: COLORS.tickerBg,
-              color: COLORS.gold,
-              padding: "4px 0",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-              borderTop: "1px solid rgba(198,163,77,0.25)",
-              borderBottom: "1px solid rgba(198,163,77,0.25)",
-            }}
-          >
+          <section>
             <div
               style={{
-                display: "inline-flex",
-                gap: 42,
-                minWidth: "200%",
-                animation: "hciTicker 34s linear infinite",
-                fontSize: 9.5,
-                fontWeight: 700,
-                letterSpacing: 0.7,
-                textTransform: "uppercase",
+                background: COLORS.tickerBg,
+                color: COLORS.gold,
+                padding: "4px 0",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                borderTop: "1px solid rgba(198,163,77,0.25)",
+                borderBottom: "1px solid rgba(198,163,77,0.25)",
               }}
             >
-              <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
-              <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
-              <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
-              <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
+              <div
+                style={{
+                  display: "inline-flex",
+                  gap: 42,
+                  minWidth: "200%",
+                  animation: "hciTicker 34s linear infinite",
+                  fontSize: 9.5,
+                  fontWeight: 700,
+                  letterSpacing: 0.7,
+                  textTransform: "uppercase",
+                }}
+              >
+                <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
+                <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
+                <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
+                <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   );
