@@ -5,7 +5,7 @@ export default function TabBar({ tabs = [], activeTabId, onChange }) {
   if (!tabs || tabs.length <= 1) return null;
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16, justifyContent: "center" }}>
       {tabs.map((tab) => {
         const active = tab.id === activeTabId;
         return (

@@ -565,7 +565,7 @@ export default function DashboardHome({ onOpenModule }) {
 
       <div className="hci-home-wrap">
         <section style={{ marginBottom: 14 }}>
-          <div style={{ maxWidth: 980 }}>
+          <div style={{ maxWidth: 980, margin: "0 auto" }}>
             <div
               className="hci-home-title"
               style={{
@@ -575,6 +575,7 @@ export default function DashboardHome({ onOpenModule }) {
                 color: COLORS.text,
                 fontWeight: 1000,
                 letterSpacing: -1,
+                textAlign: "center",
               }}
             >
               Huntsville Civic Investigator
@@ -588,6 +589,7 @@ export default function DashboardHome({ onOpenModule }) {
                 fontWeight: 700,
                 lineHeight: 1.5,
                 maxWidth: 960,
+                textAlign: "center",
               }}
             >
               Real data. Real facts. Real connections — Investigations decoded so Huntsville can uncover what's really happening.

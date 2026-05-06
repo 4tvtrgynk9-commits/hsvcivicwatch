@@ -225,6 +225,7 @@ function SectionTabs({ tabs, activeTab, onChange, accent }) {
     <div
       style={{
         display: "flex",
+        justifyContent: "center",
         gap: 2,
         overflowX: "auto",
         borderTop: `1px solid ${COLORS.border}`,
