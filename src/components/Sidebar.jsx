@@ -109,6 +109,19 @@ export default function Sidebar({
   const effectiveSearchQuery = isMobile ? submittedMobileQuery : searchQuery;
   const { results, loading } = useCardSearch(effectiveSearchQuery);
   const grouped = useMemo(() => NAV, []);
+
+  useEffect(() => {
+    if (isMobile && mobileOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.overflow = "hidden";
+      document.body.dataset.scrollY = scrollY;
+    } else {
+      document.body.style.overflow = "";
+      const scrollY = document.body.dataset.scrollY;
+      if (scrollY) window.scrollTo(0, parseInt(scrollY));
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobile, mobileOpen]);
   const compact = !isMobile;
   const showSearchDropdown = effectiveSearchQuery.trim().length >= 3;
 

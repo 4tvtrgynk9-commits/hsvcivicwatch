@@ -23,6 +23,7 @@ import ProposalsPage from "./modules/proposals/ProposalsPage";
 import ActionPage from "./modules/action/ActionPage";
 import AdminPanel from "./pages/AdminPanel";
 import AdminResetPassword from "./pages/AdminResetPassword";
+import HomepageTicker from "./components/HomepageTicker";
 
 const ROUTE_DASHBOARD = "dashboard";
 const ROUTE_ADMIN_RESET = "admin-reset";
@@ -333,6 +334,7 @@ export default function App() {
           <ActivePage activeId={activeId} activeSlug={activeSlug} onBack={(id) => navigate(id)} />
         </div>
       </main>
+      {activeId === ROUTE_DASHBOARD && !isMobile && <HomepageTicker />}
     </div>
   );
 }

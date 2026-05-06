@@ -904,48 +904,6 @@ export default function DashboardHome({ onOpenModule }) {
           </button>
         </section>
 
-        <div
-          style={{
-            width: "100vw",
-            position: "relative",
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginTop: 24,
-            overflow: "hidden",
-          }}
-        >
-          <section>
-            <div
-              style={{
-                background: COLORS.tickerBg,
-                color: COLORS.gold,
-                padding: "4px 0",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                borderTop: "1px solid rgba(198,163,77,0.25)",
-                borderBottom: "1px solid rgba(198,163,77,0.25)",
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-flex",
-                  gap: 42,
-                  minWidth: "200%",
-                  animation: "hciTicker 34s linear infinite",
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  letterSpacing: 0.7,
-                  textTransform: "uppercase",
-                }}
-              >
-                <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
-                <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
-                <span>Some figures are estimates because the exact numbers are not publicly disclosed.</span>
-                <span>If institutions want more precise figures used, they can release the records instead of hiding them behind vague reporting.</span>
-              </div>
-            </div>
-          </section>
-        </div>
       </div>
     </div>
   );
