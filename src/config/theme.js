@@ -37,7 +37,7 @@ export const COLORS = {
   blueprintBorder: "rgba(62,139,91,0.34)",
 };
 export const SPACING = {
-  pageMax: "1240px",
+  pageMax: "1400px",
   radius: "14px",
 };
 export const TYPE = {

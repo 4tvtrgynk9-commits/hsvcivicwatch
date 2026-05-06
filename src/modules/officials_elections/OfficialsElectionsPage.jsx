@@ -4,6 +4,7 @@ import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
+import ModuleEmptyState from "../../components/ModuleEmptyState";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import useSupabaseModule from "../../lib/useSupabaseModule";
 import useRotatingStats from "../../lib/useRotatingStats";
@@ -13,9 +14,8 @@ const MODULE_ID = "officials_elections";
 
 const tabs = [
   { id: "current_officials", label: "Current Officials" },
-  { id: "2026_candidates", label: "2026 Candidates" },
-  { id: "2026_elections", label: "2026 Elections" },
-  { id: "voting_registration", label: "Voting & Registration" },
+  { id: "candidates", label: "Candidates" },
+  { id: "elections_2026", label: "2026 Elections" },
 ];
 
 export default function OfficialsElectionsPage() {
@@ -31,7 +31,8 @@ export default function OfficialsElectionsPage() {
       const saved = JSON.parse(localStorage.getItem(SCROLL_KEY) || "{}");
       const age = Date.now() - (saved.ts || 0);
       const moduleMatch = saved.module === MODULE_ID;
-      if (moduleMatch && age < 24 * 60 * 60 * 1000 && saved.tab && saved.tab !== tabId) {
+      const savedTabIsValid = tabs.some((tab) => tab.id === saved.tab);
+      if (moduleMatch && age < 24 * 60 * 60 * 1000 && savedTabIsValid && saved.tab !== tabId) {
         setTabId(saved.tab);
       }
     } catch (e) {}
@@ -64,9 +65,7 @@ export default function OfficialsElectionsPage() {
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
         {!loading && tabLiveIssues.length === 0 ? (
-          <div style={{ textAlign: "center", color: COLORS.muted, padding: "40px 0", fontSize: 15 }}>
-            No cards published yet.
-          </div>
+          <ModuleEmptyState moduleName={"Who Runs Huntsville"} moduleDescription={"Who runs Huntsville, you ask? Meet the people making decisions about your daily life who'd rather you didn't look too closely."} />
         ) : null}
       </div>
       <InvestigativeTrail issues={liveIssues} />

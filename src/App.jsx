@@ -321,13 +321,16 @@ export default function App() {
       <main
         style={{
           flex: 1,
-          padding: isMobile ? "72px 12px 16px" : "12px 22px 18px 18px",
+          padding: isMobile ? "72px 16px 16px" : "20px 32px 24px 28px",
           color: COLORS.text,
           minWidth: 0,
           overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto" }}>
+        <div style={{ maxWidth: SPACING.pageMax, margin: "0 auto", width: "100%" }}>
           <ActivePage activeId={activeId} activeSlug={activeSlug} onBack={(id) => navigate(id)} />
         </div>
       </main>

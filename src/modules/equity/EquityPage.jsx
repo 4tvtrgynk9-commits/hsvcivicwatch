@@ -4,6 +4,7 @@ import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
+import ModuleEmptyState from "../../components/ModuleEmptyState";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././equity.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
@@ -60,6 +61,9 @@ export default function EquityPage() {
         {(mergedIssues).map((issue, index) => (
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
+        {!loading && mergedIssues.length === 0 ? (
+          <ModuleEmptyState moduleName={data.title} moduleDescription={data.intro} />
+        ) : null}
       </div>
       <InvestigativeTrail issues={liveIssues} />
     </div>

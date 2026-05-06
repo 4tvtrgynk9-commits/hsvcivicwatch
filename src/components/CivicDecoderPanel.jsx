@@ -6,28 +6,35 @@ const SIDEBAR_BG = "#193150";
 const GOLD = "#E8C35A";
 const GOLD_DIM = "rgba(232,195,90,0.55)";
 const BLUE = "#89C4E8";
-const LAVENDER = "#B98FD8";
+const LAVENDER = "#C9A8E8";
 const RED = "#E07068";
 const GREEN = "#5DBF85";
 
+const v = val => (!val || String(val).trim().toUpperCase() === "UNKNOWN") ? null : val;
+
 function isUrl(str) {
-  if (!str) return false;
-  return str.startsWith("http://") || str.startsWith("https://");
+  var clean = v(str);
+  if (!clean) return false;
+  return String(clean).startsWith("http://") || String(clean).startsWith("https://");
 }
 
 function linkLabel(type) {
-  if (!type) return "Open link";
-  var t = type.toLowerCase().replace(/[^a-z_]/g, "");
-  if (t === "investigation_request" || t === "investigation") return "Request investigation";
-  if (t === "records_request" || t === "records") return "Request records";
-  if (t === "complaint") return "File complaint";
-  if (t === "misconduct_report" || t === "misconduct") return "Submit misconduct report";
+  if (!v(type)) return "Open Filing Path";
+  var t = String(v(type)).toLowerCase().replace(/[^a-z_]/g, "");
+  if (t === "records_request") return "Request Records";
+  if (t === "investigation_request") return "Request Investigation";
+  if (t === "complaint") return "File a Complaint";
+  if (t === "misconduct_report") return "Report Misconduct";
+  if (t === "media_outreach") return "Send a Tip";
+  if (t === "investigation") return "Request Investigation";
+  if (t === "records") return "Request Records";
+  if (t === "misconduct") return "Report Misconduct";
   if (t === "elections" || t === "election" || t === "vote" || t === "register") return "Register to vote";
-  if (t === "media_outreach" || t === "media") return "Submit tip";
+  if (t === "media") return "Send a Tip";
   if (t.includes("organiz")) return "Connect with organizers";
   if (t.includes("policy") || t.includes("model")) return "View policy model";
   if (t.includes("research")) return "View research";
-  return "Open link";
+  return "Open Filing Path";
 }
 
 function getActionBg(kind) {
@@ -38,10 +45,12 @@ function getActionBg(kind) {
 }
 
 function ActionButton({ label, href, kind }) {
-  if (!href) return null;
+  var cleanHref = v(href);
+  var cleanLabel = v(label);
+  if (!cleanHref || !cleanLabel) return null;
   return (
     <a
-      href={href}
+      href={cleanHref}
       target="_blank"
       rel="noreferrer"
       style={{
@@ -59,13 +68,14 @@ function ActionButton({ label, href, kind }) {
         marginTop: 8,
       }}
     >
-      {label}
+      {cleanLabel}
     </a>
   );
 }
 
 function DecoderSection({ color, title, children }) {
-  if (!children) return null;
+  var content = v(children);
+  if (!content) return null;
   return (
     <div style={{ borderLeft: "3px solid " + color, paddingLeft: 14, marginBottom: 22 }}>
       <div style={{
@@ -80,7 +90,7 @@ function DecoderSection({ color, title, children }) {
         {title}
       </div>
       <div style={{ fontSize: 15, lineHeight: 1.7, color: color }}>
-        {children}
+        {content}
       </div>
     </div>
   );
@@ -101,23 +111,27 @@ function Block({ children, isLast }) {
 }
 
 function SlateRow({ label, value, href, isData }) {
-  if (!value) return null;
+  var cleanValue = v(value);
+  var cleanHref = v(href);
+  if (!cleanValue) return null;
   return (
     <div style={{ fontSize: 15, marginBottom: 6 }}>
       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 56, display: "inline-block" }}>{label}:</span>
-      {href
-        ? <a href={href} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{value}</a>
-        : <span style={{ color: isData ? "#ddd5c4" : "#9aaabb", fontSize: 15 }}>{value}</span>
+      {cleanHref
+        ? <a href={cleanHref} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{cleanValue}</a>
+        : <span style={{ color: isData ? "#ddd5c4" : "#9aaabb", fontSize: 15 }}>{cleanValue}</span>
       }
     </div>
   );
 }
 
 function GreenLink({ href, label }) {
-  if (!href) return null;
+  var cleanHref = v(href);
+  var cleanLabel = v(label);
+  if (!cleanHref || !cleanLabel) return null;
   return (
-    <a href={href} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 6 }}>
-      {label} <span style={{ fontSize: "11px", fontFamily: "system-ui", verticalAlign: "middle" }}>&#8599;</span>
+    <a href={cleanHref} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: GREEN, textDecoration: "none", display: "inline-block", marginTop: 6 }}>
+      {cleanLabel} <span style={{ fontSize: "11px", fontFamily: "system-ui", verticalAlign: "middle" }}>&#8599;</span>
     </a>
   );
 }
@@ -126,28 +140,39 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
   if (!analysis) return null;
 
   const { whatsHappening, connections, whoBenefits, impact, actions } = analysis;
+  const actionData = actions && typeof actions === "object" ? actions : {};
 
   const {
     intro,
-    contacts = [],
-    meetings = [],
-    paths = [],
-    actions: actionButtons = [],
-  } = actions || {};
+    contacts: rawContacts = [],
+    meetings: rawMeetings = [],
+    paths: rawPaths = [],
+    actions: rawActionButtons = [],
+  } = actionData;
 
-  const officials = contacts.filter(function(c) { return !c.isTipLine; });
-  const tipLines = contacts.filter(function(c) { return c.isTipLine; });
+  const contacts = Array.isArray(rawContacts) ? rawContacts : [];
+  const meetings = Array.isArray(rawMeetings) ? rawMeetings : [];
+  const paths = Array.isArray(rawPaths) ? rawPaths : [];
+  const actionButtons = Array.isArray(rawActionButtons) ? rawActionButtons : [];
+
+  const officials = contacts.filter(function(c) {
+    return !c.isTipLine && (v(c.name) || v(c.role) || v(c.phone) || v(c.email) || v(c.address) || v(c.officialLink));
+  });
+  const tipLines = contacts.filter(function(c) {
+    return c.isTipLine && v(c.email);
+  });
 
   const usableMeetings = meetings.filter(function(m) {
-    return m.title && m.frequency && m.frequency.toLowerCase() !== "unknown";
+    return v(m.title) && v(m.frequency);
   });
 
   const usablePaths = paths.filter(function(p) {
-    return p.link || (p.destination && isUrl(p.destination));
+    var destination = v(p.destination);
+    return v(p.link) || (destination && isUrl(destination));
   });
 
   const usableButtons = actionButtons.filter(function(a) {
-    return (a.template && a.template.email) || a.href;
+    return (a.template && v(a.template.email) && v(a.label)) || (v(a.href) && v(a.label));
   });
 
   const allBlocks = [
@@ -158,7 +183,7 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
     ...(tipLines.length ? [{ type: "tiplines", data: tipLines }] : []),
   ];
 
-  const hasAnything = intro || allBlocks.length > 0;
+  const hasAnything = v(intro) || allBlocks.length > 0;
 
   return (
     <div style={{
@@ -209,9 +234,9 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
             What You Can Do
           </div>
 
-          {intro ? (
+          {v(intro) ? (
             <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.7, color: GREEN }}>
-              {intro}
+              {v(intro)}
             </p>
           ) : null}
 
@@ -220,31 +245,34 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
 
             if (block.type === "contact") {
               var c = block.data;
+              var contactTitle = [v(c.name), v(c.role)].filter(Boolean).join(" - ");
               return (
                 <Block key={bi} isLast={isLast}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>
-                    {c.name}{c.role ? " – " + c.role : ""}
-                  </div>
-                  {c.phone ? (
+                  {contactTitle ? (
+                    <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>
+                      {contactTitle}
+                    </div>
+                  ) : null}
+                  {v(c.phone) ? (
                     <div style={{ fontSize: 15, marginBottom: 6 }}>
                       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 56, display: "inline-block" }}>Phone:</span>
-                      <a href={"tel:" + c.phone.replace(/[^0-9+]/g, "")} style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{c.phone}</a>
+                      <a href={"tel:" + String(v(c.phone)).replace(/[^0-9+]/g, "")} style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{v(c.phone)}</a>
                     </div>
                   ) : null}
-                  {c.email ? (
+                  {v(c.email) ? (
                     <div style={{ fontSize: 15, marginBottom: 6 }}>
                       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 56, display: "inline-block" }}>Email:</span>
-                      <a href={"mailto:" + c.email} style={{ color: GREEN, textDecoration: "none", fontSize: 15 }}>{c.email}</a>
+                      <a href={"mailto:" + v(c.email)} style={{ color: GREEN, textDecoration: "none", fontSize: 15 }}>{v(c.email)}</a>
                     </div>
                   ) : null}
-                  {c.address ? (
+                  {v(c.address) ? (
                     <div style={{ fontSize: 15, marginBottom: 6 }}>
                       <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9aaabb", minWidth: 56, display: "inline-block" }}>Address:</span>
-                      <a href={"https://maps.google.com/?q=" + encodeURIComponent(c.address)} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{c.address}</a>
+                      <a href={"https://maps.google.com/?q=" + encodeURIComponent(v(c.address))} target="_blank" rel="noreferrer" style={{ color: "#ddd5c4", textDecoration: "none", fontSize: 15 }}>{v(c.address)}</a>
                     </div>
                   ) : null}
-                  {c.officialLink ? (
-                    <GreenLink href={c.officialLink} label="Official page" />
+                  {v(c.officialLink) ? (
+                    <GreenLink href={v(c.officialLink)} label="Official page" />
                   ) : null}
                 </Block>
               );
@@ -254,23 +282,24 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
               var m = block.data;
               return (
                 <Block key={bi} isLast={isLast}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{m.title}</div>
+                  {v(m.title) ? <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{v(m.title)}</div> : null}
                   <SlateRow label="When" value={m.frequency} isData />
                   <SlateRow label="Where" value={m.location} isData />
                   <SlateRow label="Purpose" value={m.why} />
-                  {m.link ? <GreenLink href={m.link} label="View meeting schedule" /> : null}
+                  {v(m.link) ? <GreenLink href={v(m.link)} label="View meeting schedule" /> : null}
                 </Block>
               );
             }
 
             if (block.type === "path") {
               var p = block.data;
-              var url = p.link || (isUrl(p.destination) ? p.destination : null);
-              var title = isUrl(p.destination) ? p.why || p.type || "Filing path" : p.destination;
+              var destination = v(p.destination);
+              var url = v(p.link) || (destination && isUrl(destination) ? destination : null);
+              var title = destination && isUrl(destination) ? v(p.why) || v(p.type) || "Filing path" : destination;
               var label = linkLabel(p.type);
               return (
                 <Block key={bi} isLast={isLast}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{title}</div>
+                  {v(title) ? <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 6 }}>{v(title)}</div> : null}
                   <SlateRow label="Type" value={p.type} isData />
                   <SlateRow label="Purpose" value={p.why} />
                   {url ? <GreenLink href={url} label={label} /> : null}
@@ -296,11 +325,17 @@ export default function CivicDecoderPanel({ analysis, onHide }) {
                 <Block key={bi} isLast={isLast}>
                   <div style={{ fontWeight: 500, fontSize: 14, color: "#ffffff", marginBottom: 10 }}>Media Tip Lines</div>
                   {block.data.map(function(t, ti) {
-                    var mailto = "mailto:" + t.email + (t.tipSubject ? "?subject=" + encodeURIComponent(t.tipSubject) + "&body=" + encodeURIComponent(t.tipBody || "") : "");
+                    var cleanEmail = v(t.email);
+                    if (!cleanEmail) return null;
+                    var params = [];
+                    if (v(t.tipSubject)) params.push("subject=" + encodeURIComponent(v(t.tipSubject)));
+                    if (v(t.tipBody)) params.push("body=" + encodeURIComponent(v(t.tipBody)));
+                    var mailto = "mailto:" + cleanEmail + (params.length ? "?" + params.join("&") : "");
+                    var tipName = v(t.name) ? String(v(t.name)).replace(" - News Tip Line", "").replace(" – News Tip Line", "") : "Email tip";
                     return (
                       <div key={ti} style={{ marginBottom: 8 }}>
                         <a href={mailto} style={{ fontSize: 14, color: GREEN, textDecoration: "none" }}>
-                          {t.name.replace(" – News Tip Line", "")} — Email tip <span style={{ fontSize: "11px", fontFamily: "system-ui", verticalAlign: "middle" }}>&#8599;</span>
+                          {tipName} - Email tip <span style={{ fontSize: "11px", fontFamily: "system-ui", verticalAlign: "middle" }}>&#8599;</span>
                         </a>
                       </div>
                     );

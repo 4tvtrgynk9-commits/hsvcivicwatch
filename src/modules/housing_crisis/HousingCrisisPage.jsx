@@ -4,6 +4,7 @@ import PageHeader from "../../components/PageHeader";
 import VisualSwitcher from "../../components/VisualSwitcher";
 import TabBar from "../../components/TabBar";
 import IssueCard from "../../components/IssueCard";
+import ModuleEmptyState from "../../components/ModuleEmptyState";
 import InvestigativeTrail from "../../components/InvestigativeTrail";
 import data from "././housing_crisis.data";
 import useSupabaseModule from "../../lib/useSupabaseModule";
@@ -56,9 +57,7 @@ export default function HousingCrisisPage() {
           <IssueCard key={issue.id || index} issue={issue} />
         ))}
         {!loading && tabLiveIssues.length === 0 ? (
-          <div style={{ textAlign: "center", color: COLORS.muted, padding: "40px 0", fontSize: 15 }}>
-            No cards published yet.
-          </div>
+          <ModuleEmptyState moduleName={data.title} moduleDescription={data.intro} />
         ) : null}
       </div>
       <InvestigativeTrail issues={liveIssues} />

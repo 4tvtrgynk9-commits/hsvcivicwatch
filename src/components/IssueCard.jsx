@@ -58,7 +58,7 @@ function buildPunchyExcerpt(issue, maxLen = 220) {
   return cleanTruncate(issue?.summary || "", maxLen);
 }
 
-function buildShareText(issue, mode) {
+function buildShareText(issue, mode = "social") {
   const ref = issue.ref_number || issue.id || "";
   const shortUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
   const teaser = buildPunchyExcerpt(issue, mode === "sms" ? 240 : 220);
@@ -203,20 +203,70 @@ async function loadHtml2Canvas() {
   });
 }
 
+function showShareToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  Object.assign(toast.style, {
+    position: "fixed",
+    top: "18px",
+    right: "18px",
+    zIndex: "10000",
+    background: COLORS.green,
+    color: "#fff",
+    borderRadius: "8px",
+    padding: "12px 16px",
+    fontSize: "14px",
+    fontWeight: "800",
+    boxShadow: "0 14px 34px rgba(0,0,0,0.24)",
+  });
+  document.body.appendChild(toast);
+  window.setTimeout(() => toast.remove(), 2500);
+}
+
+async function fallbackTextShare(issue) {
+  const text = buildShareText(issue);
+  if (navigator.share) {
+    await navigator.share({
+      title: issue?.title || "HSV Civic Watch",
+      text,
+      url: "https://hsvcivicwatch.org",
+    });
+    return { shared: true, fallback: true };
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text + "\n\nhsvcivicwatch.org";
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+  showShareToast("Link copied to clipboard");
+  return { shared: true, fallback: true };
+}
+
 async function shareStoryCard(cardEl, issue) {
   if (!cardEl) return;
-  await loadHtml2Canvas();
-  const canvas = await window.html2canvas(cardEl, {
-    width: 800,
-    windowWidth: 800,
-    windowHeight: 1500,
-    scale: 2.5,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: COLORS.bg,
-  });
+  let canvas;
+  try {
+    await loadHtml2Canvas();
+    canvas = await window.html2canvas(cardEl, {
+      width: 800,
+      windowWidth: 800,
+      windowHeight: 1500,
+      scale: 2.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: COLORS.bg,
+    });
+  } catch (e) {
+    return fallbackTextShare(issue);
+  }
+  if (!canvas || canvas.width === 0 || canvas.height === 0) return fallbackTextShare(issue);
   const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
-  if (!blob) return;
+  if (!blob) return fallbackTextShare(issue);
   const file = new File([blob], `hsvcivicwatch-${slugifyFilePart(issue?.title)}.png`, { type: "image/png" });
   const ref = issue?.ref_number || issue?.id || "";
   const shareUrl = ref ? "https://hsvcivicwatch.org/c/" + ref : "https://hsvcivicwatch.org";
@@ -250,6 +300,8 @@ export default function IssueCard({ issue }) {
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [shareOptions, setShareOptions] = useState({ blobUrl: "", shareText: "", shareUrl: "", fbUrl: "", fileName: "" });
   const [shareStatBlock, setShareStatBlock] = useState(null);
+  const [decoderPulse, setDecoderPulse] = useState(false);
+  const [decoderClosePulse, setDecoderClosePulse] = useState(false);
   const storyCardRef = useRef(null);
   const cardRef = useRef(null);
   const cardId = issue.id || issue.ref_number || issue.title;
@@ -310,6 +362,64 @@ export default function IssueCard({ issue }) {
     };
   }, [shareOptions.blobUrl]);
 
+  useEffect(() => {
+    if (decoded) {
+      setDecoderPulse(false);
+      return undefined;
+    }
+
+    var resetTimer = null;
+    var trigger = function() {
+      setDecoderPulse(true);
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(function() {
+        setDecoderPulse(false);
+      }, 1400);
+    };
+
+    var interval = null;
+    var firstTimer = setTimeout(function() {
+      trigger();
+      interval = setInterval(trigger, 30000);
+    }, 3000);
+
+    return function() {
+      clearTimeout(firstTimer);
+      clearInterval(interval);
+      clearTimeout(resetTimer);
+      setDecoderPulse(false);
+    };
+  }, [decoded]);
+
+  useEffect(() => {
+    if (!decoded) {
+      setDecoderClosePulse(false);
+      return undefined;
+    }
+
+    var resetTimer = null;
+    var trigger = function() {
+      setDecoderClosePulse(true);
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(function() {
+        setDecoderClosePulse(false);
+      }, 1400);
+    };
+
+    var interval = null;
+    var firstTimer = setTimeout(function() {
+      trigger();
+      interval = setInterval(trigger, 30000);
+    }, 3000);
+
+    return function() {
+      clearTimeout(firstTimer);
+      clearInterval(interval);
+      clearTimeout(resetTimer);
+      setDecoderClosePulse(false);
+    };
+  }, [decoded]);
+
   const loadShareStatBlock = async () => {
     if (issue.visual_config && (issue.visual_score || 0) >= 7) return null;
     if (shareStatBlock) return shareStatBlock;
@@ -344,6 +454,9 @@ export default function IssueCard({ issue }) {
     setStoryOpen(true);
     setSharing(true);
     await new Promise(r => setTimeout(r, 120));
+    if (issue.visual_config && (issue.visual_score || 0) >= 7) {
+      await new Promise(r => setTimeout(r, 300));
+    }
     try {
       const result = await shareStoryCard(storyCardRef.current, issue);
       if (result && result.shared === false) {
@@ -423,6 +536,40 @@ export default function IssueCard({ issue }) {
             transform: translateX(0);
           }
         }
+
+        @keyframes hsvDecoderPulse {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(198,163,77,0);
+          }
+          45% {
+            transform: scale(1.045);
+            box-shadow:
+              0 0 0 4px rgba(198,163,77,0.20),
+              0 0 22px rgba(198,163,77,0.46);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(198,163,77,0);
+          }
+        }
+
+        @keyframes hsvDecoderClosePulse {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(198,163,77,0);
+          }
+          45% {
+            transform: scale(1.045);
+            box-shadow:
+              0 0 0 4px rgba(198,163,77,0.20),
+              0 0 22px rgba(198,163,77,0.46);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(198,163,77,0);
+          }
+        }
       `}</style>
     <div ref={cardRef} style={{
       background: COLORS.panel,
@@ -449,7 +596,7 @@ export default function IssueCard({ issue }) {
       {issue.visual_config && (issue.visual_score || 0) >= 7 ? (
         <IssueCardVisual config={issue.visual_config} />
       ) : null}
-      <div style={{ fontSize: 17, color: COLORS.text, lineHeight: 1.65 }}>
+      <div style={{ fontSize: 17, color: COLORS.text, lineHeight: 1.85 }}>
         {body}
       </div>
       {long ? (
@@ -480,6 +627,10 @@ export default function IssueCard({ issue }) {
           style={{
             background: COLORS.gold, color: COLORS.navyDark, border: "none",
             borderRadius: 10, padding: "10px 16px", cursor: "pointer", fontSize: 15, fontWeight: 900,
+            animation: decoded
+              ? (decoderClosePulse ? "hsvDecoderClosePulse 1.3s ease both" : "none")
+              : (decoderPulse ? "hsvDecoderPulse 1.3s ease both" : "none"),
+            transformOrigin: "center",
           }}
         >
           {decoded ? "Hide Decoder \u25b2" : "Decode This \uD83D\uDD0E"}

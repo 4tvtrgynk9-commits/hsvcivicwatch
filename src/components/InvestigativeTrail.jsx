@@ -35,6 +35,7 @@ export default function InvestigativeTrail({ issues = [], entries = [] }) {
               {entry.href ? (
                 <a href={entry.href} target="_blank" rel="noreferrer" style={{ color: COLORS.gold, textDecoration: "none" }}>
                   {entry.label || entry.href}
+                  <span style={{ fontSize: 11, verticalAlign: "middle", marginLeft: 3 }}>↗</span>
                 </a>
               ) : (
                 <span style={{ color: COLORS.textSoft }}>{entry.label || entry.text || ""}</span>

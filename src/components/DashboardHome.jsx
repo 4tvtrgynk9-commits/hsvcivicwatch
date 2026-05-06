@@ -162,7 +162,7 @@ function KeyCard({ item, onClick }) {
   );
 }
 
-function ModuleCard({ item, onClick, count, latestTitle }) {
+function ModuleCard({ item, onClick }) {
   const isBlueprint = item.id === "proposals";
 
   return (
@@ -170,16 +170,16 @@ function ModuleCard({ item, onClick, count, latestTitle }) {
       onClick={onClick}
       style={{
         background: isBlueprint ? COLORS.greenSoft : COLORS.card,
-        border: `1px solid ${isBlueprint ? COLORS.blueprintBorder : COLORS.cardBorder}`,
-        borderTop: `4px solid ${isBlueprint ? COLORS.green : item.featured ? COLORS.gold : COLORS.navy}`,
+        border: `2px solid ${COLORS.navy}`,
         borderRadius: 14,
         padding: 14,
-        textAlign: "left",
+        textAlign: "center",
         cursor: "pointer",
         minHeight: 96,
         color: COLORS.text,
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <div
@@ -188,25 +188,15 @@ function ModuleCard({ item, onClick, count, latestTitle }) {
           fontSize: 14.5,
           lineHeight: 1.26,
           display: "flex",
+          justifyContent: "center",
+          textAlign: "center",
           gap: 8,
-          alignItems: "flex-start",
+          alignItems: "center",
           width: "100%",
         }}
       >
         <span>{item.emoji}</span>
-        <span style={{ flex: 1 }}>
-          <span>{item.label}</span>
-          {typeof count === "number" ? (
-            <span style={{ display: "block", marginTop: 6, color: COLORS.textSoft, fontSize: 11.5, fontWeight: 700 }}>
-              {count} live card{count !== 1 ? "s" : ""}
-            </span>
-          ) : null}
-          {latestTitle ? (
-            <span style={{ display: "block", marginTop: 4, color: COLORS.textSoft, fontSize: 11.5, lineHeight: 1.3, fontWeight: 500 }}>
-              {latestTitle}
-            </span>
-          ) : null}
-        </span>
+        <span>{item.label}</span>
       </div>
     </button>
   );
@@ -479,26 +469,6 @@ export default function DashboardHome({ onOpenModule }) {
   const [investigationStart, setInvestigationStart] = useState(0);
   const [keyNumberStart, setKeyNumberStart] = useState(0);
 
-  const moduleCounts = useMemo(() => {
-    return cards.reduce((acc, card) => {
-      if (card.module) acc[card.module] = (acc[card.module] || 0) + 1;
-      return acc;
-    }, {});
-  }, [cards]);
-
-  const latestByModule = useMemo(() => {
-    const latest = {};
-    cards.forEach((card) => {
-      if (!card.module) return;
-      const cardTime = new Date(card.created_at || 0).getTime();
-      const knownTime = latest[card.module]?.createdAt || 0;
-      if (!latest[card.module] || cardTime > knownTime) {
-        latest[card.module] = { title: card.title || "", createdAt: cardTime };
-      }
-    });
-    return latest;
-  }, [cards]);
-
   useEffect(() => {
     if (cards.length <= 12) return;
     const id = setInterval(() => {
@@ -562,16 +532,8 @@ export default function DashboardHome({ onOpenModule }) {
             font-size: 18px !important;
           }
 
-          .hci-home-keys {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          }
-
           .hci-home-module-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          }
-
-          .hci-pay-grid {
-            grid-template-columns: 1fr !important;
           }
         }
 
@@ -586,40 +548,15 @@ export default function DashboardHome({ onOpenModule }) {
             line-height: 1.42 !important;
           }
 
-          .hci-pay-grid {
-            grid-template-columns: 1fr !important;
-            gap: 10px !important;
-          }
-
           .hci-pay-panel {
             padding: 10px !important;
           }
 
-          .hci-clock-grid-utilities {
-            grid-template-columns: 1fr !important;
-          }
-
-          .hci-clock-grid-health {
-            grid-template-columns: 1fr !important;
-          }
-
-          .hci-clock-wide {
-            grid-column: auto !important;
-            max-width: none !important;
-          }
-
-          .hci-home-keys {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 10px !important;
-          }
-
           .hci-home-module-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 9px !important;
           }
 
           .hci-acronym-box {
-            max-width: 260px !important;
             font-size: 11.5px !important;
             line-height: 1.38 !important;
           }
@@ -728,7 +665,7 @@ export default function DashboardHome({ onOpenModule }) {
           </section>
         ) : null}
 
-        <section style={{ marginBottom: 16 }}>
+        <section style={{ marginBottom: 16, marginTop: 40 }}>
           {sectionTitle("Investigations")}
           {allGroups.map((group, index) => (
             <div
@@ -743,7 +680,7 @@ export default function DashboardHome({ onOpenModule }) {
                   fontSize: 13,
                   fontWeight: 900,
                   color: COLORS.blue,
-                  marginBottom: 8,
+                  marginBottom: group.group === "Daily Life: Costs & Burdens" ? 20 : 8,
                   textTransform: "uppercase",
                   letterSpacing: 1.2,
                   lineHeight: 1.15,
@@ -765,8 +702,6 @@ export default function DashboardHome({ onOpenModule }) {
                     key={item.id}
                     item={item}
                     onClick={() => onOpenModule(item.id)}
-                    count={moduleCounts[item.id]}
-                    latestTitle={latestByModule[item.id]?.title || ""}
                   />
                 ))}
               </div>
@@ -778,8 +713,8 @@ export default function DashboardHome({ onOpenModule }) {
           style={{
             marginTop: 12,
             marginBottom: 4,
-            marginLeft: -18,
-            marginRight: -22,
+            marginLeft: "calc(50% - 50vw)",
+            marginRight: "calc(50% - 50vw)",
             position: "relative",
             overflow: "hidden",
           }}

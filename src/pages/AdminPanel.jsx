@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from '../lib/supabase';
 import EditCardModal from "../components/EditCardModal";
+import EditStatBlockModal from "../components/EditStatBlockModal";
 import { COLORS } from "../config/theme";
 import {
   PieChart, Pie, Cell, Tooltip,
@@ -1572,7 +1573,7 @@ function PublishedStatBlock({ block, onDelete, onEdit, highlight, animate, isMob
   );
 }
 
-function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel, onRerank, rerankRunning, isMobile = false }) {
+function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEditIssue, onEditStat, highlightId, animateId, exportStatus, fallbackText, fallbackRef, handleExport, getLastExportLabel, onRerank, rerankRunning, rerankMessage, rerankError, movedCardNotice, isMobile = false }) {
   const [section, setSection] = useState("issues");
 
 
@@ -1584,6 +1585,9 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
     if (!issuesByModule[m]) issuesByModule[m] = [];
     issuesByModule[m].push(c);
   });
+  if (movedCardNotice?.module && !issuesByModule[movedCardNotice.module]) {
+    issuesByModule[movedCardNotice.module] = [];
+  }
 
   const statsByModule = {};
   pubStats.forEach(b => {
@@ -1659,6 +1663,12 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
             style={{ background:"#1a5276", color:"#fff", border:"none", borderRadius:4, padding:"10px 20px", fontSize:13, fontWeight:700, cursor:rerankRunning ? "not-allowed" : "pointer", textTransform:"uppercase", letterSpacing:1, width:isMobile ? "100%" : "auto" }}>
             {rerankRunning ? "Re-ranking..." : "Re-rank All"}
           </button>
+          {rerankMessage ? (
+            <span style={{ color:"#5DBF85", fontSize:13, fontWeight:700, alignSelf:"center" }}>{rerankMessage}</span>
+          ) : null}
+          {rerankError ? (
+            <span style={{ color:"#e57373", fontSize:13, fontWeight:700, alignSelf:"center" }}>{rerankError}</span>
+          ) : null}
           <button
             onClick={async () => {
               if (!window.confirm("Delete ALL published content? This cannot be undone.")) return;
@@ -1691,6 +1701,11 @@ function PublishedTab({ pubIssues, pubStats, onDeleteIssue, onDeleteStat, onEdit
                 <span style={{ background:"#b8860b", color:"#fff", fontSize:13, fontWeight:700, padding:"5px 14px", borderRadius:4, textTransform:"uppercase", letterSpacing:1 }}>{module}</span>
                 <span style={{ color:"#8fa3b8", fontSize:14 }}>{cards.length} card{cards.length !== 1 ? "s" : ""}</span>
               </div>
+              {movedCardNotice?.module === module ? (
+                <div style={{ background:"#123d5a", color:"#c8d1dc", border:"1px solid #1a5276", borderRadius:8, padding:"12px 14px", fontSize:13, fontWeight:700, marginBottom:14 }}>
+                  {movedCardNotice.message}
+                </div>
+              ) : null}
               {cards.map((card, i) => <PublishedIssueCard key={card.id || i} card={card} onDelete={onDeleteIssue} onEdit={onEditIssue} highlight={highlightId === card.id} animate={animateId === card.id} isMobile={isMobile} />)}
             </div>
           ))}
@@ -2298,10 +2313,12 @@ export default function AdminPanel() {
   const [toolTemplateCopied, setToolTemplateCopied] = useState({ issue: false, profile: false, blueprint: false });
   const [editConfig, setEditConfig] = useState(null);
   const [editCard, setEditCard] = useState(null);
+  const [editStatBlock, setEditStatBlock] = useState(null);
   const [editSaving, setEditSaving] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
   const [animateId, setAnimateId] = useState(null);
   const [savedToast, setSavedToast] = useState("");
+  const [movedCardNotice, setMovedCardNotice] = useState(null);
   const [profileRawPaste, setProfileRawPaste] = useState("");
   const [profileParsing, setProfileParsing] = useState(false);
   const [profileParseError, setProfileParseError] = useState("");
@@ -2329,14 +2346,11 @@ export default function AdminPanel() {
   const [weeklyError, setWeeklyError] = useState("");
   const [weeklyToast, setWeeklyToast] = useState(null);
   const [rerankRunning, setRerankRunning] = useState(false);
+  const [rerankMessage, setRerankMessage] = useState("");
+  const [rerankError, setRerankError] = useState("");
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
   const fallbackRef = useRef(null);
-  const setCards = (updater) => {
-    setPubIssues(updater);
-    setDraftIssues(updater);
-  };
-
   const loadPublished = async () => {
     if (!supabase) return;
     try {
@@ -3312,30 +3326,19 @@ export default function AdminPanel() {
   };
 
   const handleRerank = async () => {
-    if (!supabase) return;
     setRerankRunning(true);
+    setRerankMessage("");
+    setRerankError("");
     try {
-      const { data: issues } = await supabase
-        .from("issue_cards")
-        .select("id, shock_score, module_relevance_score");
-
-      for (const issue of issues || []) {
-        const shock = Math.max(1, Math.min(10, issue.shock_score || 1));
-        const relevance = Math.max(1, Math.min(10, issue.module_relevance_score || 1));
-        const homepageScore = Math.max(1, Math.min(10, Math.round(
-          (shock * 0.70) + (10 * 0.20) + (relevance * 0.10)
-        )));
-        await supabase
-          .from("issue_cards")
-          .update({ homepage_score: homepageScore })
-          .eq("id", issue.id);
-      }
+      const res = await adminJsonFetch("/api/rerank", { method: "POST" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Re-rank failed");
       await loadPublished();
-      setSavedToast("Re-rank complete — homepage scores updated");
-      setTimeout(() => setSavedToast(""), 3000);
+      setRerankMessage(`Re-ranked ${payload.updated || 0} cards.`);
+      setTimeout(() => setRerankMessage(""), 3500);
     } catch (e) {
-      setSavedToast("Re-rank failed: " + e.message);
-      setTimeout(() => setSavedToast(""), 4000);
+      setRerankError(e.message || "Re-rank failed");
+      setTimeout(() => setRerankError(""), 5000);
     } finally {
       setRerankRunning(false);
     }
@@ -3989,7 +3992,7 @@ export default function AdminPanel() {
             onDeleteIssue={handleDeleteIssue}
             onDeleteStat={handleDeleteStat}
             onEditIssue={setEditCard}
-            onEditStat={openStatEdit}
+            onEditStat={setEditStatBlock}
             highlightId={highlightId}
             animateId={animateId}
             exportStatus={exportStatus}
@@ -3999,6 +4002,9 @@ export default function AdminPanel() {
             getLastExportLabel={getLastExportLabel}
             onRerank={handleRerank}
             rerankRunning={rerankRunning}
+            rerankMessage={rerankMessage}
+            rerankError={rerankError}
+            movedCardNotice={movedCardNotice}
             isMobile={isMobile}
           />
         )}
@@ -4564,8 +4570,29 @@ export default function AdminPanel() {
           card={editCard}
           onClose={() => setEditCard(null)}
           onSaved={(updated) => {
-            setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
+            const moved = updated.module !== editCard.module || updated.tab !== editCard.tab;
+            if (moved) {
+              setPubIssues(prev => prev.filter(c => c.id !== updated.id));
+              setMovedCardNotice({
+                id: updated.id,
+                module: editCard.module || "Unknown",
+                message: `Card moved to ${updated.module} / ${updated.tab} — refresh to see it in its new location`,
+              });
+              setTimeout(() => setMovedCardNotice(null), 7000);
+            } else {
+              setPubIssues(prev => prev.map(c => c.id === updated.id ? updated : c));
+            }
             setEditCard(null);
+          }}
+        />
+      )}
+      {editStatBlock && (
+        <EditStatBlockModal
+          statBlock={editStatBlock}
+          onClose={() => setEditStatBlock(null)}
+          onSaved={(updated) => {
+            setPubStats(prev => prev.map(s => s.id === updated.id ? updated : s));
+            setEditStatBlock(null);
           }}
         />
       )}
