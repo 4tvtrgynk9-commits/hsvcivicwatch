@@ -432,6 +432,21 @@ function SelectInput({ children, ...props }) {
   );
 }
 
+function getSeatSearchText(seat) {
+  return [seat?.title, seat?.body, seat?.level, seat?.county]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function filterSeatOptions(seatList, search) {
+  const query = String(search || "").trim().toLowerCase();
+  if (query.length < 2) return [];
+  return (Array.isArray(seatList) ? seatList : []).filter((seat) =>
+    getSeatSearchText(seat).includes(query)
+  );
+}
+
 function AdminMetaRow({ label, value }) {
   return (
     <div style={{ marginBottom:8 }}>
@@ -2340,13 +2355,10 @@ export default function AdminPanel() {
       setPubProfiles(data || []);
 
       try {
-        const { data: seatsData, error: seatsError } = await supabase
-          .from("seats")
-          .select("id, title, body, level, county")
-          .order("level", { ascending: true })
-          .order("title", { ascending: true });
-        if (seatsError) throw seatsError;
-        setAdminSeats(seatsData || []);
+        const res = await adminJsonFetch("/api/seats", { method: "GET" });
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || "Could not load seats");
+        setAdminSeats(Array.isArray(payload.seats) ? payload.seats : []);
       } catch (seatsError) {
         console.error("loadPublishedProfiles seats error:", seatsError);
         setAdminSeats([]);
@@ -2408,12 +2420,16 @@ export default function AdminPanel() {
   };
 
   const loadSeats = async () => {
-    if (!supabase) return;
     setSeatsLoading(true);
     try {
-      const { data } = await supabase.from("seats").select("id, title, body, level, county").order("level", { ascending: true }).order("title", { ascending: true });
-      setSeats(data || []);
-    } catch (e) { console.error("loadSeats error:", e); }
+      const res = await adminJsonFetch("/api/seats", { method: "GET" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Could not load seats");
+      setSeats(Array.isArray(payload.seats) ? payload.seats : []);
+    } catch (e) {
+      console.error("loadSeats error:", e);
+      setSeats([]);
+    }
     finally { setSeatsLoading(false); }
   };
 
@@ -2779,7 +2795,7 @@ export default function AdminPanel() {
   }, [authed]);
 
   useEffect(() => {
-    if (adminTab === "profiles") { setSeats([]); loadSeats(); }
+    if (adminTab === "profiles") { loadSeats(); }
     if (adminTab === "profiles" && profileAdminTab === "published") {
       loadPublishedProfiles();
     }
@@ -3144,7 +3160,7 @@ export default function AdminPanel() {
 
   const autoMatchSeat = async (profile) => {
     try {
-      if (!supabase || !profile) return;
+      if (!profile) return;
       const rawOffice = String(profile.office || profile.title || profile.role || profile.position || "").trim();
       const officeTerm = rawOffice.split(",")[0].trim();
       const locationTerm = String(profile.jurisdiction || profile.county || profile.location || profile.geography || "").trim();
@@ -3154,11 +3170,16 @@ export default function AdminPanel() {
         return;
       }
 
-      let query = supabase
-        .from("seats")
-        .select("id, title, body, level, county")
-        .ilike("title", `%${officeTerm}%`)
-        .limit(10);
+      let seatList = seats;
+      if (!seatList.length) {
+        const res = await adminJsonFetch("/api/seats", { method: "GET" });
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || "Could not load seats");
+        seatList = Array.isArray(payload.seats) ? payload.seats : [];
+        setSeats(seatList);
+      }
+
+      let matches = filterSeatOptions(seatList, officeTerm);
 
       if (locationTerm) {
         const locationLower = locationTerm.toLowerCase();
@@ -3169,11 +3190,14 @@ export default function AdminPanel() {
           locationLower.match(/\b(alabama|state)\b/) ? "state" :
           locationLower.match(/\b(u\.?s\.?|united states|federal)\b/) ? "federal" :
           locationTerm;
-        query = query.ilike("county", `%${countyTerm}%`);
+        const countyQuery = countyTerm.toLowerCase();
+        matches = matches.filter((seat) =>
+          String(seat.county || "").toLowerCase().includes(countyQuery) ||
+          String(seat.body || "").toLowerCase().includes(countyQuery)
+        );
       }
 
-      const { data: matches, error } = await query;
-      if (error) throw error;
+      matches = matches.slice(0, 10);
 
       if (matches?.length === 1) {
         setSelectedSeatId(matches[0].id);
@@ -3365,6 +3389,7 @@ export default function AdminPanel() {
   const issueCardsForStatModule = confirmStat
     ? pubIssues.filter(ic => ic.module === confirmStat.module)
     : [];
+  const filteredSeatOptions = filterSeatOptions(seats, seatSearch);
 
   // Queue notice modal
   const QueueNoticeModal = queueNotice > 0 ? (
@@ -4053,15 +4078,15 @@ export default function AdminPanel() {
                       style={{ width:"100%", background:"#f5f0e8", border:"1px solid #4a5268", borderRadius:6, padding:"10px 12px", fontSize:14, color:"#193150", outline:"none", marginBottom:10, boxSizing:"border-box", fontFamily:"Georgia, serif" }} />
                     {seatSearch.trim().length >= 2 ? (
                       <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:6, maxHeight:220, overflowY:"auto" }}>
-                        {seats.filter(seat => [seat.title, seat.body].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).slice(0,20).map(seat => (
+                        {filteredSeatOptions.slice(0,20).map(seat => (
                           <button key={seat.id} onClick={() => { setSelectedSeatId(seat.id); setSeatSearch(formatSeatSearchValue(seat)); setSeatMatches([]); }}
                             style={{ width:"100%", background: selectedSeatId === seat.id ? "rgba(198,163,77,0.13)" : "transparent", border:"none", borderBottom:"1px solid rgba(255,255,255,0.08)", padding:"10px 14px", textAlign:"left", cursor:"pointer", display:"flex", flexDirection:"column", gap:2 }}>
                             <span style={{ color:"#ffffff", fontSize:13, fontWeight:700 }}>{formatSeatDisplay(seat)}</span>
                             <span style={{ color:"#8fa3b8", fontSize:11 }}>{seat.level}</span>
                           </button>
                         ))}
-                        {!seats.filter(seat => [seat.title, seat.body].filter(Boolean).some(v => v.toLowerCase().includes(seatSearch.toLowerCase()))).length
-                          ? <div style={{ padding:"12px 14px", color:"#8fa3b8", fontSize:13 }}>No seats match.</div> : null}
+                        {!filteredSeatOptions.length
+                          ? <div style={{ padding:"12px 14px", color:"#8fa3b8", fontSize:13 }}>{seatsLoading ? "Loading seats..." : "No seats match."}</div> : null}
                       </div>
                     ) : null}
                     {selectedSeatId
