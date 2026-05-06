@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NAV, BOTTOM_NAV } from "../config/nav";
 import { COLORS } from "../config/theme";
 import IssueCard from "./IssueCard";
@@ -408,6 +408,48 @@ function ModuleCarousel({ group, onOpenModule }) {
     }))
     : items.map((item) => ({ item, key: item.id }));
 
+  const detectCenter = useCallback(() => {
+    const track = trackRef.current;
+    if (!track || !isCarouselMobile) return;
+
+    const cards = Array.from(track.querySelectorAll("[data-carousel-key]"));
+    if (!cards.length) return;
+
+    cards.forEach((card) => {
+      const isProposal = card.dataset.id === "proposals";
+      card.style.transform = "scale(1.0)";
+      card.style.boxShadow = "none";
+      card.style.zIndex = "1";
+      card.style.borderColor = isProposal ? COLORS.green : COLORS.navy;
+      card.style.background = isProposal ? "rgba(62,139,91,0.08)" : "white";
+    });
+
+    const trackRect = track.getBoundingClientRect();
+    const trackCenter = trackRect.left + trackRect.width / 2;
+    let closestCard = null;
+    let closestDistance = Infinity;
+
+    cards.forEach((card) => {
+      const cardRect = card.getBoundingClientRect();
+      const cardCenter = cardRect.left + cardRect.width / 2;
+      const distance = Math.abs(trackCenter - cardCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestCard = card;
+      }
+    });
+
+    if (!closestCard) return;
+
+    const isProposal = closestCard.dataset.id === "proposals";
+    closestCard.style.transform = "scale(1.10)";
+    closestCard.style.boxShadow = "0 6px 20px rgba(25,49,80,0.16)";
+    closestCard.style.zIndex = "5";
+    closestCard.style.borderColor = COLORS.gold;
+    if (isProposal) closestCard.style.background = "rgba(198,163,77,0.08)";
+    setCenteredKeys([closestCard.dataset.carouselKey]);
+  }, [isCarouselMobile]);
+
   useEffect(() => {
     const updateCarouselMode = () => setIsCarouselMobile(window.innerWidth < 960);
     updateCarouselMode();
@@ -425,35 +467,16 @@ function ModuleCarousel({ group, onOpenModule }) {
   }, [isCarouselMobile, oneSetWidth]);
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track || !isCarouselMobile) {
+    if (!isCarouselMobile) {
       setCenteredKeys([]);
       return undefined;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        setCenteredKeys((previousKeys) => {
-          const nextKeys = new Set(previousKeys);
-          entries.forEach((entry) => {
-            const key = entry.target?.dataset?.carouselKey;
-            if (!key) return;
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
-              nextKeys.add(key);
-            } else {
-              nextKeys.delete(key);
-            }
-          });
-          return Array.from(nextKeys);
-        });
-      },
-      { root: track, threshold: 0.7 }
-    );
-
-    const cards = track.querySelectorAll("[data-carousel-key]");
-    cards.forEach((card) => observer.observe(card));
-    return () => observer.disconnect();
-  }, [isCarouselMobile, trackItems.length]);
+    const id = setTimeout(() => {
+      detectCenter();
+    }, 200);
+    return () => clearTimeout(id);
+  }, [detectCenter, isCarouselMobile, trackItems.length]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -472,11 +495,12 @@ function ModuleCarousel({ group, onOpenModule }) {
       const progress = Math.max(0, Math.min(1, (currentScrollLeft - oneSetWidth) / oneSetWidth));
       const nextDot = Math.min(dotCount - 1, Math.floor(progress * dotCount));
       setActiveDot(nextDot);
+      detectCenter();
     };
 
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => track.removeEventListener("scroll", onScroll);
-  }, [dotCount, isCarouselMobile, oneSetWidth]);
+  }, [detectCenter, dotCount, isCarouselMobile, oneSetWidth]);
 
   const scrollBy = (amount) => {
     trackRef.current?.scrollBy({ left: amount, behavior: "smooth" });
@@ -581,6 +605,7 @@ function ModuleCarousel({ group, onOpenModule }) {
               <button
                 key={key}
                 data-carousel-key={key}
+                data-id={item.id}
                 onClick={() => onOpenModule(item.id)}
                 onMouseEnter={() => setHoveredKey(key)}
                 onMouseLeave={() => setHoveredKey("")}
