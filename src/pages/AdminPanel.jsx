@@ -18,6 +18,10 @@ import {
 const ADMIN_PASSKEY_NAME = "HSV Civic Watch Admin Passkey";
 const ADMIN_TOTP_NAME = "HSV Civic Watch Admin Authenticator";
 
+// TEMPORARY: frontend admin gate disabled while admin infrastructure is being finished.
+// Backend API protections remain in place.
+const TEMP_DISABLE_ADMIN_LOGIN = true;
+
 const MODULE_PREFIX = {
   equity: "EQ",
   utilities: "UT",
@@ -2540,9 +2544,9 @@ function getFriendlyAdminError(error) {
 
 export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState(TEMP_DISABLE_ADMIN_LOGIN);
   const [pw, setPw] = useState("");
-  const [authLoading, setAuthLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(!TEMP_DISABLE_ADMIN_LOGIN);
   const [authBusy, setAuthBusy] = useState(false);
   const [authView, setAuthView] = useState("password");
   const [authError, setAuthError] = useState("");
@@ -3144,6 +3148,11 @@ export default function AdminPanel() {
   }
 
   async function handleSignOut() {
+    if (TEMP_DISABLE_ADMIN_LOGIN) {
+      setAuthMessage("Admin login is temporarily disabled; sign out is unavailable in bypass mode.");
+      return;
+    }
+
     await supabase.auth.signOut();
     setAuthed(false);
     setPubIssues([]);
@@ -3158,6 +3167,16 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
+    if (TEMP_DISABLE_ADMIN_LOGIN) {
+      setAuthed(true);
+      setAuthLoading(false);
+      setAuthBusy(false);
+      setAuthError("");
+      setAuthMessage("Admin login is temporarily disabled while the admin workflow is being finished.");
+      loadPublished();
+      return undefined;
+    }
+
     let active = true;
 
     const boot = async () => {
@@ -3190,7 +3209,7 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    if (!authed) return;
+    if (!authed || TEMP_DISABLE_ADMIN_LOGIN) return;
 
     let timer = null;
 
