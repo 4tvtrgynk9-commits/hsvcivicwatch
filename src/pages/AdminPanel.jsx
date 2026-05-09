@@ -20,7 +20,7 @@ const ADMIN_TOTP_NAME = "HSV Civic Watch Admin Authenticator";
 
 // TEMPORARY: frontend admin gate disabled while admin infrastructure is being finished.
 // Backend API protections remain in place.
-const TEMP_DISABLE_ADMIN_LOGIN = true;
+const TEMP_DISABLE_ADMIN_LOGIN = process.env.NODE_ENV !== "production" && process.env.REACT_APP_TEMP_DISABLE_ADMIN_LOGIN === "true";
 const ADMIN_API_KEY_STORAGE = "hsv_admin_api_key";
 
 const MODULE_PREFIX = {
@@ -4339,7 +4339,7 @@ export default function AdminPanel() {
       {TEMP_DISABLE_ADMIN_LOGIN ? (
         <div style={{ maxWidth:1280, margin:"14px auto 0", padding:isMobile ? "0 12px" : "0 36px" }}>
           <div style={{ background:"#7A4F00", border:"1px solid #C6A34D", color:"#fff3cd", borderRadius:10, padding:12, fontSize:14, fontWeight:800 }}>
-            TEMP ADMIN BYPASS ACTIVE — finish workflow testing, then restore the login gate before launch.
+            DEV-ONLY TEMP ADMIN BYPASS ACTIVE — production builds require the admin login gate.
           </div>
         </div>
       ) : null}
@@ -4386,7 +4386,7 @@ export default function AdminPanel() {
               />
             ))
           ) : (
-            <EmptyReviewState title="No content drafts waiting" body="Use Generate Content after agents upload staged research." />
+            <EmptyReviewState title="No content drafts waiting" body="Use Import → Save Structured Packet, then Tools → Infrastructure Desk → Send to Review Queue." />
           )}
         </ReviewShell>
       ) : null}
@@ -4419,7 +4419,7 @@ export default function AdminPanel() {
               />
             ))
           ) : (
-            <EmptyReviewState title="No profile drafts waiting" body="Use Refresh Profiles after agents upload staged profile research." />
+            <EmptyReviewState title="No profile drafts waiting" body="Profile parser routes are parked during consolidation. Use manual/profile review workflow until restored." />
           )}
         </ReviewShell>
       ) : null}
