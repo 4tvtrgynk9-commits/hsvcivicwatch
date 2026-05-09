@@ -1,7 +1,7 @@
-import { parseStructuredPacket, validateRecord } from "./_shared/parserCore.js";
-import { computeScoreBundle } from "./_shared/scoring.js";
-import { getSupabaseAdminClient } from "./_shared/supabaseAdmin.js";
-import { requireAdminApiKey } from "./_shared/authGuard.js";
+import { parseStructuredPacket, validateRecord } from "../api-shared/parserCore.js";
+import { computeScoreBundle } from "../api-shared/scoring.js";
+import { getSupabaseAdminClient } from "../api-shared/supabaseAdmin.js";
+import { requireAdminApiKey } from "../api-shared/authGuard.js";
 
 async function insertChildren(supabase, table, draftId, workspace, rows) {
   if (!rows?.length) return;

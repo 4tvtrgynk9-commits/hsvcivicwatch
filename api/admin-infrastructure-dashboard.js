@@ -1,7 +1,7 @@
-import { getSupabaseAdminClient } from "./_shared/supabaseAdmin.js";
-import { requireAdminApiKey } from "./_shared/authGuard.js";
-import { getCurrentMonthSpend } from "./_shared/aiBudget.js";
-import { MONTHLY_AI_BUDGET_USD } from "./_shared/aiConfig.js";
+import { getSupabaseAdminClient } from "../api-shared/supabaseAdmin.js";
+import { requireAdminApiKey } from "../api-shared/authGuard.js";
+import { getCurrentMonthSpend } from "../api-shared/aiBudget.js";
+import { MONTHLY_AI_BUDGET_USD } from "../api-shared/aiConfig.js";
 
 export default async function handler(req, res) {
   const auth = requireAdminApiKey(req);

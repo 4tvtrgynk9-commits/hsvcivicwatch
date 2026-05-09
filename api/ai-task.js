@@ -1,6 +1,6 @@
-import { getSupabaseAdminClient } from "./_shared/supabaseAdmin.js";
-import { requireAdminApiKey } from "./_shared/authGuard.js";
-import { runAiTask } from "./_shared/aiGateway.js";
+import { getSupabaseAdminClient } from "../api-shared/supabaseAdmin.js";
+import { requireAdminApiKey } from "../api-shared/authGuard.js";
+import { runAiTask } from "../api-shared/aiGateway.js";
 
 export default async function handler(req, res) {
   const auth = requireAdminApiKey(req);

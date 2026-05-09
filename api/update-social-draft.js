@@ -1,5 +1,5 @@
-import { getSupabaseAdminClient } from "./_shared/supabaseAdmin.js";
-import { requireAdminApiKey } from "./_shared/authGuard.js";
+import { getSupabaseAdminClient } from "../api-shared/supabaseAdmin.js";
+import { requireAdminApiKey } from "../api-shared/authGuard.js";
 
 const ALLOWED_STATUS = new Set(["queued", "generated", "needs_edit", "approved", "posted", "skipped"]);
 
