@@ -7,8 +7,8 @@ import IssueCardVisual from "../components/IssueCardVisual";
 import VisualSwitcher from "../components/VisualSwitcher";
 import OfficialProfile from "../modules/officials_elections/OfficialProfile";
 import { COLORS } from "../config/theme";
-import {
 import AdminInfrastructurePanel from "../components/AdminInfrastructurePanel";
+import {
   PieChart, Pie, Cell, Tooltip,
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
   LineChart, Line, CartesianGrid
