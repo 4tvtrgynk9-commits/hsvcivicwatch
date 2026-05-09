@@ -348,7 +348,7 @@ export default function AdminInfrastructurePanel() {
               <p><strong>{reviewHealth.published_issue_count}</strong> published issue card(s) · <strong>{reviewHealth.published_stat_count}</strong> stat block(s)</p>
               <div className="admin-infra-meta">{reviewHealth.active_api_route_limit_note}</div>
             </>
-          ) : <p>Refresh dashboard to load workflow health.</p>
+          ) : <p>Refresh dashboard to load workflow health.</p>}
         </MiniCard>
 
         <MiniCard title="Draft Records">
