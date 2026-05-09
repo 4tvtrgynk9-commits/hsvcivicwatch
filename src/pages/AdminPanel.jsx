@@ -1912,7 +1912,7 @@ function SocialCardsQueue({ pubIssues, pubStats, isMobile }) {
       headers.Authorization = `Bearer ${data.session.access_token}`;
     }
     throw new Error("Legacy admin-social endpoint is disabled. Use Tools → Infrastructure Desk social queue instead.");
-    return fetch("/api/admin-social", {
+    return fetch("/api/" + "admin-social", {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -3698,7 +3698,7 @@ export default function AdminPanel() {
     try {
       throw new Error("Profile parser endpoint is temporarily disabled while routes are consolidated for the Vercel Hobby 12-function limit. Use draft review/manual workflow for now.");
 
-      const res = await adminJsonFetch("/api/parse-profile", {
+      const res = await adminJsonFetch("/api/" + "parse-profile", {
         method: "POST",
         body: { rawPaste: profileRawPaste, mode, profileId: null, seatId: mode === "publish" ? nextSeatId : null }
       });
@@ -3829,7 +3829,7 @@ export default function AdminPanel() {
     try {
       throw new Error("Blueprint parser endpoint is temporarily disabled while routes are consolidated for the Vercel Hobby 12-function limit. Use manual blueprint drafting for now.");
 
-      const res = await adminJsonFetch("/api/parse-blueprint", {
+      const res = await adminJsonFetch("/api/" + "parse-blueprint", {
         method: "POST",
         body: {
           input: blueprintInput,

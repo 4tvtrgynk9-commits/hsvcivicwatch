@@ -39,7 +39,15 @@ async function dashboard(req, res, supabase) {
       .limit(25),
   ]);
 
-  for (const result of [drafts, social, hashtags, polls]) {
+  const [issueReview, profileReview, publishedIssues, publishedStats, structuredSent] = await Promise.all([
+    supabase.from("issue_card_drafts").select("id", { count: "exact", head: true }).neq("admin_status", "published"),
+    supabase.from("profile_drafts").select("id", { count: "exact", head: true }).neq("admin_status", "published"),
+    supabase.from("issue_cards").select("id", { count: "exact", head: true }),
+    supabase.from("stat_blocks").select("id", { count: "exact", head: true }),
+    supabase.from("admin_draft_records").select("id", { count: "exact", head: true }).eq("status", "sent_to_review"),
+  ]);
+
+  for (const result of [drafts, social, hashtags, polls, issueReview, profileReview, publishedIssues, publishedStats, structuredSent]) {
     if (result.error) throw new Error(result.error.message);
   }
 
@@ -56,6 +64,14 @@ async function dashboard(req, res, supabase) {
     social_queue: social.data || [],
     hashtag_sets: hashtags.data || [],
     polls: polls.data || [],
+    review_queue_health: {
+      issue_review_count: issueReview.count || 0,
+      profile_review_count: profileReview.count || 0,
+      published_issue_count: publishedIssues.count || 0,
+      published_stat_count: publishedStats.count || 0,
+      structured_sent_to_review_count: structuredSent.count || 0,
+      active_api_route_limit_note: "Vercel Hobby target: keep active /api/*.js routes at 12 or fewer.",
+    },
   });
 }
 
@@ -345,19 +361,29 @@ async function sendDraftToReviewQueue(req, res, supabase) {
   const { id } = req.body || {};
   if (!id) return res.status(400).json({ error: "Missing admin draft record id" });
 
-  const { data: existingReview } = await supabase
-    .from("issue_card_drafts")
-    .select("id, title, admin_status")
-    .eq("structured_admin_draft_id", id)
-    .maybeSingle();
+  try {
+    const { data: existingReview, error: existingError } = await supabase
+      .from("issue_card_drafts")
+      .select("id, title, admin_status")
+      .eq("structured_admin_draft_id", id)
+      .maybeSingle();
 
-  if (existingReview?.id) {
-    return res.status(200).json({
-      success: true,
-      already_exists: true,
-      review_draft: existingReview,
-      message: "This structured draft is already in the Review Queue.",
-    });
+    if (existingError && !/structured_admin_draft_id/i.test(existingError.message || "")) {
+      throw existingError;
+    }
+
+    if (existingReview?.id) {
+      return res.status(200).json({
+        success: true,
+        already_exists: true,
+        review_draft: existingReview,
+        message: "This structured draft is already in the Review Queue.",
+      });
+    }
+  } catch (existingCheckError) {
+    if (!/structured_admin_draft_id/i.test(existingCheckError.message || "")) {
+      throw existingCheckError;
+    }
   }
 
 

@@ -186,7 +186,7 @@ export default function AdminInfrastructurePanel() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Send to review queue failed");
-      setMessage(`Sent "${row.title || row.draft_type || "draft"}" to the Review Queue.`);
+      setMessage(json.message || `Sent "${row.title || row.draft_type || "draft"}" to the Review Queue.`);
       await loadDashboard();
     } catch (err) {
       setMessage(err.message || "Send to review queue failed");
@@ -196,6 +196,7 @@ export default function AdminInfrastructurePanel() {
   }
 
   const budget = data?.budget;
+  const reviewHealth = data?.review_queue_health;
   const socialRows = data?.social_queue || [];
   const draftRows = data?.drafts || [];
   const hashtagRows = data?.hashtag_sets || [];
@@ -338,6 +339,18 @@ export default function AdminInfrastructurePanel() {
           ) : <p>Refresh dashboard to load budget.</p>}
         </MiniCard>
 
+        <MiniCard title="Workflow Health">
+          {reviewHealth ? (
+            <>
+              <p><strong>{reviewHealth.issue_review_count}</strong> issue draft(s) in review</p>
+              <p><strong>{reviewHealth.profile_review_count}</strong> profile draft(s) in review</p>
+              <p><strong>{reviewHealth.structured_sent_to_review_count}</strong> structured draft(s) sent to review</p>
+              <p><strong>{reviewHealth.published_issue_count}</strong> published issue card(s) · <strong>{reviewHealth.published_stat_count}</strong> stat block(s)</p>
+              <div className="admin-infra-meta">{reviewHealth.active_api_route_limit_note}</div>
+            </>
+          ) : <p>Refresh dashboard to load workflow health.</p>
+        </MiniCard>
+
         <MiniCard title="Draft Records">
           <div className="admin-infra-list">
             {draftRows.length ? draftRows.map((row) => (
@@ -348,8 +361,8 @@ export default function AdminInfrastructurePanel() {
                 {row.needs_review ? <Pill tone="warn">Needs review</Pill> : <Pill tone="good">Parsed</Pill>}
                 {row.draft_type === "hsv_issue_card" ? (
                   <div className="admin-infra-actions">
-                    <button onClick={() => sendDraftToReview(row)} disabled={loading}>
-                      Send to Review Queue
+                    <button onClick={() => sendDraftToReview(row)} disabled={loading || row.status === "sent_to_review"}>
+                      {row.status === "sent_to_review" ? "Already Sent" : "Send to Review Queue"}
                     </button>
                   </div>
                 ) : null}
