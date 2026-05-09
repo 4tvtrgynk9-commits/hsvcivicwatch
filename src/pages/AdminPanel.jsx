@@ -1910,6 +1910,7 @@ function SocialCardsQueue({ pubIssues, pubStats, isMobile }) {
     if (data.session?.access_token) {
       headers.Authorization = `Bearer ${data.session.access_token}`;
     }
+    throw new Error("Legacy admin-social endpoint is disabled. Use Tools → Infrastructure Desk social queue instead.");
     return fetch("/api/admin-social", {
       method: "POST",
       headers,
@@ -2705,6 +2706,13 @@ export default function AdminPanel() {
     } finally {
       setDraftActionBusy(false);
     }
+  };
+
+  const showDisabledWorkflowNotice = (label) => {
+    setWorkflowResult(null);
+    setWorkflowError(
+      `${label} is temporarily disabled while routes are consolidated for the Vercel Hobby 12-function limit. Use Advanced Manual Import or Infrastructure Desk for now.`
+    );
   };
 
   const saveIssueDraft = async (draft) => {
@@ -3585,6 +3593,8 @@ export default function AdminPanel() {
     setProfilePublishSuccess("");
 
     try {
+      throw new Error("Profile parser endpoint is temporarily disabled while routes are consolidated for the Vercel Hobby 12-function limit. Use draft review/manual workflow for now.");
+
       const res = await adminJsonFetch("/api/parse-profile", {
         method: "POST",
         body: { rawPaste: profileRawPaste, mode, profileId: null, seatId: mode === "publish" ? nextSeatId : null }
@@ -3714,6 +3724,8 @@ export default function AdminPanel() {
     setBlueprintPublishSuccess("");
 
     try {
+      throw new Error("Blueprint parser endpoint is temporarily disabled while routes are consolidated for the Vercel Hobby 12-function limit. Use manual blueprint drafting for now.");
+
       const res = await adminJsonFetch("/api/parse-blueprint", {
         method: "POST",
         body: {
@@ -4241,7 +4253,7 @@ export default function AdminPanel() {
           subtitle="Draft issue cards, stat blocks, inline visuals, parser alerts, and linked profile suggestions. Previews use the same public components as the live site."
           actions={
             <>
-              <button onClick={() => runWorkflowApi("/api/generate-content", "Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Generate Content Now"}</button>
+              <button onClick={() => showDisabledWorkflowNotice("Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Generate Content Now"}</button>
               <button onClick={loadDraftQueues} disabled={draftsLoading} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:"pointer" }}>{draftsLoading ? "Refreshing..." : "Refresh Queue"}</button>
             </>
           }
@@ -4274,7 +4286,7 @@ export default function AdminPanel() {
           subtitle="Draft elected official, candidate, board member, and appointed body profiles with exact card/page previews and locked officials decoder sections."
           actions={
             <>
-              <button onClick={() => runWorkflowApi("/api/refresh-profiles", "Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Refresh Profiles Now"}</button>
+              <button onClick={() => showDisabledWorkflowNotice("Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Refresh Profiles Now"}</button>
               <button onClick={loadDraftQueues} disabled={draftsLoading} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:"pointer" }}>{draftsLoading ? "Refreshing..." : "Refresh Queue"}</button>
             </>
           }
@@ -5080,10 +5092,10 @@ export default function AdminPanel() {
             <div style={{ borderBottom:"1px solid #4a5268", paddingBottom:24, marginBottom:24 }}>
               <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:12 }}>Content Workflow</div>
               <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap:14, marginBottom:18 }}>
-                <button onClick={() => runWorkflowApi("/api/generate-content", "Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
+                <button onClick={() => showDisabledWorkflowNotice("Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
                   {draftActionBusy ? "Working..." : "Generate Content Now"}
                 </button>
-                <button onClick={() => runWorkflowApi("/api/refresh-profiles", "Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
+                <button onClick={() => showDisabledWorkflowNotice("Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
                   {draftActionBusy ? "Working..." : "Refresh Profiles Now"}
                 </button>
               </div>
