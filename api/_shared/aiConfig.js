@@ -70,6 +70,13 @@ export const AI_JOB_ROUTES = {
     max_task_cost_usd: 1.25,
     enabled_flag: "ENABLE_AI_MISSING_FIELD_RESEARCH",
   },
+  hashtag_trend_scout: {
+    tier: "cheap_search_manual",
+    primary: "gemini_flash_lite",
+    fallback: "deepseek_v4_flash",
+    max_task_cost_usd: 0.15,
+    enabled_flag: "ENABLE_CHEAP_CLERK_MODEL",
+  },
   social_generation: {
     tier: "manual",
     primary: "anthropic_haiku",
