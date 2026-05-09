@@ -21,6 +21,7 @@ const ADMIN_TOTP_NAME = "HSV Civic Watch Admin Authenticator";
 // TEMPORARY: frontend admin gate disabled while admin infrastructure is being finished.
 // Backend API protections remain in place.
 const TEMP_DISABLE_ADMIN_LOGIN = true;
+const ADMIN_API_KEY_STORAGE = "hsv_admin_api_key";
 
 const MODULE_PREFIX = {
   equity: "EQ",
@@ -2617,6 +2618,8 @@ export default function AdminPanel() {
   const [profileAdminTab, setProfileAdminTab] = useState("paste");
   const [activeTab, setActiveTab] = useState("import");
   const [rawPaste, setRawPaste] = useState("");
+  const [structuredWorkspace, setStructuredWorkspace] = useState("hsv");
+  const [structuredResult, setStructuredResult] = useState(null);
   const [parsing, setParsing] = useState(false);
   const [parseError, setParseError] = useState("");
   const [pendingIssues, setPendingIssues] = useState([]);
@@ -3336,6 +3339,48 @@ export default function AdminPanel() {
       const data = await res.json();
       return data.scores || [];
     } catch { return []; }
+  };
+
+  const getSessionAdminApiKey = () => {
+    try {
+      return sessionStorage.getItem(ADMIN_API_KEY_STORAGE) || "";
+    } catch {
+      return "";
+    }
+  };
+
+  const parseStructuredPacketFromPaste = async ({ dryRun = true } = {}) => {
+    if (!rawPaste.trim()) return;
+
+    const adminApiKey = getSessionAdminApiKey();
+    setParsing(true);
+    setParseError("");
+    setStructuredResult(null);
+
+    try {
+      const res = await fetch("/api/parse-structured-packet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(adminApiKey ? { "x-admin-api-key": adminApiKey } : {}),
+        },
+        body: JSON.stringify({
+          workspace: structuredWorkspace,
+          rawText: rawPaste,
+          dryRun,
+        }),
+      });
+
+      const parsed = await res.json();
+      if (!res.ok) throw new Error(parsed.error || "Structured packet parse failed");
+
+      setStructuredResult(parsed);
+      if (!dryRun) setRawPaste("");
+    } catch (e) {
+      setParseError("Could not parse structured packet. Error: " + (e?.message || e));
+    } finally {
+      setParsing(false);
+    }
   };
 
   const handleParse = async () => {
@@ -4445,13 +4490,30 @@ export default function AdminPanel() {
                 style={{ width:"100%", minHeight:isMobile ? 220 : 360, background:"#f5f0e8", border:"1px solid #4a5268", color:"#193150", fontSize:isMobile ? 13 : 14, lineHeight:1.7, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:14, borderRadius:8 }} />
             </div>
             {parseError && <div style={{ background:"#fef2f2", border:"1px solid #fca5a5", borderRadius:6, padding:"14px 18px", marginBottom:18, color:"#b91c1c", fontSize:14, fontWeight:600 }}>{parseError}</div>}
-            <div style={{ display:"flex", gap:14, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row" }}>
+            {structuredResult ? (
+              <div style={{ background:"#1d3f2b", border:"1px solid #3E8B5B", borderRadius:8, padding:"14px 18px", marginBottom:18, color:"#d6f2df", fontSize:14, lineHeight:1.55 }}>
+                <strong>Structured packet {structuredResult.dryRun ? "dry run" : "saved"}:</strong> {structuredResult.draft_count || 0} draft record(s) processed.
+              </div>
+            ) : null}
+            <div style={{ display:"flex", gap:10, alignItems:isMobile ? "stretch" : "center", flexDirection:isMobile ? "column" : "row", flexWrap:"wrap" }}>
+              <select value={structuredWorkspace} onChange={(e) => setStructuredWorkspace(e.target.value)} style={{ background:"#f5f0e8", color:"#193150", border:"1px solid #4a5268", borderRadius:8, padding:"11px 12px", fontWeight:800 }}>
+                <option value="hsv">HSV Civic Watch</option>
+                <option value="veritas">Veritas Chronicle</option>
+              </select>
+              <button onClick={() => parseStructuredPacketFromPaste({ dryRun:true })} disabled={parsing || !rawPaste.trim()}
+                style={{ ...primaryParseButtnStyle, background:parsing ? "#4a5268" : "#2F5D8A", cursor:parsing ? "not-allowed" : "pointer" }}>
+                {parsing ? "Processing..." : "Structured Packet Dry Run"}
+              </button>
+              <button onClick={() => parseStructuredPacketFromPaste({ dryRun:false })} disabled={parsing || !rawPaste.trim()}
+                style={{ ...primaryParseButtonStyle, background:parsing ? "#4a5268" : "#3E8B5B", cursor:parsing ? "not-allowed" : "pointer" }}>
+                {parsing ? "Processing..." : "Save Structured Packet"}
+              </button>
               <button onClick={handleParse} disabled={parsing || !rawPaste.trim()}
                 style={{ ...primaryParseButtonStyle, background:parsing ? "#4a5268" : "#b8860b", cursor:parsing ? "not-allowed" : "pointer" }}>
-                {parsing ? "Processing..." : "Process & Organize"}
+                {parsing ? "Processing..." : "Legacy Parse"}
               </button>
               <span style={pasteStatusStyle}>
-                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) · "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) detected" : "No content pasted"}
+                {rawPaste.trim() ? (rawPaste.split("--- ISSUE CARD START ---").length-1)+" issue card(s) · "+(rawPaste.split("--- STAT BLOCK START ---").length-1)+" stat block(s) · "+(rawPaste.split("--- SOURCE RECORD START ---").length-1)+" source record(s)" : "No content pasted"}
               </span>
             </div>
           </div>
@@ -5166,9 +5228,17 @@ export default function AdminPanel() {
                   <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
                     placeholder={"Emergency formatted issue-card paste only..."}
                     style={{ width:"100%", minHeight:180, background:"#f5f0e8", border:"1px solid #4a5268", color:"#193150", fontSize:13, lineHeight:1.6, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:12, borderRadius:8 }} />
-                  <button onClick={handleParse} disabled={parsing || !rawPaste.trim()} style={{ ...primaryParseButtonStyle, marginTop:10, cursor:parsing || !rawPaste.trim() ? "not-allowed" : "pointer" }}>
-                    {parsing ? "Processing..." : "Process Manual Import"}
-                  </button>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:10, marginTop:10 }}>
+                    <button onClick={() => parseStructuredPacketFromPaste({ dryRun:true })} disabled={parsing || !rawPaste.trim()} style={{ ...primaryParseButtonStyle, cursor:parsing || !rawPaste.trim() ? "not-allowed" : "pointer" }}>
+                      {parsing ? "Processing..." : "Structured Dry Run"}
+                    </button>
+                    <button onClick={() => parseStructuredPacketFromPaste({ dryRun:false })} disabled={parsing || !rawPaste.trim()} style={{ ...primaryParseButtonStyle, background:"#3E8B5B", cursor:parsing || !rawPaste.trim() ? "not-allowed" : "pointer" }}>
+                      {parsing ? "Processing..." : "Save Structured Packet"}
+                    </button>
+                    <button onClick={handleParse} disabled={parsing || !rawPaste.trim()} style={{ ...primaryParseButtonStyle, background:"#b8860b", cursor:parsing || !rawPaste.trim() ? "not-allowed" : "pointer" }}>
+                      {parsing ? "Processing..." : "Legacy Parse"}
+                    </button>
+                  </div>
                 </div>
               ) : null}
             </div>
