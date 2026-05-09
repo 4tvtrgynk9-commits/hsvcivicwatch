@@ -1,47 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-const HSV_SUPABASE_URL = "https://idtzqminkklydbuooilk.supabase.co";
-
-function isValidSupabaseProjectUrl(value) {
-  if (!value || typeof value !== "string") return false;
-
-  const trimmed = value.trim();
-
-  if (!trimmed) return false;
-  if (trimmed.includes("/rest/v1")) return false;
-  if (trimmed.includes("supabase.com/dashboard")) return false;
-  if (trimmed.startsWith("eyJ")) return false;
-
-  try {
-    const url = new URL(trimmed);
-
-    if (!["http:", "https:"].includes(url.protocol)) return false;
-    if (!url.hostname.endsWith(".supabase.co")) return false;
-
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export function resolveSupabaseUrl(rawUrl) {
-  return isValidSupabaseProjectUrl(rawUrl) ? rawUrl.trim() : HSV_SUPABASE_URL;
-}
+export const supabaseUrl = "https://idtzqminkklydbuooilk.supabase.co";
 
 export function getSupabaseAnonKey() {
-  return (
-    process.env.REACT_APP_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY ||
-    ""
-  ).trim();
+  return (process.env.REACT_APP_SUPABASE_ANON_KEY || "").trim();
 }
-
-export const supabaseUrl = resolveSupabaseUrl(
-  process.env.REACT_APP_SUPABASE_URL ||
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    process.env.VITE_SUPABASE_URL
-);
 
 export const supabaseAnonKey = getSupabaseAnonKey();
 
@@ -69,7 +32,7 @@ export function getSupabaseClient() {
     return supabaseClient;
   } catch (error) {
     supabaseClientInitError =
-      "Frontend Supabase client failed to initialize. Check the public anon key configuration.";
+      "Admin build is still using a bad Supabase client. Check deployed commit.";
     throw new Error(supabaseClientInitError);
   }
 }

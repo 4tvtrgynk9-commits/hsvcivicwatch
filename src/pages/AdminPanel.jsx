@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from '../lib/supabase';
+import { ADMIN_BUILD_COMMIT } from "../adminBuildInfo";
 import EditCardModal from "../components/EditCardModal";
 import EditStatBlockModal from "../components/EditStatBlockModal";
 import IssueCard from "../components/IssueCard";
@@ -2506,6 +2507,33 @@ function ProfileDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, 
 
 // --- Main Admin Panel --------------------------------------------------------
 
+
+function getFriendlyAdminError(error) {
+  const message = String(error?.message || error || "");
+
+  if (
+    /Invalid supabaseUrl|valid HTTP or HTTPS URL|string does not match expected pattern/i.test(
+      message
+    )
+  ) {
+    return "Admin build is still using a bad Supabase client. Check deployed commit.";
+  }
+
+  if (/incorrect|invalid password|unauthorized|401/i.test(message)) {
+    return "Incorrect admin password.";
+  }
+
+  if (/missing|required.*environment|SUPABASE|anon key|service role/i.test(message)) {
+    return "Backend Supabase env vars are missing or invalid.";
+  }
+
+  if (/session/i.test(message)) {
+    return "Admin API login did not return a valid session.";
+  }
+
+  return message || "Admin login failed.";
+}
+
 export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [authed, setAuthed] = useState(false);
@@ -2896,7 +2924,7 @@ export default function AdminPanel() {
     const { error } = await supabase.auth.mfa.webauthn.authenticate({ factorId });
     if (error) {
       setAuthBusy(false);
-      setAuthError(error.message || "Passkey verification did not complete.");
+      setAuthError(getFriendlyAdminError(error) || "Passkey verification did not complete.");
       return false;
     }
 
@@ -2908,7 +2936,7 @@ export default function AdminPanel() {
     if (error) {
       setAuthBusy(false);
       setAuthView("password");
-      setAuthError(error.message || "Could not load your second-factor options.");
+      setAuthError(getFriendlyAdminError(error) || "Could not load your second-factor options.");
       return false;
     }
 
@@ -3015,7 +3043,7 @@ export default function AdminPanel() {
       await syncAdminSession({ preferPasskeyPrompt: true });
     } catch (error) {
       setAuthBusy(false);
-      setAuthError(String(error?.message || "Could not sign in."));
+      setAuthError(getFriendlyAdminError(error));
     }
   }
 
@@ -3031,7 +3059,7 @@ export default function AdminPanel() {
 
       setAuthMessage(payload.message || "Reset link sent to your admin recovery inbox.");
     } catch (error) {
-      setAuthError(String(error?.message || "Could not send a reset link."));
+      setAuthError(getFriendlyAdminError(error) || "Could not send a reset link.");
     } finally {
       setAuthBusy(false);
     }
@@ -3058,7 +3086,7 @@ export default function AdminPanel() {
 
     if (error) {
       setAuthBusy(false);
-      setAuthError(error.message || "That code could not be verified.");
+      setAuthError(getFriendlyAdminError(error) || "That code could not be verified.");
       return;
     }
 
@@ -3077,7 +3105,7 @@ export default function AdminPanel() {
 
     if (error) {
       setAuthBusy(false);
-      setAuthError(error.message || "Could not register the passkey second factor.");
+      setAuthError(getFriendlyAdminError(error) || "Could not register the passkey second factor.");
       return;
     }
 
@@ -3097,7 +3125,7 @@ export default function AdminPanel() {
 
     if (error) {
       setAuthBusy(false);
-      setAuthError(error.message || "Could not start authenticator setup.");
+      setAuthError(getFriendlyAdminError(error) || "Could not start authenticator setup.");
       return;
     }
 
@@ -3865,6 +3893,9 @@ export default function AdminPanel() {
             <button onClick={handleLogin} disabled={authBusy} style={primaryButtonStyle}>
               {authBusy ? "Checking..." : "Enter"}
             </button>
+              <div style={{ marginTop: 12, fontSize: 12, opacity: 0.7 }}>
+                Admin build: {ADMIN_BUILD_COMMIT}
+              </div>
             <button
               onClick={handleForgotPassword}
               disabled={authBusy}
