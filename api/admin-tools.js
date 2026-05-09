@@ -438,7 +438,11 @@ async function sendDraftToReviewQueue(req, res, supabase) {
 
   await supabase
     .from("admin_draft_records")
-    .update({ status: "sent_to_review", needs_review: false })
+    .update({
+      status: "sent_to_review",
+      needs_review: false,
+      sent_to_review_at: new Date().toISOString(),
+    })
     .eq("id", id);
 
   return res.status(200).json({
