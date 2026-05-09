@@ -293,6 +293,97 @@ async function aiTask(req, res, supabase) {
   return res.status(result.status || (result.ok ? 200 : 500)).json(result);
 }
 
+function normalizeDraftArray(value) {
+  return Array.isArray(value) ? value : value ? [value] : [];
+}
+
+function structuredIssuePayloadToReviewDraft(row) {
+  const payload = row.parsed_payload || {};
+  const validation = row.validation_result || {};
+  const warnings = normalizeDraftArray(validation.warnings);
+  const errors = normalizeDraftArray(validation.errors);
+  const needsReview = Boolean(row.needs_review || warnings.length || errors.length);
+
+  return {
+    module: payload.module || "equity",
+    tab: payload.tab || "overview",
+    tabs: Array.isArray(payload.tabs) && payload.tabs.length ? payload.tabs : [payload.tab || "overview"],
+    label: payload.label || payload.content_type || "Structured Packet",
+    title: payload.title || row.title || "Untitled structured draft",
+    summary: payload.summary || "",
+    homepage_teaser: payload.homepage_teaser || "",
+    details: payload.details || payload.body || "",
+    sources: Array.isArray(payload.sources) && payload.sources.length
+      ? payload.sources
+      : normalizeDraftArray(row.source_records),
+    decoder: {
+      whatsHappening: payload.decoder?.whatsHappening || payload.decoder?.whats_happening || "",
+      connections: payload.decoder?.connections || "",
+      whoBenefits: payload.decoder?.whoBenefits || payload.decoder?.who_benefits || "",
+      impact: payload.decoder?.impact || "",
+    },
+    actions: payload.actions || (payload.actions_raw ? { raw: payload.actions_raw } : {}),
+    stat_blocks: [],
+    visual_config: payload.visual_config || null,
+    inline_visual_config: payload.inline_visual_config || null,
+    checklist_status: {
+      checks: {},
+      missing: warnings.map((item) => String(item)),
+    },
+    parser_alerts: [
+      ...warnings.map((message) => ({ type: "structured_warning", severity: "warning", message: String(message) })),
+      ...errors.map((message) => ({ type: "structured_error", severity: "error", message: String(message) })),
+    ],
+    linked_profiles: [],
+    admin_status: needsReview ? "needs_more_research" : "pending_review",
+    updated_at: new Date().toISOString(),
+  };
+}
+
+async function sendDraftToReviewQueue(req, res, supabase) {
+  const { id } = req.body || {};
+  if (!id) return res.status(400).json({ error: "Missing admin draft record id" });
+
+  const { data: row, error: rowError } = await supabase
+    .from("admin_draft_records")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (rowError) throw new Error(rowError.message);
+  if (!row) return res.status(404).json({ error: "Admin draft record not found" });
+
+  if (row.workspace !== "hsv") {
+    return res.status(400).json({ error: "Only HSV structured drafts can be sent to the review queue right now." });
+  }
+
+  if (row.draft_type !== "hsv_issue_card") {
+    return res.status(400).json({ error: `Draft type ${row.draft_type} is not review-queue enabled yet.` });
+  }
+
+  const reviewDraft = structuredIssuePayloadToReviewDraft(row);
+
+  const { data: inserted, error: insertError } = await supabase
+    .from("issue_card_drafts")
+    .insert(reviewDraft)
+    .select("*")
+    .single();
+
+  if (insertError) throw new Error(insertError.message);
+
+  await supabase
+    .from("admin_draft_records")
+    .update({ status: "sent_to_review", needs_review: false })
+    .eq("id", id);
+
+  return res.status(200).json({
+    success: true,
+    type: "issue",
+    review_draft: inserted,
+    message: "Structured draft was sent to Review Content.",
+  });
+}
+
 export default async function handler(req, res) {
   const auth = requireAdminApiKey(req);
   if (!auth.ok) return res.status(auth.status).json({ error: auth.error });
@@ -309,6 +400,7 @@ export default async function handler(req, res) {
     if (req.method === "POST" && action === "update-social-draft") return updateSocialDraft(req, res, supabase);
     if (req.method === "POST" && action === "hashtag-scout") return hashtagScout(req, res, supabase);
     if (req.method === "POST" && action === "ai-task") return aiTask(req, res, supabase);
+    if (req.method === "POST" && action === "send-draft-to-review") return sendDraftToReviewQueue(req, res, supabase);
 
     return res.status(400).json({ error: "Missing or invalid admin-tools action" });
   } catch (error) {

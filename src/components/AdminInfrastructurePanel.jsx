@@ -174,6 +174,25 @@ export default function AdminInfrastructurePanel() {
     }
   }
 
+  async function sendDraftToReview(row) {
+    setLoading(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/admin-tools?action=send-draft-to-review", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ id: row.id }),
+      });
+      const json = await parseApiResponse(res, "Send to review queue failed");
+      setMessage(json.message || "Structured draft sent to Review Content.");
+      await loadDashboard();
+    } catch (err) {
+      setMessage(err.message || "Send to review queue failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const budget = data?.budget;
   const socialRows = data?.social_queue || [];
   const draftRows = data?.drafts || [];
@@ -325,6 +344,13 @@ export default function AdminInfrastructurePanel() {
                 <div className="admin-infra-meta">{row.workspace} • {row.draft_type} • {row.status}</div>
                 <div className="admin-infra-meta">{scoreLabel(row)}</div>
                 {row.needs_review ? <Pill tone="warn">Needs review</Pill> : <Pill tone="good">Parsed</Pill>}
+                {row.draft_type === "hsv_issue_card" ? (
+                  <div className="admin-infra-actions">
+                    <button onClick={() => sendDraftToReview(row)} disabled={loading}>
+                      Send to Review Queue
+                    </button>
+                  </div>
+                ) : null}
               </div>
             )) : <p>No draft records loaded.</p>}
           </div>
