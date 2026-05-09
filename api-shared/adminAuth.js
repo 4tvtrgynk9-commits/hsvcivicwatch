@@ -2,14 +2,38 @@ import { createClient } from "@supabase/supabase-js";
 
 const DEFAULT_ADMIN_EMAIL = "howardjt1234@gmail.com";
 const DEFAULT_ADMIN_RESET_REDIRECT_URL = "https://www.hsvcivicwatch.org/?admin-reset=1";
+const HSV_SUPABASE_URL = "https://idtzqminkklydbuooilk.supabase.co";
+
+function isValidSupabaseProjectUrl(value) {
+  if (!value || typeof value !== "string") return false;
+
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (trimmed.includes("/rest/v1")) return false;
+  if (trimmed.includes("supabase.com/dashboard")) return false;
+  if (trimmed.startsWith("eyJ")) return false;
+
+  try {
+    const url = new URL(trimmed);
+    return (
+      ["http:", "https:"].includes(url.protocol) &&
+      url.hostname.endsWith(".supabase.co")
+    );
+  } catch {
+    return false;
+  }
+}
 
 function getSupabaseUrl() {
-  return (
+  const candidate =
     process.env.SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.REACT_APP_SUPABASE_URL ||
-    ""
-  );
+    "";
+
+  return isValidSupabaseProjectUrl(candidate)
+    ? candidate.trim()
+    : HSV_SUPABASE_URL;
 }
 
 function getSupabaseAnonKey() {
