@@ -4501,7 +4501,7 @@ export default function AdminPanel() {
                 <option value="veritas">Veritas Chronicle</option>
               </select>
               <button onClick={() => parseStructuredPacketFromPaste({ dryRun:true })} disabled={parsing || !rawPaste.trim()}
-                style={{ ...primaryParseButtnStyle, background:parsing ? "#4a5268" : "#2F5D8A", cursor:parsing ? "not-allowed" : "pointer" }}>
+                style={{ ...primaryParseButtonStyle, background:parsing ? "#4a5268" : "#2F5D8A", cursor:parsing ? "not-allowed" : "pointer" }}>
                 {parsing ? "Processing..." : "Structured Packet Dry Run"}
               </button>
               <button onClick={() => parseStructuredPacketFromPaste({ dryRun:false })} disabled={parsing || !rawPaste.trim()}
