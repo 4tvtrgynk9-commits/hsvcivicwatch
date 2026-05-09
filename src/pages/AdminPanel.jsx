@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from '../lib/supabase';
 import EditCardModal from "../components/EditCardModal";
 import EditStatBlockModal from "../components/EditStatBlockModal";
+import IssueCard from "../components/IssueCard";
+import IssueCardVisual from "../components/IssueCardVisual";
+import VisualSwitcher from "../components/VisualSwitcher";
+import OfficialProfile from "../modules/officials_elections/OfficialProfile";
 import { COLORS } from "../config/theme";
 import {
   PieChart, Pie, Cell, Tooltip,
@@ -2274,6 +2278,230 @@ function AdminPreviewBlock({ borderColor, children }) {
   );
 }
 
+function ReviewShell({ title, subtitle, actions, children }) {
+  return (
+    <div style={{ maxWidth:1280, margin:"0 auto", padding:"28px 36px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:18, marginBottom:22, flexWrap:"wrap" }}>
+        <div>
+          <h2 style={{ color:"#ffffff", fontSize:24, fontWeight:900, margin:"0 0 7px" }}>{title}</h2>
+          {subtitle ? <div style={{ color:"#c8d1dc", fontSize:15, lineHeight:1.55 }}>{subtitle}</div> : null}
+        </div>
+        {actions ? <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>{actions}</div> : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function EmptyReviewState({ title, body }) {
+  return (
+    <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:"54px 24px", textAlign:"center", color:"#8fa3b8" }}>
+      <div style={{ color:"#ffffff", fontSize:19, fontWeight:900, marginBottom:8 }}>{title}</div>
+      <div style={{ fontSize:14 }}>{body}</div>
+    </div>
+  );
+}
+
+function ChecklistPanel({ checklist, alerts }) {
+  const checks = checklist?.checks || {};
+  const missing = checklist?.missing || [];
+  return (
+    <div style={{ background:"#263240", border:"1px solid #4a5268", borderRadius:10, padding:16 }}>
+      <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, textTransform:"uppercase", letterSpacing:1.4, marginBottom:12 }}>Parser Checklist</div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:7 }}>
+        {Object.entries(checks).map(([key, ok]) => (
+          <div key={key} style={{ color:ok ? "#b9e4c8" : "#f4c7c3", fontSize:12, lineHeight:1.35 }}>
+            {ok ? "OK" : "Needs review"} · {key}
+          </div>
+        ))}
+      </div>
+      {missing.length ? <div style={{ color:"#f4c7c3", fontSize:12, marginTop:12 }}>Missing or weak fields are hidden from public previews and shown here for admin review.</div> : null}
+      {Array.isArray(alerts) && alerts.length ? (
+        <div style={{ marginTop:14, display:"grid", gap:8 }}>
+          {alerts.map((alert, index) => (
+            <div key={index} style={{ background:"#4a1f25", border:"1px solid #8a3a44", borderRadius:8, color:"#ffd5d2", padding:"9px 10px", fontSize:12, lineHeight:1.45 }}>
+              <strong>{alert.type || "alert"}:</strong> {alert.message || String(alert)}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function DraftEditor({ draft, type, onChange }) {
+  const set = (key, value) => onChange({ ...draft, [key]: value });
+  const decoder = draft.decoder || {};
+  const setDecoder = (key, value) => set("decoder", { ...decoder, [key]: value });
+  if (type === "profile") {
+    return (
+      <div style={{ display:"grid", gap:10 }}>
+        <TextInput value={draft.display_name || draft.full_name || ""} onChange={(e) => set("display_name", e.target.value)} placeholder="Display name" />
+        <TextInput value={draft.title || ""} onChange={(e) => set("title", e.target.value)} placeholder="Current title" />
+        <TextInput value={draft.jurisdiction || ""} onChange={(e) => set("jurisdiction", e.target.value)} placeholder="Jurisdiction" />
+        <TextArea rows={3} value={decoder.rise || ""} onChange={(e) => setDecoder("rise", e.target.value)} placeholder="The Rise" />
+        <TextArea rows={3} value={decoder.affiliations || ""} onChange={(e) => setDecoder("affiliations", e.target.value)} placeholder="The Affiliations" />
+        <TextArea rows={3} value={decoder.beneficiaries || ""} onChange={(e) => setDecoder("beneficiaries", e.target.value)} placeholder="The Beneficiaries" />
+        <TextArea rows={3} value={decoder.track_record || ""} onChange={(e) => setDecoder("track_record", e.target.value)} placeholder="The Track Record" />
+      </div>
+    );
+  }
+  return (
+    <div style={{ display:"grid", gap:10 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(2, minmax(0, 1fr))", gap:10 }}>
+        <TextInput value={draft.module || ""} onChange={(e) => set("module", e.target.value)} placeholder="Module" />
+        <TextInput value={draft.tab || ""} onChange={(e) => set("tab", e.target.value)} placeholder="Tab" />
+      </div>
+      <TextInput value={draft.label || ""} onChange={(e) => set("label", e.target.value)} placeholder="Label" />
+      <TextInput value={draft.title || ""} onChange={(e) => set("title", e.target.value)} placeholder="Title" />
+      <TextArea rows={3} value={draft.summary || ""} onChange={(e) => set("summary", e.target.value)} placeholder="Summary" />
+      <TextArea rows={5} value={draft.details || ""} onChange={(e) => set("details", e.target.value)} placeholder="Details" />
+      <TextArea rows={3} value={decoder.whatsHappening || ""} onChange={(e) => setDecoder("whatsHappening", e.target.value)} placeholder="What's Happening" />
+      <TextArea rows={3} value={decoder.connections || ""} onChange={(e) => setDecoder("connections", e.target.value)} placeholder="Connections" />
+      <TextArea rows={3} value={decoder.whoBenefits || ""} onChange={(e) => setDecoder("whoBenefits", e.target.value)} placeholder="Who Benefits" />
+      <TextArea rows={3} value={decoder.impact || ""} onChange={(e) => setDecoder("impact", e.target.value)} placeholder="Impact" />
+    </div>
+  );
+}
+
+function sanitizeIssueForPreview(draft) {
+  const hide = (value) => {
+    if (value == null) return "";
+    const text = String(value).trim();
+    return ["unknown", "not found", "null", "n/a"].includes(text.toLowerCase()) ? "" : value;
+  };
+  return {
+    ...draft,
+    label: hide(draft.label),
+    title: hide(draft.title),
+    summary: hide(draft.summary),
+    details: hide(draft.details),
+    visual_score: draft.visual_config || draft.inline_visual_config ? 8 : draft.visual_score,
+    visual_config: draft.visual_config || draft.inline_visual_config || null,
+    decoder: {
+      whatsHappening: hide(draft.decoder?.whatsHappening),
+      connections: hide(draft.decoder?.connections),
+      whoBenefits: hide(draft.decoder?.whoBenefits),
+      impact: hide(draft.decoder?.impact),
+    },
+  };
+}
+
+function profileDraftToOfficial(draft) {
+  return {
+    id: draft.id,
+    name: draft.display_name || draft.full_name,
+    office: draft.title,
+    kind: draft.profile_type,
+    geography: draft.jurisdiction || draft.district_or_seat,
+    term_start: draft.term_start,
+    term_end: draft.term_end,
+    election_date: draft.next_election,
+    contact: draft.contact_info || {},
+    education: Array.isArray(draft.education) ? draft.education.map(String).join("; ") : draft.education,
+    donors: draft.donors || draft.campaign_finance || {},
+    ethics_complaints: draft.ethics_disclosures || {},
+    votes: Array.isArray(draft.votes_actions) ? draft.votes_actions : [],
+    decoder: {
+      rise: draft.decoder?.rise || "",
+      affiliations: draft.decoder?.affiliations || "",
+      beneficiaries: draft.decoder?.beneficiaries || "",
+      track_record: draft.decoder?.track_record || "",
+    },
+  };
+}
+
+function PreviewFrame({ isMobile, mode, setMode, children }) {
+  const mobileOnly = isMobile;
+  const previewMode = mobileOnly ? "mobile" : mode;
+  return (
+    <div>
+      {!mobileOnly ? (
+        <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginBottom:10 }}>
+          {["desktop", "mobile"].map((item) => (
+            <button key={item} onClick={() => setMode(item)} style={{ background:previewMode === item ? "#C6A34D" : "#353b48", color:previewMode === item ? "#193150" : "#c8d1dc", border:"1px solid #4a5268", borderRadius:7, padding:"8px 12px", fontSize:12, fontWeight:900, cursor:"pointer", textTransform:"uppercase" }}>
+              {item === "desktop" ? "Desktop Preview" : "Mobile Preview"}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <div style={{ width:previewMode === "mobile" ? 390 : "100%", maxWidth:"100%", margin:previewMode === "mobile" ? "0 auto" : 0, background:COLORS.bg, border:"1px solid #d8cfbf", borderRadius:previewMode === "mobile" ? 24 : 12, padding:previewMode === "mobile" ? 12 : 18, overflow:"hidden" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function IssueDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, onEdit, onSave, onPublish, onSendBack, onReject, busy }) {
+  const previewIssue = sanitizeIssueForPreview(draft);
+  return (
+    <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:14, padding:18, marginBottom:22 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", gap:12, flexWrap:"wrap", marginBottom:16 }}>
+        <div>
+          <AdminPreviewBadge>{draft.admin_status || "pending_review"}</AdminPreviewBadge>
+          <AdminPreviewBadge>{draft.case_id || "no case id"}</AdminPreviewBadge>
+          <div style={{ color:"#ffffff", fontSize:20, fontWeight:900, marginTop:10 }}>{draft.title || "Untitled draft"}</div>
+        </div>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          <button onClick={() => onSave(draft)} disabled={busy} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Save Changes</button>
+          <button onClick={() => onPublish(draft)} disabled={busy} style={{ background:"#3E8B5B", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Publish</button>
+          <button onClick={() => onSendBack(draft)} disabled={busy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Send Back</button>
+          <button onClick={() => onReject(draft)} disabled={busy} style={{ background:"#B4473E", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Reject</button>
+        </div>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(0, 1.15fr) minmax(340px, 0.85fr)", gap:18 }}>
+        <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
+          <IssueCard issue={previewIssue} />
+          {Array.isArray(draft.stat_blocks) && draft.stat_blocks.length ? <VisualSwitcher stats={draft.stat_blocks.map((block, index) => ({ ...block, id:index, data:block }))} /> : null}
+          {draft.inline_visual_config ? <IssueCardVisual config={draft.inline_visual_config} /> : null}
+        </PreviewFrame>
+        <div style={{ display:"grid", gap:14 }}>
+          <DraftEditor draft={draft} type="issue" onChange={onEdit} />
+          {Array.isArray(draft.linked_profiles) && draft.linked_profiles.length ? (
+            <div style={{ color:"#c8d1dc", fontSize:13 }}>
+              <strong style={{ color:"#f0c93a" }}>Suggested linked profiles:</strong> {draft.linked_profiles.map((item) => item.name || item.profile_ref || item).join(", ")}
+            </div>
+          ) : null}
+          <ChecklistPanel checklist={draft.checklist_status} alerts={draft.parser_alerts} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProfileDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, onEdit, onSave, onPublish, onSendBack, onReject, busy }) {
+  const official = profileDraftToOfficial(draft);
+  return (
+    <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:14, padding:18, marginBottom:22 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", gap:12, flexWrap:"wrap", marginBottom:16 }}>
+        <div>
+          <AdminPreviewBadge>{draft.admin_status || "pending_review"}</AdminPreviewBadge>
+          <AdminPreviewBadge>{draft.profile_case_id || "no profile case"}</AdminPreviewBadge>
+          <div style={{ color:"#ffffff", fontSize:20, fontWeight:900, marginTop:10 }}>{draft.display_name || draft.full_name || "Untitled profile"}</div>
+        </div>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          <button onClick={() => onSave(draft)} disabled={busy} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Save Changes</button>
+          <button onClick={() => onPublish(draft)} disabled={busy} style={{ background:"#3E8B5B", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Publish</button>
+          <button onClick={() => onSendBack(draft)} disabled={busy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Send Back</button>
+          <button onClick={() => onReject(draft)} disabled={busy} style={{ background:"#B4473E", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Reject</button>
+        </div>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(0, 1.15fr) minmax(340px, 0.85fr)", gap:18 }}>
+        <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
+          <OfficialProfile official={official} onClose={() => {}} />
+        </PreviewFrame>
+        <div style={{ display:"grid", gap:14 }}>
+          <DraftEditor draft={draft} type="profile" onChange={onEdit} />
+          <div style={{ background:"#263240", border:"1px solid #4a5268", borderRadius:10, padding:14, color:"#c8d1dc", fontSize:13, lineHeight:1.6 }}>
+            <strong style={{ color:"#f0c93a" }}>Officials decoder:</strong> The Rise · The Affiliations · The Beneficiaries · The Track Record
+          </div>
+          <ChecklistPanel checklist={draft.checklist_status} alerts={draft.parser_alerts} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- Main Admin Panel --------------------------------------------------------
 
 export default function AdminPanel() {
@@ -2289,7 +2517,7 @@ export default function AdminPanel() {
   const [totpFactorId, setTotpFactorId] = useState("");
   const [mfaCode, setMfaCode] = useState("");
   const [totpSetup, setTotpSetup] = useState(null);
-  const [adminTab, setAdminTab] = useState("issue_cards");
+  const [adminTab, setAdminTab] = useState("review_content");
   const [profileAdminTab, setProfileAdminTab] = useState("paste");
   const [activeTab, setActiveTab] = useState("import");
   const [rawPaste, setRawPaste] = useState("");
@@ -2350,6 +2578,14 @@ export default function AdminPanel() {
   const [rerankError, setRerankError] = useState("");
   const [exportStatus, setExportStatus] = useState("idle");
   const [fallbackText, setFallbackText] = useState("");
+  const [issueDrafts, setIssueDrafts] = useState([]);
+  const [profileDrafts, setProfileDrafts] = useState([]);
+  const [draftsLoading, setDraftsLoading] = useState(false);
+  const [draftActionBusy, setDraftActionBusy] = useState(false);
+  const [workflowResult, setWorkflowResult] = useState(null);
+  const [workflowError, setWorkflowError] = useState("");
+  const [previewMode, setPreviewMode] = useState("desktop");
+  const [advancedManualOpen, setAdvancedManualOpen] = useState(false);
   const fallbackRef = useRef(null);
   const loadPublished = async () => {
     if (!supabase) return;
@@ -2389,6 +2625,137 @@ export default function AdminPanel() {
       setPubProfilesError(e?.message || "Could not load published profiles.");
     } finally {
       setPubProfilesLoading(false);
+    }
+  };
+
+  const loadDraftQueues = async () => {
+    if (!supabase) return;
+    setDraftsLoading(true);
+    try {
+      const [{ data: issueRows }, { data: profileRows }] = await Promise.all([
+        supabase
+          .from("issue_card_drafts")
+          .select("*")
+          .neq("admin_status", "published")
+          .order("updated_at", { ascending: false }),
+        supabase
+          .from("profile_drafts")
+          .select("*")
+          .neq("admin_status", "published")
+          .order("updated_at", { ascending: false }),
+      ]);
+      setIssueDrafts(issueRows || []);
+      setProfileDrafts(profileRows || []);
+    } catch (e) {
+      setWorkflowError(e?.message || "Could not load draft queues.");
+    } finally {
+      setDraftsLoading(false);
+    }
+  };
+
+  const runWorkflowApi = async (url, label) => {
+    setDraftActionBusy(true);
+    setWorkflowError("");
+    setWorkflowResult(null);
+    try {
+      const res = await adminJsonFetch(url, { method: "POST" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || `${label} failed`);
+      setWorkflowResult({ label, ...payload });
+      await loadDraftQueues();
+    } catch (e) {
+      setWorkflowError(e?.message || `${label} failed`);
+    } finally {
+      setDraftActionBusy(false);
+    }
+  };
+
+  const saveIssueDraft = async (draft) => {
+    if (!supabase) return;
+    setDraftActionBusy(true);
+    try {
+      const { error } = await supabase.from("issue_card_drafts").update({
+        module: draft.module,
+        tab: draft.tab,
+        tabs: Array.isArray(draft.tabs) ? draft.tabs : [draft.tab || "overview"],
+        label: draft.label,
+        title: draft.title,
+        summary: draft.summary,
+        homepage_teaser: draft.homepage_teaser,
+        details: draft.details,
+        decoder: draft.decoder || {},
+        updated_at: new Date().toISOString(),
+      }).eq("id", draft.id);
+      if (error) throw error;
+      await loadDraftQueues();
+    } catch (e) {
+      setWorkflowError(e?.message || "Could not save issue draft.");
+    } finally {
+      setDraftActionBusy(false);
+    }
+  };
+
+  const saveProfileDraft = async (draft) => {
+    if (!supabase) return;
+    setDraftActionBusy(true);
+    try {
+      const { error } = await supabase.from("profile_drafts").update({
+        display_name: draft.display_name,
+        full_name: draft.full_name,
+        title: draft.title,
+        jurisdiction: draft.jurisdiction,
+        decoder: draft.decoder || {},
+        updated_at: new Date().toISOString(),
+      }).eq("id", draft.id);
+      if (error) throw error;
+      await loadDraftQueues();
+    } catch (e) {
+      setWorkflowError(e?.message || "Could not save profile draft.");
+    } finally {
+      setDraftActionBusy(false);
+    }
+  };
+
+  const setDraftStatus = async (type, draft, status) => {
+    if (!supabase) return;
+    const table = type === "profile" ? "profile_drafts" : "issue_card_drafts";
+    const caseTable = type === "profile" ? "profile_cases" : "research_cases";
+    const caseKey = type === "profile" ? "profile_case_id" : "case_id";
+    setDraftActionBusy(true);
+    try {
+      const { error } = await supabase.from(table).update({
+        admin_status: status,
+        updated_at: new Date().toISOString(),
+      }).eq("id", draft.id);
+      if (error) throw error;
+      if (status === "sent_back") {
+        await supabase.from(caseTable).update({ admin_review_status: "sent_back", updated_at: new Date().toISOString() }).eq(caseKey, draft[caseKey]);
+      }
+      await loadDraftQueues();
+    } catch (e) {
+      setWorkflowError(e?.message || "Could not update draft.");
+    } finally {
+      setDraftActionBusy(false);
+    }
+  };
+
+  const publishDraft = async (type, draft) => {
+    const checklistMissing = draft?.checklist_status?.missing || [];
+    if (checklistMissing.length && !window.confirm("This draft is incomplete. Publish anyway?")) return;
+    setDraftActionBusy(true);
+    try {
+      const res = await adminJsonFetch("/api/publish-draft", {
+        method: "POST",
+        body: { type, id: draft.id },
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || "Publish failed");
+      await Promise.all([loadDraftQueues(), loadPublished(), loadPublishedProfiles()]);
+      setWorkflowResult({ label: type === "profile" ? "Profile Published" : "Issue Card Published", ...payload });
+    } catch (e) {
+      setWorkflowError(e?.message || "Publish failed");
+    } finally {
+      setDraftActionBusy(false);
     }
   };
 
@@ -2820,6 +3187,17 @@ export default function AdminPanel() {
       loadPublishedProfiles();
     }
   }, [adminTab, profileAdminTab]);
+
+  useEffect(() => {
+    if (!authed) return;
+    if (["review_content", "review_profiles", "needs_research"].includes(adminTab)) {
+      loadDraftQueues();
+    }
+    if (adminTab === "published_review") {
+      loadPublished();
+      loadPublishedProfiles();
+    }
+  }, [authed, adminTab]);
 
   const generateRefNumber = async (module, type) => {
     if (!supabase) return `XX-${type === "issue" ? "IC" : "SB"}-1`;
@@ -3733,10 +4111,11 @@ export default function AdminPanel() {
       <div style={{ borderBottom:"2px solid #4a5268", marginBottom:0, background:"#2e3440", padding:isMobile ? "0 12px" : "0 36px" }}>
         <div className={isMobile ? "admin-scroll-tabs" : undefined} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, overflowX:isMobile ? "auto" : "visible", whiteSpace:isMobile ? "nowrap" : "normal", flexWrap:"nowrap", scrollbarWidth:isMobile ? "none" : undefined, msOverflowStyle:isMobile ? "none" : undefined }}>
           <div style={{ display:"flex", alignItems:"center", gap:0, flexWrap:"nowrap" }}>
-            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("issue_cards"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("issue_cards"), padding:isMobile ? "10px 14px" : adminTabStyle("issue_cards").padding, fontSize:isMobile ? 12 : adminTabStyle("issue_cards").fontSize, flexShrink:isMobile ? 0 : undefined }}>Content</button>
-            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("profiles"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("profiles"), padding:isMobile ? "10px 14px" : adminTabStyle("profiles").padding, fontSize:isMobile ? 12 : adminTabStyle("profiles").fontSize, flexShrink:isMobile ? 0 : undefined }}>Profiles</button>
-            <button onClick={() => setAdminTab("blueprints")} style={{ ...adminTabStyle("blueprints"), padding:isMobile ? "10px 14px" : adminTabStyle("blueprints").padding, fontSize:isMobile ? 12 : adminTabStyle("blueprints").fontSize, flexShrink:isMobile ? 0 : undefined }}>Blueprints</button>
-            <button onClick={() => { if (!profileParsing && !blueprintParsing && !parsing) setAdminTab("tools"); }} disabled={profileParsing || blueprintParsing || parsing} style={{ ...adminTabStyle("tools"), padding:isMobile ? "10px 14px" : adminTabStyle("tools").padding, fontSize:isMobile ? 12 : adminTabStyle("tools").fontSize, flexShrink:isMobile ? 0 : undefined }}>Tools</button>
+            <button onClick={() => setAdminTab("review_content")} style={{ ...adminTabStyle("review_content"), padding:isMobile ? "10px 14px" : adminTabStyle("review_content").padding, fontSize:isMobile ? 12 : adminTabStyle("review_content").fontSize, flexShrink:isMobile ? 0 : undefined }}>Review Content{issueDrafts.filter(d => d.admin_status === "pending_review").length ? ` (${issueDrafts.filter(d => d.admin_status === "pending_review").length})` : ""}</button>
+            <button onClick={() => setAdminTab("review_profiles")} style={{ ...adminTabStyle("review_profiles"), padding:isMobile ? "10px 14px" : adminTabStyle("review_profiles").padding, fontSize:isMobile ? 12 : adminTabStyle("review_profiles").fontSize, flexShrink:isMobile ? 0 : undefined }}>Review Profiles{profileDrafts.filter(d => d.admin_status === "pending_review").length ? ` (${profileDrafts.filter(d => d.admin_status === "pending_review").length})` : ""}</button>
+            <button onClick={() => setAdminTab("needs_research")} style={{ ...adminTabStyle("needs_research"), padding:isMobile ? "10px 14px" : adminTabStyle("needs_research").padding, fontSize:isMobile ? 12 : adminTabStyle("needs_research").fontSize, flexShrink:isMobile ? 0 : undefined }}>Needs More Research</button>
+            <button onClick={() => setAdminTab("published_review")} style={{ ...adminTabStyle("published_review"), padding:isMobile ? "10px 14px" : adminTabStyle("published_review").padding, fontSize:isMobile ? 12 : adminTabStyle("published_review").fontSize, flexShrink:isMobile ? 0 : undefined }}>Published</button>
+            <button onClick={() => setAdminTab("tools")} style={{ ...adminTabStyle("tools"), padding:isMobile ? "10px 14px" : adminTabStyle("tools").padding, fontSize:isMobile ? 12 : adminTabStyle("tools").fontSize, flexShrink:isMobile ? 0 : undefined }}>Tools</button>
           </div>
           {!isMobile && adminTab === "tools" ? (
             <div style={{ display:"flex", gap:10, marginLeft:"auto", alignItems:"center" }}>
@@ -3785,6 +4164,138 @@ export default function AdminPanel() {
             style={{ width:"100%", minHeight:120, background:"#f5f0e8", color:"#193150", border:"1px solid #4a5268", borderRadius:10, padding:12, fontSize:11, fontFamily:"Georgia, serif", resize:"vertical" }}
           />
         </div>
+      ) : null}
+
+      {workflowError ? (
+        <div style={{ maxWidth:1280, margin:"14px auto 0", padding:isMobile ? "0 12px" : "0 36px" }}>
+          <div style={{ background:"#4a1f25", border:"1px solid #8a3a44", color:"#ffd5d2", borderRadius:10, padding:12, fontSize:14 }}>{workflowError}</div>
+        </div>
+      ) : null}
+
+      {workflowResult ? (
+        <div style={{ maxWidth:1280, margin:"14px auto 0", padding:isMobile ? "0 12px" : "0 36px" }}>
+          <div style={{ background:"#1d3f2b", border:"1px solid #3E8B5B", color:"#d6f2df", borderRadius:10, padding:12, fontSize:14 }}>
+            <strong>{workflowResult.label}:</strong> cases checked {workflowResult.cases_checked ?? "—"} · drafts created {workflowResult.drafts_created ?? "—"} · drafts updated {workflowResult.drafts_updated ?? "—"} · needs more research {workflowResult.needs_more_research ?? "—"}
+          </div>
+        </div>
+      ) : null}
+
+      {adminTab === "review_content" ? (
+        <ReviewShell
+          title="Review Content"
+          subtitle="Draft issue cards, stat blocks, inline visuals, parser alerts, and linked profile suggestions. Previews use the same public components as the live site."
+          actions={
+            <>
+              <button onClick={() => runWorkflowApi("/api/generate-content", "Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Generate Content Now"}</button>
+              <button onClick={loadDraftQueues} disabled={draftsLoading} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:"pointer" }}>{draftsLoading ? "Refreshing..." : "Refresh Queue"}</button>
+            </>
+          }
+        >
+          {issueDrafts.filter((draft) => draft.admin_status !== "needs_more_research").length ? (
+            issueDrafts.filter((draft) => draft.admin_status !== "needs_more_research").map((draft) => (
+              <IssueDraftReviewCard
+                key={draft.id}
+                draft={draft}
+                isMobile={isMobile}
+                previewMode={previewMode}
+                setPreviewMode={setPreviewMode}
+                busy={draftActionBusy}
+                onEdit={(next) => setIssueDrafts((prev) => prev.map((item) => item.id === next.id ? next : item))}
+                onSave={saveIssueDraft}
+                onPublish={(item) => publishDraft("issue", item)}
+                onSendBack={(item) => setDraftStatus("issue", item, "sent_back")}
+                onReject={(item) => setDraftStatus("issue", item, "rejected")}
+              />
+            ))
+          ) : (
+            <EmptyReviewState title="No content drafts waiting" body="Use Generate Content after agents upload staged research." />
+          )}
+        </ReviewShell>
+      ) : null}
+
+      {adminTab === "review_profiles" ? (
+        <ReviewShell
+          title="Review Profiles"
+          subtitle="Draft elected official, candidate, board member, and appointed body profiles with exact card/page previews and locked officials decoder sections."
+          actions={
+            <>
+              <button onClick={() => runWorkflowApi("/api/refresh-profiles", "Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>{draftActionBusy ? "Working..." : "Refresh Profiles Now"}</button>
+              <button onClick={loadDraftQueues} disabled={draftsLoading} style={{ background:"#353b48", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"11px 16px", fontSize:13, fontWeight:900, cursor:"pointer" }}>{draftsLoading ? "Refreshing..." : "Refresh Queue"}</button>
+            </>
+          }
+        >
+          {profileDrafts.filter((draft) => draft.admin_status !== "needs_more_research").length ? (
+            profileDrafts.filter((draft) => draft.admin_status !== "needs_more_research").map((draft) => (
+              <ProfileDraftReviewCard
+                key={draft.id}
+                draft={draft}
+                isMobile={isMobile}
+                previewMode={previewMode}
+                setPreviewMode={setPreviewMode}
+                busy={draftActionBusy}
+                onEdit={(next) => setProfileDrafts((prev) => prev.map((item) => item.id === next.id ? next : item))}
+                onSave={saveProfileDraft}
+                onPublish={(item) => publishDraft("profile", item)}
+                onSendBack={(item) => setDraftStatus("profile", item, "sent_back")}
+                onReject={(item) => setDraftStatus("profile", item, "rejected")}
+              />
+            ))
+          ) : (
+            <EmptyReviewState title="No profile drafts waiting" body="Use Refresh Profiles after agents upload staged profile research." />
+          )}
+        </ReviewShell>
+      ) : null}
+
+      {adminTab === "needs_research" ? (
+        <ReviewShell title="Needs More Research" subtitle="Drafts with missing required fields, conflicting sources, weak claims, stale records, or low confidence stay here until reviewed or sent back.">
+          {[...issueDrafts.map((draft) => ({ type:"issue", draft })), ...profileDrafts.map((draft) => ({ type:"profile", draft }))]
+            .filter(({ draft }) => draft.admin_status === "needs_more_research" || (draft.checklist_status?.missing || []).length || (draft.parser_alerts || []).length)
+            .map(({ type, draft }) => (
+              <div key={`${type}-${draft.id}`} style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:18, marginBottom:14 }}>
+                <div style={{ color:"#ffffff", fontSize:17, fontWeight:900, marginBottom:6 }}>{type === "profile" ? (draft.display_name || draft.full_name) : draft.title}</div>
+                <div style={{ color:"#8fa3b8", fontSize:13, marginBottom:12 }}>{type === "profile" ? draft.profile_case_id : draft.case_id}</div>
+                <ChecklistPanel checklist={draft.checklist_status} alerts={draft.parser_alerts} />
+                <div style={{ display:"flex", gap:10, marginTop:14, flexWrap:"wrap" }}>
+                  <button onClick={() => setDraftStatus(type, draft, "sent_back")} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:8, padding:"9px 14px", fontWeight:900, cursor:"pointer" }}>Send Back to Agent</button>
+                  <button onClick={() => setDraftStatus(type, draft, "pending_review")} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:8, padding:"9px 14px", fontWeight:900, cursor:"pointer" }}>Mark Reviewed</button>
+                </div>
+              </div>
+            ))}
+        </ReviewShell>
+      ) : null}
+
+      {adminTab === "published_review" ? (
+        <ReviewShell title="Published" subtitle="Live issue cards, stat blocks, and profiles remain backward-compatible while drafts move through review.">
+          <PublishedTab
+            pubIssues={pubIssues}
+            pubStats={pubStats}
+            onDeleteIssue={handleDeleteIssue}
+            onDeleteStat={handleDeleteStat}
+            onEditIssue={(card) => setEditCard(card)}
+            onEditStat={(block) => setEditStatBlock(block)}
+            highlightId={highlightId}
+            animateId={animateId}
+            exportStatus={exportStatus}
+            fallbackText={fallbackText}
+            fallbackRef={fallbackRef}
+            handleExport={handleExport}
+            getLastExportLabel={getLastExportLabel}
+            onRerank={handleRerank}
+            rerankRunning={rerankRunning}
+            rerankMessage={rerankMessage}
+            rerankError={rerankError}
+            movedCardNotice={movedCardNotice}
+            isMobile={isMobile}
+          />
+          <div style={{ marginTop:28, background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:18 }}>
+            <div style={{ color:"#f0c93a", fontSize:12, fontWeight:900, letterSpacing:1.3, textTransform:"uppercase", marginBottom:12 }}>Live Profiles</div>
+            {pubProfiles.length ? pubProfiles.map((profile) => (
+              <div key={profile.id} style={{ color:"#c8d1dc", borderTop:"1px solid rgba(255,255,255,0.08)", padding:"10px 0", fontSize:14 }}>
+                <strong style={{ color:"#ffffff" }}>{profile.name}</strong> · {profile.office || "No title listed"}
+              </div>
+            )) : <div style={{ color:"#8fa3b8", fontSize:14 }}>No live profiles loaded.</div>}
+          </div>
+        </ReviewShell>
       ) : null}
 
       {adminTab === "issue_cards" ? (
@@ -4511,6 +5022,31 @@ export default function AdminPanel() {
       {adminTab === "tools" ? (
         <div style={{ maxWidth:1060, margin:"0 auto", padding:isMobile ? "0 12px 16px" : "0 36px 36px" }}>
           <div style={{ background:"#353b48", border:"1px solid #4a5268", borderRadius:12, padding:28 }}>
+            <div style={{ borderBottom:"1px solid #4a5268", paddingBottom:24, marginBottom:24 }}>
+              <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:12 }}>Content Workflow</div>
+              <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap:14, marginBottom:18 }}>
+                <button onClick={() => runWorkflowApi("/api/generate-content", "Generate Content")} disabled={draftActionBusy} style={{ background:"#C6A34D", color:"#193150", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
+                  {draftActionBusy ? "Working..." : "Generate Content Now"}
+                </button>
+                <button onClick={() => runWorkflowApi("/api/refresh-profiles", "Refresh Profiles")} disabled={draftActionBusy} style={{ background:"#2F5D8A", color:"#fff", border:"none", borderRadius:10, padding:"16px 18px", fontSize:15, fontWeight:900, cursor:draftActionBusy ? "not-allowed" : "pointer" }}>
+                  {draftActionBusy ? "Working..." : "Refresh Profiles Now"}
+                </button>
+              </div>
+              <button onClick={() => setAdvancedManualOpen((prev) => !prev)} style={{ width:"100%", background:"#263240", color:"#c8d1dc", border:"1px solid #4a5268", borderRadius:8, padding:"12px 14px", fontSize:13, fontWeight:900, cursor:"pointer", textAlign:"left" }}>
+                Advanced Manual Import {advancedManualOpen ? "▲" : "▼"}
+              </button>
+              {advancedManualOpen ? (
+                <div style={{ marginTop:14, background:"#2e3440", border:"1px solid #4a5268", borderRadius:10, padding:14 }}>
+                  <div style={{ color:"#8fa3b8", fontSize:13, lineHeight:1.55, marginBottom:10 }}>Emergency fallback only. Normal intake now starts with agents uploading raw research into Supabase staging tables.</div>
+                  <textarea value={rawPaste} onChange={e => setRawPaste(e.target.value)}
+                    placeholder={"Emergency formatted issue-card paste only..."}
+                    style={{ width:"100%", minHeight:180, background:"#f5f0e8", border:"1px solid #4a5268", color:"#193150", fontSize:13, lineHeight:1.6, resize:"vertical", outline:"none", fontFamily:"monospace", boxSizing:"border-box", padding:12, borderRadius:8 }} />
+                  <button onClick={handleParse} disabled={parsing || !rawPaste.trim()} style={{ ...primaryParseButtonStyle, marginTop:10, cursor:parsing || !rawPaste.trim() ? "not-allowed" : "pointer" }}>
+                    {parsing ? "Processing..." : "Process Manual Import"}
+                  </button>
+                </div>
+              ) : null}
+            </div>
             <div>
               <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10, paddingBottom:10, borderBottom:"2px solid rgba(198,163,77,0.25)" }}>📱 SOCIAL MEDIA CONTENT</div>
               <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} isMobile={isMobile} />

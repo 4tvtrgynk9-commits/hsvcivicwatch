@@ -4,7 +4,7 @@ const ALLOWED_FIELDS = [
   "title","label","summary","details","sources",
   "module","tab","shock_factor","module_relevance","visual_score",
   "decoder_what","decoder_connections","decoder_who_benefits","decoder_impact",
-  "show_on_overview",
+  "show_on_overview","homepage_score",
 ];
 
 module.exports = async function handler(req, res) {

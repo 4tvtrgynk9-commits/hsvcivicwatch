@@ -383,11 +383,13 @@ export default function ConnectionsMap() {
             if (len < 2) return null;
             const ux = dx / len;
             const uy = dy / len;
-            const gap = 28;
+            const gap = 18;
             const sx = start.x + ux * gap;
             const sy = start.y + uy * gap;
             const ex = end.x - ux * gap;
             const ey = end.y - uy * gap;
+            const remainLen = Math.sqrt((ex-sx)*(ex-sx) + (ey-sy)*(ey-sy));
+            if (remainLen < 10) return null;
             return (
               <line key={i} x1={sx} y1={sy} x2={ex} y2={ey}
                 stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.4"

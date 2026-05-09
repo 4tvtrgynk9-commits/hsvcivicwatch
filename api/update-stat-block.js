@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) { console.error(error); return res.status(500).json({ error: error.message }); }
     return res.status(200).json({ success: true, statBlock: data });
   } catch (error) {
     console.error("update stat block error:", error);
