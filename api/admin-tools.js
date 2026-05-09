@@ -342,6 +342,9 @@ function structuredIssuePayloadToReviewDraft(row) {
 }
 
 async function sendDraftToReviewQueue(req, res, supabase) {
+  const { id } = req.body || {};
+  if (!id) return res.status(400).json({ error: "Missing admin draft record id" });
+
   const { data: existingReview } = await supabase
     .from("issue_card_drafts")
     .select("id, title, admin_status")
@@ -357,8 +360,6 @@ async function sendDraftToReviewQueue(req, res, supabase) {
     });
   }
 
-  const { id } = req.body || {};
-  if (!id) return res.status(400).json({ error: "Missing admin draft record id" });
 
   const { data: row, error: rowError } = await supabase
     .from("admin_draft_records")
