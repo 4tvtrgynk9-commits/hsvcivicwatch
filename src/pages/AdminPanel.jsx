@@ -378,7 +378,6 @@ function FieldLabel({ children }) {
   return (
     <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
       {children}
-      <AdminInfrastructurePanel />
     </div>
   );
 }
@@ -5106,6 +5105,11 @@ export default function AdminPanel() {
             <div>
               <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10, paddingBottom:10, borderBottom:"2px solid rgba(198,163,77,0.25)" }}>📱 SOCIAL MEDIA CONTENT</div>
               <SocialCardsQueue pubIssues={pubIssues} pubStats={pubStats} isMobile={isMobile} />
+            </div>
+
+            <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
+              <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>Infrastructure Desk</div>
+              <AdminInfrastructurePanel />
             </div>
 
             <div style={{ borderTop:"1px solid #4a5268", paddingTop:24, marginTop:24 }}>
