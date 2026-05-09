@@ -1,5 +1,5 @@
-import { requireAdmin } from "./_adminAuth";
-import { getAdminClient } from "./_reviewWorkflow";
+import { requireAdmin } from "../api-shared/adminAuth";
+import { getAdminClient } from "../api-shared/reviewWorkflow";
 
 const MODULE_PREFIX = {
   equity: "EQ", utilities: "UT", health: "HS", insurance_burdens: "IN",

@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { requireAdmin } from "./_adminAuth";
+import { requireAdmin } from "../api-shared/adminAuth";
 
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const MODEL = "claude-sonnet-4-20250514";

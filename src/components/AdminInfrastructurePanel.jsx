@@ -53,7 +53,7 @@ export default function AdminInfrastructurePanel() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/admin-infrastructure-dashboard", { headers });
+      const res = await fetch("/api/admin-tools?action=dashboard", { headers });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Dashboard failed");
       setData(json);
@@ -72,7 +72,7 @@ export default function AdminInfrastructurePanel() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/generate-social-drafts", {
+      const res = await fetch("/api/admin-tools?action=generate-social-drafts", {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -97,7 +97,7 @@ export default function AdminInfrastructurePanel() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/social-hashtag-scout", {
+      const res = await fetch("/api/admin-tools?action=hashtag-scout", {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -127,7 +127,7 @@ export default function AdminInfrastructurePanel() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/update-social-draft", {
+      const res = await fetch("/api/admin-tools?action=update-social-draft", {
         method: "POST",
         headers,
         body: JSON.stringify({ id: row.id, status }),

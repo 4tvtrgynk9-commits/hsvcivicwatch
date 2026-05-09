@@ -1,4 +1,4 @@
-import { requireAdmin } from "./_adminAuth";
+import { requireAdmin } from "../api-shared/adminAuth";
 
 // ── constants ─────────────────────────────────────────────────────────────────
 

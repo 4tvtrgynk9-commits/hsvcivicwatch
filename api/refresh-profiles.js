@@ -1,11 +1,11 @@
-import { requireAdmin } from "./_adminAuth";
+import { requireAdmin } from "../api-shared/adminAuth";
 import {
   alertsFromChecklist,
   anthropicJson,
   checklistForProfile,
   compactJson,
   getAdminClient,
-} from "./_reviewWorkflow";
+} from "../api-shared/reviewWorkflow";
 
 const PROFILE_SYSTEM = `You generate draft HSV Civic Watch official/candidate/board profiles from staged research.
 Return ONLY valid JSON: { "profiles": [...] }.

@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { requireAdmin } from "./_adminAuth";
+import { requireAdmin } from "../api-shared/adminAuth";
 
 function json(res, status, body) {
   res.status(status).json(body);

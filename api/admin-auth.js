@@ -1,4 +1,4 @@
-import { loginAdmin, logoutAdmin, sendAdminPasswordReset, getAdminSession } from "./_adminAuth";
+import { loginAdmin, logoutAdmin, sendAdminPasswordReset, getAdminSession } from "../api-shared/adminAuth";
 
 function normalizeLoginError(error) {
   const message = String(error?.message || "Could not sign in.");

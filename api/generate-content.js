@@ -1,4 +1,4 @@
-import { requireAdmin } from "./_adminAuth";
+import { requireAdmin } from "../api-shared/adminAuth";
 import {
   alertsFromChecklist,
   anthropicJson,
@@ -6,7 +6,7 @@ import {
   compactJson,
   getAdminClient,
   isMissing,
-} from "./_reviewWorkflow";
+} from "../api-shared/reviewWorkflow";
 
 const CONTENT_SYSTEM = `You generate draft HSV Civic Watch issue cards from staged agent research.
 Return ONLY valid JSON: { "issueCards": [...] }.
