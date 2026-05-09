@@ -6,14 +6,16 @@ function normalizeLoginError(error) {
   if (/email not confirmed/i.test(message)) return { status: 403, error: "The admin account email is not confirmed in Supabase Auth." };
   if (/not allowed to access the admin panel/i.test(message)) return { status: 403, error: "This account is not allowed to access the admin panel." };
   if (/missing admin auth email configuration/i.test(message)) return { status: 500, error: "Admin login is not configured on this deployment." };
-  if (/missing supabase url configuration|missing supabase anon key configuration/i.test(message)) return { status: 500, error: "Supabase auth is not configured on this deployment." };
+  if (/invalid api key|anon\/publishable key is invalid/i.test(message)) return { status: 500, error: "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel." };
+  if (/missing supabase url configuration|missing supabase anon key configuration|missing supabase anon\/publishable key configuration/i.test(message)) return { status: 500, error: "Supabase auth is not configured on this deployment." };
   return { status: 500, error: message };
 }
 
 function normalizeResetError(error) {
   const message = String(error?.message || "Could not send admin password reset.");
   if (/missing admin auth email configuration/i.test(message)) return "Admin password reset is not configured on this deployment.";
-  if (/missing supabase url configuration|missing supabase anon key configuration/i.test(message)) return "Supabase auth is not configured on this deployment.";
+  if (/invalid api key|anon\/publishable key is invalid/i.test(message)) return "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel.";
+  if (/missing supabase url configuration|missing supabase anon key configuration|missing supabase anon\/publishable key configuration/i.test(message)) return "Supabase auth is not configured on this deployment.";
   if (/rate limit|too many/i.test(message)) return "Too many reset attempts. Wait a moment and try again.";
   return message;
 }

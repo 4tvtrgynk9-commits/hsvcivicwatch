@@ -6,6 +6,23 @@ export function getSupabaseAnonKey() {
   return (process.env.REACT_APP_SUPABASE_ANON_KEY || "").trim();
 }
 
+export function isLikelyPublishableOrAnonKey(value) {
+  const key = String(value || "").trim();
+  if (!key) return false;
+
+  // Current Supabase publishable keys.
+  if (key.startsWith("sb_publishable_")) return true;
+
+  // Legacy anon JWT keys.
+  if (key.startsWith("eyJ")) return true;
+
+  // Never allow secret/service-role style keys in frontend.
+  if (key.startsWith("sb_secret_")) return false;
+  if (/service[_-]?role/i.test(key)) return false;
+
+  return false;
+}
+
 export const supabaseAnonKey = getSupabaseAnonKey();
 
 let supabaseClient = null;
@@ -16,7 +33,13 @@ export function getSupabaseClient() {
 
   if (!supabaseAnonKey) {
     supabaseClientInitError =
-      "Frontend Supabase anon key is missing. Set REACT_APP_SUPABASE_ANON_KEY in Vercel.";
+      "Frontend Supabase anon/publishable key is missing. Set REACT_APP_SUPABASE_ANON_KEY in Vercel.";
+    throw new Error(supabaseClientInitError);
+  }
+
+  if (!isLikelyPublishableOrAnonKey(supabaseAnonKey)) {
+    supabaseClientInitError =
+      "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel.";
     throw new Error(supabaseClientInitError);
   }
 
@@ -31,8 +54,10 @@ export function getSupabaseClient() {
 
     return supabaseClient;
   } catch (error) {
-    supabaseClientInitError =
-      "Admin build is still using a bad Supabase client. Check deployed commit.";
+    const message = String(error?.message || error || "");
+    supabaseClientInitError = /Invalid API key/i.test(message)
+      ? "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel."
+      : "Frontend Supabase client failed to initialize. Check REACT_APP_SUPABASE_ANON_KEY in Vercel.";
     throw new Error(supabaseClientInitError);
   }
 }

@@ -2519,6 +2519,10 @@ function getFriendlyAdminError(error) {
     return "Admin build is still using a bad Supabase client. Check deployed commit.";
   }
 
+  if (/Invalid API key|anon\/publishable key is invalid/i.test(message)) {
+    return "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel.";
+  }
+
   if (/incorrect|invalid password|unauthorized|401/i.test(message)) {
     return "Incorrect admin password.";
   }
