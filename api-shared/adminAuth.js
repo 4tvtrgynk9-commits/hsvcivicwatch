@@ -36,28 +36,29 @@ function getSupabaseUrl() {
     : HSV_SUPABASE_URL;
 }
 
+function normalizeSupabaseKey(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^["']+|["']+$/g, "")
+    .trim();
+}
+
 function getSupabaseAnonKey() {
-  return (
+  return normalizeSupabaseKey(
     process.env.SUPABASE_ANON_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     process.env.REACT_APP_SUPABASE_ANON_KEY ||
     ""
-  ).trim();
+  );
 }
 
-function isLikelyPublishableOrAnonKey(value) {
-  const key = String(value || "").trim();
-  if (!key) return false;
-
-  // Current Supabase publishable keys.
-  if (key.startsWith("sb_publishable_")) return true;
-
-  // Legacy anon JWT keys.
-  if (key.startsWith("eyJ")) return true;
+function isBlockedAuthKey(value) {
+  const key = normalizeSupabaseKey(value);
+  if (!key) return true;
 
   // Never use secret/service-role style keys for password login.
-  if (key.startsWith("sb_secret_")) return false;
-  if (/service[_-]?role/i.test(key)) return false;
+  if (key.startsWith("sb_secret_")) return true;
+  if (/service[_-]?role/i.test(key)) return true;
 
   return false;
 }
@@ -85,8 +86,8 @@ function getExplicitResetRedirectUrl() {
 function getMissingConfigError() {
   if (!getSupabaseUrl()) return "Missing Supabase URL configuration";
   if (!getSupabaseAnonKey()) return "Missing Supabase anon/publishable key configuration";
-  if (!isLikelyPublishableOrAnonKey(getSupabaseAnonKey())) {
-    return "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel.";
+  if (isBlockedAuthKey(getSupabaseAnonKey())) {
+    return "Supabase anon/publishable key is missing or unsafe. Check SUPABASE_ANON_KEY in Vercel.";
   }
   if (!getAdminEmail()) return "Missing admin auth email configuration";
   return null;

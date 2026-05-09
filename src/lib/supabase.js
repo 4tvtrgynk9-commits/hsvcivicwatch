@@ -2,23 +2,24 @@ import { createClient } from "@supabase/supabase-js";
 
 export const supabaseUrl = "https://idtzqminkklydbuooilk.supabase.co";
 
-export function getSupabaseAnonKey() {
-  return (process.env.REACT_APP_SUPABASE_ANON_KEY || "").trim();
+export function normalizeSupabaseKey(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^["']+|["']+$/g, "")
+    .trim();
 }
 
-export function isLikelyPublishableOrAnonKey(value) {
-  const key = String(value || "").trim();
-  if (!key) return false;
+export function getSupabaseAnonKey() {
+  return normalizeSupabaseKey(process.env.REACT_APP_SUPABASE_ANON_KEY || "");
+}
 
-  // Current Supabase publishable keys.
-  if (key.startsWith("sb_publishable_")) return true;
-
-  // Legacy anon JWT keys.
-  if (key.startsWith("eyJ")) return true;
+export function isBlockedFrontendKey(value) {
+  const key = normalizeSupabaseKey(value);
+  if (!key) return true;
 
   // Never allow secret/service-role style keys in frontend.
-  if (key.startsWith("sb_secret_")) return false;
-  if (/service[_-]?role/i.test(key)) return false;
+  if (key.startsWith("sb_secret_")) return true;
+  if (/service[_-]?role/i.test(key)) return true;
 
   return false;
 }
@@ -37,9 +38,9 @@ export function getSupabaseClient() {
     throw new Error(supabaseClientInitError);
   }
 
-  if (!isLikelyPublishableOrAnonKey(supabaseAnonKey)) {
+  if (isBlockedFrontendKey(supabaseAnonKey)) {
     supabaseClientInitError =
-      "Supabase anon/publishable key is invalid. Check REACT_APP_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY in Vercel.";
+      "Supabase anon/publishable key is missing or unsafe. Check REACT_APP_SUPABASE_ANON_KEY in Vercel.";
     throw new Error(supabaseClientInitError);
   }
 
