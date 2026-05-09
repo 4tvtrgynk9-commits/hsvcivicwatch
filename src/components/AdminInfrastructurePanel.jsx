@@ -7,6 +7,37 @@ function copyText(text) {
   navigator.clipboard?.writeText(text);
 }
 
+async function parseApiResponse(res, fallbackMessage) {
+  let json = {};
+  try {
+    json = await res.json();
+  } catch {
+    json = {};
+  }
+
+  if (res.ok) return json;
+
+  const raw = String(json.error || fallbackMessage || "Admin request failed");
+
+  if (/ADMIN_API_KEY is required/i.test(raw)) {
+    throw new Error("Admin API Key is required for Infrastructure Desk actions. Enter it above; it is stored only in this browser session.");
+  }
+
+  if (/Unauthorized admin API request/i.test(raw)) {
+    throw new Error("Admin API Key was rejected. Re-enter the current Admin API Key and try again.");
+  }
+
+  if (/Missing Supabase service role configuration/i.test(raw)) {
+    throw new Error("Backend Supabase service role configuration is missing. Infrastructure Desk cannot load server-side tables yet.");
+  }
+
+  if (/AI gateway is wired but disabled/i.test(raw)) {
+    throw new Error("AI gateway is OFF. No AI money was spent. Fallback hashtags may still be available.");
+  }
+
+  throw new Error(raw);
+}
+
 function scoreLabel(row) {
   const parts = [];
   if (row.readiness_score_50 !== null && row.readiness_score_50 !== undefined) {
@@ -54,8 +85,7 @@ export default function AdminInfrastructurePanel() {
     setMessage("");
     try {
       const res = await fetch("/api/admin-tools?action=dashboard", { headers });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Dashboard failed");
+      const json = await parseApiResponse(res, "Dashboard failed");
       setData(json);
     } catch (err) {
       setMessage(err.message || "Dashboard failed");
@@ -65,7 +95,11 @@ export default function AdminInfrastructurePanel() {
   }
 
   useEffect(() => {
-    if (apiKey) sessionStorage.setItem(API_KEY_STORAGE, apiKey);
+    if (apiKey) {
+      sessionStorage.setItem(API_KEY_STORAGE, apiKey);
+    } else {
+      sessionStorage.removeItem(API_KEY_STORAGE);
+    }
   }, [apiKey]);
 
   async function generateSocialDrafts() {
@@ -82,8 +116,7 @@ export default function AdminInfrastructurePanel() {
           scheduled_for: new Date().toISOString(),
         }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Generate social drafts failed");
+      const json = await parseApiResponse(res, "Generate social drafts failed");
       setMessage(`Generated ${json.draft_count} ${workspace.toUpperCase()} social draft(s).`);
       await loadDashboard();
     } catch (err) {
@@ -112,8 +145,7 @@ export default function AdminInfrastructurePanel() {
           dryRun: false,
         }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Hashtag scout failed");
+      const json = await parseApiResponse(res, "Hashtag scout failed");
       setMessage(`Hashtag Scout saved ${json.hashtag_set?.recommended_final_set?.length || 0} hashtags.`);
       await loadDashboard();
     } catch (err) {
@@ -132,8 +164,7 @@ export default function AdminInfrastructurePanel() {
         headers,
         body: JSON.stringify({ id: row.id, status }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Update social draft failed");
+      await parseApiResponse(res, "Update social draft failed");
       setMessage(`Marked social draft ${status}.`);
       await loadDashboard();
     } catch (err) {
@@ -248,13 +279,13 @@ export default function AdminInfrastructurePanel() {
       <h2>Admin Infrastructure Desk</h2>
       <p>
         Parser drafts, AI budget, social queue, hashtag scout, poll records, and share payloads.
-        This is infrastructure only: no auto-posting, and AI remains controlled by gateway flags.
+        This is infrastructure only: no auto-posting. AI remains controlled by gateway flags and should stay OFF unless explicitly enabled.
       </p>
 
       <div className="admin-infra-toolbar">
         <input
           type="password"
-          placeholder="Admin API key if required"
+          placeholder="Admin API Key — stored only in sessionStorage"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
           aria-label="Admin API key"
