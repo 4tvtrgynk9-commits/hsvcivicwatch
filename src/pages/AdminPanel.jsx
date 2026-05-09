@@ -8,6 +8,7 @@ import VisualSwitcher from "../components/VisualSwitcher";
 import OfficialProfile from "../modules/officials_elections/OfficialProfile";
 import { COLORS } from "../config/theme";
 import {
+import AdminInfrastructurePanel from "../components/AdminInfrastructurePanel";
   PieChart, Pie, Cell, Tooltip,
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
   LineChart, Line, CartesianGrid
@@ -372,6 +373,7 @@ function FieldLabel({ children }) {
   return (
     <div style={{ color:"#c8d1dc", fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>
       {children}
+      <AdminInfrastructurePanel />
     </div>
   );
 }
