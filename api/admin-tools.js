@@ -313,6 +313,16 @@ function normalizeDraftArray(value) {
   return Array.isArray(value) ? value : value ? [value] : [];
 }
 
+
+function isMissingStructuredDraftColumn(error) {
+  return /structured_admin_draft_id|column .* does not exist|Could not find .*structured_admin_draft_id/i.test(String(error?.message || error || ""));
+}
+
+function stripStructuredDraftColumn(payload = {}) {
+  const { structured_admin_draft_id, ...rest } = payload;
+  return rest;
+}
+
 function structuredIssuePayloadToReviewDraft(row) {
   const payload = row.parsed_payload || {};
   const validation = row.validation_result || {};
@@ -368,7 +378,7 @@ async function sendDraftToReviewQueue(req, res, supabase) {
       .eq("structured_admin_draft_id", id)
       .maybeSingle();
 
-    if (existingError && !/structured_admin_draft_id/i.test(existingError.message || "")) {
+    if (existingError && !isMissingStructuredDraftColumn(existingError)) {
       throw existingError;
     }
 
@@ -381,7 +391,7 @@ async function sendDraftToReviewQueue(req, res, supabase) {
       });
     }
   } catch (existingCheckError) {
-    if (!/structured_admin_draft_id/i.test(existingCheckError.message || "")) {
+    if (!isMissingStructuredDraftColumn(existingCheckError)) {
       throw existingCheckError;
     }
   }
@@ -406,11 +416,23 @@ async function sendDraftToReviewQueue(req, res, supabase) {
 
   const reviewDraft = structuredIssuePayloadToReviewDraft(row);
 
-  const { data: inserted, error: insertError } = await supabase
+  let insertPayload = reviewDraft;
+  let { data: inserted, error: insertError } = await supabase
     .from("issue_card_drafts")
-    .insert(reviewDraft)
-    .select("*")
+    .insert(insertPayload)
+    .select()
     .single();
+
+  if (insertError && isMissingStructuredDraftColumn(insertError)) {
+    insertPayload = stripStructuredDraftColumn(reviewDraft);
+    const retry = await supabase
+      .from("issue_card_drafts")
+      .insert(insertPayload)
+      .select()
+      .single();
+    inserted = retry.data;
+    insertError = retry.error;
+  }
 
   if (insertError) throw new Error(insertError.message);
 
