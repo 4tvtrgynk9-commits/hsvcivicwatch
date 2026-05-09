@@ -1,9 +1,6 @@
+import { supabase } from "../lib/supabase";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://idtzqminkklydbuooilk.supabase.co";
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 export default function useHomepageData() {
   const [cards, setCards] = useState([]);

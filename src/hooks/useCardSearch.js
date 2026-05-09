@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
 
-const supabaseUrl = "https://idtzqminkklydbuooilk.supabase.co";
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "";
-const searchClient = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+const searchClient = supabase;
+
 
 function escapeSearchValue(value) {
   return String(value || "").replace(/[%_,]/g, "\\$&");
