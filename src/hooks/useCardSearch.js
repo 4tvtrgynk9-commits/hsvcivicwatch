@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://idtzqminkklydbuooilk.supabase.co";
+const supabaseUrl = "https://idtzqminkklydbuooilk.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "";
 const searchClient = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
