@@ -305,6 +305,7 @@ function structuredIssuePayloadToReviewDraft(row) {
   const needsReview = Boolean(row.needs_review || warnings.length || errors.length);
 
   return {
+    structured_admin_draft_id: row.id,
     module: payload.module || "equity",
     tab: payload.tab || "overview",
     tabs: Array.isArray(payload.tabs) && payload.tabs.length ? payload.tabs : [payload.tab || "overview"],
@@ -341,6 +342,21 @@ function structuredIssuePayloadToReviewDraft(row) {
 }
 
 async function sendDraftToReviewQueue(req, res, supabase) {
+  const { data: existingReview } = await supabase
+    .from("issue_card_drafts")
+    .select("id, title, admin_status")
+    .eq("structured_admin_draft_id", id)
+    .maybeSingle();
+
+  if (existingReview?.id) {
+    return res.status(200).json({
+      success: true,
+      already_exists: true,
+      review_draft: existingReview,
+      message: "This structured draft is already in the Review Queue.",
+    });
+  }
+
   const { id } = req.body || {};
   if (!id) return res.status(400).json({ error: "Missing admin draft record id" });
 

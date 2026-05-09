@@ -4336,6 +4336,14 @@ export default function AdminPanel() {
         </div>
       ) : null}
 
+      {TEMP_DISABLE_ADMIN_LOGIN ? (
+        <div style={{ maxWidth:1280, margin:"14px auto 0", padding:isMobile ? "0 12px" : "0 36px" }}>
+          <div style={{ background:"#7A4F00", border:"1px solid #C6A34D", color:"#fff3cd", borderRadius:10, padding:12, fontSize:14, fontWeight:800 }}>
+            TEMP ADMIN BYPASS ACTIVE — finish workflow testing, then restore the login gate before launch.
+          </div>
+        </div>
+      ) : null}
+
       {workflowError ? (
         <div style={{ maxWidth:1280, margin:"14px auto 0", padding:isMobile ? "0 12px" : "0 36px" }}>
           <div style={{ background:"#4a1f25", border:"1px solid #8a3a44", color:"#ffd5d2", borderRadius:10, padding:12, fontSize:14 }}>{workflowError}</div>

@@ -175,6 +175,7 @@ export default function AdminInfrastructurePanel() {
   }
 
   async function sendDraftToReview(row) {
+    if (!row?.id) return;
     setLoading(true);
     setMessage("");
     try {
@@ -183,8 +184,9 @@ export default function AdminInfrastructurePanel() {
         headers,
         body: JSON.stringify({ id: row.id }),
       });
-      const json = await parseApiResponse(res, "Send to review queue failed");
-      setMessage(json.message || "Structured draft sent to Review Content.");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Send to review queue failed");
+      setMessage(`Sent "${row.title || row.draft_type || "draft"}" to the Review Queue.`);
       await loadDashboard();
     } catch (err) {
       setMessage(err.message || "Send to review queue failed");
@@ -352,7 +354,7 @@ export default function AdminInfrastructurePanel() {
                   </div>
                 ) : null}
               </div>
-            )) : <p>No draft records loaded.</p>}
+            )) : <p>No structured draft records loaded. Use Import → Save Structured Packet, then refresh this dashboard.</p>}
           </div>
         </MiniCard>
 
@@ -375,7 +377,7 @@ export default function AdminInfrastructurePanel() {
                   </div>
                 </div>
               );
-            }) : <p>No social drafts yet.</p>}
+            }) : <p>No social drafts yet. Generate a draft after published content exists.</p>}
           </div>
         </MiniCard>
 
