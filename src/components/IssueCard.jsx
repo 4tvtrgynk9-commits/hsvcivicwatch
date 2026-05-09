@@ -424,7 +424,7 @@ export default function IssueCard({ issue }) {
     if (issue.visual_config && (issue.visual_score || 0) >= 7) return null;
     if (shareStatBlock) return shareStatBlock;
     if (!issue.ref_number) return null;
-    const url = process.env.REACT_APP_SUPABASE_URL;
+    const url = process.env.REACT_APP_SUPABASE_URL || "https://idtzqminkklydbuooilk.supabase.co";
     const anonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
     if (!url || !anonKey) return null;
 
