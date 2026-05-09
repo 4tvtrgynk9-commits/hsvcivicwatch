@@ -2371,12 +2371,33 @@ function DraftEditor({ draft, type, onChange }) {
   );
 }
 
+function hidePublicPlaceholder(value) {
+  if (value == null) return "";
+  const text = String(value).trim();
+  if (!text) return "";
+
+  const normalized = text.toLowerCase();
+  if (
+    [
+      "unknown",
+      "not found",
+      "null",
+      "n/a",
+      "na",
+      "needs more research",
+      "needs_more_research",
+      "verify",
+      "[verify]",
+    ].includes(normalized)
+  ) {
+    return "";
+  }
+
+  return value;
+}
+
 function sanitizeIssueForPreview(draft) {
-  const hide = (value) => {
-    if (value == null) return "";
-    const text = String(value).trim();
-    return ["unknown", "not found", "null", "n/a"].includes(text.toLowerCase()) ? "" : value;
-  };
+  const hide = hidePublicPlaceholder;
   return {
     ...draft,
     label: hide(draft.label),
@@ -2394,8 +2415,37 @@ function sanitizeIssueForPreview(draft) {
   };
 }
 
+function sanitizePublicValue(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map(sanitizePublicValue)
+      .filter((item) => {
+        if (item == null) return false;
+        if (typeof item === "string") return Boolean(item.trim());
+        if (typeof item === "object") return Object.keys(item).length > 0;
+        return true;
+      });
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, item]) => [key, sanitizePublicValue(item)])
+        .filter(([, item]) => {
+          if (item == null) return false;
+          if (typeof item === "string") return Boolean(item.trim());
+          if (Array.isArray(item)) return item.length > 0;
+          if (typeof item === "object") return Object.keys(item).length > 0;
+          return true;
+        })
+    );
+  }
+
+  return hidePublicPlaceholder(value);
+}
+
 function profileDraftToOfficial(draft) {
-  return {
+  return sanitizePublicValue({
     id: draft.id,
     name: draft.display_name || draft.full_name,
     office: draft.title,
@@ -2415,7 +2465,7 @@ function profileDraftToOfficial(draft) {
       beneficiaries: draft.decoder?.beneficiaries || "",
       track_record: draft.decoder?.track_record || "",
     },
-  };
+  });
 }
 
 function PreviewFrame({ isMobile, mode, setMode, children }) {
@@ -2456,13 +2506,9 @@ function IssueDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, on
           <button onClick={() => onReject(draft)} disabled={busy} style={{ background:"#B4473E", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Reject</button>
         </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(0, 1.15fr) minmax(340px, 0.85fr)", gap:18 }}>
-        <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
-          <IssueCard issue={previewIssue} />
-          {Array.isArray(draft.stat_blocks) && draft.stat_blocks.length ? <VisualSwitcher stats={draft.stat_blocks.map((block, index) => ({ ...block, id:index, data:block }))} /> : null}
-          {draft.inline_visual_config ? <IssueCardVisual config={draft.inline_visual_config} /> : null}
-        </PreviewFrame>
-        <div style={{ display:"grid", gap:14 }}>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(340px, 0.85fr) minmax(0, 1.15fr)", gap:18 }}>
+        <div style={{ display:"grid", gap:14, order:isMobile ? 2 : 1 }}>
+          <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase" }}>Edit Fields</div>
           <DraftEditor draft={draft} type="issue" onChange={onEdit} />
           {Array.isArray(draft.linked_profiles) && draft.linked_profiles.length ? (
             <div style={{ color:"#c8d1dc", fontSize:13 }}>
@@ -2470,6 +2516,14 @@ function IssueDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, on
             </div>
           ) : null}
           <ChecklistPanel checklist={draft.checklist_status} alerts={draft.parser_alerts} />
+        </div>
+        <div style={{ order:isMobile ? 1 : 2 }}>
+          <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>Public Visual Preview</div>
+          <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
+            <IssueCard issue={previewIssue} />
+            {Array.isArray(draft.stat_blocks) && draft.stat_blocks.length ? <VisualSwitcher stats={draft.stat_blocks.map((block, index) => ({ ...block, id:index, data:block }))} /> : null}
+            {draft.inline_visual_config ? <IssueCardVisual config={draft.inline_visual_config} /> : null}
+          </PreviewFrame>
         </div>
       </div>
     </div>
@@ -2493,16 +2547,20 @@ function ProfileDraftReviewCard({ draft, isMobile, previewMode, setPreviewMode, 
           <button onClick={() => onReject(draft)} disabled={busy} style={{ background:"#B4473E", color:"#fff", border:"none", borderRadius:8, padding:"10px 14px", fontWeight:900, cursor:"pointer" }}>Reject</button>
         </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(0, 1.15fr) minmax(340px, 0.85fr)", gap:18 }}>
-        <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
-          <OfficialProfile official={official} onClose={() => {}} />
-        </PreviewFrame>
-        <div style={{ display:"grid", gap:14 }}>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "minmax(340px, 0.85fr) minmax(0, 1.15fr)", gap:18 }}>
+        <div style={{ display:"grid", gap:14, order:isMobile ? 2 : 1 }}>
+          <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase" }}>Edit Fields</div>
           <DraftEditor draft={draft} type="profile" onChange={onEdit} />
           <div style={{ background:"#263240", border:"1px solid #4a5268", borderRadius:10, padding:14, color:"#c8d1dc", fontSize:13, lineHeight:1.6 }}>
             <strong style={{ color:"#f0c93a" }}>Officials decoder:</strong> The Rise · The Affiliations · The Beneficiaries · The Track Record
           </div>
           <ChecklistPanel checklist={draft.checklist_status} alerts={draft.parser_alerts} />
+        </div>
+        <div style={{ order:isMobile ? 1 : 2 }}>
+          <div style={{ color:"#f0c93a", fontSize:11, fontWeight:900, letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>Public Visual Preview</div>
+          <PreviewFrame isMobile={isMobile} mode={previewMode} setMode={setPreviewMode}>
+            <OfficialProfile official={official} onClose={() => {}} />
+          </PreviewFrame>
         </div>
       </div>
     </div>
